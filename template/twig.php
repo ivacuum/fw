@@ -23,15 +23,15 @@ class twig
 	{
 		global $config, $site_root_path, $src_root_path;
 
-		require($src_root_path . '../lib/twig/' . $config['twig_version'] . '/Twig/Autoloader.php');
+		require("{$src_root_path}../lib/twig/{$config['twig_version']}/Twig/Autoloader.php");
 		\Twig_Autoloader::register();
 		
-		$this->path   = $site_root_path . '../templates';
-		$this->loader = new \Twig_Loader_Filesystem(array($this->path, $src_root_path . 'templates'));
+		$this->path   = "{$site_root_path}../templates";
+		$this->loader = new \Twig_Loader_Filesystem(array($this->path, "{$src_root_path}templates"));
 		$this->env    = new \Twig_Environment($this->loader, array(
 			'auto_reload' => true,
 			'autoescape'  => false,
-			'cache'       => $site_root_path . '../cache/templates'
+			'cache'       => "{$site_root_path}../cache/templates",
 		));
 	}
 	
@@ -40,7 +40,7 @@ class twig
 	*/
 	public function append($loop_name, $vars_array)
 	{
-		if( strpos($loop_name, '.') !== false )
+		if (false !== strpos($loop_name, '.'))
 		{
 			/**
 			* Цикл в цикле
@@ -50,7 +50,7 @@ class twig
 
 			$str = &$this->vars;
 
-			for( $i = 0; $i < $loops_count; $i++ )
+			for ($i = 0; $i < $loops_count; $i++)
 			{
 				$str = &$str[$loops[$i]];
 				$str = &$str[sizeof($str) - 1];
@@ -75,9 +75,9 @@ class twig
 	{
 		$args = func_get_args();
 
-		if( is_array($args[0]) )
+		if (is_array($args[0]))
 		{
-			foreach( $args[0] as $key => $value )
+			foreach ($args[0] as $key => $value)
 			{
 				$this->vars[$key] = $value;
 			}
@@ -87,12 +87,12 @@ class twig
 
 		$len = sizeof($args);
 
-		if( $len % 2 != 0 )
+		if ($len % 2 != 0)
 		{
 			return false;
 		}
 
-		for( $i = 0; $i < $len; $i += 2 )
+		for ($i = 0; $i < $len; $i += 2)
 		{
 			$this->vars[$args[$i]] = $args[$i + 1];
 		}
@@ -161,7 +161,7 @@ class twig
 		$this->env    = new \Twig_Environment($this->loader, array(
 			'auto_reload' => true,
 			'autoescape'  => false,
-			'cache'       => $site_root_path . 'cache/templates'
+			'cache'       => "{$site_root_path}cache/templates",
 		));
 		$this->is_globals_set = false;
 	}
@@ -184,7 +184,7 @@ class twig
 		$this->env->addGlobal('cfg', $config);
 		$this->env->addGlobal('lang', $user->lang);
 
-		if( $this->is_globals_set === false )
+		if (false === $this->is_globals_set)
 		{
 			$this->env->addFunction('lang', new \Twig_Function_Function('\\fw\\template\\twig_lang'));
 			$this->env->addFunction('static', new \Twig_Function_Function('\\fw\\template\\twig_static'));
@@ -216,14 +216,14 @@ function twig_static($type, $url, $custom_extension = false)
 	global $config;
 	static $is_local = null;
 	
-	if( is_null($is_local) )
+	if (is_null($is_local))
 	{
 		global $user;
 		
-		$is_local = $user->isp == 'local';
+		$is_local = $user->isp === 'local';
 	}
 	
-	switch( $type )
+	switch ($type)
 	{
 		case 'd':
 		case 'download': $prefix = $config['download_path']; $ext = 'html'; break;
@@ -245,17 +245,17 @@ function twig_static($type, $url, $custom_extension = false)
 		default: $prefix = ''; $ext = 'png';
 	}
 	
-	if( $is_local )
+	if ($is_local)
 	{
 		$prefix = str_replace(array('ivacuum.ru', 'ivacuum.org'), array('local.ivacuum.ru', '0.ivacuum.org'), $prefix);
 	}
 	
-	if( $custom_extension !== false )
+	if (false !== $custom_extension)
 	{
 		$ext = $custom_extension;
 	}
 	
-	return ($ext) ? sprintf('%s/%s.%s', $prefix, $url, $ext) : sprintf('%s/%s', $prefix, $url);
+	return $ext ? sprintf('%s/%s.%s', $prefix, $url, $ext) : sprintf('%s/%s', $prefix, $url);
 }
 
 /**
@@ -263,21 +263,21 @@ function twig_static($type, $url, $custom_extension = false)
 */
 function twig_truncate($string, $length = 80, $etc = '...', $break_words = false, $middle = false)
 {
-	if( !$length )
+	if (!$length)
 	{
 		return;
 	}
 
-	if( mb_strlen($string) > $length )
+	if (mb_strlen($string) > $length)
 	{
 		$length -= min($length, mb_strlen($etc));
 
-		if( !$break_words && !$middle )
+		if (!$break_words && !$middle)
 		{
 			$string = preg_replace('#\s+?(\S+)?$#u', '', mb_substr($string, 0, $length + 1));
 		}
 
-		if( !$middle )
+		if (!$middle)
 		{
 			return mb_substr($string, 0, $length) . $etc;
 		}

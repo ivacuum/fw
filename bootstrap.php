@@ -25,7 +25,7 @@ $profiler = new core\profiler();
 require($src_root_path . 'functions.php');
 require($src_root_path . 'config.php');
 
-if( file_exists($site_root_path . '../config.php') )
+if (file_exists($site_root_path . '../config.php'))
 {
 	require($site_root_path . '../config.php');
 }
@@ -44,7 +44,7 @@ $db   = new db\mysqli($dbhost, $dbuser, $dbpass, $dbname, $dbport, $dbsock, $dbp
 $user = new session\user();
 $auth = new core\auth();
 
-if( false === $site_info = get_site_info_by_url($user->domain, $user->page) )
+if (false === $site_info = get_site_info_by_url($user->domain, $user->page))
 {
 	$site_info = get_site_info_by_url($user->domain);
 }
@@ -53,7 +53,7 @@ $config   = new config\db($site_info);
 $template = new template\twig();
 
 /* Планировщику задач понадобится путь к папке проекта */
-if( $site_root_path != $config['site_dir'] )
+if ($site_root_path != $config['site_dir'])
 {
 	$config->set('site_dir', $site_root_path);
 }
@@ -70,21 +70,21 @@ class autoloader
 	{
 		global $site_root_path, $src_root_path;
 
-		if( strpos($class, '\\') === false )
+		if (false === strpos($class, '\\'))
 		{
 			return;
 		}
 
 		list($prefix, $filename) = explode('/', str_replace('\\', '/', $class), 2);
 		
-		if( $prefix == 'fw' && file_exists($src_root_path . $filename . '.php') )
+		if ($prefix == 'fw' && file_exists("{$src_root_path}{$filename}.php"))
 		{
-			require($src_root_path . $filename . '.php');
+			require("{$src_root_path}{$filename}.php");
 			return true;
 		}
-		elseif( $prefix == 'app' && file_exists($site_root_path . '../includes/' . $filename . '.php') )
+		elseif ($prefix == 'app' && file_exists("{$site_root_path}../includes/{$filename}.php"))
 		{
-			require($site_root_path . '../includes/' . $filename . '.php');
+			require("{$site_root_path}../includes/{$filename}.php");
 			return true;
 		}
 		
