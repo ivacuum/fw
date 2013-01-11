@@ -1,7 +1,7 @@
 <?php
 /**
 * @package src.ivacuum.ru
-* @copyright (c) 2010 vacuum
+* @copyright (c) 2010
 */
 
 if( !defined('IN_SITE') )

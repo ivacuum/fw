@@ -1,7 +1,7 @@
 <?php
 /**
 * @package src.ivacuum.ru
-* @copyright (c) 2012 vacuum
+* @copyright (c) 2012
 */
 
 require_once(dirname(__FILE__) . '/../../engine/sessions.php');
