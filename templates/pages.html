@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block content_header %}{% endblock %}
+{% block content %}
+<div id="pages-management" class="row">
+{% if S_EDIT_PAGE %}
+	<div class="span8 offset2">
+		{% if PAGENAME %}
+			<div class="page-header">
+				<h2>{{ PAGENAME }}{% if PAGE_HANDLER and HANDLER_METHOD %} <small>{{ PAGE_HANDLER }}::{{ HANDLER_METHOD }}()</small>{% endif %}</h2>
+			</div>
+		{% endif %}
+
+		{% if S_ERROR %}
+			<div class="errorbox">
+				<h3>{{ lang('WARNING') }}</h3>
+				<p>{{ ERROR_MSG }}</p>
+			</div>
+		{% endif %}
+
+		<form action="{{ U_ACTION }}" method="post">
+		<fieldset class="b-center">
+			{% if not PAGENAME %}
+				<legend>Добавление новой страницы</legend>
+			{% endif %}
+			<div class="row">
+				<div class="span4">
+					<label>Название<input name="page_name" type="text" id="page_name" value="{{ PAGE_NAME }}" placeholder="page_name"></label>
+				</div>
+				<div class="span4">
+					<label>Заголовок<input name="page_title" type="text" id="page_title" value="{{ PAGE_TITLE }}" placeholder="page_title"></label>
+				</div>
+			</div>
+			<div class="row">
+				<div class="span4">
+					<label>URL<input type="text" name="page_url" id="page_url" value="{{ PAGE_URL }}" placeholder="page_url"></label>
+				</div>
+				<div class="span4">
+					<label>Форматы<input name="page_formats" type="text" id="page_formats" value="{{ PAGE_FORMATS }}" placeholder="html"></label>
+				</div>
+			</div>
+			<div class="row">
+				<div class="span4">
+					<label>Папка<select name="is_dir" id="is_dir"><option value="1"{% if S_IS_DIR %} selected="selected"{% endif %}>{{ lang('YES') }}</option><option value="0"{% if not S_IS_DIR %} selected="selected"{% endif %}>{{ lang('NO') }}</option></select></label>
+				</div>
+				<div class="span4">
+					<label>Родитель<select name="parent_id" id="parent_id">{{ S_CAT_OPTIONS }}</select></label>
+				</div>
+			</div>
+			<div class="row control-group">
+				<div class="span2">
+					<label>Включена</label>
+					<label class="radio"><input type="radio" name="page_enabled" id="page_enabled" value="1"{% if PAGE_ENABLED %} checked="checked"{% endif %}> {{ lang('YES') }}</label>
+					<label class="radio"><input type="radio" name="page_enabled" value="0"{% if not PAGE_ENABLED %} checked="checked"{% endif %}> {{ lang('NO') }}</label>
+				</div>
+				<div class="span2">
+					<label>Отображается</label>
+					<label class="radio"><input type="radio" name="page_display" value="2"{% if PAGE_DISPLAY == 2 %} checked="checked"{% endif %}> Глобально</label>
+					<label class="radio"><input type="radio" name="page_display" id="page_display" value="1"{% if PAGE_DISPLAY == 1 %} checked="checked"{% endif %}> Локально</label>
+					<label class="radio"><input type="radio" name="page_display" value="0"{% if not PAGE_DISPLAY %} checked="checked"{% endif %}> {{ lang('NO') }}</label>
+				</div>
+				<div class="span2">
+					<label for="page_noindex">Индексируется</label>
+					<label class="radio"><input type="radio" name="page_noindex" id="page_noindex" value="0"{% if not PAGE_NOINDEX %} checked="checked"{% endif %}> {{ lang.YES }}</label>
+					<label class="radio"><input type="radio" name="page_noindex" value="1"{% if PAGE_NOINDEX %} checked="checked"{% endif %}> {{ lang.NO }}</label>
+				</div>
+			</div>
+			<input class="span8" name="page_redirect" type="text" id="page_redirect" value="{{ PAGE_REDIRECT }}" placeholder="Редирект">
+			<div class="row">
+				<div class="span4"><input class="span4" name="page_handler" type="text" id="page_handler" value="{{ PAGE_HANDLER }}" placeholder="Модуль"></div>
+				<div class="span4"><input class="span4" name="handler_method" type="text" id="handler_method" value="{{ HANDLER_METHOD }}" placeholder="Метод"></div>
+			</div>
+			<input class="span8" name="page_image" type="text" id="page_image" value="{{ PAGE_IMAGE }}" placeholder="Картинка">
+			<label>Содержимое страницы<textarea class="span8" name="page_text" id="page_text" style="height: 30em;">{{ PAGE_TEXT }}</textarea></label>
+			<div class="form-actions">
+				<input type="hidden" name="action" value="{{ ACTION }}">
+				<input type="hidden" name="pid" value="{{ PAGE_ID }}">
+				<input class="btn btn-primary btn-large" type="submit" id="submit" name="submit" value="{{ lang.SAVE }}">
+			</div>
+			{{ S_FORM_TOKEN }}
+		</fieldset>
+		</form>
+	</div>
+{% else %}
+	<table class="b-center table-stats ui-shadow-light">
+		<thead>
+		<tr>
+			<th align="left" colspan="5">{{ NAVIGATION }}{% if S_NO_PAGES %} [<a href="{{ U_EDIT }}">{{ lang('EDIT') }}</a> | <a href="{{ U_DELETE }}">{{ lang('DELETE') }}</a> | {% if PAGE_ENABLED %}<a href="{{ U_DISABLE }}">{{ lang('DISABLE') }}</a>{% else %}<a href="{{ U_ENABLE }}">{{ lang('ENABLE') }}</a>{% endif %}]{% endif %}</th>
+		</tr>
+		</thead>
+		{% for row in pages %}
+		<tr ondblclick="document.location='{{ row.U_EDIT }}';">
+			<td style="width: 25px; text-align: right;"><img src="{{ static('i', '_/' ~ row.PAGE_IMAGE) }}" alt=""></td>
+			<td style="width: 25px; text-align: center;">
+				{% if row.PAGE_ENABLED %}
+					<img src="{{ static('i', '_/status_online') }}" alt="">
+				{% else %}
+					<img src="{{ static('i', '_/status_offline') }}" alt="">
+				{% endif %}
+			</td>
+			<td>
+				{% if row.PAGE_IMG %}
+					<img src="{{ static('i', '_/' ~ row.PAGE_IMG) }}" alt="">
+				{% endif %}
+				<a href="{{ row.U_PAGE }}">{{ row.PAGE_NAME }}</a>
+				{% if row.IS_DIR %}
+					(/{{ row.PAGE_URL }}/)
+				{% else %}
+					({{ row.PAGE_URL }}.html)
+				{% endif %}
+				{% if row.PAGE_NOINDEX %}
+					<img src="{{ static('i', '_/monitor_off') }}" alt="">
+				{% endif %}
+				{% if row.PAGE_DISPLAYED == 2 %}
+					<img src="{{ static('i', '_/sitemap_application_blue') }}" alt="">
+				{% elseif row.PAGE_DISPLAYED == 1 %}
+					<img src="{{ static('i', '_/sitemap_application') }}" alt="">
+				{% endif %}
+				{% if row.PAGE_REDIRECT %}
+					<img src="{{ static('i', '_/road_sign') }}" alt="">
+				{% endif %}
+			</td>
+			<td style="width: 15%; white-space: nowrap; text-align: center; vertical-align: middle;">&nbsp;{% if row.PAGE_ENABLED %}<a href="{{ row.U_DISABLE }}">{{ lang('DISABLE') }}</a>{% else %}<a href="{{ row.U_ENABLE }}">{{ lang('ENABLE') }}</a>{% endif %}&nbsp;</td>
+			<td style="width:90px; white-space: nowrap; text-align: right; vertical-align: middle;">
+				{% if loop.first and not loop.last %}
+					{{ ICON_MOVE_UP_DISABLED }}
+					<a href="{{ row.U_MOVE_DOWN }}"><img src="{{ static('i', '_/arrow_270') }}" alt=""></a>
+				{% elseif not loop.first and not loop.last %}
+					<a href="{{ row.U_MOVE_UP }}"><img src="{{ static('i', '_/arrow_090') }}" alt=""></a> 
+					<a href="{{ row.U_MOVE_DOWN }}"><img src="{{ static('i', '_/arrow_270') }}" alt=""></a> 
+				{% elseif not loop.first and loop.last %}
+					<a href="{{ row.U_MOVE_UP }}"><img src="{{ static('i', '_/arrow_090') }}" alt=""></a>	
+					{{ ICON_MOVE_DOWN_DISABLED }}
+				{% else %}
+					{{ ICON_MOVE_UP_DISABLED }}
+					{{ ICON_MOVE_DOWN_DISABLED }}
+				{% endif %}
+				<a href="{{ row.U_EDIT }}"><img src="{{ static('i', '_/pencil') }}" alt=""></a> 
+				<a href="#" onclick="if(confirm('Будет удалена вся информация, связанная с этой записью! Продолжить?')) { document.location = '{{ row.U_DELETE }}'; return false; }"><img src="{{ static('i', '_/cross') }}" alt=""></a>
+			</td>
+		</tr>
+		{% endfor %}
+	</table>
+	
+	<br>
+
+	<form method="post" action="">
+	<fieldset class="b-center" style="max-width: 300px;">
+		<legend>Создать новую страницу</legend>
+		<input type="hidden" name="action" value="add">
+		<input type="hidden" name="parent_id" value="{{ PARENT_ID }}">
+		
+		<input type="text" name="page_name" maxlength="255" placeholder="page_name">
+		<input class="btn" name="addpage" type="submit" value="Продолжить...">
+	</fieldset>
+	</form>
+{% endif %}
+</div>
+{% endblock %}
+{% block content_footer %}{% endblock %}

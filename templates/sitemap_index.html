@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+	<h2>{{ page.page_title }}</h2>
+</div>
+<ul>
+{% for row in pages %}
+	<li><a href="{{ row.URL }}">{{ row.TITLE }}</a>
+		{% if row.children %}
+			<ul>
+			{% for row in row.children %}
+				<li><a href="{{ row.URL }}">{{ row.TITLE }}</a>
+					{% if row.children %}
+						<ul>
+						{% for row in row.children %}
+							<li><a href="{{ row.URL }}">{{ row.TITLE }}</a></li>
+						{% endfor %}
+						</ul>
+					{% endif %}
+				</li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+	</li>
+{% endfor %}
+</ul>
+{% endblock %}

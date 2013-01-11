@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="robots" content="noindex, nofollow" />
+	<title>Критическая ошибка</title>
+	<style type="text/css">
+	* { font-size: 100.01%; }
+	html, body, ul, ol, li, dl, dt, dd, p, h1, h2, h3, h4, h5, h6, blockquote, form, fieldset, legend, table, td, th { margin: 0; padding: 0; }
+	html, body { height: 100%; }
+	body { background-color: #fafafa; color: #222; font: .9375em/1.6 Segoe UI, Arial, sans-serif; }
+	button, select { font-size: .9375em; }
+
+	a { color: #0834b3; }
+	a:visited { color: #909; }
+	a:hover, a:focus { color: #ff5223 !important; }
+
+	img { border: 0; vertical-align: middle; }
+
+	p, address, blockquote { margin: 0 0 1em; }
+
+	small { font-size: .867em; }
+
+	#container { margin: 1em; }
+	.code { border-left: 4px solid silver; font-family: Monaco, "Consolas", "Lucida Console", "Courier New", monospace; font-size: .867em; padding-left: 0.6em; }
+
+	h1, h2, h3, h4 { font-family: Trebuchet MS, serif; font-weight: bold; line-height: 1.2; color: #186CCC; text-shadow: #dedede 1px 1px 1px; }
+	h1 { font-weight: bold; margin: 0 0 0.5em 0; font-size: 1.846em; }
+	h2 { font-size: 1.546em; margin: 1.3em 0 .5em; }
+	h3 { font-size: 1.33em; margin: 1.5em 0 .5em; }
+
+	h1 a { color: #4983ff; }
+
+	h2:first-child, h3:first-child { margin-top: 0; }
+
+	h1 + h2, h1 + h3, h2 + h3 { margin-top: 0; }
+
+	hr { border: 0 hidden; border-top: 1px solid #d6d6d6; clear: both; height: 0; margin-top: 1em; }
+
+	ul { list-style-type: none; }
+	li { margin: 0 0 .3em; }
+	li ul, li ol { margin: .3em 0 0 2.5em; }
+	ul.list { margin-left: 1.7em; }
+	ul.list > li { text-indent: -1.7em; }
+	ul.list > li:before { color: #ffb55e; content: '\2014\a0'; margin-right: .4em; }
+
+	.sig { color: #888; }
+
+	pre {
+		border: 1px solid #cacaca;
+		line-height: 1.2em;
+		font: 14px Menlo,Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
+		padding: 10px;
+		overflow:auto;
+		-webkit-border-radius: 3px;
+		-moz-border-radius: 3px;
+		border-radius: 3px;
+		-moz-background-clip: padding;
+		-webkit-background-clip: padding-box;
+		background-clip: padding-box;
+		background-color: #FAFAFB;
+		color: #393939;
+		margin: 0px;
+	}
+	
+	pre.terminal {
+		background-color: #444;
+		color: #fff;
+		-webkit-border-radius: 3px;
+		-moz-border-radius: 3px;
+		border-radius: 3px;
+		-moz-background-clip: padding;
+		-webkit-background-clip: padding-box;
+		background-clip: padding-box;
+		border: 2px solid #DEDEDE;
+		position: relative;
+		padding: 10px;
+		white-space: normal;
+	}
+	
+	pre.terminal em {
+		color: #f9fe64;
+		font-style: normal;
+	}
+
+	span.codeline {
+		display: block;
+		position: relative;
+	}
+
+	span.codeline:hover {
+		background-color: #292929;
+		margin: 0px;
+		padding-left: 3px;
+		margin-left: -3px;
+		-webkit-border-radius: 3px;
+		-moz-border-radius: 3px;
+		border-radius: 3px;
+		color: #666666;
+	}
+	</style>
+</head>
+<body>
+<div id="container">
+<h2>Ошибка в SQL запросе</h2>
+<ul class="list">
+	<li>Код ошибки: <b>{{ error.code }}</b></li>
+	<li>Текст ошибки: <b>{{ error.text }}</b></li>
+</ul>
+<pre class="terminal bootcamp">{{ error.sql }}</pre>
+</div>
+</body>
+</html>
