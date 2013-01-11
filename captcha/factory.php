@@ -1,10 +1,10 @@
 <?php
 /**
-* @package src.ivacuum.ru
+* @package fw
 * @copyright (c) 2012
 */
 
-namespace engine\captcha;
+namespace fw\captcha;
 
 /**
 * Фабрика для капчи
@@ -20,7 +20,7 @@ class factory
 	
 	public function get_driver()
 	{
-		$class = 'engine\\captcha\\driver\\' . $this->type;
+		$class = 'fw\\captcha\\driver\\' . $this->type;
 		
 		return new $class();
 	}

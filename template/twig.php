@@ -1,13 +1,13 @@
 <?php
 /**
-* @package src.ivacuum.ru
-* @copyright (c) 2012 vacuum
+* @package fw
+* @copyright (c) 2013
 */
 
-namespace engine\template;
+namespace fw\template;
 
 /**
-* Класс обработчика шаблонов
+* Шаблонизатор Twig
 */
 class twig
 {
@@ -186,9 +186,9 @@ class twig
 
 		if( $this->is_globals_set === false )
 		{
-			$this->env->addFunction('lang', new \Twig_Function_Function('\\engine\\template\\twig_lang'));
-			$this->env->addFunction('static', new \Twig_Function_Function('\\engine\\template\\twig_static'));
-			$this->env->addFilter('truncate', new \Twig_Filter_Function('\\engine\\template\\twig_truncate'));
+			$this->env->addFunction('lang', new \Twig_Function_Function('\\fw\\template\\twig_lang'));
+			$this->env->addFunction('static', new \Twig_Function_Function('\\fw\\template\\twig_static'));
+			$this->env->addFilter('truncate', new \Twig_Filter_Function('\\fw\\template\\twig_truncate'));
 			$this->is_globals_set = true;
 		}
 	}

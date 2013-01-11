@@ -1,10 +1,10 @@
 <?php
 /**
-* @package src.ivacuum.ru
+* @package fw
 * @copyright (c) 2012
 */
 
-namespace engine\db;
+namespace fw\db;
 
 /**
 * Класс работы со Sphinx по протоколу MySQL версии 4.1

@@ -1,10 +1,10 @@
 <?php
 /**
-* @package src.ivacuum.ru
+* @package fw
 * @copyright (c) 2012
 */
 
-namespace engine;
+namespace fw;
 
 /**
 * Настройки, необходимые для
@@ -77,7 +77,7 @@ class autoloader
 
 		list($prefix, $filename) = explode('/', str_replace('\\', '/', $class), 2);
 		
-		if( $prefix == 'engine' && file_exists($src_root_path . $filename . '.php') )
+		if( $prefix == 'fw' && file_exists($src_root_path . $filename . '.php') )
 		{
 			require($src_root_path . $filename . '.php');
 			return true;

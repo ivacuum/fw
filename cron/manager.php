@@ -1,10 +1,10 @@
 <?php
 /**
-* @package src.ivacuum.ru
+* @package fw
 * @copyright (c) 2012
 */
 
-namespace engine\cron;
+namespace fw\cron;
 
 /**
 * Задачи по расписанию

@@ -1,10 +1,10 @@
 <?php
 /**
-* @package src.ivacuum.ru
+* @package fw
 * @copyright (c) 2012
 */
 
-namespace engine\config;
+namespace fw\config;
 
 /**
 * Настройки сайта, хранящиеся в БД

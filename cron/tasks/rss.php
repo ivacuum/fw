@@ -1,12 +1,12 @@
 <?php
 /**
-* @package src.ivacuum.ru
+* @package fw
 * @copyright (c) 2012
 */
 
-namespace engine\cron\tasks;
+namespace fw\cron\tasks;
 
-use engine\cron\task;
+use fw\cron\task;
 
 /**
 * Обработка RSS

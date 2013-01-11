@@ -1,6 +1,6 @@
 <?php
 /**
-* @package src.ivacuum.ru
+* @package fw
 * @copyright (c) 2010
 */
 

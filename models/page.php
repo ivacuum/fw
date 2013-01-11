@@ -1,10 +1,10 @@
 <?php
 /**
-* @package src.ivacuum.ru
+* @package fw
 * @copyright (c) 2012
 */
 
-namespace engine\models;
+namespace fw\models;
 
 /**
 * Страница сайта
@@ -172,7 +172,7 @@ class page
 			* Обращение по абсолютному адресу
 			* Чаще всего к модулям движка
 			*
-			* \engine\modules\gallery::index
+			* \fw\modules\gallery::index
 			*/
 			/* Разработчик знает, что подключает */
 			if( isset($this->handlers_urls[$handler]) )
@@ -255,7 +255,7 @@ class page
 	*
 	* app_news
 	* app_news_index
-	* engine_core_profiler
+	* fw_core_profiler
 	*/
 	public function load_translations()
 	{
@@ -437,7 +437,7 @@ class page
 			$filename = substr($filename, 4);
 		}
 		
-		if( 0 === strpos($filename, 'engine/modules/') )
+		if( 0 === strpos($filename, 'fw/modules/') )
 		{
 			$filename = substr($filename, 15);
 		}

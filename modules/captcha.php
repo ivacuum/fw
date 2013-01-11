@@ -1,10 +1,10 @@
 <?php
 /**
-* @package src.ivacuum.ru
+* @package fw
 * @copyright (c) 2012
 */
 
-namespace engine\modules;
+namespace fw\modules;
 
 use app\models\page;
 
@@ -15,7 +15,7 @@ class captcha extends page
 {
 	public function index()
 	{
-		$factory = new \engine\captcha\factory($this->config['confirm_type']);
+		$factory = new \fw\captcha\factory($this->config['confirm_type']);
 		$captcha = $factory->get_service();
 		$captcha->send();
 		

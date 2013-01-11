@@ -1,12 +1,12 @@
 <?php
 /**
-* @package src.ivacuum.ru
+* @package fw
 * @copyright (c) 2012
 */
 
-namespace engine\helpers\traverse\tree;
+namespace fw\helpers\traverse\tree;
 
-use engine\helpers\traverse\tree;
+use fw\helpers\traverse\tree;
 
 /**
 * Обход страниц сайта

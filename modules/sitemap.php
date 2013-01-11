@@ -1,13 +1,13 @@
 <?php
 /**
-* @package src.ivacuum.ru
+* @package fw
 * @copyright (c) 2012
 */
 
-namespace engine\modules;
+namespace fw\modules;
 
 use app\models\page;
-use engine\helpers\traverse\tree\site_pages;
+use fw\helpers\traverse\tree\site_pages;
 
 /**
 * Карта сайта

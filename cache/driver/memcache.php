@@ -1,10 +1,10 @@
 <?php
 /**
-* @package src.ivacuum.ru
+* @package fw
 * @copyright (c) 2012
 */
 
-namespace engine\cache\driver;
+namespace fw\cache\driver;
 
 /**
 * Memcache

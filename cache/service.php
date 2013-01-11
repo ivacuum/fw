@@ -1,12 +1,12 @@
 <?php
 /**
-* @package src.ivacuum.ru
+* @package fw
 * @copyright (c) 2012
 */
 
-namespace engine\cache;
+namespace fw\cache;
 
-use engine\helpers\traverse\tree\site_pages;
+use fw\helpers\traverse\tree\site_pages;
 
 /**
 * Слой для работы с кэшем

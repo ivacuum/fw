@@ -1,10 +1,10 @@
 <?php
 /**
-* @package src.ivacuum.ru
+* @package fw
 * @copyright (c) 2012
 */
 
-namespace engine\cache;
+namespace fw\cache;
 
 /**
 * Фабрика для кэшей
@@ -22,7 +22,7 @@ class factory
 	
 	public function get_driver()
 	{
-		$class = 'engine\\cache\\driver\\' . $this->type;
+		$class = 'fw\\cache\\driver\\' . $this->type;
 		
 		return new $class($this->prefix);
 	}

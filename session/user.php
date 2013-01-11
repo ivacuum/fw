@@ -1,10 +1,10 @@
 <?php
 /**
-* @package src.ivacuum.ru
+* @package fw
 * @copyright (c) 2012
 */
 
-namespace engine\session;
+namespace fw\session;
 
 /**
 * Пользователь
@@ -108,7 +108,7 @@ class user extends session
 			case 'deny':
 			
 				send_status_line(401);
-				// \engine\core\error_handler::log_mail('Unauthorized access to http://' . $this->domain . $this->page . ' page', '401 Unauthorized');
+				// \fw\core\error_handler::log_mail('Unauthorized access to http://' . $this->domain . $this->page . ' page', '401 Unauthorized');
 
 				if( $this->domain == 'dev.ivacuum.ru' )
 				{
@@ -206,7 +206,7 @@ class user extends session
 		/* Общая локализация */
 		$lang = array_merge_recursive($lang, $this->get_i18n_data(0, $language, $lang_file, $force_update));
 		
-		if( 0 !== strpos($lang_file, 'engine_') )
+		if( 0 !== strpos($lang_file, 'fw_') )
 		{
 			/* Локализация проекта */
 			$site_info = get_site_info_by_url_lang($this->domain, $language);
