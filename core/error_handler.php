@@ -17,7 +17,7 @@ class error_handler
 		
 		/* Выходим, если проверка отключена через @ */
 		/*
-		if( error_reporting() == 0 && $type != E_USER_ERROR && $type != E_USER_WARNING && $type != E_USER_NOTICE )
+		if (error_reporting() == 0 && $type != E_USER_ERROR && $type != E_USER_WARNING && $type != E_USER_NOTICE)
 		{
 			return;
 		}
@@ -25,7 +25,7 @@ class error_handler
 		
 		$file = str_replace($request->server('DOCUMENT_ROOT'), '', $file);
 		
-		switch( $type )
+		switch ($type)
 		{
 			/**
 			* Ошибка/предупреждение
@@ -43,13 +43,13 @@ class error_handler
 			*/
 			case E_USER_ERROR:
 			
-				if( defined('IN_SQL_ERROR') )
+				if (defined('IN_SQL_ERROR'))
 				{
 					global $auth, $error_ary, $src_root_path, $template;
 					
 					self::log_mail($error_ary);
 					
-					if( $auth->acl_get('a_') )
+					if ($auth->acl_get('a_'))
 					{
 						$template->assign('error', $error_ary);
 						$template->display('sql_error.html');
@@ -90,22 +90,22 @@ class error_handler
 
 				global $auth, $config, $router, $site_info, $template, $user;
 
-				if( !defined('IN_CHECK_BAN') )
+				if (!defined('IN_CHECK_BAN'))
 				{
-					if( empty($user->data) )
+					if (empty($user->data))
 					{
 						$user->session_begin();
 					}
 
 					$auth->init($user->data);
 
-					if( empty($user->lang) )
+					if (empty($user->lang))
 					{
 						$user->setup();
 					}
 				}
 				
-				if( !empty($router) && is_object($router->handler) )
+				if (!empty($router) && is_object($router->handler))
 				{
 					$handler =& $router->handler;
 				}
@@ -114,7 +114,7 @@ class error_handler
 					$handler = new \app\models\page();
 					$handler->data['site_id'] = $site_info['id'];
 					$handler->set_site_menu();
-					$handler->format = ( !empty($router) ) ? $router->format : $config['router_default_extension'];
+					$handler->format = !empty($router) ? $router->format : $config['router_default_extension'];
 				}
 				
 				/* Запрет индексирования страницы */
@@ -126,13 +126,13 @@ class error_handler
 				*/
 				preg_match('#NOT_FOUND$#', $text, $matches);
 
-				if( !empty($matches) || 0 === strpos($text, 'ERR_') )
+				if (!empty($matches) || 0 === strpos($text, 'ERR_'))
 				{
 					send_status_line(404);
 					// self::log_mail('Page http://' . $user->domain . $user->data['session_page'] . ' not found', '404 Not Found');
 				}
 				
-				if( !$handler->format || $handler->format == 'json' )
+				if (!$handler->format || $handler->format == 'json')
 				{
 					$error = array(
 						'code' => $text
@@ -170,9 +170,9 @@ class error_handler
 	*/
 	static public function handle_fatal_error()
 	{
-		if( $error = error_get_last() )
+		if ($error = error_get_last())
 		{
-			switch( $error['type'] )
+			switch ($error['type'])
 			{
 				case E_ERROR:
 				case E_CORE_ERROR:
@@ -181,7 +181,7 @@ class error_handler
 				
 					self::log_mail('Fatal error: ' . $error['message']);
 
-					if( $_SERVER['REMOTE_ADDR'] != '10.171.2.236' )
+					if ($_SERVER['REMOTE_ADDR'] != '10.171.2.236')
 					{
 						return;
 					}
@@ -190,7 +190,7 @@ class error_handler
 
 					printf('<b style="color: red;">***</b> <b style="white-space: pre-line;">%s</b> on line <b>%d</b> in file <b>%s</b>.<br />', $error['message'], $error['line'], $error['file']);
 
-					if( function_exists('xdebug_print_function_stack') )
+					if (function_exists('xdebug_print_function_stack'))
 					{
 						echo '<pre>', xdebug_print_function_stack(), '</pre>';
 					}
@@ -210,12 +210,12 @@ class error_handler
 		$call_stack = '';
 		$text       = is_array($text) ? print_r($text, true) : $text;
 		
-		if( !$title )
+		if (!$title)
 		{
 			$title = defined('IN_SQL_ERROR') ? 'E_USER_ERROR_SQL' : 'E_USER_ERROR';
 		}
 		
-		if( function_exists('xdebug_print_function_stack') )
+		if (function_exists('xdebug_print_function_stack'))
 		{
 			ob_start();
 			xdebug_print_function_stack();
