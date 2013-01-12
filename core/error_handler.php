@@ -181,7 +181,7 @@ class error_handler
 				
 					self::log_mail('Fatal error: ' . $error['message']);
 
-					if ($_SERVER['REMOTE_ADDR'] != '10.171.2.236')
+					if ($_SERVER['REMOTE_ADDR'] != '192.168.1.1')
 					{
 						return;
 					}

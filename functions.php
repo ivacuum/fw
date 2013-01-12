@@ -86,7 +86,7 @@ function garbage_collection($display_profiler = true)
 	{
 		if( $display_profiler && !$request->is_ajax && !defined('IN_SQL_ERROR') )
 		{
-			if( ($auth->acl_get('a_') || $_SERVER['REMOTE_ADDR'] == '10.171.2.236') && $config['profiler_display'] )
+			if( ($auth->acl_get('a_') || $_SERVER['REMOTE_ADDR'] == '192.168.1.1') && $config['profiler_display'] )
 			{
 				$profiler->display();
 			}
