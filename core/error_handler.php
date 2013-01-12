@@ -222,7 +222,7 @@ class error_handler
 			$call_stack = str_replace(array('/srv/www/vhosts'), array(''), ob_get_clean());
 		}
 		
-		mail('vacuum@ivacuum.ru', $title, $text . "\n" . $call_stack . print_r($user->data, true) . "\n" . print_r($_SERVER, true) . "\n" . print_r($_REQUEST, true), "From: developer@{$user->domain}\r\n");
+		mail('vacuum@ivacuum.ru', $title, sprintf("%s\n%s%s\n%s\n%s", $text, $call_stack, print_r($user->data, true), print_r($_SERVER, true), print_r($_REQUEST, true)), sprintf("From: %s@%s\r\n", $user->domain, gethostname()));
 	}
 
 	/**
