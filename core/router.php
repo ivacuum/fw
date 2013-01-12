@@ -32,20 +32,20 @@ class router
 		$this->namespace = $namespace;
 		$this->page      = $config['router_directory_index'];
 		
-		$url = ( $url ) ?: htmlspecialchars_decode($user->page);
+		$url = $url ?: htmlspecialchars_decode($user->page);
 		
-		if( !$url )
+		if (!$url)
 		{
 			redirect(ilink());
 		}
 		
 		/* Поиск сайта */
-		if( false === $this->site_id = $this->get_site_id($user->domain, $user->lang['.']) )
+		if (false === $this->site_id = $this->get_site_id($user->domain, $user->lang['.']))
 		{
 			trigger_error('Сайт не найден');
 		}
 		
-		if( false !== $query_string_pos = strpos($url, '?') )
+		if (false !== $query_string_pos = strpos($url, '?'))
 		{
 			$url = substr($url, 0, $query_string_pos);
 		}
@@ -53,28 +53,28 @@ class router
 		$this->url = trim($url, '/');
 		$ary = pathinfo($this->url);
 		
-		if( isset($ary['extension']) )
+		if (isset($ary['extension']))
 		{
 			/* Обращение к странице */
-			if( !in_array($ary['extension'], explode(';', $config['router_allowed_extensions']), true) )
+			if (!in_array($ary['extension'], explode(';', $config['router_allowed_extensions']), true))
 			{
 				trigger_error('PAGE_NOT_FOUND');
 			}
 			
 			$this->format = $ary['extension'];
-			$this->params = ( $ary['dirname'] != '.' ) ? explode('/', $ary['dirname']) : array();
+			$this->params = $ary['dirname'] != '.' ? explode('/', $ary['dirname']) : array();
 			$this->page   = $ary['filename'];
-			$this->url    = ( $ary['dirname'] != '.' ) ? $ary['dirname'] : '';
+			$this->url    = $ary['dirname'] != '.' ? $ary['dirname'] : '';
 		}
-		elseif( substr($url, -1) != '/' )
+		elseif (substr($url, -1) != '/')
 		{
 			/**
 			* Обращение к странице без расширения
 			* Проверяем, можно ли обращаться к страницам без расширения
 			*/
-			if( in_array('', explode(';', $config['router_allowed_extensions']), true) )
+			if (in_array('', explode(';', $config['router_allowed_extensions']), true))
 			{
-				$this->params = ( $ary['dirname'] != '.' ) ? explode('/', $ary['dirname']) : array();
+				$this->params = $ary['dirname'] != '.' ? explode('/', $ary['dirname']) : array();
 				$this->page   = $ary['filename'];
 			}
 			else
@@ -83,7 +83,7 @@ class router
 				redirect(ilink($this->url), 301);
 			}
 		}
-		elseif( $this->url )
+		elseif ($this->url)
 		{
 			/* Обращение к каталогу */
 			$this->params = explode('/', $this->url);
@@ -123,26 +123,26 @@ class router
 		* /[index.html]
 		* /[объявление.html]
 		*/
-		if( empty($this->params) )
+		if (empty($this->params))
 		{
 			$row = $this->get_page_row_by_url($this->page, false, $parent_id);
 			
-			if( $row['page_handler'] && $row['handler_method'] )
+			if ($row['page_handler'] && $row['handler_method'])
 			{
 				$handler_name   = $row['page_handler'];
 				$handler_method = $row['handler_method'];
 			}
 			
-			if( $this->page != $config['router_directory_index'] )
+			if ($this->page != $config['router_directory_index'])
 			{
-				$this->page_link[] = ( $this->format ) ? sprintf('%s.%s', $this->page, $this->format) : $this->page;
+				$this->page_link[] = $this->format ? sprintf('%s.%s', $this->page, $this->format) : $this->page;
 			}
 			else
 			{
 				$this->page_link[] = '';
 			}
 
-			if( $row['page_url'] != '*' )
+			if ($row['page_url'] != '*')
 			{
 				navigation_link(ilink($this->page_link[0]), $row['page_name'], $row['page_image']);
 			}
@@ -152,7 +152,7 @@ class router
 		* /[игры/diablo2]/скриншоты.html
 		* /[users/a/admin]/posts.html
 		*/
-		for( $i = 0; $i < $this->params_count; $i++ )
+		for ($i = 0; $i < $this->params_count; $i++)
 		{
 			$ary = $this->get_page_row_by_url($this->params[$i], true, $parent_id);
 
@@ -162,14 +162,14 @@ class router
 			* Причем существует только "новости", остальные
 			* параметры пересылаются обработчику
 			*/
-			if( $i > 0 && !$ary && $handler_name && $handler_method && $handler_method != 'static_page' )
+			if ($i > 0 && !$ary && $handler_name && $handler_method && $handler_method != 'static_page')
 			{
 				$dynamic_handle = true;
 				break;
 			}
-			elseif( !$ary )
+			elseif (!$ary)
 			{
-				if( isset($row) && $row['page_redirect'] )
+				if (isset($row) && $row['page_redirect'])
 				{
 					redirect(ilink($row['page_redirect']), 301);
 				}
@@ -179,9 +179,9 @@ class router
 			
 			$row = $ary;
 			
-			if( $row['is_dir'] )
+			if ($row['is_dir'])
 			{
-				if( $row['page_handler'] && $row['handler_method'] )
+				if ($row['page_handler'] && $row['handler_method'])
 				{
 					$handler_name   = $row['page_handler'];
 					$handler_method = $row['handler_method'];
@@ -196,7 +196,7 @@ class router
 			
 			$parent_id = (int) $row['page_id'];
 			
-			if( $row['page_url'] != '*' )
+			if ($row['page_url'] != '*')
 			{
 				navigation_link(ilink(implode('/', $this->page_link)), $row['page_name'], $row['page_image']);
 				
@@ -207,13 +207,13 @@ class router
 		/**
 		* /ucp/[login.html]
 		*/
-		if( $this->params_count > 0 && !$dynamic_handle && false != $ary = $this->get_page_row_by_url($this->page, false, $parent_id) )
+		if ($this->params_count > 0 && !$dynamic_handle && false != $ary = $this->get_page_row_by_url($this->page, false, $parent_id))
 		{
-			if( $this->page != $config['router_directory_index'] || $ary['page_url'] != '*' )
+			if ($this->page != $config['router_directory_index'] || $ary['page_url'] != '*')
 			{
 				$row = $ary;
 				
-				if( $row['page_handler'] && $row['handler_method'] )
+				if ($row['page_handler'] && $row['handler_method'])
 				{
 					$handler_name   = $row['page_handler'];
 					$handler_method = $row['handler_method'];
@@ -223,25 +223,25 @@ class router
 					$handler_method = 'static_page';
 				}
 
-				if( $this->page != $config['router_directory_index'] )
+				if ($this->page != $config['router_directory_index'])
 				{
-					$this->page_link[] = ( $this->format ) ? sprintf('%s.%s', $this->page, $this->format) : $this->page;
+					$this->page_link[] = $this->format ? sprintf('%s.%s', $this->page, $this->format) : $this->page;
 				}
 
-				if( $row['page_url'] != '*' )
+				if ($row['page_url'] != '*')
 				{
 					navigation_link(ilink(implode('/', $this->page_link)), $row['page_name'], $row['page_image']);
 				}
 			}
 		}
 		
-		if( !$row )
+		if (!$row)
 		{
 			/* На сайте еще нет ни одной страницы */
 			trigger_error('PAGE_NOT_FOUND');
 		}
 		
-		if( !in_array($this->format, explode(';', $row['page_formats']), true) )
+		if (!in_array($this->format, explode(';', $row['page_formats']), true))
 		{
 			trigger_error('PAGE_NOT_FOUND');
 		}
@@ -255,17 +255,17 @@ class router
 		$this->page_row = $row;
 		
 		/* Статичная страница */
-		if( !$handler_name || !$handler_method )
+		if (!$handler_name || !$handler_method)
 		{
 			/* Нужно ли переадресовать на другую страницу */
-			if( $row['page_redirect'] )
+			if ($row['page_redirect'])
 			{
 				redirect(ilink($row['page_redirect']), 301);
 			}
 			
 			return $this->load_handler('models\\page', 'static_page');
 		}
-		elseif( $handler_method == 'static_page' && $row['page_redirect'] )
+		elseif ($handler_method == 'static_page' && $row['page_redirect'])
 		{
 			redirect(ilink($row['page_redirect']), 301);
 		}
@@ -278,14 +278,14 @@ class router
 	*/
 	protected function load_handler($handler, $method, $params = array(), $redirect = false)
 	{
-		$class_name = ( 0 !== strpos($handler, '\\') ) ? $this->namespace . $handler : $handler;
+		$class_name = 0 !== strpos($handler, '\\') ? $this->namespace . $handler : $handler;
 		
 		$this->handler = new $class_name;
 		$this->method  = $method;
 		
-		if( !$this->load_handler_with_params($params) )
+		if (!$this->load_handler_with_params($params))
 		{
-			if( $redirect )
+			if ($redirect)
 			{
 				redirect($redirect);
 			}
@@ -308,14 +308,14 @@ class router
 		/**
 		* Проверка существования необходимого метода у обработчика
 		*/
-		if( !method_exists($this->handler, $concrete_method) && !method_exists($this->handler, $this->method) )
+		if (!method_exists($this->handler, $concrete_method) && !method_exists($this->handler, $this->method))
 		{
-			if( $config['router_send_status_codes'] )
+			if ($config['router_send_status_codes'])
 			{
 				/**
 				* API-сайт должен отправлять соответствующие коды состояния HTTP
 				*/
-				if( $request->method == 'get' || !method_exists($this->handler, $this->method . '_get') )
+				if ($request->method == 'get' || !method_exists($this->handler, $this->method . '_get'))
 				{
 					send_status_line(501);
 				}
@@ -334,7 +334,7 @@ class router
 			}
 		}
 		
-		$full_url = $this->url . (($this->page != $config['router_directory_index']) ? (($this->format) ? sprintf('/%s.%s', $this->page, $this->format) : $this->page) : '');
+		$full_url = $this->url . ($this->page != $config['router_directory_index'] ? ($this->format ? sprintf('/%s.%s', $this->page, $this->format) : $this->page) : '');
 		
 		/* Параметры обработчика */
 		$this->handler->data     = $this->page_row;
@@ -354,12 +354,12 @@ class router
 		$this->handler->set_appropriate_content_type();
 		
 		/* Предустановки */
-		if( method_exists($this->handler, '_setup') )
+		if (method_exists($this->handler, '_setup'))
 		{
 			call_user_func(array($this->handler, '_setup'));
 		}
 		
-		if( method_exists($this->handler, $concrete_method) )
+		if (method_exists($this->handler, $concrete_method))
 		{
 			/**
 			* Попытка вызвать метод с суффиксом в виде HTTP метода
@@ -386,11 +386,11 @@ class router
 	*/
 	protected function call_with_format($method, $params)
 	{
-		if( $this->format )
+		if ($this->format)
 		{
 			$method = sprintf('%s_%s', $method, $this->format);
 			
-			if( method_exists($this->handler, $method) )
+			if (method_exists($this->handler, $method))
 			{
 				call_user_func_array(array($this->handler, $method), $params);
 			}
@@ -439,9 +439,9 @@ class router
 		
 		$sites = $cache->obtain_sites();
 		
-		foreach( $sites as $row )
+		foreach ($sites as $row)
 		{
-			if( $domain == $row['site_url'] && $language == $row['site_language'] )
+			if ($domain == $row['site_url'] && $language == $row['site_language'])
 			{
 				setlocale(LC_ALL, $row['site_locale']);
 				
