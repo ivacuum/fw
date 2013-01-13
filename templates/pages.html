@@ -119,6 +119,9 @@
 				{% if row.PAGE_REDIRECT %}
 					<img src="{{ static('i', '_/road_sign') }}" alt="">
 				{% endif %}
+				{% if row.PAGE_HANDLER and row.HANDLER_METHOD %}
+					<br><span class="muted">{{ row.PAGE_HANDLER }}::{{ row.HANDLER_METHOD }}</span>
+				{% endif %}
 			</td>
 			<td style="width: 15%; white-space: nowrap; text-align: center; vertical-align: middle;">&nbsp;{% if row.PAGE_ENABLED %}<a href="{{ row.U_DISABLE }}">{{ lang('DISABLE') }}</a>{% else %}<a href="{{ row.U_ENABLE }}">{{ lang('ENABLE') }}</a>{% endif %}&nbsp;</td>
 			<td style="width:90px; white-space: nowrap; text-align: right; vertical-align: middle;">
