@@ -31,7 +31,7 @@ class factory
 	{
 		global $site_root_path;
 		
-		if( file_exists($site_root_path . '../includes/cache/service.php') )
+		if (file_exists($site_root_path . '../includes/cache/service.php'))
 		{
 			return new \app\cache\service($this->get_driver());
 		}

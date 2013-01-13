@@ -45,7 +45,7 @@ class memcache extends memory
 	*/
 	public function _set($var, $data, $ttl = 2592000)
 	{
-		if( !$this->memcache->replace($var, $data, $this->flags, $ttl) )
+		if (!$this->memcache->replace($var, $data, $this->flags, $ttl))
 		{
 			return $this->memcache->set($var, $data, $this->flags, $ttl);
 		}

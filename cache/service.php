@@ -69,7 +69,7 @@ class service
 	*/
 	public function obtain_bots()
 	{
-		if( false === $bots = $this->driver->_get('src_bots') )
+		if (false === $bots = $this->driver->_get('src_bots'))
 		{
 			$sql = '
 				SELECT
@@ -96,18 +96,18 @@ class service
 		global $config;
 		static $cache_entry, $handlers, $site_info;
 		
-		if( !$site_id )
+		if (!$site_id)
 		{
 			return false;
 		}
 		
-		if( empty($handlers) )
+		if (empty($handlers))
 		{
 			$site_info = get_site_info_by_id($site_id);
 			$cache_entry = sprintf('%s_handlers_%s', $site_info['domain'], $site_info['language']);
 		}
 		
-		if( empty($handlers) && (false === $handlers = $this->driver->_get($cache_entry)) )
+		if (empty($handlers) && (false === $handlers = $this->driver->_get($cache_entry)))
 		{
 			$sql = '
 				SELECT
@@ -121,7 +121,7 @@ class service
 			$this->db->query($sql);
 			$traversal = new traverse_handlers_urls();
 			
-			while( $row = $this->db->fetchrow() )
+			while ($row = $this->db->fetchrow())
 			{
 				$traversal->process_node($row);
 			}
@@ -140,7 +140,7 @@ class service
 	*/
 	public function obtain_image_stats()
 	{
-		if( false === $stats = $this->driver->get('image_stats') )
+		if (false === $stats = $this->driver->get('image_stats'))
 		{
 			$stats = array();
 
@@ -186,7 +186,7 @@ class service
 	*/
 	public function obtain_groups()
 	{
-		if( false === $groups = $this->driver->_get('src_groups') )
+		if (false === $groups = $this->driver->_get('src_groups'))
 		{
 			$sql = '
 				SELECT
@@ -209,7 +209,7 @@ class service
 	*/
 	public function obtain_languages($force_reload = false)
 	{
-		if( (false === $languages = $this->driver->_get('src_languages')) || $force_reload )
+		if ((false === $languages = $this->driver->_get('src_languages')) || $force_reload)
 		{
 			$sql = '
 				SELECT
@@ -234,7 +234,7 @@ class service
 	{
 		global $config;
 		
-		if( !$site_id )
+		if (!$site_id)
 		{
 			return false;
 		}
@@ -242,7 +242,7 @@ class service
 		$site_info = get_site_info_by_id($site_id);
 		$cache_entry = sprintf('%s_menu_%s', $site_info['domain'], $site_info['language']);
 		
-		if( false === $menu = $this->driver->_get($cache_entry) )
+		if (false === $menu = $this->driver->_get($cache_entry))
 		{
 			$sql = '
 				SELECT
@@ -256,7 +256,7 @@ class service
 			$this->db->query($sql);
 			$traversal = new traverse_menu(true);
 			
-			while( $row = $this->db->fetchrow() )
+			while ($row = $this->db->fetchrow())
 			{
 				$traversal->process_node($row);
 			}
@@ -275,7 +275,7 @@ class service
 	*/
 	public function obtain_online_userlist($language)
 	{
-		if( false === $data = $this->driver->get('online_userlist_' . $language) )
+		if (false === $data = $this->driver->get('online_userlist_' . $language))
 		{
 			global $config, $user;
 
@@ -310,16 +310,16 @@ class service
 					s.session_time DESC';
 			$result = $this->db->query($sql);
 
-			while( $row = $this->db->fetchrow($result) )
+			while ($row = $this->db->fetchrow($result))
 			{
 				/**
 				* Для зарегистрированных пользователей формируем ссылки на просмотр профиля
 				*/
-				if( !isset($prev_id[$row['user_id']]) )
+				if (!isset($prev_id[$row['user_id']]))
 				{
 					$user_link = $this->user_profile_link('', $row['username'], $row['user_colour'], $row['user_url'], $row['user_id'], $row['session_time']);
 
-					$data['online_userlist'] .= ( $data['online_userlist'] ) ? ', ' . $user_link : $user_link;
+					$data['online_userlist'] .= $data['online_userlist'] ? ', ' . $user_link : $user_link;
 					$prev_id[$row['user_id']] = 1;
 					$data['users_online']++;
 				}
@@ -341,9 +341,9 @@ class service
 					session_time >= ' . $this->db->check_value($user->ctime - $config['load_online_time']);
 			$result = $this->db->query($sql);
 
-			while( $row = $this->db->fetchrow($result) )
+			while ($row = $this->db->fetchrow($result))
 			{
-				if( !isset($prev_ip[$row['session_ip']]) )
+				if (!isset($prev_ip[$row['session_ip']]))
 				{
 					$prev_ip[$row['session_ip']] = 1;
 					$data['guests_online']++;
@@ -352,7 +352,7 @@ class service
 
 			$this->db->freeresult($result);
 
-			if( empty($data['online_userlist']) )
+			if (empty($data['online_userlist']))
 			{
 				/**
 				* Если на сайте нет зарегистрированных пользователей, то сообщаем об этом
@@ -378,7 +378,7 @@ class service
 	*/
 	public function obtain_ranks()
 	{
-		if( false === $ranks = $this->driver->_get('src_ranks') )
+		if (false === $ranks = $this->driver->_get('src_ranks'))
 		{
 			$sql = '
 				SELECT
@@ -401,7 +401,7 @@ class service
 	{
 		static $sites;
 		
-		if( empty($sites) && (false === $sites = $this->driver->_get('src_sites')) )
+		if (empty($sites) && (false === $sites = $this->driver->_get('src_sites')))
 		{
 			$sql = '
 				SELECT
@@ -428,7 +428,7 @@ class traverse_handlers_urls extends site_pages
 {
 	protected function tree_append($data)
 	{
-		if( !$this->row['page_handler'] || !$this->row['handler_method'] )
+		if (!$this->row['page_handler'] || !$this->row['handler_method'])
 		{
 			return false;
 		}
@@ -440,7 +440,7 @@ class traverse_handlers_urls extends site_pages
 		*/
 		$i = 0;
 
-		while( false !== $pos = strpos($data, '*') )
+		while (false !== $pos = strpos($data, '*'))
 		{
 			$data = substr_replace($data, '$' . $i++, $pos, 1);
 		}

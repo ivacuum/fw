@@ -23,7 +23,7 @@ class memory
 	{
 		$this->set_prefix($prefix);
 		
-		if( !isset($this->extension) || !extension_loaded($this->extension) )
+		if (!isset($this->extension) || !extension_loaded($this->extension))
 		{
 			trigger_error(sprintf('Не удается найти расширение [%s] для ACM.', $this->extension), E_USER_ERROR);
 		}
@@ -42,21 +42,21 @@ class memory
 	*/
 	public function delete($var, $table = '')
 	{
-		if( $var == 'sql' && !empty($table) )
+		if ($var == 'sql' && !empty($table))
 		{
-			if( !is_array($table) )
+			if (!is_array($table))
 			{
 				$table = array($table);
 			}
 			
-			foreach( $table as $table_name )
+			foreach ($table as $table_name)
 			{
-				if( false === $temp = $this->_get($this->prefix . 'sql_' . $table_name) )
+				if (false === $temp = $this->_get($this->prefix . 'sql_' . $table_name))
 				{
 					continue;
 				}
 				
-				foreach( $temp as $md5 => $void )
+				foreach ($temp as $md5 => $void)
 				{
 					$this->_delete($this->prefix . 'sql_' . $md5);
 				}
@@ -67,12 +67,12 @@ class memory
 			return;
 		}
 
-		if( !$this->_exists($var) )
+		if (!$this->_exists($var))
 		{
 			return;
 		}
 
-		if( isset($this->data[$var]) )
+		if (isset($this->data[$var]))
 		{
 			$this->is_modified = true;
 			unset($this->data[$var]);
@@ -80,7 +80,7 @@ class memory
 			/* cache hit */
 			$this->save();
 		}
-		elseif( $var[0] != '_' )
+		elseif ($var[0] != '_')
 		{
 			$this->_delete($this->prefix . $var);
 		}
@@ -91,12 +91,12 @@ class memory
 	*/
 	public function get($var)
 	{
-		if( !$this->_exists($var) )
+		if (!$this->_exists($var))
 		{
 			return false;
 		}
 
-		if( $var[0] == '_' )
+		if ($var[0] == '_')
 		{
 			return $this->data[$var];
 		}
@@ -135,7 +135,7 @@ class memory
 	*/
 	public function set($var, $data, $ttl = 2592000)
 	{
-		if( $var[0] == '_' )
+		if ($var[0] == '_')
 		{
 			$this->data[$var] = $data;
 			$this->is_modified = true;
@@ -151,7 +151,7 @@ class memory
 	*/
 	public function set_prefix($prefix = '')
 	{
-		$this->prefix = ( $prefix ) ? $prefix . '_' : '';
+		$this->prefix = $prefix ? $prefix . '_' : '';
 	}
 
 	/**
@@ -167,7 +167,7 @@ class memory
 	*/
 	public function sql_fetchall($query_id)
 	{
-		if( $this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]) )
+		if ($this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
 		{
 			return $this->sql_rowset[$query_id];
 		}
@@ -180,7 +180,7 @@ class memory
 	*/
 	public function sql_fetchfield($query_id, $field)
 	{
-		if( $this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]) )
+		if ($this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
 		{
 			return isset($this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]][$field]) ? $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]++][$field] : false;
 		}
@@ -193,7 +193,7 @@ class memory
 	*/
 	public function sql_fetchrow($query_id)
 	{
-		if( $this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]) )
+		if ($this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
 		{
 			return $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]++];
 		}
@@ -206,7 +206,7 @@ class memory
 	*/
 	public function sql_freeresult($query_id)
 	{
-		if( !isset($this->sql_rowset[$query_id]) )
+		if (!isset($this->sql_rowset[$query_id]))
 		{
 			return false;
 		}
@@ -225,7 +225,7 @@ class memory
 		$query    = preg_replace('#[\n\r\s\t]+#', ' ', $query);
 		$query_id = sizeof($this->sql_rowset);
 		
-		if( false === $result = $this->_get($this->prefix . 'sql_' . md5($query)) )
+		if (false === $result = $this->_get($this->prefix . 'sql_' . md5($query)))
 		{
 			return false;
 		}
@@ -241,7 +241,7 @@ class memory
 	*/
 	public function sql_rowseek($rownum, $query_id)
 	{
-		if( $rownum >= sizeof($this->sql_rowset[$query_id]) )
+		if ($rownum >= sizeof($this->sql_rowset[$query_id]))
 		{
 			return false;
 		}
@@ -264,24 +264,24 @@ class memory
 		/**
 		* Какие таблицы затрагивает запрос
 		*/
-		if( !preg_match('/FROM \\(?(`?\\w+`?(?: \\w+)?(?:, ?`?\\w+`?(?: \\w+)?)*)\\)?/', $query, $regs) )
+		if (!preg_match('/FROM \\(?(`?\\w+`?(?: \\w+)?(?:, ?`?\\w+`?(?: \\w+)?)*)\\)?/', $query, $regs))
 		{
 			return;
 		}
 		
 		$tables = array_map('trim', explode(',', $regs[1]));
 		
-		foreach( $tables as $table_name )
+		foreach ($tables as $table_name)
 		{
 			/* Опускаем кавычки */
-			$table_name = ( $table_name[0] == '`' ) ? substr($table_name, 1, -1) : $table_name;
+			$table_name = $table_name[0] == '`' ? substr($table_name, 1, -1) : $table_name;
 			
-			if( false !== $pos = strpos($table_name, ' ') )
+			if (false !== $pos = strpos($table_name, ' '))
 			{
 				$table_name = substr($table_name, 0, $pos);
 			}
 			
-			if( false === $temp = $this->_get($this->prefix . 'sql_' . $table_name) )
+			if (false === $temp = $this->_get($this->prefix . 'sql_' . $table_name))
 			{
 				$temp = array();
 			}
@@ -295,7 +295,7 @@ class memory
 		$this->sql_rowset[$query_id] = array();
 		$this->sql_row_pointer[$query_id] = 0;
 		
-		while( $row = $db->fetchrow($query_result) )
+		while ($row = $db->fetchrow($query_result))
 		{
 			$this->sql_rowset[$query_id][] = $row;
 		}
@@ -327,9 +327,9 @@ class memory
 	*/
 	private function _exists($var)
 	{
-		if( $var[0] == '_' )
+		if ($var[0] == '_')
 		{
-			if( !sizeof($this->data) )
+			if (!sizeof($this->data))
 			{
 				$this->load();
 			}
@@ -347,7 +347,7 @@ class memory
 	*/
 	private function save()
 	{
-		if( !$this->is_modified )
+		if (!$this->is_modified)
 		{
 			return;
 		}
