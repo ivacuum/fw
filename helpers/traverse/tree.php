@@ -36,15 +36,15 @@ class tree
 	*/
 	public function process_node($row = array())
 	{
-		if( !empty($row) )
+		if (!empty($row))
 		{
 			$this->row = $row;
 		}
 		
 		/* Пропуск ветви */
-		if( $this->right_id )
+		if ($this->right_id)
 		{
-			if( $this->row['left_id'] < $this->right_id )
+			if ($this->row['left_id'] < $this->right_id)
 			{
 				return;
 			}
@@ -53,18 +53,18 @@ class tree
 		}
 		
 		/* Следует ли пропустить ветвь дерева */
-		if( $this->skip_condition() )
+		if ($this->skip_condition())
 		{
 			$this->right_id = $this->row['right_id'];
 			return;
 		}
 		
 		/* Уменьшение глубины */
-		if( $this->depth && $this->row['left_id'] > $this->edge[$this->depth] )
+		if ($this->depth && $this->row['left_id'] > $this->edge[$this->depth])
 		{
-			for( $i = $this->depth; $i > 0; $i-- )
+			for ($i = $this->depth; $i > 0; $i--)
 			{
-				if( $this->row['left_id'] > $this->edge[$i] )
+				if ($this->row['left_id'] > $this->edge[$i])
 				{
 					array_pop($this->edge);
 					$this->depth--;
@@ -78,7 +78,7 @@ class tree
 		$this->edge[$this->depth] = $this->row['right_id'];
 		$this->on_depth_increase();
 		
-		if( false === $data = $this->get_data() )
+		if (false === $data = $this->get_data())
 		{
 			return;
 		}
@@ -92,12 +92,12 @@ class tree
 	*/
 	public function process_nodes($rows)
 	{
-		if( !is_array($rows) || !isset($rows[0]) )
+		if (!is_array($rows) || !isset($rows[0]))
 		{
 			return false;
 		}
 		
-		foreach( $rows as $this->row )
+		foreach ($rows as $this->row)
 		{
 			$this->process_node();
 		}
@@ -108,7 +108,7 @@ class tree
 	*/
 	protected function get_data()
 	{
-		return ( $this->return_as_tree ) ? array('children' => array()) : '';
+		return $this->return_as_tree ? array('children' => array()) : '';
 	}
 	
 	/**
@@ -146,14 +146,14 @@ class tree
 	protected function tree_append($data)
 	{
 		/* Формирование списка */
-		if( !$this->return_as_tree )
+		if (!$this->return_as_tree)
 		{
 			$this->tree[] = $data;
 			return true;
 		}
 		
 		/* Формирование дерева */
-		if( $this->depth === 1 )
+		if ($this->depth === 1)
 		{
 			unset($this->branch);
 			$this->branch = array();
