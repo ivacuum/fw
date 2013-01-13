@@ -36,7 +36,7 @@ class console
 	{
 		$this->logs[] = array(
 			'data' => $data,
-			'type' => 'log'
+			'type' => 'log',
 		);
 
 		$this->log_count++;
@@ -47,20 +47,11 @@ class console
 	*/
 	public function log_memory($object = false, $name = 'php')
 	{
-		if( $object )
-		{
-			$memory = strlen(serialize($object));
-		}
-		else
-		{
-			$memory = memory_get_usage();
-		}
-
 		$this->logs[] = array(
-			'data'      => $memory,
+			'data'      => $object ? strlen(serialize($object)) : memory_get_usage(),
 			'type'      => 'memory',
 			'name'      => $name,
-			'data_type' => gettype($object)
+			'data_type' => gettype($object),
 		);
 
 		$this->memory_count++;
@@ -73,7 +64,7 @@ class console
 	{
 		$call_stack = '';
 		
-		if( function_exists('xdebug_print_function_stack') )
+		if (function_exists('xdebug_print_function_stack'))
 		{
 			ob_start();
 			xdebug_print_function_stack();
@@ -85,7 +76,7 @@ class console
 			'data'       => $message,
 			'type'       => 'error',
 			'file'       => $file,
-			'line'       => $line
+			'line'       => $line,
 		);
 
 		$this->error_count++;
@@ -96,12 +87,10 @@ class console
 	*/
 	public function log_speed($name = 'label')
 	{
-		$time = explode(' ', microtime());
-
 		$this->logs[] = array(
-			'data' => $time[1] + $time[0],
+			'data' => microtime(true),
 			'type' => 'speed',
-			'name' => $name
+			'name' => $name,
 		);
 
 		$this->speed_count++;
@@ -121,7 +110,7 @@ class console
 		$this->query_count++;
 		$this->query_time += $time * 1000;
 		
-		if( $cached )
+		if ($cached)
 		{
 			$this->query_cached++;
 		}
@@ -138,8 +127,7 @@ class profiler extends console
 	*/
 	function __construct()
 	{
-		$time = explode(' ', microtime());
-		$this->start_time = $time[1] + $time[0];
+		$this->start_time = microtime(true);
 	}
 
 	/**
@@ -147,18 +135,17 @@ class profiler extends console
 	*/
 	public function display()
 	{
-		if( PHP_SAPI == 'cli' )
+		if (PHP_SAPI == 'cli')
 		{
 			return;
 		}
 		
-		$this->get_console_data();
-		$this->get_file_data();
-		$this->get_memory_data();
-		$this->get_query_data();
-		$this->get_speed_data();
-
-		$this->display_profiler();
+		$this->get_console_data()
+			->get_file_data()
+			->get_memory_data()
+			->get_query_data()
+			->get_speed_data()
+			->display_profiler();
 	}
 	
 	/**
@@ -168,23 +155,23 @@ class profiler extends console
 	{
 		global $user;
 		
-		if( PHP_SAPI == 'cli' )
+		if (PHP_SAPI == 'cli')
 		{
 			return;
 		}
 		
-		if( false === $fp = fsockopen('udp://' . $ip, $port) )
+		if (false === $fp = fsockopen('udp://' . $ip, $port))
 		{
 			return false;
 		}
 		
-		if( !$this->memory_used )
+		if (!$this->memory_used)
 		{
-			$this->get_console_data();
-			$this->get_file_data();
-			$this->get_memory_data();
-			$this->get_query_data();
-			$this->get_speed_data();
+			$this->get_console_data()
+				->get_file_data()
+				->get_memory_data()
+				->get_query_data()
+				->get_speed_data();
 		}
 
 		fwrite($fp, json_encode(array(
@@ -214,32 +201,31 @@ class profiler extends console
 	}
 
 	/**
+	* Время в определенном формате
+	*/
+	protected function get_readable_time($time)
+	{
+		return sprintf('%.3f ms', $time);
+	}
+
+	/**
 	* Сообщения, выведенные в консоль
 	*/
 	private function get_console_data()
 	{
-		$logs = $this->logs;
-
-		if( $logs )
+		foreach ($this->logs as $key => $log)
 		{
-			foreach( $logs as $key => $log )
+			switch ($log['type'])
 			{
-				if( $log['type'] == 'log' )
-				{
-					$logs[$key]['data'] = print_r($log['data'], true);
-				}
-				elseif( $log['type'] == 'memory' )
-				{
-					$logs[$key]['data'] = humn_size($log['data'], 2);
-				}
-				elseif( $log['type'] == 'speed' )
-				{
-					$logs[$key]['data'] = $this->get_readable_time(($log['data'] - $this->start_time) * 1000);
-				}
+				case 'log':    $logs[$key]['data'] = print_r($log['data'], true); break;
+				case 'memory': $logs[$key]['data'] = humn_size($log['data'], 2); break;
+				case 'speed':  $logs[$key]['data'] = $this->get_readable_time(($log['data'] - $this->start_time) * 1000); break;
 			}
 		}
 
 		$this->output['logs'] = $logs;
+		
+		return $this;
 	}
 
 	/**
@@ -247,14 +233,12 @@ class profiler extends console
 	*/
 	private function get_file_data()
 	{
-		$files     = get_included_files();
 		$file_list = array();
-
 		$this->file_count = 0;
 
-		foreach( $files as $key => $file )
+		foreach (get_included_files() as $key => $file)
 		{
-			if( false !== strpos($file, '/Twig/') )
+			if (false !== strpos($file, '/lib/'))
 			{
 				continue;
 			}
@@ -267,18 +251,13 @@ class profiler extends console
 			);
 
 			$this->file_size += $size;
-
-			if( $size > $this->file_largest )
-			{
-				$this->file_largest = $size;
-			}
-			
+			$this->file_largest = $size > $this->file_largest ? $size : $this->file_largest;
 			$this->file_count++;
 		}
 
-		// $this->file_count = sizeof($files);
-
 		$this->output['files'] = $file_list;
+		
+		return $this;
 	}
 
 	/**
@@ -288,6 +267,8 @@ class profiler extends console
 	{
 		$this->memory_used  = memory_get_peak_usage();
 		$this->memory_total = ini_get('memory_limit');
+		
+		return $this;
 	}
 
 	/**
@@ -296,6 +277,8 @@ class profiler extends console
 	private function get_query_data()
 	{
 		$this->output['queries'] = $this->queries;
+		
+		return $this;
 	}
 
 	/**
@@ -303,18 +286,10 @@ class profiler extends console
 	*/
 	private function get_speed_data()
 	{
-		$time = explode(' ', microtime());
-
 		$this->speed_allowed = ini_get('max_execution_time');
-		$this->speed_total   = ($time[1] + $time[0] - $this->start_time) * 1000;
-	}
-
-	/**
-	* Время в определенном формате
-	*/
-	protected function get_readable_time($time)
-	{
-		return sprintf('%.3f ms', $time);
+		$this->speed_total   = (microtime(true) - $this->start_time) * 1000;
+		
+		return $this;
 	}
 
 	/**
@@ -322,7 +297,7 @@ class profiler extends console
 	*/
 	private function display_profiler()
 	{
-		global $src_root_path, $template, $user;
+		global $template, $user;
 		
 		$user->load_language('profiler');
 		
@@ -331,21 +306,22 @@ class profiler extends console
 			'profiler_files'   => $this->output['files'],
 			'profiler_queries' => $this->output['queries'],
 			
-			'FILE_COUNT'    => $this->file_count,
-			'FILE_SIZE'     => humn_size($this->file_size),
-			'FILE_LARGEST'  => humn_size($this->file_largest),
-			'LOG_COUNT'     => $this->log_count,
-			'LOGS_COUNT'    => sizeof($this->output['logs']),
-			'ERROR_COUNT'   => $this->error_count,
-			'MEMORY_COUNT'  => $this->memory_count,
-			'MEMORY_TOTAL'  => $this->memory_total,
-			'MEMORY_USED'   => humn_size($this->memory_used),
-			'SPEED_ALLOWED' => $this->speed_allowed,
-			'SPEED_COUNT'   => $this->speed_count,
-			'SPEED_TOTAL'   => $this->get_readable_time($this->speed_total),
-			'QUERY_CACHED'  => $this->query_cached,
-			'QUERY_COUNT'   => $this->query_count,
-			'QUERY_TIME'    => $this->get_readable_time($this->query_time),
+			'FILE_COUNT'      => $this->file_count,
+			'FILE_SIZE'       => humn_size($this->file_size),
+			'FILE_LARGEST'    => humn_size($this->file_largest),
+			'LOG_COUNT'       => $this->log_count,
+			'LOGS_COUNT'      => sizeof($this->output['logs']),
+			'ERROR_COUNT'     => $this->error_count,
+			'MEMORY_COUNT'    => $this->memory_count,
+			'MEMORY_TOTAL'    => $this->memory_total,
+			'MEMORY_USED'     => humn_size($this->memory_used),
+			'SERVER_HOSTNAME' => gethostname(),
+			'SPEED_ALLOWED'   => $this->speed_allowed,
+			'SPEED_COUNT'     => $this->speed_count,
+			'SPEED_TOTAL'     => $this->get_readable_time($this->speed_total),
+			'QUERY_CACHED'    => $this->query_cached,
+			'QUERY_COUNT'     => $this->query_count,
+			'QUERY_TIME'      => $this->get_readable_time($this->query_time),
 
 			'FILE_COUNT_TEXT'  => plural($this->file_count, $user->lang['plural']['FILES']),
 			'QUERY_COUNT_TEXT' => plural($this->query_count, $user->lang['plural']['QUERIES'])
