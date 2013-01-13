@@ -605,17 +605,17 @@ function pagination($on_page, $overall, $link, $page_var = 'p')
 	{
 		if ($sort_count != $on_page)
 		{
-			$link .= false !== strpos($link, '?') ? '&' : '?' ) . 'sc=' . $sort_count;
+			$link .= (false !== strpos($link, '?') ? '&' : '?') . 'sc=' . $sort_count;
 		}
 
 		if ($sort_dir != 'd')
 		{
-			$link .= false !== strpos($link, '?') ? '&' : '?' ) . 'sd=' . $sort_dir;
+			$link .= (false !== strpos($link, '?') ? '&' : '?') . 'sd=' . $sort_dir;
 		}
 
 		if ($sort_key != 'a')
 		{
-			$link .= false !== strpos($link, '?') ? '&' : '?' ) . 'sk=' . $sort_key;
+			$link .= (false !== strpos($link, '?') ? '&' : '?') . 'sk=' . $sort_key;
 		}
 	}
 
