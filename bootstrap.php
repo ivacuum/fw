@@ -42,8 +42,8 @@ $app['autoloader']->register_namespaces([
 ]);
 
 $app['autoloader']->register_prefixes([
-	// 'Swift' => __DIR__ . '/../lib/swiftmailer/4.3/classes/Swift',
-	'Twig'  => __DIR__ . '/../lib/twig/1.12/Twig',
+	// 'Swift' => __DIR__ . '/../lib/swiftmailer/4.3/classes',
+	'Twig'  => __DIR__ . '/../lib/twig/1.12',
 ]);
 
 $profiler = $app['profiler'];
