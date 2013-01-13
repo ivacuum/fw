@@ -14,7 +14,7 @@ function login_db(&$username, &$password)
 		return [
 			'status'    => 'LOGIN_ERROR_PASSWORD',
 			'error_msg' => 'NO_PASSWORD_SUPPLIED',
-			'user_row'  => array('user_id' => 0)
+			'user_row'  => ['user_id' => 0],
 		];
 	}
 
@@ -23,7 +23,7 @@ function login_db(&$username, &$password)
 		return [
 			'status'    => 'LOGIN_ERROR_USERNAME',
 			'error_msg' => 'LOGIN_ERROR_USERNAME',
-			'user_row'  => array('user_id' => 0)
+			'user_row'  => ['user_id' => 0],
 		];
 	}
 
@@ -48,7 +48,7 @@ function login_db(&$username, &$password)
 		return [
 			'status'    => 'LOGIN_ERROR_USERNAME',
 			'error_msg' => 'LOGIN_ERROR_USERNAME',
-			'user_row'  => array('user_id' => 0)
+			'user_row'  => ['user_id' => 0],
 		];
 	}
 

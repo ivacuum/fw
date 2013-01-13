@@ -463,7 +463,7 @@ class traverse_menu extends site_pages
 			'IMAGE' => $this->row['page_image'],
 			'TITLE' => $this->row['page_name'],
 			'URL'   => $ary['url'],
-			'children' => array()
+			'children' => [],
 		];
 	}
 	

@@ -660,7 +660,7 @@ function pagination($on_page, $overall, $link, $page_var = 'p')
 	}
 	
 	$template->assign([
-		'pagination' => array(
+		'pagination' => [
 			'ITEMS'   => $overall,
 			'NEXT'    => generate_page_link($url_next, $base_url, $query_string),
 			'ON_PAGE' => $sort_count,
@@ -669,7 +669,7 @@ function pagination($on_page, $overall, $link, $page_var = 'p')
 			'PREV'    => generate_page_link($url_prev, $base_url, $query_string),
 			'VAR'     => $page_var,
 			'URL'     => $link
-		),
+		],
 	]);
 
 	return [
