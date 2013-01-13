@@ -33,8 +33,6 @@ if (file_exists(SITE_DIR . '../config.php'))
 
 $app = new application($app);
 
-$profiler = $app['profiler'];
-
 $app['autoloader']->register_namespaces(array(
 	'fw'       => __DIR__,
 	'app'      => SITE_DIR . '../includes',
@@ -44,6 +42,8 @@ $app['autoloader']->register_namespaces(array(
 	// 'Swift'    => __DIR__ . '/../lib/swiftmailer/4.3/classes/Swift',
 	'Twig'     => __DIR__ . '/../lib/twig/1.12/Twig',
 ));
+
+$profiler = $app['profiler'];
 
 /* Внедрение зависимостей */
 // $app['cache']->_set_db($app['db']);
