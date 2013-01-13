@@ -37,10 +37,10 @@ class mysqli
 		$this->user = $dbuser;
 		$this->password = $dbpass;
 		$this->database = $dbname;
-		$this->port = ( !$dbport ) ? null : $dbport;
+		$this->port = !$dbport ? null : $dbport;
 		$this->socket = $dbsock;
 		
-		if( $persistent !== false && version_compare(PHP_VERSION, '5.3.0', '>=') )
+		if (false !== $persistent && version_compare(PHP_VERSION, '5.3.0', '>='))
 		{
 			$this->server = 'p:' . $this->server;
 		}
@@ -57,8 +57,8 @@ class mysqli
 	*/
 	private function add_num_queries($cached = false)
 	{
-		$this->num_queries['cached'] += ( $cached !== false ) ? 1 : 0;
-		$this->num_queries['normal'] += ( $cached !== false ) ? 0 : 1;
+		$this->num_queries['cached'] += false !== $cached ? 1 : 0;
+		$this->num_queries['normal'] += false !== $cached ? 0 : 1;
 		$this->num_queries['total']++;
 	}
 
@@ -67,7 +67,7 @@ class mysqli
 	*/
 	public function affected_rows()
 	{
-		return ( $this->connect_id ) ? mysqli_affected_rows($this->connect_id) : false;
+		return $this->connect_id ? mysqli_affected_rows($this->connect_id) : false;
 	}
 
 	/**
@@ -76,16 +76,16 @@ class mysqli
 	*/
 	public function build_array($query, $data = false)
 	{
-		if( !is_array($data) )
+		if (!is_array($data))
 		{
 			return false;
 		}
 
 		$fields = $values = array();
 
-		if( $query == 'INSERT' )
+		if ($query == 'INSERT')
 		{
-			foreach( $data as $key => $value )
+			foreach ($data as $key => $value)
 			{
 				$fields[] = $key;
 				$values[] = $this->check_value($value);
@@ -93,11 +93,11 @@ class mysqli
 
 			$query = ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
 		}
-		elseif( $query == 'SELECT' || $query == 'UPDATE' )
+		elseif ($query == 'SELECT' || $query == 'UPDATE')
 		{
 			$values = array();
 			
-			foreach( $data as $key => $value )
+			foreach ($data as $key => $value)
 			{
 				$values[] = $key . ' = ' . $this->check_value($value);
 			}
@@ -115,25 +115,25 @@ class mysqli
 	{
 		$sql = '';
 		
-		switch( $query )
+		switch ($query)
 		{
 			case 'SELECT':
 			case 'SELECT_DISTINCT':
 			
 				$sql = str_replace('_', '', $query) . ' ' . ((is_array($array['SELECT'])) ? implode(', ', $array['SELECT']) : $array['SELECT']) . ' FROM ';
 				
-				if( is_array($array['FROM']) )
+				if (is_array($array['FROM']))
 				{
 					$table_array = $aliases = array();
 					$used_multi_alias = false;
 
-					foreach( $array['FROM'] as $table_name => $alias )
+					foreach ($array['FROM'] as $table_name => $alias)
 					{
-						if( is_array($alias) )
+						if (is_array($alias))
 						{
 							$used_multi_alias = true;
 
-							foreach( $alias as $multi_alias )
+							foreach ($alias as $multi_alias)
 							{
 								$table_array[] = $table_name . ' ' . $multi_alias;
 								$aliases[] = $multi_alias;
@@ -153,11 +153,11 @@ class mysqli
 					$sql .= $array['FROM'];
 				}
 				
-				if( !empty($array['LEFT_JOIN']) )
+				if (!empty($array['LEFT_JOIN']))
 				{
-					if( is_array($array['LEFT_JOIN']) )
+					if (is_array($array['LEFT_JOIN']))
 					{
-						foreach( $array['LEFT_JOIN'] as $join )
+						foreach ($array['LEFT_JOIN'] as $join)
 						{
 							$sql .= ' LEFT JOIN ' . key($join['FROM']) . ' ' . current($join['FROM']) . ' ON (' . $join['ON'] . ')';
 						}
@@ -168,17 +168,17 @@ class mysqli
 					}
 				}
 				
-				if( !empty($array['WHERE']) )
+				if (!empty($array['WHERE']))
 				{
 					$sql .= ' WHERE ' . implode(' AND ', $array['WHERE']);
 				}
 				
-				if( !empty($array['GROUP_BY']) )
+				if (!empty($array['GROUP_BY']))
 				{
 					$sql .= ' GROUP BY ' . $array['GROUP_BY'];
 				}
 				
-				if( !empty($array['ORDER_BY']) )
+				if (!empty($array['ORDER_BY']))
 				{
 					$sql .= ' ORDER BY ' . $array['ORDER_BY'];
 				}
@@ -195,17 +195,17 @@ class mysqli
 	*/
 	public function check_value($value)
 	{
-		if( is_null($value) )
+		if (is_null($value))
 		{
 			return 'NULL';
 		}
-		elseif( is_string($value) )
+		elseif (is_string($value))
 		{
 			return "'" . $this->escape($value) . "'";
 		}
 		else
 		{
-			return ( is_bool($value) ) ? intval($value) : $value;
+			return is_bool($value) ? intval($value) : $value;
 		}
 	}
 
@@ -214,18 +214,18 @@ class mysqli
 	*/
 	public function close()
 	{
-		if( !$this->connect_id )
+		if (!$this->connect_id)
 		{
 			return false;
 		}
 
-		if( $this->transaction )
+		if ($this->transaction)
 		{
 			do
 			{
 				$this->transaction('commit');
 			}
-			while( $this->transaction );
+			while ($this->transaction);
 		}
 
 		return mysqli_close($this->connect_id);
@@ -236,7 +236,7 @@ class mysqli
 	*/
 	public function escape($message)
 	{
-		if( !$this->connect_id )
+		if (!$this->connect_id)
 		{
 			$this->connect();
 		}
@@ -253,22 +253,22 @@ class mysqli
 	{
 		global $cache;
 
-		if( $query_id === false )
+		if (false === $query_id)
 		{
 			$query_id = $this->query_result;
 		}
 
-		if( $query_id !== false )
+		if (false !== $query_id)
 		{
 			$result = array();
 
-			if( !is_object($query_id) && isset($cache->sql_rowset[$query_id]) )
+			if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
 			{
-				if( $field !== false )
+				if (false !== $field)
 				{
 					$ary = $cache->sql_fetchall($query_id);
 					
-					foreach( $ary as $row )
+					foreach ($ary as $row)
 					{
 						$result[$row[$field]] = $row;
 					}
@@ -279,9 +279,9 @@ class mysqli
 				return $cache->sql_fetchall($query_id);
 			}
 			
-			while( $row = $this->fetchrow($query_id) )
+			while ($row = $this->fetchrow($query_id))
 			{
-				if( $field !== false )
+				if (false !== $field)
 				{
 					$result[$row[$field]] = $row;
 				}
@@ -305,19 +305,19 @@ class mysqli
 	{
 		global $cache;
 
-		if( $query_id === false )
+		if (false === $query_id)
 		{
 			$query_id = $this->query_result;
 		}
 
-		if( $query_id !== false )
+		if (false !== $query_id)
 		{
-			if( $rownum !== false )
+			if (false !== $rownum)
 			{
 				$this->rowseek($rownum, $query_id);
 			}
 
-			if( !is_object($query_id) && isset($cache->sql_rowset[$query_id]) )
+			if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
 			{
 				return $cache->sql_fetchfield($query_id, $field);
 			}
@@ -337,17 +337,17 @@ class mysqli
 	{
 		global $cache;
 
-		if( $query_id === false )
+		if (false === $query_id)
 		{
 			$query_id = $this->query_result;
 		}
 
-		if( !is_object($query_id) && isset($cache->sql_rowset[$query_id]) )
+		if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
 		{
 			return $cache->sql_fetchrow($query_id);
 		}
 		
-		if( $query_id !== false )
+		if (false !== $query_id)
 		{
 			$result = mysqli_fetch_assoc($query_id);
 			return $result !== null ? $result : false;
@@ -363,12 +363,12 @@ class mysqli
 	{
 		global $cache;
 		
-		if( $query_id === false )
+		if (false === $query_id)
 		{
 			$query_id = $this->query_result;
 		}
 
-		if( !is_object($query_id) && isset($cache->sql_rowset[$query_id]) )
+		if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
 		{
 			return $cache->sql_freeresult($query_id);
 		}
@@ -381,9 +381,9 @@ class mysqli
 	*/
 	public function in_set($field, $array, $negate = false, $allow_empty_set = false)
 	{
-		if( !sizeof($array) )
+		if (!sizeof($array))
 		{
-			if( !$allow_empty_set )
+			if (!$allow_empty_set)
 			{
 				// Print the backtrace to help identifying the location of the problematic code
 				$this->error('No values specified for SQL IN comparison');
@@ -391,7 +391,7 @@ class mysqli
 			else
 			{
 				// NOT IN () actually means everything so use a tautology
-				if( $negate )
+				if ($negate)
 				{
 					return '1=1';
 				}
@@ -403,12 +403,12 @@ class mysqli
 			}
 		}
 
-		if( !is_array($array) )
+		if (!is_array($array))
 		{
 			$array = array($array);
 		}
 
-		if( sizeof($array) == 1 )
+		if (sizeof($array) == 1)
 		{
 			@reset($array);
 			$var = current($array);
@@ -426,7 +426,7 @@ class mysqli
 	*/
 	public function insert_id()
 	{
-		return ( $this->connect_id ) ? mysqli_insert_id($this->connect_id) : false;
+		return $this->connect_id ? mysqli_insert_id($this->connect_id) : false;
 	}
 
 	/**
@@ -446,23 +446,23 @@ class mysqli
 	*/
 	public function multi_insert($table, &$sql_ary, $on_duplicate_action = '')
 	{
-		if( !sizeof($sql_ary) )
+		if (!sizeof($sql_ary))
 		{
 			return false;
 		}
 		
 		$ary = array();
 		
-		foreach( $sql_ary as $id => $_sql_ary )
+		foreach ($sql_ary as $id => $_sql_ary)
 		{
-			if( !is_array($_sql_ary) )
+			if (!is_array($_sql_ary))
 			{
 				return $this->query('INSERT INTO ' . $table . ' ' . $this->build_array('INSERT', $sql_ary) . (($on_duplicate_action) ? ' ON DUPLICATE KEY UPDATE ' . $on_duplicate_action : ''));
 			}
 			
 			$values = array();
 			
-			foreach( $_sql_ary as $key => $var )
+			foreach ($_sql_ary as $key => $var)
 			{
 				$values[] = $this->check_value($var);
 			}
@@ -478,7 +478,7 @@ class mysqli
 	*/
 	public function num_queries($cached = false)
 	{
-		return ( $cached ) ? $this->num_queries['cached'] : $this->num_queries['normal'];
+		return $cached ? $this->num_queries['cached'] : $this->num_queries['normal'];
 	}
 
 	/**
@@ -488,27 +488,27 @@ class mysqli
 	{
 		global $profiler;
 
-		if( !$this->connect_id )
+		if (!$this->connect_id)
 		{
 			$this->connect();
 		}
 		
-		if( $query )
+		if ($query)
 		{
 			global $cache;
 			
-			$this->query_result = ( $cache_ttl ) ? $cache->sql_load($query) : false;
+			$this->query_result = $cache_ttl ? $cache->sql_load($query) : false;
 			$this->add_num_queries($this->query_result);
 			$start_time = microtime(true);
 
-			if( $this->query_result === false )
+			if (false === $this->query_result)
 			{
-				if( ( $this->query_result = mysqli_query($this->connect_id, $query) ) === false )
+				if (($this->query_result = mysqli_query($this->connect_id, $query)) === false)
 				{
 					$this->error($query);
 				}
 				
-				if( $cache_ttl )
+				if ($cache_ttl)
 				{
 					$cache->sql_save($query, $this->query_result, $cache_ttl);
 				}
@@ -530,7 +530,7 @@ class mysqli
 	
 	public function query_limit($query, $on_page, $offset = 0, $cache_ttl = 0)
 	{
-		if( empty($query) )
+		if (empty($query))
 		{
 			return false;
 		}
@@ -541,7 +541,7 @@ class mysqli
 		$this->query_result = false;
 		
 		/* 0 = нет лимита */
-		if( $on_page == 0 )
+		if ($on_page == 0)
 		{
 			/**
 			* -1 уже нельзя
@@ -562,17 +562,17 @@ class mysqli
 	{
 		global $cache;
 
-		if( $query_id === false )
+		if (false === $query_id)
 		{
 			$query_id = $this->query_result;
 		}
 
-		if( !is_object($query_id) && isset($cache->sql_rowset[$query_id]) )
+		if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
 		{
 			return $cache->sql_rowseek($rownum, $query_id);
 		}
 
-		return ( $query_id !== false ) ? mysqli_data_seek($query_id, $rownum) : false;
+		return false !== $query_id ? mysqli_data_seek($query_id, $rownum) : false;
 	}
 	
 
@@ -589,22 +589,22 @@ class mysqli
 	*/
 	public function transaction($status = 'begin')
 	{
-		if( !$this->connect_id )
+		if (!$this->connect_id)
 		{
 			$this->connect();
 		}
 		
-		switch( $status )
+		switch ($status)
 		{
 			case 'begin':
 
-				if( $this->transaction )
+				if ($this->transaction)
 				{
 					$this->transactions++;
 					return true;
 				}
 
-				if( false == $result = mysqli_autocommit($this->connect_id, false) )
+				if (false == $result = mysqli_autocommit($this->connect_id, false))
 				{
 					$this->error();
 				}
@@ -614,13 +614,13 @@ class mysqli
 			break;
 			case 'commit':
 
-				if( $this->transaction && $this->transactions )
+				if ($this->transaction && $this->transactions)
 				{
 					$this->transactions--;
 					return true;
 				}
 
-				if( !$this->transaction )
+				if (!$this->transaction)
 				{
 					return false;
 				}
@@ -628,7 +628,7 @@ class mysqli
 				$result = mysqli_commit($this->connect_id);
 				mysqli_autocommit($this->connect_id, true);
 
-				if( !$result )
+				if (!$result)
 				{
 					$this->error();
 				}
@@ -658,7 +658,7 @@ class mysqli
 		$this->connect_id = mysqli_connect($this->server, $this->user, $this->password, $this->database, $this->port, $this->socket);
 		$this->password = '';
 
-		return ( $this->connect_id && $this->database ) ? $this->connect_id : $this->error();
+		return $this->connect_id && $this->database ? $this->connect_id : $this->error();
 	}
 
 	/**
@@ -668,8 +668,8 @@ class mysqli
 	{
 		global $error_ary;
 
-		$code    = ( $this->connect_id ) ? mysqli_errno($this->connect_id) : mysqli_connect_errno();
-		$message = ( $this->connect_id ) ? mysqli_error($this->connect_id) : mysqli_connect_error();
+		$code    = $this->connect_id ? mysqli_errno($this->connect_id) : mysqli_connect_errno();
+		$message = $this->connect_id ? mysqli_error($this->connect_id) : mysqli_connect_error();
 		
 		define('IN_SQL_ERROR', true);
 		
@@ -682,7 +682,7 @@ class mysqli
 			'text' => $message
 		);
 
-		if( $this->transaction )
+		if ($this->transaction)
 		{
 			$this->transaction('rollback');
 		}
@@ -690,7 +690,7 @@ class mysqli
 		/**
 		* Автоматическое исправление таблиц
 		*/
-		if( $code === 145 )
+		if ($code === 145)
 		{
 			if( preg_match("#Table '.+/(.+)' is marked as crashed and should be repaired#", $message, $matches) )
 			{
