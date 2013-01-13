@@ -52,9 +52,9 @@ class page
 	*/
 	public function append_link_params($query_string, $url = false)
 	{
-		$url = ( $url ) ? ilink($url) : ilink($this->url);
+		$url = $url ? ilink($url) : ilink($this->url);
 		
-		if( false !== strpos($url, '?') )
+		if (false !== strpos($url, '?'))
 		{
 			return sprintf('%s&%s', $url, $query_string);
 		}
@@ -71,13 +71,13 @@ class page
 	{
 		static $base_url;
 		
-		if( !$base_url )
+		if (!$base_url)
 		{
 			$ary = pathinfo($this->url);
 			$base_url = isset($ary['extension']) ? $ary['dirname'] : $this->url;
 		}
 		
-		$url = ( $row['is_dir'] ) ? $row['page_url'] : (($row['page_url'] != $this->config['router_directory_index']) ? (($this->format) ? sprintf('%s.%s', $row['page_url'], $this->format) : $row['page_url']) : '');
+		$url = $row['is_dir'] ? $row['page_url'] : ($row['page_url'] != $this->config['router_directory_index'] ? ($this->format ? sprintf('%s.%s', $row['page_url'], $this->format) : $row['page_url']) : '');
 		
 		return ilink(sprintf('%s/%s', $base_url, $url));
 	}
@@ -87,7 +87,7 @@ class page
 	*/
 	public function get_page_branch($page_id, $type = 'all', $order = 'descending', $include_self = true)
 	{
-		switch( $type )
+		switch ($type)
 		{
 			case 'parents':  $condition = 'p1.left_id BETWEEN p2.left_id AND p2.right_id'; break;
 			case 'children': $condition = 'p2.left_id BETWEEN p1.left_id AND p1.right_id'; break;
@@ -113,9 +113,9 @@ class page
 				p2.left_id ' . (($order == 'descending') ? 'ASC' : 'DESC');
 		$this->db->query($sql);
 
-		while( $row = $this->db->fetchrow() )
+		while ($row = $this->db->fetchrow())
 		{
-			if( !$include_self && $row['page_id'] == $page_id )
+			if (!$include_self && $row['page_id'] == $page_id)
 			{
 				continue;
 			}
@@ -133,9 +133,9 @@ class page
 	*/
 	public function get_page_descendants($page_id = false)
 	{
-		if( $page_id === false )
+		if (false === $page_id)
 		{
-			$page_id = ( $this->data['is_dir'] ) ? $this->data['page_id'] : $this->data['parent_id'];
+			$page_id = $this->data['is_dir'] ? $this->data['page_id'] : $this->data['parent_id'];
 		}
 		
 		$page_id = (int) $page_id;
@@ -166,7 +166,7 @@ class page
 	*/
 	public function get_handler_url($handler, array $params = array())
 	{
-		if( 0 === strpos($handler, '\\') )
+		if (0 === strpos($handler, '\\'))
 		{
 			/**
 			* Обращение по абсолютному адресу
@@ -175,7 +175,7 @@ class page
 			* \fw\modules\gallery::index
 			*/
 			/* Разработчик знает, что подключает */
-			if( isset($this->handlers_urls[$handler]) )
+			if (isset($this->handlers_urls[$handler]))
 			{
 				return $this->get_url_with_params($this->handlers_urls[$handler], $params);
 			}
@@ -186,9 +186,9 @@ class page
 		/**
 		* Обращение к методу текущего модуля
 		*/
-		if( false === strpos($handler, '::') )
+		if (false === strpos($handler, '::'))
 		{
-			if( isset($this->urls[$handler]) )
+			if (isset($this->urls[$handler]))
 			{
 				return $this->get_url_with_params($this->urls[$handler], $params);
 			}
@@ -207,20 +207,20 @@ class page
 		$class = substr($class, 4);
 		$diff = substr_count($class, '\\') - substr_count($handler, '\\');
 		
-		if( $diff > 0 )
+		if ($diff > 0)
 		{
-			if( false != $prefix = implode('\\', array_slice(explode('\\', $class), 0, $diff)) )
+			if (false != $prefix = implode('\\', array_slice(explode('\\', $class), 0, $diff)))
 			{
 				$full_handler = $prefix . '\\' . $handler;
 				
-				if( isset($this->handlers_urls[$full_handler]) )
+				if (isset($this->handlers_urls[$full_handler]))
 				{
 					return $this->get_url_with_params($this->handlers_urls[$full_handler], $params);
 				}
 			}
 		}
 		
-		if( isset($this->handlers_urls[$handler]) )
+		if (isset($this->handlers_urls[$handler]))
 		{
 			return $this->get_url_with_params($this->handlers_urls[$handler], $params);
 		}
@@ -235,14 +235,14 @@ class page
 	*/
 	public function get_url_with_params($url, array $params = array())
 	{
-		if( empty($params) )
+		if (empty($params))
 		{
 			return $url;
 		}
 		
 		$ary = array();
 		
-		for( $i = 0, $len = sizeof($params); $i < $len; $i++ )
+		for ($i = 0, $len = sizeof($params); $i < $len; $i++)
 		{
 			$ary[] = '$' . $i;
 		}
@@ -261,7 +261,7 @@ class page
 	{
 		$filename = str_replace('\\', '/', get_class($this));
 		
-		if( 0 === strpos($filename, 'app/') )
+		if (0 === strpos($filename, 'app/'))
 		{
 			$filename = substr($filename, 4);
 		}
@@ -278,16 +278,16 @@ class page
 		$handler = get_class($this);
 		$this->handlers_urls = $this->cache->obtain_handlers_urls($this->data['site_id']);
 		
-		if( 0 === strpos($handler, 'app\\') )
+		if (0 === strpos($handler, 'app\\'))
 		{
 			$handler = substr($handler, 4);
 		}
 		
 		$pos = strlen($handler) + 2;
 
-		foreach( $this->handlers_urls as $method => $url )
+		foreach ($this->handlers_urls as $method => $url)
 		{
-			if( 0 === strpos($method, $handler . '::') )
+			if (0 === strpos($method, $handler . '::'))
 			{
 				$this->urls[substr($method, $pos)] = $url;
 			}
@@ -299,7 +299,7 @@ class page
 	*/
 	public function page_header()
 	{
-		if( defined('HEADER_PRINTED') )
+		if (defined('HEADER_PRINTED'))
 		{
 			return;
 		}
@@ -310,7 +310,7 @@ class page
 		header('Pragma: no-cache');
 
 		/* Ссылки на вход-выход */
-		$u_login = ( $this->user->is_registered ) ? ilink($this->get_handler_url('ucp::logout')) : ilink($this->get_handler_url('ucp::login'));
+		$u_login = $this->user->is_registered ? ilink($this->get_handler_url('ucp::logout')) : ilink($this->get_handler_url('ucp::login'));
 		
 		/**
 		* Выпадающий список языков
@@ -318,16 +318,16 @@ class page
 		$languages = $this->cache->obtain_languages();
 		$sites     = $this->cache->obtain_sites();
 
-		foreach( $sites as $row )
+		foreach ($sites as $row)
 		{
-			if( $this->user->domain != $row['site_url'] )
+			if ($this->user->domain != $row['site_url'])
 			{
 				continue;
 			}
 			
-			foreach( $languages as $ary )
+			foreach ($languages as $ary)
 			{
-				if( $ary['language_title'] == $row['site_language'] )
+				if ($ary['language_title'] == $row['site_language'])
 				{
 					break;
 				}
@@ -340,7 +340,7 @@ class page
 				'URL'   => ilink('', $this->config['site_root_path'] . $row['site_language'])
 			));
 			
-			if( $this->user->lang['.'] == $ary['language_title'] )
+			if ($this->user->lang['.'] == $ary['language_title'])
 			{
 				$language_ary = $ary;
 			}
@@ -348,8 +348,8 @@ class page
 
 		$this->template->assign(array(
 			'CURRENT_TIME' => sprintf($this->user->lang['CURRENT_TIME'], $this->user->create_date($this->user->ctime, false, true)),
-			'LAST_VISIT'   => ( $this->user->is_registered ) ? sprintf($this->user->lang['LAST_VISIT'], $this->user->create_date($this->user['user_last_visit'])) : '',
-			'LOGIN'        => ( $this->user->is_registered ) ? sprintf($this->user->lang['LOGOUT'], $this->user['username']) : $this->user->lang['LOGIN'],
+			'LAST_VISIT'   => $this->user->is_registered ? sprintf($this->user->lang['LAST_VISIT'], $this->user->create_date($this->user['user_last_visit'])) : '',
+			'LOGIN'        => $this->user->is_registered ? sprintf($this->user->lang['LOGOUT'], $this->user['username']) : $this->user->lang['LOGIN'],
 
 			'S_BOT'                => $this->user->is_bot,
 			'S_ISP'                => $this->user->isp,
@@ -382,7 +382,7 @@ class page
 			'U_COPYRIGHT' => ilink(sprintf('%s/vacuum.html', $this->get_handler_url('users::index')))
 		));
 		
-		if( $this->template->file )
+		if ($this->template->file)
 		{
 			$this->template->display();
 		}
@@ -390,7 +390,7 @@ class page
 		$display_profiler = false;
 		
 		/* Вывод профайлера только для html-документов */
-		if( $this->format == 'html' )
+		if ($this->format == 'html')
 		{
 			$display_profiler = true;
 		}
@@ -404,7 +404,7 @@ class page
 	*/
 	public function set_appropriate_content_type()
 	{
-		switch( $this->format )
+		switch ($this->format)
 		{
 			case 'json': $type = 'application/json'; break;
 			case 'xml':  $type = 'text/xml'; break;
@@ -425,26 +425,26 @@ class page
 	*/
 	public function set_default_template()
 	{
-		if( !$this->format )
+		if (!$this->format)
 		{
 			return;
 		}
 		
 		$filename = str_replace('\\', '/', get_class($this));
 		
-		if( 0 === strpos($filename, 'app/') )
+		if (0 === strpos($filename, 'app/'))
 		{
 			$filename = substr($filename, 4);
 		}
 		
-		if( 0 === strpos($filename, 'fw/modules/') )
+		if (0 === strpos($filename, 'fw/modules/'))
 		{
 			$filename = substr($filename, 11);
 		}
 		
 		$this->template->file = sprintf('%s_%s.%s', $filename, $this->method, $this->format);
 		
-		if( $this->request->is_ajax )
+		if ($this->request->is_ajax)
 		{
 			$this->template->file = sprintf('ajax/%s_%s.%s', $filename, $this->method, $this->format);
 		}
@@ -467,22 +467,22 @@ class page
 		$page_url = ilink($this->full_url);
 		$root_url = ilink();
 		
-		foreach( $menu as $row )
+		foreach ($menu as $row)
 		{
-			if( $row['URL'] == $root_url )
+			if ($row['URL'] == $root_url)
 			{
-				if( $page_url == $row['URL'] )
+				if ($page_url == $row['URL'])
 				{
 					$row['ACTIVE'] = true;
 				}
 			}
 			else
 			{
-				if( 0 === mb_strpos($page_url, $row['URL']) )
+				if (0 === mb_strpos($page_url, $row['URL']))
 				{
 					$row['ACTIVE'] = true;
 					
-					if( !empty($row['children']) )
+					if (!empty($row['children']))
 					{
 						$this->recursive_set_menu_active_items($row['children'], $row['URL']);
 					}
@@ -500,7 +500,7 @@ class page
 	{
 		$rows = $this->get_page_descendants();
 		
-		foreach( $rows as $row )
+		foreach ($rows as $row)
 		{
 			$this->template->append('submenu', array(
 				'ACTIVE' => $this->data['page_id'] == $row['page_id'],
@@ -523,16 +523,16 @@ class page
 		$groups      = $this->cache->obtain_groups();
 		$groups_list = '';
 
-		foreach( $groups as $row )
+		foreach ($groups as $row)
 		{
-			if( !$row['group_legend'] )
+			if (!$row['group_legend'])
 			{
 				continue;
 			}
 
 			$groups_link = '<span style="color: #' . $row['group_colour'] . ';">' . $this->user->lang($row['group_name']) . '</span>';
 
-			$groups_list .= ( $groups_list ) ? ', ' . $groups_link : $groups_link;
+			$groups_list .= $groups_list ? ', ' . $groups_link : $groups_link;
 		}
 
 		$this->template->assign(array(
@@ -572,14 +572,14 @@ class page
 	*/
 	public function user_profile_link($mode, $username, $colour = false, $url = false, $id = false, $time = false)
 	{
-		switch( $mode )
+		switch ($mode)
 		{
 			/**
 			* Строка без ссылки
 			*/
 			case 'plain':
 
-				$colour = ( $colour ) ? ' style="color: #' . $colour . ';"' : '';
+				$colour = $colour ? ' style="color: #' . $colour . ';"' : '';
 
 				return sprintf('<b%s>%s</b>', $colour, $username);
 
@@ -589,7 +589,7 @@ class page
 			*/
 			case 'raw':
 
-				return ( $url ) ? $this->get_handler_url('users::profile', array($url)) : $this->get_handler_url('users::profile', array($id));
+				return $url ? $this->get_handler_url('users::profile', array($url)) : $this->get_handler_url('users::profile', array($id));
 
 			break;
 			/**
@@ -597,9 +597,9 @@ class page
 			*/
 			default:
 
-				$colour = ( $colour ) ? ' style="color: #' . $colour . '; font-weight: bold;"' : '';
-				$time   = ( $time ) ? ' title="' . $this->user->create_date($time, 'H:i', true) . '"' : '';
-				$url    = ( $url ) ? $this->get_handler_url('users::profile', array($url)) : $this->get_handler_url('users::profile', array($id));
+				$colour = $colour ? ' style="color: #' . $colour . '; font-weight: bold;"' : '';
+				$time   = $time ? ' title="' . $this->user->create_date($time, 'H:i', true) . '"' : '';
+				$url    = $url ? $this->get_handler_url('users::profile', array($url)) : $this->get_handler_url('users::profile', array($id));
 
 				return sprintf('<a href="%s"%s%s>%s</a>', $url, $colour, $time, $username);
 
@@ -614,16 +614,16 @@ class page
 	{
 		static $page_url;
 		
-		if( !$page_url )
+		if (!$page_url)
 		{
 			$page_url = ilink($this->full_url);
 		}
 		
-		for( $i = 0, $len = sizeof($menu); $i < $len; $i++ )
+		for ($i = 0, $len = sizeof($menu); $i < $len; $i++)
 		{
-			if( $menu[$i]['URL'] == $section_url )
+			if ($menu[$i]['URL'] == $section_url)
 			{
-				if( $page_url == $menu[$i]['URL'] )
+				if ($page_url == $menu[$i]['URL'])
 				{
 					$menu[$i]['ACTIVE'] = true;
 					return;
@@ -631,11 +631,11 @@ class page
 			}
 			else
 			{
-				if( 0 === mb_strpos($page_url, $menu[$i]['URL']) )
+				if (0 === mb_strpos($page_url, $menu[$i]['URL']))
 				{
 					$menu[$i]['ACTIVE'] = true;
 
-					if( !empty($menu[$i]['children']) )
+					if (!empty($menu[$i]['children']))
 					{
 						$this->recursive_set_menu_active_items($menu[$i]['children'], $menu[$i]['URL']);
 					}
