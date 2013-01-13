@@ -48,7 +48,7 @@ class sitemap extends page
 	{
 		$traversal = new traverse_sitemap_pages_html(true);
 		
-		while( $row = $this->db->fetchrow() )
+		while ($row = $this->db->fetchrow())
 		{
 			$traversal->process_node($row);
 		}
@@ -67,7 +67,7 @@ class sitemap extends page
 	{
 		$traversal = new traverse_sitemap_pages_xml();
 		
-		while( $row = $this->db->fetchrow() )
+		while ($row = $this->db->fetchrow())
 		{
 			$traversal->process_node($row);
 		}
@@ -126,11 +126,11 @@ class traverse_sitemap_pages_xml extends site_pages
 		*
 		* Исключение: главная страница сайта
 		*/
-		if( !$this->row['is_dir'] && $this->row['page_url'] == $config['router_directory_index'] )
+		if (!$this->row['is_dir'] && $this->row['page_url'] == $config['router_directory_index'])
 		{
 			$this->base_url[] = '';
 			
-			if( !$this->row['parent_id'] )
+			if (!$this->row['parent_id'])
 			{
 				return ilink('');
 			}
