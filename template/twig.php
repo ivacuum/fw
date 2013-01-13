@@ -21,9 +21,6 @@ class twig
 
 	function __construct()
 	{
-		require(FW_DIR . '../lib/twig/1.12/Twig/Autoloader.php');
-		\Twig_Autoloader::register();
-		
 		$this->path   = SITE_DIR . '../templates';
 		$this->loader = new \Twig_Loader_Filesystem(array($this->path, FW_DIR . 'templates'));
 		$this->env    = new \Twig_Environment($this->loader, array(
