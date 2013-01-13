@@ -24,7 +24,7 @@ class imagetransform
 	
 	function __construct($source)
 	{
-		if( !file_exists($source) || (false === $image_info = @getimagesize($source)) )
+		if (!file_exists($source) || (false === $image_info = @getimagesize($source)))
 		{
 			$this->init_error = true;
 			return false;
@@ -40,15 +40,15 @@ class imagetransform
 	*/
 	public function make_thumbnail($max_width, $destination)
 	{
-		if( $this->init_error )
+		if ($this->init_error)
 		{
 			return false;
 		}
 		
 		/* Если размеры исходника меньше желаемых, то будет создана полная копия изображения */
-		if( $this->width <= $max_width && $this->height <= $max_width )
+		if ($this->width <= $max_width && $this->height <= $max_width)
 		{
-			if( $this->source == $destination )
+			if ($this->source == $destination)
 			{
 				return true;
 			}
@@ -58,7 +58,7 @@ class imagetransform
 		
 		list($width, $height) = $this->get_thumbnail_dimensions($max_width);
 
-		if( $this->mimetype == 'image/gif' )
+		if ($this->mimetype == 'image/gif')
 		{
 			/* -sample не нарушает gif-анимацию */
 			@passthru(sprintf('%sgm convert "%s" -sample %dx%d +profile "*" "%s"', escapeshellcmd('/usr/local/bin/'), $this->source, $width, $height, $destination));
@@ -69,7 +69,7 @@ class imagetransform
 			@passthru(sprintf('%sgm convert -size %dx%d "%s" -quality %d -filter triangle -resize %dx%d +profile "*" "%s"', escapeshellcmd('/usr/local/bin/'), $width, $height, $this->source, 75, $width, $height, $destination));
 		}
 
-		if( !file_exists($destination) )
+		if (!file_exists($destination))
 		{
 			return false;
 		}
@@ -86,7 +86,7 @@ class imagetransform
 	{
 		global $config, $db;
 		
-		if( $this->init_error || !$watermark )
+		if ($this->init_error || !$watermark)
 		{
 			$this->error[] = 'Ошибка инициализация модуля наложения водяного знака';
 			return false;
@@ -103,7 +103,7 @@ class imagetransform
 		$row = $db->fetchrow();
 		$db->freeresult();
 		
-		if( !$row )
+		if (!$row)
 		{
 			$this->error[] = 'Водяной знак не найден';
 			return false;
@@ -111,13 +111,13 @@ class imagetransform
 		
 		$watermark = sprintf('%swatermark_%s.png', $config['watermarks_dir'], $watermark);
 		
-		if( !file_exists($watermark) )
+		if (!file_exists($watermark))
 		{
 			$this->error[] = 'Изображение с водяным знаком не найдено';
 			return false;
 		}
 		
-		switch( $position )
+		switch ($position)
 		{
 			case 'northwest':
 			case 'north':
@@ -137,7 +137,7 @@ class imagetransform
 			break;
 		}
 
-		if( $this->width < $row['wm_width'] || $this->height < $row['wm_height'] )
+		if ($this->width < $row['wm_width'] || $this->height < $row['wm_height'])
 		{
 			$this->error[] = 'Размеры изображения меньше размеров водяного знака';
 			return false;
@@ -153,7 +153,7 @@ class imagetransform
 	*/
 	private function get_thumbnail_dimensions($max_width)
 	{
-		if( $this->width > $this->height )
+		if ($this->width > $this->height)
 		{
 			return array(
 				round($this->width * ($max_width / $this->width)),
