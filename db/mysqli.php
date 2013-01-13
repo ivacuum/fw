@@ -51,16 +51,6 @@ class mysqli
 			'total'  => 0
 		);
 	}
-	
-	/**
-	* Увеличение счетчика запросов
-	*/
-	private function add_num_queries($cached = false)
-	{
-		$this->num_queries['cached'] += false !== $cached ? 1 : 0;
-		$this->num_queries['normal'] += false !== $cached ? 0 : 1;
-		$this->num_queries['total']++;
-	}
 
 	/**
 	* Затронутые поля
@@ -649,11 +639,21 @@ class mysqli
 		
 		return $result;
 	}
+	
+	/**
+	* Увеличение счетчика запросов
+	*/
+	protected function add_num_queries($cached = false)
+	{
+		$this->num_queries['cached'] += false !== $cached ? 1 : 0;
+		$this->num_queries['normal'] += false !== $cached ? 0 : 1;
+		$this->num_queries['total']++;
+	}
 
 	/**
 	* Установка подключения к БД
 	*/
-	private function connect()
+	protected function connect()
 	{
 		$this->connect_id = mysqli_connect($this->server, $this->user, $this->password, $this->database, $this->port, $this->socket);
 		$this->password = '';
@@ -664,7 +664,7 @@ class mysqli
 	/**
 	* SQL ошибки передаём нашему обработчику
 	*/
-	private function error($sql = '')
+	protected function error($sql = '')
 	{
 		global $error_ary;
 
