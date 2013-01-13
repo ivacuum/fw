@@ -35,15 +35,15 @@ $app = new application($app);
 
 $profiler = $app['profiler'];
 
-// $app['autoloader']->register_namespaces(array(
-// 	'fw'       => __DIR__,
-// 	'app'      => SITE_DIR . '../modules',
-// 	'Geocoder' => __DIR__ . '/../lib/geocoder/1.1.6/Geocoder',
-// 	'Imagine'  => __DIR__ . '/../lib/imagine/0.4.1/Imagine',
-// 	'Monolog'  => __DIR__ . '/../lib/monolog/1.0.3/Monolog',
-// 	'Swift'    => __DIR__ . '/../lib/swiftmailer/4.3/classes/Swift',
-// 	'Twig'     => __DIR__ . '/../lib/twig/1.12/Twig',
-// ));
+$app['autoloader']->register_namespaces(array(
+	'fw'       => __DIR__,
+	'app'      => SITE_DIR . '../includes',
+	// 'Geocoder' => __DIR__ . '/../lib/geocoder/1.1.6/Geocoder',
+	// 'Imagine'  => __DIR__ . '/../lib/imagine/0.4.1/Imagine',
+	// 'Monolog'  => __DIR__ . '/../lib/monolog/1.0.3/Monolog',
+	// 'Swift'    => __DIR__ . '/../lib/swiftmailer/4.3/classes/Swift',
+	'Twig'     => __DIR__ . '/../lib/twig/1.12/Twig',
+));
 
 /* Внедрение зависимостей */
 // $app['cache']->_set_db($app['db']);
@@ -77,44 +77,4 @@ $template = $app['template'];
 if (SITE_DIR != $config['site_dir'])
 {
 	$config->set('site_dir', SITE_DIR);
-}
-
-/**
-* Автозагрузчик классов
-*/
-class autoloader
-{
-	/**
-	* Загрузка класса
-	*/
-	static public function autoload($class)
-	{
-		if (false === strpos($class, '\\'))
-		{
-			return;
-		}
-
-		list($prefix, $filename) = explode('/', str_replace('\\', '/', $class), 2);
-		
-		if ($prefix == 'fw' && file_exists(FW_DIR . "{$filename}.php"))
-		{
-			require(FW_DIR . "{$filename}.php");
-			return true;
-		}
-		elseif ($prefix == 'app' && file_exists(SITE_DIR . "../includes/{$filename}.php"))
-		{
-			require(SITE_DIR . "../includes/{$filename}.php");
-			return true;
-		}
-		
-		return false;
-	}
-	
-	/**
-	* Регистрация загрузчика
-	*/
-	static public function register()
-	{
-		spl_autoload_register(array(new self, 'autoload'));
-	}
 }
