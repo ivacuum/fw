@@ -61,7 +61,7 @@ class service
 	
 	public function __call($method, $args)
 	{
-		return call_user_func_array(array($this->driver, $method), $args);
+		return call_user_func_array([$this->driver, $method], $args);
 	}
 
 	/**
@@ -142,7 +142,7 @@ class service
 	{
 		if (false === $stats = $this->driver->get('image_stats'))
 		{
-			$stats = array();
+			$stats = [];
 
 			/**
 			* Количество изображений, загруженных за последние сутки
@@ -286,8 +286,8 @@ class service
 			$data['users_online'] = 0;
 			$data['online_list'] = '';
 			$data['online_userlist'] = '';
-			$prev_id = array();
-			$prev_ip = array();
+			$prev_id = [];
+			$prev_ip = [];
 
 			/**
 			* Получаем данные пользователей, которые посетили сайт в последние $config['load_online_time'] минут
@@ -458,13 +458,13 @@ class traverse_menu extends site_pages
 	{
 		$ary = parent::get_data();
 		
-		return array(
+		return [
 			'ID'    => $this->row['page_id'],
 			'IMAGE' => $this->row['page_image'],
 			'TITLE' => $this->row['page_name'],
 			'URL'   => $ary['url'],
 			'children' => array()
-		);
+		];
 	}
 	
 	protected function skip_condition()

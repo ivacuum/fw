@@ -15,7 +15,7 @@ class router
 	public $handler;
 	public $method;
 	public $page = 'index';
-	public $page_link = array();
+	public $page_link = [];
 	public $page_row;
 	public $site_id;
 	public $url;
@@ -24,10 +24,10 @@ class router
 	protected $config;
 	protected $db;
 	protected $namespace;
-	protected $params = array();
+	protected $params = [];
 	protected $params_count;
 	protected $request;
-	protected $site_info = array();
+	protected $site_info = [];
 	protected $template;
 	protected $user;
 	
@@ -77,7 +77,7 @@ class router
 			}
 			
 			$this->format = $ary['extension'];
-			$this->params = $ary['dirname'] != '.' ? explode('/', $ary['dirname']) : array();
+			$this->params = $ary['dirname'] != '.' ? explode('/', $ary['dirname']) : [];
 			$this->page   = $ary['filename'];
 			$this->url    = $ary['dirname'] != '.' ? $ary['dirname'] : '';
 		}
@@ -89,7 +89,7 @@ class router
 			*/
 			if (in_array('', explode(';', $this->config['router_allowed_extensions']), true))
 			{
-				$this->params = $ary['dirname'] != '.' ? explode('/', $ary['dirname']) : array();
+				$this->params = $ary['dirname'] != '.' ? explode('/', $ary['dirname']) : [];
 				$this->page   = $ary['filename'];
 			}
 			else
@@ -371,7 +371,7 @@ class router
 		/* Предустановки */
 		if (method_exists($this->handler, '_setup'))
 		{
-			call_user_func(array($this->handler, '_setup'));
+			call_user_func([$this->handler, '_setup']);
 		}
 		
 		if (method_exists($this->handler, $concrete_method))
@@ -381,12 +381,12 @@ class router
 			* GET index -> index_get
 			* PUT single -> single_put
 			*/
-			call_user_func_array(array($this->handler, $concrete_method), $params);
+			call_user_func_array([$this->handler, $concrete_method], $params);
 			$this->call_with_format($concrete_method, $params);
 		}
 		else
 		{
-			call_user_func_array(array($this->handler, $this->method), $params);
+			call_user_func_array([$this->handler, $this->method], $params);
 			$this->call_with_format($this->method, $params);
 		}
 		
@@ -407,7 +407,7 @@ class router
 			
 			if (method_exists($this->handler, $method))
 			{
-				call_user_func_array(array($this->handler, $method), $params);
+				call_user_func_array([$this->handler, $method], $params);
 			}
 		}
 	}
@@ -427,7 +427,7 @@ class router
 			AND
 				site_id = ' . $this->db->check_value($this->site_id) . '
 			AND
-				' . $this->db->in_set('page_url', array($page_url, '*')) . '
+				' . $this->db->in_set('page_url', [$page_url, '*']) . '
 			AND
 				is_dir = ' . $this->db->check_value($is_dir) . '
 			AND

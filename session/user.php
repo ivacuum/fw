@@ -11,7 +11,7 @@ namespace fw\session;
 */
 class user extends session
 {
-	public $lang = array();
+	public $lang = [];
 	
 	/**
 	* Создание даты в нужном формате
@@ -199,7 +199,7 @@ class user extends session
 	*/
 	public function load_language($lang_file, $force_update = false, $language = false)
 	{
-		$lang      = array();
+		$lang      = [];
 		$language  = $language ?: $this->lang['.'];
 		$lang_file = str_replace('/', '_', $lang_file);
 		
@@ -232,20 +232,20 @@ class user extends session
 		
 		if (!$username)
 		{
-			return array(
+			return [
 				'message'  => 'Вы не указали имя',
 				'status'   => 'ERROR_USERNAME',
-				'user_row' => array('user_id' => 0)
-			);
+				'user_row' => ['user_id' => 0],
+			];
 		}
 
 		if (!$password)
 		{
-			return array(
+			return [
 				'message'  => 'Вы не указали пароль',
 				'status'   => 'ERROR_PASSWORD',
-				'user_row' => array('user_id' => 0)
-			);
+				'user_row' => ['user_id' => 0],
+			];
 		}
 
 		$sql = '
@@ -281,7 +281,7 @@ class user extends session
 		// 	$attempts = (int) $this->db->fetchfield('attempts');
 		// 	$this->db->freeresult();
 		// 
-		// 	$sql_ary = array(
+		// 	$sql_ary = [
 		// 		'attempt_ip'			=> $ip,
 		// 		'attempt_browser'		=> trim(substr($browser, 0, 149)),
 		// 		'attempt_forwarded_for'	=> $forwarded_for,
@@ -289,7 +289,7 @@ class user extends session
 		// 		'user_id'				=> $row ? (int) $row['user_id'] : 0,
 		// 		'username'				=> $username,
 		// 		'username_clean'		=> $username_clean,
-		// 	);
+		// 	];
 		// 	
 		// 	$sql = 'INSERT INTO ' . LOGIN_ATTEMPT_TABLE . $this->db->build_array('INSERT', $sql_ary);
 		// 	$this->db->sql_query($sql);
@@ -297,11 +297,11 @@ class user extends session
 
 		if (!$row)
 		{
-			return array(
+			return [
 				'message'  => 'Неверно указано имя или пароль',
 				'status'   => 'ERROR_LOGIN',
-				'user_row' => array('user_id' => 0)
-			);
+				'user_row' => ['user_id' => 0],
+			];
 		}
 		
 		/* Не пора ли показывать капчу */
@@ -316,11 +316,11 @@ class user extends session
 		// 	
 		// 	if ($vc_response)
 		// 	{
-		// 		return array(
+		// 		return [
 		// 			'status'    => 'error_attempts',
 		// 			'error_msg' => 'LOGIN_ERROR_ATTEMPTS',
 		// 			'user_row'  => $row,
-		// 		);
+		// 		];
 		// 	}
 		// 	
 		// 	$captcha->reset();
@@ -333,10 +333,10 @@ class user extends session
 			{
 				$salt = make_random_string(5);
 				
-				$this->user_update(array(
+				$this->user_update([
 					'user_password' => md5($password . $salt),
 					'user_salt'     => $salt
-				), $row['user_id']);
+				], $row['user_id']);
 			}
 			
 			/*
@@ -351,34 +351,34 @@ class user extends session
 			
 			if ($row['user_login_attempts'])
 			{
-				$this->user_update(array('user_login_attempts' => 0), $row['user_id']);
+				$this->user_update(['user_login_attempts' => 0], $row['user_id']);
 			}
 			
 			if (!$row['user_active'])
 			{
-				return array(
+				return [
 					'message'  => 'Эта учетная запись отключена',
 					'status'   => 'ERROR_NOT_ACTIVE',
-					'user_row' => array('user_id' => $row)
-				);
+					'user_row' => ['user_id' => $row],
+				];
 			}
 			
 			/* Успешная авторизация */
-			return array(
+			return [
 				'message'  => '',
 				'status'   => 'OK',
-				'user_row' => $row
-			);
+				'user_row' => $row,
+			];
 		}
 		
 		/* Неверный пароль */
-		$this->user_update(array('user_login_attempts' => $row['user_login_attempts'] + 1), $row['user_id']);
+		$this->user_update(['user_login_attempts' => $row['user_login_attempts'] + 1], $row['user_id']);
 		
-		return array(
+		return [
 			'message'  => $show_captcha ? 'Слишком много ошибок при авторизации. Введите код подтверждения' : 'Неверно указано имя или пароль',
 			'status'   => 'ERROR_LOGIN',
-			'user_row' => $row
-		);
+			'user_row' => $row,
+		];
 	}
 
 	/**
@@ -433,7 +433,7 @@ class user extends session
 		global $site_info;
 		
 		$url = trim(htmlspecialchars_decode($this->page), '/');
-		$params = $url ? explode('/', $url) : array();
+		$params = $url ? explode('/', $url) : [];
 		
 		if (empty($params))
 		{
@@ -493,7 +493,7 @@ class user extends session
 				AND
 					i18n_file = ' . $this->db->check_value($lang_file);
 			$this->db->query($sql);
-			$lang = array();
+			$lang = [];
 
 			while ($row = $this->db->fetchrow())
 			{

@@ -12,9 +12,9 @@ namespace fw\session;
 class session implements \ArrayAccess, \IteratorAggregate, \Countable
 {
 	public $browser        = '';
-	public $cookie         = array();
+	public $cookie         = [];
 	public $ctime          = 0;
-	public $data           = array();
+	public $data           = [];
 	public $domain         = '';
 	public $forwarded_for  = '';
 	public $ip             = '';
@@ -45,7 +45,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 		* Данные посетителя
 		*/
 		$this->browser       = $this->request->header('User-Agent');
-		$this->cookie        = array('u' => 0, 'k' => '');
+		$this->cookie        = ['u' => 0, 'k' => ''];
 		$this->ctime         = time();
 		$this->domain        = $this->request->server('SERVER_NAME');
 		$this->forwarded_for = $this->request->header('X-Forwarded-For');
@@ -72,13 +72,13 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 		}
 
 		$banned = false;
-		$where_sql = array();
+		$where_sql = [];
 		
-		$sql_array = array(
+		$sql_array = [
 			'SELECT' => 'ban_ip, user_id, ban_email, ban_exclude, ban_reason, ban_end',
 			'FROM'   => BANLIST_TABLE,
-			'WHERE'  => array()
-		);
+			'WHERE'  => [],
+		];
 		
 		if (false === $user_email)
 		{
@@ -338,7 +338,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 			if ($update_page && ($this->ctime - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->page))
 			{
 				$this->data['session_time'] = $this->ctime;
-				$sql_ary = array('session_time' => $this->ctime);
+				$sql_ary = ['session_time' => $this->ctime];
 
 				if ($update_page && $this->data['session_domain'] != $this->domain)
 				{
@@ -370,7 +370,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 	*/
 	public function session_create($user_id = false, $autologin = false, $set_admin = false, $viewonline = true, $openid_provider = '')
 	{
-		$this->data = array();
+		$this->data = [];
 
 		if (!$this->config['autologin_allow'])
 		{
@@ -528,20 +528,20 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 					$this->data['session_time'] = $this->data['session_last_visit'] = $this->ctime;
 					$this->data['session_page'] = $this->page;
 
-					$this->session_update(array(
+					$this->session_update([
 						'session_last_visit'      => $this->ctime,
 						'session_time'            => $this->ctime,
 						'session_domain'          => $this->domain,
 						'session_page'            => $this->page,
 						'session_referer'         => $this->referer,
-					));
+					]);
 
-					$this->user_update(array(
+					$this->user_update([
 						'user_session_time' => (int) $this->data['session_time'],
 						'user_session_page' => (string) $this->page,
 						'user_last_visit'   => (int) $this->data['session_last_visit'],
 						'user_ip'           => (string) $this->ip,
-					));
+					]);
 				}
 
 				return true;
@@ -567,7 +567,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 		/**
 		* Массив данных сессии
 		*/
-		$sql_ary = array(
+		$sql_ary = [
 			'user_id'                 => (int) $this->data['user_id'],
 			'openid_provider'         => (string) $openid_provider,
 			'session_last_visit'      => (int) $this->data['session_last_visit'],
@@ -582,7 +582,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 			'session_viewonline'      => (int) $viewonline,
 			'session_autologin'       => (int) $autologin,
 			'session_admin'           => (int) $set_admin
-		);
+		];
 
 		$sql = '
 			DELETE
@@ -638,7 +638,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 			{
 				$this->data['user_form_salt'] = make_random_string();
 				
-				$this->user_update(array('user_form_salt' => (string) $this->data['user_form_salt']));
+				$this->user_update(['user_form_salt' => (string) $this->data['user_form_salt']]);
 			}
 		}
 		else
@@ -646,12 +646,12 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 			/**
 			* Обновляем дату последнего визита бота
 			*/
-			$this->user_update(array(
+			$this->user_update([
 				'user_session_time' => (int) $this->ctime,
 				'user_session_page' => (string) $this->page,
 				'user_last_visit'   => (int) $this->ctime,
 				'user_ip'           => (string) $this->ip
-			));
+			]);
 		}
 
 		return true;
@@ -674,7 +674,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 
 		if ($this->data['user_id'] > 0)
 		{
-			$this->user_update(array('user_last_visit' => $this->ctime));
+			$this->user_update(['user_last_visit' => $this->ctime]);
 
 			if ($this->cookie['k'])
 			{
@@ -697,7 +697,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 		$this->set_cookie('sid', '', $cookie_expire);
 		unset($cookie_expire);
 		
-		$this->data = array();
+		$this->data = [];
 		$this->session_id = '';
 
 		if (false !== $new_session)
@@ -731,7 +731,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 	*/
 	public function set_admin()
 	{
-		$this->session_update(array('session_admin' => 1));
+		$this->session_update(['session_admin' => 1]);
 	}
 
 	/**
@@ -762,12 +762,12 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 
 		$key_id = make_random_string(16);
 
-		$sql_ary = array(
+		$sql_ary = [
 			'key_id'          => (string) md5($key_id),
 			'openid_provider' => (string) $openid_provider,
 			'last_ip'         => (string) $this->ip,
 			'last_login'      => (int) $this->ctime
-		);
+		];
 
 		if ($key)
 		{

@@ -26,19 +26,19 @@ class console
 	protected $query_count   = 0;
 	protected $query_time    = 0;
 
-	protected $logs = array();
-	protected $queries = array();
+	protected $logs = [];
+	protected $queries = [];
 
 	/**
 	* Лог пользовательских данных
 	*/
 	public function log($data)
 	{
-		$this->logs[] = array(
+		$this->logs[] = [
 			'data' => $data,
-			'type' => 'log',
-		);
-
+			'type' => 'log'
+		];
+		
 		$this->log_count++;
 	}
 
@@ -47,12 +47,12 @@ class console
 	*/
 	public function log_memory($object = false, $name = 'php')
 	{
-		$this->logs[] = array(
+		$this->logs[] = [
 			'data'      => $object ? strlen(serialize($object)) : memory_get_usage(),
 			'type'      => 'memory',
 			'name'      => $name,
 			'data_type' => gettype($object),
-		);
+		];
 
 		$this->memory_count++;
 	}
@@ -68,16 +68,16 @@ class console
 		{
 			ob_start();
 			xdebug_print_function_stack();
-			$call_stack = str_replace(array('/srv/www/vhosts'), array(''), ob_get_clean());
+			$call_stack = str_replace(['/srv/www/vhosts'], [''], ob_get_clean());
 		}
 		
-		$this->logs[] = array(
+		$this->logs[] = [
 			'call_stack' => $call_stack,
 			'data'       => $message,
 			'type'       => 'error',
 			'file'       => $file,
 			'line'       => $line,
-		);
+		];
 
 		$this->error_count++;
 	}
@@ -87,12 +87,12 @@ class console
 	*/
 	public function log_speed($name = 'label')
 	{
-		$this->logs[] = array(
+		$this->logs[] = [
 			'data' => microtime(true),
 			'type' => 'speed',
-			'name' => $name,
-		);
-
+			'name' => $name
+		];
+		
 		$this->speed_count++;
 	}
 
@@ -101,11 +101,11 @@ class console
 	*/
 	public function log_query($sql, $time, $cached = false)
 	{
-		$this->queries[] = array(
+		$this->queries[] = [
 			'cached' => $cached,
 			'sql'    => preg_replace('#[\n\r\s\t]+#', ' ', $sql),
-			'time'   => $this->get_readable_time($time * 1000)
-		);
+			'time'   => $this->get_readable_time($time * 1000),
+		];
 
 		$this->query_count++;
 		$this->query_time += $time * 1000;
@@ -119,7 +119,7 @@ class console
 
 class profiler extends console
 {
-	private $output = array();
+	private $output = [];
 	private $start_time;
 	
 	private $template;
@@ -177,7 +177,7 @@ class profiler extends console
 				->get_speed_data();
 		}
 
-		fwrite($fp, json_encode(array(
+		fwrite($fp, json_encode([
 			'domain' => $user->domain,
 			'page'   => $user->page,
 			
@@ -198,7 +198,7 @@ class profiler extends console
 			'query_cached'  => $this->query_cached,
 			'query_count'   => $this->query_count,
 			'query_time'    => sprintf('%.3f', $this->query_time),
-		)));
+		]));
 		
 		fclose($fp);
 	}
@@ -236,7 +236,7 @@ class profiler extends console
 	*/
 	private function get_file_data()
 	{
-		$file_list = array();
+		$file_list = [];
 		$this->file_count = 0;
 
 		foreach (get_included_files() as $key => $file)
@@ -248,10 +248,10 @@ class profiler extends console
 			
 			$size = filesize($file);
 
-			$file_list[] = array(
-				'name' => str_replace(array('/srv/www/vhosts'), array(''), $file),
+			$file_list[] = [
+				'name' => str_replace(['/srv/www/vhosts'], [''], $file),
 				'size' => humn_size($size, 2)
-			);
+			];
 
 			$this->file_size += $size;
 			$this->file_largest = $size > $this->file_largest ? $size : $this->file_largest;
@@ -304,7 +304,7 @@ class profiler extends console
 		
 		$user->load_language('profiler');
 		
-		$this->template->assign(array(
+		$this->template->assign([
 			'profiler_logs'    => $this->output['logs'],
 			'profiler_files'   => $this->output['files'],
 			'profiler_queries' => $this->output['queries'],
@@ -328,7 +328,7 @@ class profiler extends console
 
 			'FILE_COUNT_TEXT'  => plural($this->file_count, $user->lang['plural']['FILES']),
 			'QUERY_COUNT_TEXT' => plural($this->query_count, $user->lang['plural']['QUERIES'])
-		));
+		]);
 		
 		$this->template->display('profiler.html');
 	}

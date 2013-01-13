@@ -11,12 +11,12 @@ class user_lang_test extends PHPUnit_Framework_TestCase
 	public function test_user_lang_sprintf()
 	{
 		$user = new session();
-		$user->lang = array(
+		$user->lang = [
 			'TEST'   => 'BRO',
 			'STR'    => 'There are %d users %s.',
 			'EMPTY'  => '',
 			'ZERO'   => 0
-		);
+		];
 		
 		/* Существующие элементы */
 		$this->assertEquals($user->lang('TEST'), 'BRO');

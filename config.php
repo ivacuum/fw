@@ -19,7 +19,7 @@ $dbpers = false;
 $acm_prefix = 'src.ivacuum.ru';
 $acm_type   = 'memcache';
 
-$app = array(
+$app = [
 	/* Настройки подключения к БД */
 	'db.host' => 'localhost',
 	'db.port' => false,
@@ -32,7 +32,7 @@ $app = array(
 	/* Настройки кэша */
 	'acm.prefix' => 'src.ivacuum.ru',
 	'acm.type'   => 'memcache',
-);
+];
 
 /**
 * Константы
@@ -40,7 +40,7 @@ $app = array(
 */
 if (false === load_constants())
 {
-	set_constants(array(
+	set_constants([
 		/* Способы уведомления */
 		'NOTIFY_EMAIL' => 0,
 		'NOTIFY_IM'    => 1,
@@ -75,5 +75,5 @@ if (false === load_constants())
 		'SITES_TABLE'             => 'site_sites',
 		'USERS_TABLE'             => 'site_users',
 		'USER_GROUPS_TABLE'       => 'site_user_groups'
-	));
+	]);
 }

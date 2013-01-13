@@ -12,14 +12,14 @@ namespace fw\core;
 class ajax
 {
 	private $action;
-	private $request = array();
-	protected $response = array();
+	private $request = [];
+	protected $response = [];
 
-	protected $valid_actions = array(
+	protected $valid_actions = [
 		'get_login_form'    => 'guest',
 		'get_logout_form'   => 'user',
 		'get_password_form' => 'user'
-	);
+	];
 
 	function __construct()
 	{
@@ -191,11 +191,11 @@ class ajax
 
 		$back_url = $request->variable('back_url', $user->page_prev);
 
-		$template->vars(array(
+		$template->vars([
 			'BACK_URL' => htmlspecialchars($back_url, ENT_QUOTES),
 
-			'U_ACTION' => ilink('/ucp/login.html'))
-		);
+			'U_ACTION' => ilink('/ucp/login.html')
+		]);
 
 		$template->file = 'ajax/login_form.html';
 
@@ -203,7 +203,7 @@ class ajax
 		$template->go();
 		$template_php = ob_get_clean();
 
-		$this->response['update_ids'] = array('dialog' => $template_php);
+		$this->response['update_ids'] = ['dialog' => $template_php];
 	}
 
 	/**
@@ -216,9 +216,9 @@ class ajax
 		$user->session_begin(false);
 		$user->preferences();
 
-		$template->vars(array(
-			'U_ACTION' => ilink('/ucp/logout.html'))
-		);
+		$template->vars([
+			'U_ACTION' => ilink('/ucp/logout.html')
+		]);
 
 		$template->file = 'ajax/logout_form.html';
 
@@ -226,7 +226,7 @@ class ajax
 		$template->go();
 		$template_php = ob_get_clean();
 
-		$this->response['update_ids'] = array('dialog' => $template_php);
+		$this->response['update_ids'] = ['dialog' => $template_php];
 	}
 
 	/**
@@ -247,22 +247,22 @@ class ajax
 
 		$back_url = $request->variable('back_url', $user->page_prev);
 
-		$template->vars(array(
+		$template->vars([
 			'BACK_URL' => htmlspecialchars($back_url, ENT_QUOTES),
 
-			'U_ACTION' => ilink('/ucp/login.html'))
-		);
+			'U_ACTION' => ilink('/ucp/login.html')
+		]);
 
 		$template->file = 'ajax/password_form.html';
 
-		$template->vars(array(
-			'USERNAME' => $user['username'])
-		);
+		$template->vars([
+			'USERNAME' => $user['username']
+		]);
 
 		ob_start();
 		$template->go();
 		$template_php = ob_get_clean();
 
-		$this->response['update_ids'] = array('dialog' => $template_php);
+		$this->response['update_ids'] = ['dialog' => $template_php];
 	}
 }

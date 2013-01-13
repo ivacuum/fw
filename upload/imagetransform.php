@@ -18,7 +18,7 @@ class imagetransform
 	public $height = 0;
 	public $width = 0;
 	
-	public $error = array();
+	public $error = [];
 	
 	private $init_error = false;
 	
@@ -155,15 +155,15 @@ class imagetransform
 	{
 		if ($this->width > $this->height)
 		{
-			return array(
+			return [
 				round($this->width * ($max_width / $this->width)),
 				round($this->height * ($max_width / $this->width))
-			);
+			];
 		}
 		
-		return array(
+		return [
 			round($this->width * ($max_width / $this->height)),
 			round($this->height * ($max_width / $this->height))
-		);
+		];
 	}
 }

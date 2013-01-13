@@ -45,11 +45,11 @@ class mysqli
 			$this->server = 'p:' . $this->server;
 		}
 		
-		$this->num_queries = array(
+		$this->num_queries = [
 			'cached' => 0,
 			'normal' => 0,
 			'total'  => 0
-		);
+		];
 	}
 
 	/**
@@ -71,7 +71,7 @@ class mysqli
 			return false;
 		}
 
-		$fields = $values = array();
+		$fields = $values = [];
 
 		if ($query == 'INSERT')
 		{
@@ -85,7 +85,7 @@ class mysqli
 		}
 		elseif ($query == 'SELECT' || $query == 'UPDATE')
 		{
-			$values = array();
+			$values = [];
 			
 			foreach ($data as $key => $value)
 			{
@@ -114,7 +114,7 @@ class mysqli
 				
 				if (is_array($array['FROM']))
 				{
-					$table_array = $aliases = array();
+					$table_array = $aliases = [];
 					$used_multi_alias = false;
 
 					foreach ($array['FROM'] as $table_name => $alias)
@@ -250,7 +250,7 @@ class mysqli
 
 		if (false !== $query_id)
 		{
-			$result = array();
+			$result = [];
 
 			if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
 			{
@@ -395,7 +395,7 @@ class mysqli
 
 		if (!is_array($array))
 		{
-			$array = array($array);
+			$array = [$array];
 		}
 
 		if (sizeof($array) == 1)
@@ -407,7 +407,7 @@ class mysqli
 		}
 		else
 		{
-			return $field . ($negate ? ' NOT IN ' : ' IN ') . '(' . implode(', ', array_map(array($this, 'check_value'), $array)) . ')';
+			return $field . ($negate ? ' NOT IN ' : ' IN ') . '(' . implode(', ', array_map([$this, 'check_value'], $array)) . ')';
 		}
 	}
 
@@ -424,8 +424,8 @@ class mysqli
 	*/
 	public function like_expression($expression)
 	{
-		$expression = str_replace(array('_', '%'), array("\_", "\%"), $expression);
-		$expression = str_replace(array(chr(0) . "\_", chr(0) . "\%"), array('_', '%'), $expression);
+		$expression = str_replace(['_', '%'], ["\_", "\%"], $expression);
+		$expression = str_replace([chr(0) . "\_", chr(0) . "\%"], ['_', '%'], $expression);
 
 		return 'LIKE \'%' . $this->escape($expression) . '%\'';
 	}
@@ -441,7 +441,7 @@ class mysqli
 			return false;
 		}
 		
-		$ary = array();
+		$ary = [];
 		
 		foreach ($sql_ary as $id => $_sql_ary)
 		{
@@ -450,7 +450,7 @@ class mysqli
 				return $this->query('INSERT INTO ' . $table . ' ' . $this->build_array('INSERT', $sql_ary) . (($on_duplicate_action) ? ' ON DUPLICATE KEY UPDATE ' . $on_duplicate_action : ''));
 			}
 			
-			$values = array();
+			$values = [];
 			
 			foreach ($_sql_ary as $key => $var)
 			{
@@ -676,11 +676,11 @@ class mysqli
 		/* Подсветка ключевых слов */
 		$sql = preg_replace('#(SELECT|INSERT INTO|UPDATE|SET|DELETE|FROM|LEFT JOIN|WHERE|AND|GROUP BY|ORDER BY|LIMIT|AS|ON)#', '<em>${1}</em>', $sql);
 
-		$error_ary = array(
+		$error_ary = [
 			'code' => $code,
 			'sql'  => $sql,
 			'text' => $message
-		);
+		];
 
 		if ($this->transaction)
 		{

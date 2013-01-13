@@ -20,7 +20,7 @@ class manager
 	private $deadlock_timeout = 900;
 	private $start_time;
 	private $task_time_limit = 300;
-	private $tasks = array();
+	private $tasks = [];
 	private $tasks_timeout = 1;
 
 	function __construct()
@@ -66,7 +66,7 @@ class manager
 			return;
 		}
 
-		register_shutdown_function(array($this, 'release_file_lock'));
+		register_shutdown_function([$this, 'release_file_lock']);
 
 		$this->track_running('start');
 		$this->load_tasks();

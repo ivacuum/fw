@@ -55,9 +55,9 @@ class sitemap extends page
 		
 		$this->db->freeresult();
 		
-		$this->template->assign(array(
+		$this->template->assign([
 			'pages' => $traversal->get_tree_data()
-		));
+		]);
 	}
 	
 	/**
@@ -74,11 +74,11 @@ class sitemap extends page
 		
 		$this->db->freeresult();
 		
-		$this->template->assign(array(
+		$this->template->assign([
 			'pages' => $traversal->get_tree_data(),
 			
 			'DOMAIN' => $this->user->domain
-		));
+		]);
 	}
 }
 
@@ -91,13 +91,13 @@ class traverse_sitemap_pages_html extends site_pages
 	{
 		$ary = parent::get_data();
 
-		return array(
+		return [
 			'ID'    => $this->row['page_id'],
 			'IMAGE' => $this->row['page_image'],
 			'TITLE' => $this->row['page_name'],
 			'URL'   => $ary['url'],
-			'children' => array()
-		);
+			'children' => [],
+		];
 	}
 
 	/**

@@ -17,18 +17,18 @@ class request
 	const REQUEST = 3;
 	const SERVER  = 4;
 	
-	public $http_methods = array('GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS');
+	public $http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'];
 	public $is_ajax;
 	public $is_secure;
 	public $method;
 	
-	private $globals = array(
+	private $globals = [
 		self::GET     => '_GET',
 		self::POST    => '_POST',
 		self::COOKIE  => '_COOKIE',
 		self::REQUEST => '_REQUEST',
 		self::SERVER  => '_SERVER'
-	);
+	];
 	
 	function __construct()
 	{
@@ -137,7 +137,7 @@ class request
 			
 			if (empty($path))
 			{
-				return is_array($default) ? array() : $default;
+				return is_array($default) ? [] : $default;
 			}
 			
 			$var = array_shift($path);
@@ -149,7 +149,7 @@ class request
 			* Переменная не установлена
 			* Возвращаем значение по умолчанию
 			*/
-			return is_array($default) ? array() : $default;
+			return is_array($default) ? [] : $default;
 		}
 		
 		$var = $GLOBALS[$input][$var];
@@ -164,7 +164,7 @@ class request
 				}
 				else
 				{
-					return is_array($default) ? array() : $default;
+					return is_array($default) ? [] : $default;
 				}
 			}
 		}
@@ -185,7 +185,7 @@ class request
 		
 		if ($type == 'string')
 		{
-			$result = trim(htmlspecialchars(str_replace(array("\r\n", "\r", "\0"), array("\n", "\n", ''), $result), ENT_COMPAT, 'UTF-8'));
+			$result = trim(htmlspecialchars(str_replace(["\r\n", "\r", "\0"], ["\n", "\n", ''], $result), ENT_COMPAT, 'UTF-8'));
 		}
 	}
 	
@@ -196,7 +196,7 @@ class request
 	{
 		if (is_array($var) !== is_array($default))
 		{
-			$var = is_array($default) ? array() : $default;
+			$var = is_array($default) ? [] : $default;
 			return;
 		}
 		
@@ -209,7 +209,7 @@ class request
 		
 		if (empty($default))
 		{
-			$var = array();
+			$var = [];
 			return;
 		}
 		
@@ -218,7 +218,7 @@ class request
 		$key_type = gettype($default_key);
 		
 		$_var = $var;
-		$var = array();
+		$var = [];
 		
 		foreach ($_var as $k => $v)
 		{

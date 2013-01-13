@@ -134,21 +134,17 @@ class errorhandler
 				
 				if (!$handler->format || $handler->format == 'json')
 				{
-					$error = array(
-						'code' => $text
-					);
+					$error = ['code' => $text];
 
-					json_output(array(
-						'errors' => array($error)
-					));
+					json_output(['errors' => [$error]]);
 				}
 
-				$template->assign(array(
+				$template->assign([
 					'page' => $handler->data,
 					
 					'MESSAGE_TEXT'  => isset($user->lang[$text]) ? $user->lang[$text] : $text,
 					'MESSAGE_TITLE' => $user->lang['SITE_MESSAGE']
-				));
+				]);
 				
 				$template->file = 'message_body.html';
 				
@@ -219,7 +215,7 @@ class errorhandler
 		{
 			ob_start();
 			xdebug_print_function_stack();
-			$call_stack = str_replace(array('/srv/www/vhosts'), array(''), ob_get_clean());
+			$call_stack = str_replace(['/srv/www/vhosts'], [''], ob_get_clean());
 		}
 		
 		mail('vacuum@ivacuum.ru', $title, sprintf("%s\n%s%s\n%s\n%s", $text, $call_stack, print_r($user->data, true), print_r($_SERVER, true), print_r($_REQUEST, true)), sprintf("From: %s@%s\r\n", $user->domain ?: 'fw', gethostname()));
@@ -230,8 +226,8 @@ class errorhandler
 	*/
 	static public function register()
 	{
-		set_error_handler(array(new self, 'handle_error'));
-		register_shutdown_function(array(new self, 'handle_fatal_error'));
+		set_error_handler([new self, 'handle_error']);
+		register_shutdown_function([new self, 'handle_fatal_error']);
 	}
 	
 	/**

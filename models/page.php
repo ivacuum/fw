@@ -14,12 +14,12 @@ class page
 	public $data;
 	public $format;
 	public $full_url;
-	public $handlers_urls = array();
+	public $handlers_urls = [];
 	public $method;
 	public $page;
 	public $params;
 	public $url;
-	public $urls = array();
+	public $urls = [];
 	
 	protected $auth;
 	protected $cache;
@@ -94,7 +94,7 @@ class page
 			default:         $condition = 'p2.left_id BETWEEN p1.left_id AND p1.right_id OR p1.left_id BETWEEN p2.left_id AND p2.right_id';
 		}
 
-		$rows = array();
+		$rows = [];
 
 		$sql = '
 			SELECT
@@ -139,7 +139,7 @@ class page
 		}
 		
 		$page_id = (int) $page_id;
-		$rows = array();
+		$rows = [];
 		
 		$sql = '
 			SELECT
@@ -240,7 +240,7 @@ class page
 			return $url;
 		}
 		
-		$ary = array();
+		$ary = [];
 		
 		for ($i = 0, $len = sizeof($params); $i < $len; $i++)
 		{
@@ -337,12 +337,12 @@ class page
 				}
 			}
 
-			$this->template->append('languages', array(
+			$this->template->append('languages', [
 				'IMG'   => $row['site_language'],
 				'NAME'  => $ary['language_name'],
 				'TITLE' => $ary['language_title'],
 				'URL'   => ilink('', $this->config['site_root_path'] . $row['site_language'])
-			));
+			]);
 			
 			if ($this->user->lang['.'] == $ary['language_title'])
 			{
@@ -350,7 +350,7 @@ class page
 			}
 		}
 
-		$this->template->assign(array(
+		$this->template->assign([
 			'CURRENT_TIME' => sprintf($this->user->lang['CURRENT_TIME'], $this->user->create_date($this->user->ctime, false, true)),
 			'LAST_VISIT'   => $this->user->is_registered ? sprintf($this->user->lang['LAST_VISIT'], $this->user->create_date($this->user['user_last_visit'])) : '',
 			'LOGIN'        => $this->user->is_registered ? sprintf($this->user->lang['LOGOUT'], $this->user['username']) : $this->user->lang['LOGIN'],
@@ -369,7 +369,7 @@ class page
 			'U_LOGIN'     => $u_login,
 			'U_THIS_PAGE' => $this->user->get_back_url(),
 			'U_REGISTER'  => ilink($this->get_handler_url('ucp::register'))
-		));
+		]);
 
 		define('HEADER_PRINTED', true);
 	}
@@ -379,12 +379,12 @@ class page
 	*/
 	public function page_footer()
 	{
-		$this->template->assign(array(
+		$this->template->assign([
 			'S_ACP'      => $this->auth->acl_get('a_'),
 			'S_INTERNET' => $this->user->isp == 'internet' || $this->user->isp == 'corbina-kaluga',
 
 			'U_COPYRIGHT' => ilink(sprintf('%s/vacuum.html', $this->get_handler_url('users::index')))
-		));
+		]);
 		
 		if ($this->template->file)
 		{
@@ -514,13 +514,13 @@ class page
 		
 		foreach ($rows as $row)
 		{
-			$this->template->append('submenu', array(
+			$this->template->append('submenu', [
 				'ACTIVE' => $this->data['page_id'] == $row['page_id'],
 				'IMAGE'  => $row['page_image'],
 				'TITLE'  => $row['page_name'],
 				
 				'U_VIEW' => $this->descendant_link($row)
-			));
+			]);
 		}
 	}
 	
@@ -547,7 +547,7 @@ class page
 			$groups_list .= $groups_list ? ', ' . $groups_link : $groups_link;
 		}
 
-		$this->template->assign(array(
+		$this->template->assign([
 			'GROUPS_LIST'     => !empty($groups_list) ? $groups_list : '',
 			'NEWEST_USER'     => $this->user_profile_link('', $this->config['newest_username'], false, $this->config['newest_user_id']),
 			'ONLINE_LIST'     => $online_userlist['online_list'],
@@ -560,7 +560,7 @@ class page
 			'S_WHO_IS_ONLINE' => true,
 
 			'U_WHO_IS_ONLINE' => ilink($this->user->lang['URL_WHO_IS_ONLINE'])
-		));
+		]);
 	}
 	
 	/**
@@ -601,7 +601,7 @@ class page
 			*/
 			case 'raw':
 
-				return $url ? $this->get_handler_url('users::profile', array($url)) : $this->get_handler_url('users::profile', array($id));
+				return $url ? $this->get_handler_url('users::profile', [$url]) : $this->get_handler_url('users::profile', [$id]);
 
 			break;
 			/**
@@ -611,7 +611,7 @@ class page
 
 				$colour = $colour ? ' style="color: #' . $colour . '; font-weight: bold;"' : '';
 				$time   = $time ? ' title="' . $this->user->create_date($time, 'H:i', true) . '"' : '';
-				$url    = $url ? $this->get_handler_url('users::profile', array($url)) : $this->get_handler_url('users::profile', array($id));
+				$url    = $url ? $this->get_handler_url('users::profile', [$url]) : $this->get_handler_url('users::profile', [$id]);
 
 				return sprintf('<a href="%s"%s%s>%s</a>', $url, $colour, $time, $username);
 

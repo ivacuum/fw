@@ -12,10 +12,10 @@ namespace fw\core;
 class autoloader
 {
 	private $apc_prefix;
-	private $namespaces = array();
-	private $namespace_fallbacks = array();
-	private $prefixes = array();
-	private $prefix_fallbacks = array();
+	private $namespaces = [];
+	private $namespace_fallbacks = [];
+	private $prefixes = [];
+	private $prefix_fallbacks = [];
 	private $use_include_path = false;
 	
 	function __construct($prefix = false)
@@ -149,7 +149,7 @@ class autoloader
 	*/
 	public function register($prepend = false)
 	{
-		spl_autoload_register(array($this, 'autoload'), true, $prepend);
+		spl_autoload_register([$this, 'autoload'], true, $prepend);
 	}
 	
 	/**

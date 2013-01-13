@@ -49,7 +49,7 @@ class service
 
 	public function __call($method, $args)
 	{
-		return call_user_func_array(array($this->driver, $method), $args);
+		return call_user_func_array([$this->driver, $method], $args);
 	}
 	
 	/**
@@ -57,7 +57,7 @@ class service
 	*/
 	public function generate_code()
 	{
-		static $symbols = array('А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'И', 'К', 'Л', 'М', 'Н', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Э', 'Ю', 'Я', 1, 2, 4, 5, 6, 7, 8, 9);
+		static $symbols = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'И', 'К', 'Л', 'М', 'Н', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Э', 'Ю', 'Я', 1, 2, 4, 5, 6, 7, 8, 9];
 		
 		$symbols_last_index = sizeof($symbols) - 1;
 		
@@ -69,11 +69,11 @@ class service
 		// $this->code = strtr(mb_strtoupper(make_random_string(mt_rand($this->config['confirm_min_chars'], $this->config['confirm_max_chars']))), $transform);
 		$this->solved = false;
 		
-		$sql_ary = array(
+		$sql_ary = [
 			'session_id' => (string) $this->user->session_id,
 			'code'       => (string) $this->code,
 			'expire'    => (int) $this->user->ctime + $this->config['confirm_expire']
-		);
+		];
 		
 		$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $this->db->build_array('INSERT', $sql_ary) . ' ON DUPLICATE KEY UPDATE code = values(code), expire = values(expire)';
 		$this->db->query($sql);

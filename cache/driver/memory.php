@@ -11,12 +11,12 @@ namespace fw\cache\driver;
 */
 class memory
 {
-	public $sql_rowset = array();
-	public $sql_row_pointer = array();
+	public $sql_rowset = [];
+	public $sql_row_pointer = [];
 
 	protected $prefix;
 	
-	private $data = array();
+	private $data = [];
 	private $is_modified = false;
 	
 	function __construct($prefix = '')
@@ -46,7 +46,7 @@ class memory
 		{
 			if (!is_array($table))
 			{
-				$table = array($table);
+				$table = [$table];
 			}
 			
 			foreach ($table as $table_name)
@@ -123,9 +123,9 @@ class memory
 		unset($this->sql_rowset);
 		unset($this->sql_row_pointer);
 
-		$this->data = array();
-		$this->sql_rowset = array();
-		$this->sql_row_pointer = array();
+		$this->data = [];
+		$this->sql_rowset = [];
+		$this->sql_row_pointer = [];
 		
 		$this->is_modified = false;
 	}
@@ -283,7 +283,7 @@ class memory
 			
 			if (false === $temp = $this->_get($this->prefix . 'sql_' . $table_name))
 			{
-				$temp = array();
+				$temp = [];
 			}
 			
 			$temp[$hash] = true;
@@ -292,7 +292,7 @@ class memory
 		}
 		
 		$query_id = sizeof($this->sql_rowset);
-		$this->sql_rowset[$query_id] = array();
+		$this->sql_rowset[$query_id] = [];
 		$this->sql_row_pointer[$query_id] = 0;
 		
 		while ($row = $db->fetchrow($query_result))
@@ -317,9 +317,9 @@ class memory
 		unset($this->sql_rowset);
 		unset($this->sql_row_pointer);
 
-		$this->data = array();
-		$this->sql_rowset = array();
-		$this->sql_row_pointer = array();
+		$this->data = [];
+		$this->sql_rowset = [];
+		$this->sql_row_pointer = [];
 	}
 
 	/**

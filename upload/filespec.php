@@ -14,7 +14,7 @@ class filespec
 	var $extension = '';
 	var $filename = '';
 	var $filesize = 0;
-	var $image_info = array();
+	var $image_info = [];
 	var $mimetype = '';
 	var $realname = '';
 	var $uploadname = '';
@@ -29,7 +29,7 @@ class filespec
 	var $init_error = false;
 	var $local = false;
 
-	var $error = array();
+	var $error = [];
 	var $upload = '';
 
 	/**
@@ -128,7 +128,7 @@ class filespec
 				}
 
 				/* Заменяем запрещенные символы нижним подчеркиванием */
-				$bad_chars = array("'", "\\", ' ', '/', ':', '*', '?', '"', '<', '>', '|');
+				$bad_chars = ["'", "\\", ' ', '/', ':', '*', '?', '"', '<', '>', '|'];
 
 				$this->realname = rawurlencode(str_replace($bad_chars, '_', strtolower($this->realname)));
 				$this->realname = preg_replace("/%(\w{2})/", '_', $this->realname);
@@ -310,10 +310,10 @@ class filespec
 		
 		$this->error = array_merge($this->error, $errors);
 		
-		$template->append('upload_errors', array(
+		$template->append('upload_errors', [
 			'ERRORS' => $this->error,
 			'FILE'   => $this->uploadname,
-		));
+		]);
 		
 		$this->remove();
 	}

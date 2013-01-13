@@ -15,9 +15,9 @@ class auth
 	const ACL_YES   = 1;
 	const ACL_NO    = -1;
 	
-	private $acl     = array();
-	private $cache   = array();
-	private $options = array();
+	private $acl     = [];
+	private $cache   = [];
+	private $options = [];
 
 	/**
 	* Инициализация привилегий
@@ -26,7 +26,7 @@ class auth
 	{
 		global $cache, $db;
 
-		$this->acl = $this->cache = $this->options = array();
+		$this->acl = $this->cache = $this->options = [];
 
 		if (false === $this->options = $cache->_get('src_auth_options'))
 		// if (false === false)
@@ -42,7 +42,7 @@ class auth
 				ORDER BY
 					auth_id ASC';
 			$result = $db->query($sql);
-			$this->options = array();
+			$this->options = [];
 
 			while ($row = $db->fetchrow($result))
 			{
@@ -96,7 +96,7 @@ class auth
 			ORDER BY
 				role_id ASC';
 		$result = $db->query($sql);
-		$this->role_cache = array();
+		$this->role_cache = [];
 
 		while ($row = $db->fetchrow($result))
 		{
@@ -190,14 +190,14 @@ class auth
 	{
 		if (false !== $user_id && !is_array($user_id) && false === $opts && false === $local_id)
 		{
-			$ary = array($user_id => $this->get_user_acl($user_id));
+			$ary = [$user_id => $this->get_user_acl($user_id)];
 		}
 		else
 		{
 			$ary = $this->acl_raw_data($user_id, $opts, $local_id);
 		}
 
-		$auth_ary = array();
+		$auth_ary = [];
 
 		foreach ($ary as $user_id => $local_ary)
 		{
@@ -257,7 +257,7 @@ class auth
 		$sql_local = false !== $local_id ? (!is_array($local_id) ? 'AND a.local_id = ' . (int) $local_id : 'AND ' . $db->in_set('a.local_id', array_map('intval', $local_id))) : '';
 
 		$sql_opts = '';
-		$ary = $sql_ary = array();
+		$ary = $sql_ary = [];
 
 		if (false !== $opts)
 		{
@@ -330,7 +330,7 @@ class auth
 		$sql_local = false !== $local_id ? (!is_array($local_id) ? 'AND a.local_id = ' . (int) $local_id : 'AND ' . $db->in_set('a.local_id', array_map('intval', $local_id))) : '';
 
 		$sql_opts = $sql_opts_select = $sql_opts_from = '';
-		$ary = array();
+		$ary = [];
 
 		if (false !== $opts)
 		{
@@ -339,7 +339,7 @@ class auth
 			$this->build_auth_option_statement('ao.auth_var', $opts, $sql_opts);
 		}
 
-		$sql_ary = array();
+		$sql_ary = [];
 
 		/* Права пользователя */
 		$sql_ary[] = '
@@ -389,7 +389,7 @@ class auth
 			$db->freeresult($result);
 		}
 
-		$sql_ary = array();
+		$sql_ary = [];
 
 		/* Права группы */
 		$sql_ary[] = '
@@ -484,7 +484,7 @@ class auth
 	{
 		global $db;
 
-		$roles = array();
+		$roles = [];
 
 		$sql_id = $user_type == 'user' ? 'user_id' : 'group_id';
 		$sql_ug = false !== $ug_id ? (!is_array($ug_id) ? "AND a.$sql_id = $ug_id" : 'AND ' . $db->in_set("a.$sql_id", $ug_id)) : '';
@@ -530,7 +530,7 @@ class auth
 		$sql_local = false !== $local_id ? (!is_array($local_id) ? 'AND a.local_id = ' . (int) $local_id : 'AND ' . $db->in_set('a.local_id', array_map('intval', $local_id))) : '';
 
 		$sql_opts = '';
-		$ary = $sql_ary = array();
+		$ary = $sql_ary = [];
 
 		if (false !== $opts)
 		{
@@ -638,11 +638,11 @@ class auth
 				return $login;
 			}
 
-			return array(
+			return [
 				'message'  => $result,
 				'status'   => 'LOGIN_BREAK',
 				'user_row' => $login['user_row']
-			);
+			];
 		}
 
 		return $login;
@@ -740,7 +740,7 @@ class auth
 			}
 			else
 			{
-				$sql = array();
+				$sql = [];
 
 				foreach ($auth_options as $option)
 				{
@@ -771,7 +771,7 @@ class auth
 		if (false === $role_cache = $cache->_get('src_role_cache'))
 		// if (false === false)
 		{
-			$role_cache = array();
+			$role_cache = [];
 
 			$sql = '
 				SELECT
@@ -797,7 +797,7 @@ class auth
 			$cache->_set('src_role_cache', $role_cache);
 		}
 
-		$ary = array();
+		$ary = [];
 
 		/**
 		* Права пользователя
@@ -897,14 +897,14 @@ class auth
 
 			while ($row = $db->fetchrow())
 			{
-				$this->options[$row['auth_id']] = array(
+				$this->options[$row['auth_id']] = [
 					'name'    => $row['auth_name'],
 					'sub'     => $row['auth_sub'],
 					'var'     => $row['auth_var'],
 					'global'  => $row['auth_global'],
 					'local'   => $row['auth_local'],
 					'default' => $row['auth_default']
-				);
+				];
 			}
 
 			$db->freeresult();
@@ -927,11 +927,11 @@ class auth
 
 			while ($row = $db->fetchrow())
 			{
-				$this->roles[$row['role_id']] = array(
+				$this->roles[$row['role_id']] = [
 					'name'        => $row['role_name'],
 					'description' => $row['role_description'],
 					'sort'        => $row['role_sort']
-				);
+				];
 			}
 
 			$db->freeresult();
@@ -953,7 +953,7 @@ class auth
 		/* Получаем все типы привилегий */
 		$this->get_all();
 
-		$userdata = array();
+		$userdata = [];
 
 		/**
 		* Если данные не указаны, то используем текущего пользователя
@@ -1103,11 +1103,11 @@ class auth
 		/**
 		* Массив данных sql запроса
 		*/
-		$sql_array = array(
+		$sql_array = [
 			'auth_option_id' => $auth_option_id,
 			'auth_role_id'   => $auth_role_id,
 			'auth_value'     => $auth_value
-		);
+		];
 
 		/**
 		* Обновляем данные

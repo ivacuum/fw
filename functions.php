@@ -161,11 +161,11 @@ function get_site_info_by_id($site_id)
 	{
 		if ($site_id == $row['site_id'])
 		{
-			return array(
+			return [
 				'domain'   => $row['site_url'],
 				'language' => $row['site_language'],
 				'title'    => $row['site_title']
-			);
+			];
 		}
 	}
 	
@@ -185,7 +185,7 @@ function get_site_info_by_url($url, $page = '')
 
 	$language = '';
 	$page     = trim($page, '/');
-	$params   = $page ? explode('/', $page) : array();
+	$params   = $page ? explode('/', $page) : [];
 	
 	if (!empty($params) && strlen($params[0]) == 2)
 	{
@@ -198,13 +198,13 @@ function get_site_info_by_url($url, $page = '')
 	{
 		if ($url == $row['site_url'] && (($row['site_default'] && !$language) || ($language && $language == $row['site_language'])))
 		{
-			return array(
+			return [
 				'default'  => (int) $row['site_default'],
 				'domain'   => $row['site_url'],
 				'id'       => (int) $row['site_id'],
 				'language' => $row['site_language'],
 				'title'    => $row['site_title']
-			);
+			];
 		}
 	}
 	
@@ -224,10 +224,10 @@ function get_site_info_by_url_lang($url, $lang)
 	{
 		if ($url == $row['site_url'] && $lang == $row['site_language'])
 		{
-			return array(
+			return [
 				'id'    => (int) $row['site_id'],
 				'title' => $row['site_title']
-			);
+			];
 		}
 	}
 	
@@ -248,8 +248,8 @@ function humn_size($size, $rounder = '', $min = '', $space = '&nbsp;')
 {
 	global $user;
 
-	$sizes = array($user->lang['SIZE_BYTES'], $user->lang['SIZE_KB'], $user->lang['SIZE_MB'], $user->lang['SIZE_GB'], $user->lang['SIZE_TB'], $user->lang['SIZE_PB'], $user->lang['SIZE_EB'], $user->lang['SIZE_ZB'], $user->lang['SIZE_YB']);
-	static $rounders = array(0, 0, 1, 2, 3, 3, 3, 3, 3);
+	$sizes = [$user->lang['SIZE_BYTES'], $user->lang['SIZE_KB'], $user->lang['SIZE_MB'], $user->lang['SIZE_GB'], $user->lang['SIZE_TB'], $user->lang['SIZE_PB'], $user->lang['SIZE_EB'], $user->lang['SIZE_ZB'], $user->lang['SIZE_YB']];
+	static $rounders = [0, 0, 1, 2, 3, 3, 3, 3, 3];
 
 	$size = (float) $size;
 	$ext  = $sizes[0];
@@ -471,7 +471,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$err = $result['message'];
 	}
 	
-	$s_hidden_fields = array();
+	$s_hidden_fields = [];
 
 	if ($redirect)
 	{
@@ -480,7 +480,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 	$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 	
-	$template->assign(array(
+	$template->assign([
 		'LOGIN_ERROR'   => $err,
 		'LOGIN_EXPLAIN' => $l_explain,
 		'USERNAME'      => $admin ? $user['username'] : '',
@@ -492,7 +492,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'S_ADMIN_AUTH'         => $admin,
 		'S_DISPLAY_FULL_LOGIN' => $s_display ? true : false,
 		'S_HIDDEN_FIELDS'      => $s_hidden_fields
-	));
+	]);
 
 	$template->file = 'ucp_login.html';
 }
@@ -566,11 +566,11 @@ function navigation_link($url, $text, $image = false)
 {
 	global $template;
 	
-	$template->append('nav_links', array(
+	$template->append('nav_links', [
 		'IMAGE' => $image,
 		'TEXT'  => $text,
 		'URL'   => $url
-	));
+	]);
 }
 
 /**
@@ -659,7 +659,7 @@ function pagination($on_page, $overall, $link, $page_var = 'p')
 		$url_prev = $p - 1;
 	}
 	
-	$template->assign(array(
+	$template->assign([
 		'pagination' => array(
 			'ITEMS'   => $overall,
 			'NEXT'    => generate_page_link($url_next, $base_url, $query_string),
@@ -670,14 +670,14 @@ function pagination($on_page, $overall, $link, $page_var = 'p')
 			'VAR'     => $page_var,
 			'URL'     => $link
 		),
-	));
+	]);
 
-	return array(
+	return [
 		'offset'  => (int) $start,
 		'on_page' => (int) $sort_count,
 		'p'       => (int) $p,
 		'pages'   => (int) $pages
-	);
+	];
 }
 
 /**
@@ -791,7 +791,7 @@ function redirect($url, $status_code = 302)
 	{
 		if ($user->isp == 'local')
 		{
-			$url = str_replace(array('ivacuum.ru/', 't.local.ivacuum.ru/'), array('local.ivacuum.ru/', 't.ivacuum.ru/'), $url);
+			$url = str_replace(['ivacuum.ru/', 't.local.ivacuum.ru/'], ['local.ivacuum.ru/', 't.ivacuum.ru/'], $url);
 		}
 	}
 	
@@ -816,10 +816,10 @@ function rss_add($url, $root = false, $title = 'RSS 2.0')
 {
 	global $config, $template;
 
-	$template->append('rss', array(
+	$template->append('rss', [
 		'TITLE' => $title,
-		'URL'   => false !== $root ? ilink($url, $config['site_root_path']) : ilink($url))
-	);
+		'URL'   => false !== $root ? ilink($url, $config['site_root_path']) : ilink($url)
+	]);
 
 	return;
 }
@@ -929,7 +929,7 @@ function seo_url($url, $lang = 'ru')
 	* _. заменяем на _
 	* Убираем точку в конце
 	*/
-	$result = preg_replace(array('/_{2,}/', '/\.{2,}/', '/_\./', '/(.*)\./'), array('_', '', '_', '$1'), $result);
+	$result = preg_replace(['/_{2,}/', '/\.{2,}/', '/_\./', '/(.*)\./'], ['_', '', '_', '$1'], $result);
 
 	return $result;
 }

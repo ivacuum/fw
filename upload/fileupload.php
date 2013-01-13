@@ -17,8 +17,8 @@ class fileupload
 	public $min_height = 0;
 	public $min_width = 0;
 
-	private $allowed_extensions = array();
-	private $disallowed_content = array('body', 'head', 'html', 'img', 'plaintext', 'a href', 'pre', 'script', 'table', 'title');
+	private $allowed_extensions = [];
+	private $disallowed_content = ['body', 'head', 'html', 'img', 'plaintext', 'a href', 'pre', 'script', 'table', 'title'];
 
 	/**
 	* Конструктор класса
@@ -92,11 +92,11 @@ class fileupload
 	*/
 	public function image_types()
 	{
-		return array(
-			1 => array('gif'),
-			2 => array('jpg', 'jpeg'),
-			3 => array('png')
-		);
+		return [
+			1 => ['gif'],
+			2 => ['jpg', 'jpeg'],
+			3 => ['png'],
+		];
 	}
 
 	/**
@@ -105,7 +105,7 @@ class fileupload
 	public function reset_vars()
 	{
 		$this->max_filesize = $this->min_width = $this->min_height = $this->max_width = $this->max_height = 0;
-		$this->allowed_extensions = $this->disallowed_content = array();
+		$this->allowed_extensions = $this->disallowed_content = [];
 	}
 
 	/**
@@ -137,7 +137,7 @@ class fileupload
 	{
 		if (false !== $disallowed_content && is_array($disallowed_content))
 		{
-			$this->disallowed_content = array_diff($disallowed_content, array(''));
+			$this->disallowed_content = array_diff($disallowed_content, ['']);
 		}
 	}
 

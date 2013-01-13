@@ -11,7 +11,7 @@ namespace fw\captcha\driver;
 */
 class gd
 {
-	private $fonts = array('tremble');
+	private $fonts = ['tremble'];
 	private $fonts_dir;
 	private $height;
 	private $width;

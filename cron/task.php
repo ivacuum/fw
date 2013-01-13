@@ -11,7 +11,7 @@ namespace fw\cron;
 */
 class task
 {
-	public $data = array();
+	public $data = [];
 
 	protected $cache;
 	protected $config;

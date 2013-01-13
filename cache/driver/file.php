@@ -11,14 +11,14 @@ namespace fw\cache\driver;
 */
 class file
 {
-	public $sql_rowset = array();
-	public $sql_row_pointer = array();
+	public $sql_rowset = [];
+	public $sql_row_pointer = [];
 
 	protected $prefix;
 
 	private $cache_dir;
-	private $data = array();
-	private $data_expires = array();
+	private $data = [];
+	private $data_expires = [];
 	private $is_modified = false;
 	
 	function __construct($prefix = '')
@@ -49,7 +49,7 @@ class file
 		
 		if ($filename == $this->prefix . 'global')
 		{
-			$this->data = $this->data_expires = array();
+			$this->data = $this->data_expires = [];
 			$time = time();
 			
 			while (($expires = (int) fgets($handle)) && !feof($handle))
@@ -60,7 +60,7 @@ class file
 				{
 					fclose($handle);
 					
-					$this->data = $this->data_expires = array();
+					$this->data = $this->data_expires = [];
 					$this->is_modified = false;
 					$this->remove_file($file);
 					
@@ -238,7 +238,7 @@ class file
 		{
 			if (!is_array($table))
 			{
-				$table = array($table);
+				$table = [$table];
 			}
 			
 			if (false === $dir = opendir($this->cache_dir))
@@ -351,7 +351,7 @@ class file
 		
 		unset($this->data, $this->data_expires, $this->sql_rowset, $this->sql_row_pointer);
 
-		$this->data = $this->data_expires = $this->sql_rowset = $this->sql_row_pointer = array();
+		$this->data = $this->data_expires = $this->sql_rowset = $this->sql_row_pointer = [];
 		$this->is_modified = false;
 	}
 	
@@ -500,7 +500,7 @@ class file
 		$query = preg_replace('#[\n\r\s\t]+#', ' ', $query);
 		$query_id = sizeof($this->sql_rowset);
 		
-		$this->sql_rowset[$query_id] = array();
+		$this->sql_rowset[$query_id] = [];
 		$this->sql_row_pointer[$query_id] = 0;
 		
 		while ($row = $db->fetchrow($query_result))
@@ -581,7 +581,7 @@ class file
 		
 		unset($this->data, $this->data_expires, $this->sql_rowset, $this->sql_row_pointer);
 		
-		$this->data = $this->data_expires = $this->sql_rowset = $this->sql_row_pointer = array();
+		$this->data = $this->data_expires = $this->sql_rowset = $this->sql_row_pointer = [];
 	}
 
 	/**

@@ -28,7 +28,7 @@ class pages extends page
 		$parent_id = $this->request->variable('parent_id', 0);
 		$action    = $this->request->variable('action', '');
 		$back_url  = $this->url . '?parent_id=' . $parent_id;
-		$errors    = array();
+		$errors    = [];
 		$page_id   = $this->request->variable('pid', 0);
 		$submit    = $this->request->is_set_post('submit');
 		
@@ -154,7 +154,7 @@ class pages extends page
 			
 				if ($action == 'add')
 				{
-					$page_row = array(
+					$page_row = [
 						'page_name'      => $this->request->variable('page_name', ''),
 						'page_title'     => '',
 						'page_url'       => seo_url($this->request->variable('page_name', '')),
@@ -169,10 +169,10 @@ class pages extends page
 						'page_noindex'   => 0,
 						'page_image'     => '',
 						'page_text'      => ''
-					);
+					];
 				}
 
-				$page_data = array(
+				$page_data = [
 					'page_name'      => $this->request->variable('page_name', (string) $page_row['page_name']),
 					'page_title'     => $this->request->variable('page_title', (string) $page_row['page_title']),
 					'page_url'       => $this->request->variable('page_url', (string) $page_row['page_url']),
@@ -188,7 +188,7 @@ class pages extends page
 					'page_noindex'   => $this->request->variable('page_noindex', (int) $page_row['page_noindex']),
 					'page_image'     => $this->request->variable('page_image', (string) $page_row['page_image']),
 					'page_text'      => $this->request->is_set('page_text') ? $_REQUEST['page_text'] : (string) $page_row['page_text']
-				);
+				];
 
 				if ($submit)
 				{
@@ -215,7 +215,7 @@ class pages extends page
 
 				$s_cat_option = '<option value="0"' . (($page_data['parent_id'] == 0) ? ' selected="selected"' : '') . '>' . 'NO_PARENT' . '</option>';
 
-				$this->template->assign(array_merge(array(
+				$this->template->assign(array_merge([
 					'S_EDIT_PAGE'   => true,
 					'S_IS_DIR'      => $page_data['is_dir'],
 					'S_CAT_OPTIONS' => $s_cat_option . $this->make_page_select($page_data['parent_id'], ($action == 'edit') ? $page_row['page_id'] : false, false, true),
@@ -225,16 +225,16 @@ class pages extends page
 					'PAGENAME' => $page_data['page_name'],
 					'ACTION'   => $action,
 					'PAGE_ID'  => $page_id,
-				),
+				],
 					array_change_key_case($page_data, CASE_UPPER)
 				));
 
 				if (sizeof($errors))
 				{
-					$this->template->assign(array(
+					$this->template->assign([
 						'S_ERROR'   => true,
 						'ERROR_MSG' => implode('<br />', $errors)
-					));
+					]);
 				}
 
 				return;
@@ -245,10 +245,10 @@ class pages extends page
 		// Default management page
 		if (sizeof($errors))
 		{
-			$this->template->assign(array(
+			$this->template->assign([
 				'S_ERROR'   => true,
 				'ERROR_MSG' => implode('<br />', $errors)
-			));
+			]);
 		}
 
 		if (!$parent_id)
@@ -296,7 +296,7 @@ class pages extends page
 
 				$url = ilink($this->url . '?parent_id=' . $parent_id . '&amp;pid=' . $row['page_id']);
 
-				$this->template->append('pages', array(
+				$this->template->append('pages', [
 					'IS_DIR'         => $row['is_dir'],
 					'PAGE_IMAGE'     => $page_image,
 					'PAGE_IMG'       => $row['page_image'],
@@ -318,7 +318,7 @@ class pages extends page
 					'U_DELETE'    => $url . '&amp;action=delete',
 					'U_ENABLE'    => $url . '&amp;action=enable',
 					'U_DISABLE'   => $url . '&amp;action=disable'
-				));
+				]);
 			}
 			while ($row = $this->db->fetchrow());
 
@@ -329,7 +329,7 @@ class pages extends page
 			$row = $this->get_page_row($parent_id);
 			$url = ilink($this->url . '?parent_id=' . $parent_id . '&amp;pid=' . $row['page_id']);
 
-			$this->template->assign(array(
+			$this->template->assign([
 				'S_NO_PAGES'     => true,
 				'PAGE_NAME'      => $row['page_name'],
 				'PAGE_ENABLED'   => $row['page_enabled'],
@@ -339,17 +339,17 @@ class pages extends page
 				'U_DELETE'  => $url . '&amp;action=delete',
 				'U_ENABLE'  => $url . '&amp;action=enable',
 				'U_DISABLE' => $url . '&amp;action=disable'
-			));
+			]);
 		}
 
 		$this->db->freeresult($result);
 
-		$this->template->assign(array(
+		$this->template->assign([
 			'U_SEL_ACTION' => "",
 			'U_ACTION'     => ilink($this->url . '?parent_id=' . $parent_id),
 			'NAVIGATION'   => $navigation,
 			'PARENT_ID'    => $parent_id
-		));
+		]);
 	}
 	
 	/**
@@ -362,7 +362,7 @@ class pages extends page
 
 		if (sizeof($branch))
 		{
-			return array('CANNOT_REMOVE_PAGE');
+			return ['CANNOT_REMOVE_PAGE'];
 		}
 
 		$diff = 2;
@@ -405,7 +405,7 @@ class pages extends page
 				left_id > ' . $row['right_id'];
 		$this->db->query($sql);
 
-		return array();
+		return [];
 	}
 
 	/**
@@ -420,7 +420,7 @@ class pages extends page
 			default:         $condition = 'p2.left_id BETWEEN p1.left_id AND p1.right_id OR p1.left_id BETWEEN p2.left_id AND p2.right_id';
 		}
 
-		$rows = array();
+		$rows = [];
 
 		$sql = '
 			SELECT
@@ -504,7 +504,7 @@ class pages extends page
 		$this->db->query($sql);
 
 		$right = 0;
-		$padding_store = array('0' => '');
+		$padding_store = ['0' => ''];
 		$page_list = $padding = '';
 
 		while ($row = $this->db->fetchrow())
@@ -560,7 +560,7 @@ class pages extends page
 		$from_data = $moved_pages[0];
 		$diff = sizeof($moved_pages) * 2;
 
-		$moved_ids = array();
+		$moved_ids = [];
 		for ($i = 0, $len = sizeof($moved_pages); $i < $len; ++$i)
 		{
 			$moved_ids[] = $moved_pages[$i]['page_id'];
@@ -695,7 +695,7 @@ class pages extends page
 			AND
 				' . (($action == 'move_up') ? 'right_id < ' . (int) $page_row['right_id'] . ' ORDER BY right_id DESC' : 'left_id > ' . (int) $page_row['left_id'] . ' ORDER BY left_id ASC');
 		$this->db->query_limit($sql, $steps);
-		$target = array();
+		$target = [];
 
 		while ($row = $this->db->fetchrow())
 		{
@@ -878,7 +878,7 @@ class pages extends page
 
 				if (sizeof($branch))
 				{
-					return array('NO_DIR_TO_PAGE');
+					return ['NO_DIR_TO_PAGE'];
 				}
 			}
 
@@ -902,6 +902,6 @@ class pages extends page
 			$this->db->query($sql);
 		}
 
-		return array();
+		return [];
 	}
 }

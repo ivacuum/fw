@@ -53,13 +53,13 @@ class comments
 		$this->db->transaction('begin');
 		
 		$sql = 'INSERT INTO ' . COMMENTS_TABLE . ' ' .
-			$this->db->build_array('INSERT', array(
+			$this->db->build_array('INSERT', [
 				'page_id'   => $this->page_id,
 				'user_id'   => $this->user['user_id'],
 				'minor_id'  => $this->minor_id,
 				'comm_time' => $this->user->ctime,
 				'comm_text' => prepare_text_for_db($post_text)
-			));
+			]);
 		$this->db->query($sql);
 		
 		$comment_id = $this->db->insert_id();
@@ -157,7 +157,7 @@ class comments
 		
 		while ($row = $this->db->fetchrow())
 		{
-			$this->template->append('comments', array(
+			$this->template->append('comments', [
 				'ID'         => $row['comm_id'],
 				'ONLINE'     => ($this->user->ctime - $row['user_session_time']) < $this->config['load_online_time'],
 				'POSTS'      => num_format($row['user_posts']),
@@ -167,7 +167,7 @@ class comments
 				'TIME'       => $this->user->create_date($row['comm_time']),
 				'USERNAME'   => profile_link('full', $row['username'], $row['user_colour'], $row['user_url'], $row['user_id']),
 				'USER_ID'    => $row['user_id'])
-			));
+			]);
 		}
 		
 		$this->db->freeresult();
@@ -201,11 +201,11 @@ class comments
 			$row = $db->fetchrow($result);
 			$db->freeresult($result);
 
-			$template->vars(array(
+			$template->vars([
 				'EDIT_FORM' => false,
 				'SEND_TEXT' => true,
-				'TEXT'      => prepare_text_for_print(nl2br($row['comm_text'])))
-			);
+				'TEXT'      => prepare_text_for_print(nl2br($row['comm_text']))
+			]);
 
 			$template->go('comments_quickedit.html');
 			garbage_collection();
@@ -234,11 +234,11 @@ class comments
 					user_id =' . $db->check_value($user['user_id']);
 			$db->query($sql);
 
-			$template->vars(array(
+			$template->vars([
 				'EDIT_FORM' => false,
 				'SEND_TEXT' => true,
-				'TEXT'      => prepare_text_for_print(nl2br(prepare_text_for_db($post_text))))
-			);
+				'TEXT'      => prepare_text_for_print(nl2br(prepare_text_for_db($post_text)))
+			]);
 
 			$template->go('comments_quickedit.html');
 			garbage_collection();
@@ -260,12 +260,12 @@ class comments
 			$row = $db->fetchrow($result);
 			$db->freeresult($result);
 
-			$template->vars(array(
+			$template->vars([
 				'COMMENT_ID'   => $row['comm_id'],
 				'COMMENT_TEXT' => prepare_text_for_edit($row['comm_text']),
 				'EDIT_FORM'    => true,
-				'SEND_TEXT'    => false)
-			);
+				'SEND_TEXT'    => false,
+			]);
 
 			$template->go('comments_quickedit.html');
 			garbage_collection();

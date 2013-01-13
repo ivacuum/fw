@@ -17,17 +17,17 @@ class twig
 
 	private $is_globals_set = false;
 	private $loader;
-	private $vars = array();
+	private $vars = [];
 
 	function __construct()
 	{
 		$this->path   = SITE_DIR . '../templates';
-		$this->loader = new \Twig_Loader_Filesystem(array($this->path, FW_DIR . 'templates'));
-		$this->env    = new \Twig_Environment($this->loader, array(
+		$this->loader = new \Twig_Loader_Filesystem([$this->path, FW_DIR . 'templates']);
+		$this->env    = new \Twig_Environment($this->loader, [
 			'auto_reload' => true,
 			'autoescape'  => false,
 			'cache'       => SITE_DIR . '../cache/templates',
-		));
+		]);
 	}
 	
 	/**
@@ -151,11 +151,11 @@ class twig
 	{
 		$this->path   = $path;
 		$this->loader = new \Twig_Loader_Filesystem($this->path);
-		$this->env    = new \Twig_Environment($this->loader, array(
+		$this->env    = new \Twig_Environment($this->loader, [
 			'auto_reload' => true,
 			'autoescape'  => false,
 			'cache'       => SITE_DIR . 'cache/templates',
-		));
+		]);
 		$this->is_globals_set = false;
 	}
 
@@ -196,7 +196,7 @@ function twig_lang()
 	
 	$args = func_get_args();
 	
-	return call_user_func_array(array($user, 'lang'), $args);
+	return call_user_func_array([$user, 'lang'], $args);
 }
 
 /**
@@ -240,7 +240,7 @@ function twig_static($type, $url, $custom_extension = false)
 	
 	if ($is_local)
 	{
-		$prefix = str_replace(array('ivacuum.ru', 'ivacuum.org'), array('local.ivacuum.ru', '0.ivacuum.org'), $prefix);
+		$prefix = str_replace(['ivacuum.ru', 'ivacuum.org'], ['local.ivacuum.ru', '0.ivacuum.org'], $prefix);
 	}
 	
 	if (false !== $custom_extension)

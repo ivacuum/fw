@@ -11,20 +11,20 @@ function login_db(&$username, &$password)
 	/* Нельзя вводить пустой пароль */
 	if (!$password)
 	{
-		return array(
+		return [
 			'status'    => 'LOGIN_ERROR_PASSWORD',
 			'error_msg' => 'NO_PASSWORD_SUPPLIED',
 			'user_row'  => array('user_id' => 0)
-		);
+		];
 	}
 
 	if (!$username)
 	{
-		return array(
+		return [
 			'status'    => 'LOGIN_ERROR_USERNAME',
 			'error_msg' => 'LOGIN_ERROR_USERNAME',
 			'user_row'  => array('user_id' => 0)
-		);
+		];
 	}
 
 	$sql = '
@@ -45,11 +45,11 @@ function login_db(&$username, &$password)
 
 	if (!$row)
 	{
-		return array(
+		return [
 			'status'    => 'LOGIN_ERROR_USERNAME',
 			'error_msg' => 'LOGIN_ERROR_USERNAME',
 			'user_row'  => array('user_id' => 0)
-		);
+		];
 	}
 
 	// $show_captcha = $config['max_login_attempts'] && $row['user_login_attempts'] >= $config['max_login_attempts'];
@@ -72,11 +72,11 @@ function login_db(&$username, &$password)
 		$vc_response = $captcha->validate($row);
 		if ($vc_response)
 		{
-			return array(
+			return [
 				'status'		=> LOGIN_ERROR_ATTEMPTS,
 				'error_msg'		=> 'LOGIN_ERROR_ATTEMPTS',
 				'user_row'		=> $row,
-			);
+			];
 		}
 		else
 		{
@@ -106,18 +106,18 @@ function login_db(&$username, &$password)
 
 		if (!$row['user_active'])
 		{
-			return array(
+			return [
 				'status'    => 'LOGIN_ERROR_ACTIVE',
 				'error_msg' => 'ACTIVE_ERROR',
 				'user_row'  => $row
-			);
+			];
 		}
 
-		return array(
+		return [
 			'status'    => 'LOGIN_SUCCESS',
 			'error_msg' => false,
 			'user_row'  => $row
-		);
+		];
 	}
 
 	$sql = '
@@ -131,9 +131,9 @@ function login_db(&$username, &$password)
 			user_login_attempts < ' . $db->check_value($config['max_login_attempts']);
 	$db->query($sql);
 
-	return array(
+	return [
 		'status'    => $show_captcha ? 'LOGIN_ERROR_ATTEMPTS' : 'LOGIN_ERROR_PASSWORD',
 		'error_msg' => $show_captcha ? 'LOGIN_ERROR_ATTEMPTS' : 'LOGIN_ERROR_PASSWORD',
 		'user_row'  => $row
-	);
+	];
 }

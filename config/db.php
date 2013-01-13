@@ -183,11 +183,11 @@ class db extends config
 		{
 			$insert = $site_id > 0 && $site_id !== $this->site_id ? 'INSERT IGNORE' : 'INSERT';
 			
-			$sql = $insert . ' INTO ' . $this->table . ' ' . $this->db->build_array('INSERT', array(
+			$sql = $insert . ' INTO ' . $this->table . ' ' . $this->db->build_array('INSERT', [
 				'config_name'  => $key,
 				'config_value' => $new_value,
 				'site_id'      => $site_id
-			));
+			]);
 			$this->db->query($sql);
 		}
 		
@@ -241,7 +241,7 @@ class db extends config
 				WHERE
 					site_id = ' . $this->db->check_value($site_id);
 			$this->db->query($sql);
-			$config = array();
+			$config = [];
 
 			while ($row = $this->db->fetchrow())
 			{

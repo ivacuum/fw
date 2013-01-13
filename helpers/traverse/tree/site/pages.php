@@ -13,7 +13,7 @@ use fw\helpers\traverse\tree;
 */
 class site_pages extends tree
 {
-	protected $base_url = array();
+	protected $base_url = [];
 
 	public function get_pages_data($pages)
 	{
@@ -31,7 +31,7 @@ class site_pages extends tree
 		
 		$this->base_url[] = $this->row['is_dir'] ? $this->row['page_url'] : ($this->row['page_url'] == $config['router_directory_index'] ? '' : ($config['router_default_extension'] ? sprintf('%s.%s', $this->row['page_url'], $config['router_default_extension']) : $this->row['page_url']));
 		
-		return $this->return_as_tree ? array('url' => ilink(implode('/', $this->base_url)), 'children' => array()) : ilink(implode('/', $this->base_url));
+		return $this->return_as_tree ? ['url' => ilink(implode('/', $this->base_url)), 'children' => []] : ilink(implode('/', $this->base_url));
 	}
 	
 	/**

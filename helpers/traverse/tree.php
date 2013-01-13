@@ -11,10 +11,10 @@ namespace fw\helpers\traverse;
 */
 class tree
 {
-	protected $branch = array();
-	protected $edge = array();
-	protected $row = array();
-	protected $tree = array();
+	protected $branch = [];
+	protected $edge = [];
+	protected $row = [];
+	protected $tree = [];
 	
 	protected $depth = 0;
 	protected $right_id = 0;
@@ -108,7 +108,7 @@ class tree
 	*/
 	protected function get_data()
 	{
-		return $this->return_as_tree ? array('children' => array()) : '';
+		return $this->return_as_tree ? array('children' => []) : '';
 	}
 	
 	/**
@@ -156,7 +156,7 @@ class tree
 		if ($this->depth === 1)
 		{
 			unset($this->branch);
-			$this->branch = array();
+			$this->branch = [];
 
 			$i = sizeof($this->tree);
 			$this->tree[$i] = $data;

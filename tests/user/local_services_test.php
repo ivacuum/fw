@@ -33,16 +33,16 @@ class user_local_services_test extends PHPUnit_Framework_TestCase
 	
 	public function data_download_link()
 	{
-		return array(
+		return [
 			/* Локальные ссылки */
-			array('//dl.local.ivacuum.ru/1/', 'local', 1),
-			array('//dl.local.ivacuum.ru/2/', 'beeline-kaluga', 2),
-			array('//dl.local.ivacuum.ru/3/', 'corbina-kaluga', 3),
-			array('//dl.local.ivacuum.ru/4/', 'vacuum', 4),
+			['//dl.local.ivacuum.ru/1/', 'local', 1],
+			['//dl.local.ivacuum.ru/2/', 'beeline-kaluga', 2],
+			['//dl.local.ivacuum.ru/3/', 'corbina-kaluga', 3],
+			['//dl.local.ivacuum.ru/4/', 'vacuum', 4],
 			
 			/* Внешние ссылки */
-			array('//dl.ivacuum.ru/1/', 'internet', 1),
-			array('//dl.ivacuum.ru/2/', 'hz-telecom', 2)
-		);
+			['//dl.ivacuum.ru/1/', 'internet', 1],
+			['//dl.ivacuum.ru/2/', 'hz-telecom', 2],
+		];
 	}
 }
