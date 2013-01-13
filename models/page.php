@@ -439,7 +439,7 @@ class page
 		
 		if( 0 === strpos($filename, 'fw/modules/') )
 		{
-			$filename = substr($filename, 15);
+			$filename = substr($filename, 11);
 		}
 		
 		$this->template->file = sprintf('%s_%s.%s', $filename, $this->method, $this->format);
