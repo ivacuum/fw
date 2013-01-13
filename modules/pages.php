@@ -308,6 +308,8 @@ class pages extends page
 					'PAGE_URL'       => $row['page_url'],
 					'PAGE_FORMATS'   => $row['page_formats'],
 					'PAGE_NOINDEX'   => $row['page_noindex'],
+					'PAGE_HANDLER'   => $row['page_handler'],
+					'HANDLER_METHOD' => $row['handler_method'],
 
 					'U_PAGE'      => ilink($this->url . '?parent_id=' . $row['page_id']),
 					'U_MOVE_UP'   => $url . '&amp;action=move_up',
