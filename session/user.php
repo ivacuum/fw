@@ -26,7 +26,7 @@ class user extends session
 	{
 		static $midnight;
 
-		if( $gmepoch == 0 )
+		if ($gmepoch == 0)
 		{
 			return $this->lang['NEVER'];
 		}
@@ -34,11 +34,11 @@ class user extends session
 		/**
 		* Определяем переменные
 		*/
-		$format = ( !$format ) ? $this->config['dateformat'] : $format;
+		$format = !$format ? $this->config['dateformat'] : $format;
 		$tz = 3600 * $this->config['site_tz'];
 		$forcedate = !isset($this->lang['datetime']) ? true : $forcedate;
 
-		if( !$midnight )
+		if (!$midnight)
 		{
 			/* Определение полуночи */
 			list($d, $m, $y) = explode(' ', gmdate('j n Y', $this->ctime + $tz));
@@ -53,30 +53,30 @@ class user extends session
 		* Вчера, 14:55
 		* 10 Августа 2009
 		*/
-		if( $short_form !== false )
+		if (false !== $short_form)
 		{
-			if( strpos($format, '|') !== false && $gmepoch < $midnight - 86400 && !$forcedate )
+			if (strpos($format, '|') !== false && $gmepoch < $midnight - 86400 && !$forcedate)
 			{
 				return strtr(@gmdate(str_replace('|', '', substr($format, 0, strrpos($format, '|'))), $gmepoch + $tz), $this->lang['datetime']);
 			}
 		}
 
-		if( strpos($format, '|') === false || ($gmepoch < $midnight - 86400 && !$forcedate) || ($gmepoch > $midnight + 172800 && !$forcedate) )
+		if (strpos($format, '|') === false || ($gmepoch < $midnight - 86400 && !$forcedate) || ($gmepoch > $midnight + 172800 && !$forcedate))
 		{
 			return strtr(@gmdate(str_replace('|', '', $format), $gmepoch + $tz), $this->lang['datetime']);
 		}
 
-		if( $gmepoch > $midnight + 86400 && !$forcedate )
+		if ($gmepoch > $midnight + 86400 && !$forcedate)
 		{
 			/* Завтра ... */
 			return $this->lang['datetime']['TOMORROW'] . strtr(@gmdate(substr($format, strpos($format, '|', 1) + 1), $gmepoch + $tz), $this->lang['datetime']);
 		}
-		elseif( $gmepoch > $midnight && !$forcedate )
+		elseif ($gmepoch > $midnight && !$forcedate)
 		{
 			/* Сегодня ... */
 			return $this->lang['datetime']['TODAY'] . strtr(@gmdate(substr($format, strpos($format, '|', 1) + 1), $gmepoch + $tz), $this->lang['datetime']);
 		}
-		elseif( $gmepoch > $midnight - 86400 && !$forcedate )
+		elseif ($gmepoch > $midnight - 86400 && !$forcedate)
 		{
 			/* Вчера ... */
 			return $this->lang['datetime']['YESTERDAY'] . strtr(@gmdate(substr($format, strpos($format, '|', 1) + 1), $gmepoch + $tz), $this->lang['datetime']);
@@ -95,12 +95,12 @@ class user extends session
 	*/
 	public function is_auth($mode = '')
 	{
-		if( $this->is_registered )
+		if ($this->is_registered)
 		{
 			return true;
 		}
 
-		switch( $mode )
+		switch ($mode)
 		{
 			/**
 			* Запрет просмотра страницы
@@ -110,7 +110,7 @@ class user extends session
 				send_status_line(401);
 				// \fw\core\error_handler::log_mail('Unauthorized access to http://' . $this->domain . $this->page . ' page', '401 Unauthorized');
 
-				if( $this->domain == 'dev.ivacuum.ru' )
+				if ($this->domain == 'dev.ivacuum.ru')
 				{
 					trigger_error(sprintf($this->lang['NEED_LOGIN'], ilink(sprintf('/ucp/login.html?goto=%s', $this->get_back_url()))));
 				}
@@ -123,7 +123,7 @@ class user extends session
 			*/
 			case 'redirect':
 			
-				if( $this->domain == 'dev.ivacuum.ru' )
+				if ($this->domain == 'dev.ivacuum.ru')
 				{
 					redirect(ilink(sprintf('/ucp/login.html?goto=%s', $this->get_back_url())));
 				}
@@ -152,13 +152,13 @@ class user extends session
 		$key  = $args[0];
 
 		/* Если языковой элемент не найден, то возвращаем индекс элемента */
-		if( !isset($this->lang[$key]) )
+		if (!isset($this->lang[$key]))
 		{
 			return $key;
 		}
 
 		/* Был просто запрошен индекс */
-		if( sizeof($args) == 1 )
+		if (sizeof($args) == 1)
 		{
 			return $this->lang[$key];
 		}
@@ -179,9 +179,9 @@ class user extends session
 	{
 		$sites = $this->cache->obtain_sites();
 		
-		foreach( $sites as $row )
+		foreach ($sites as $row)
 		{
-			if( $this->domain == $row['site_url'] && $language == $row['site_language'] )
+			if ($this->domain == $row['site_url'] && $language == $row['site_language'])
 			{
 				return true;
 			}
@@ -200,13 +200,13 @@ class user extends session
 	public function load_language($lang_file, $force_update = false, $language = false)
 	{
 		$lang      = array();
-		$language  = ( $language ) ?: $this->lang['.'];
+		$language  = $language ?: $this->lang['.'];
 		$lang_file = str_replace('/', '_', $lang_file);
 		
 		/* Общая локализация */
 		$lang = array_merge_recursive($lang, $this->get_i18n_data(0, $language, $lang_file, $force_update));
 		
-		if( 0 !== strpos($lang_file, 'fw_') )
+		if (0 !== strpos($lang_file, 'fw_'))
 		{
 			/* Локализация проекта */
 			$site_info = get_site_info_by_url_lang($this->domain, $language);
@@ -214,7 +214,7 @@ class user extends session
 			$lang = array_merge_recursive($lang, $this->get_i18n_data($site_info['id'], $language, $lang_file, $force_update));
 		}
 		
-		if( $language == $this->lang['.'] )
+		if ($language == $this->lang['.'])
 		{
 			$this->lang = array_merge_recursive($this->lang, $lang);
 			return;
@@ -230,7 +230,7 @@ class user extends session
 	{
 		$username = mb_strtolower($username);
 		
-		if( !$username )
+		if (!$username)
 		{
 			return array(
 				'message'  => 'Вы не указали имя',
@@ -239,7 +239,7 @@ class user extends session
 			);
 		}
 
-		if( !$password )
+		if (!$password)
 		{
 			return array(
 				'message'  => 'Вы не указали пароль',
@@ -266,7 +266,7 @@ class user extends session
 		$this->db->freeresult();
 		$attempts = 0;
 		
-		// if( $ip )
+		// if ($ip)
 		// {
 		// 	$sql = '
 		// 		SELECT
@@ -286,7 +286,7 @@ class user extends session
 		// 		'attempt_browser'		=> trim(substr($browser, 0, 149)),
 		// 		'attempt_forwarded_for'	=> $forwarded_for,
 		// 		'attempt_time'			=> time(),
-		// 		'user_id'				=> ( $row ) ? (int) $row['user_id'] : 0,
+		// 		'user_id'				=> $row ? (int) $row['user_id'] : 0,
 		// 		'username'				=> $username,
 		// 		'username_clean'		=> $username_clean,
 		// 	);
@@ -295,7 +295,7 @@ class user extends session
 		// 	$this->db->sql_query($sql);
 		// }
 
-		if( !$row )
+		if (!$row)
 		{
 			return array(
 				'message'  => 'Неверно указано имя или пароль',
@@ -308,13 +308,13 @@ class user extends session
 		// $show_captcha = ($this->config['max_login_attempts'] && $row['user_login_attempts'] >= $this->config['max_login_attempts']) || ($this->config['ip_login_limit_max'] && $attempts >= $this->config['ip_login_limit_max']);
 		$show_captcha = false;
 		
-		// if( $show_captcha )
+		// if ($show_captcha)
 		// {
 		// 	$captcha =& captcha\factory::get_instance($this->config['captcha_plugin']);
 		// 	$captcha->init(CONFIRM_LOGIN);
 		// 	$vc_response = $captcha->validate($row);
 		// 	
-		// 	if( $vc_response )
+		// 	if ($vc_response)
 		// 	{
 		// 		return array(
 		// 			'status'    => 'error_attempts',
@@ -327,9 +327,9 @@ class user extends session
 		// }
 
 		/* Проверка пароля */
-		if( ($row['user_salt'] && md5($password . $row['user_salt']) == $row['user_password']) || (!$row['user_salt'] && md5($password) == $row['user_password']) )
+		if (($row['user_salt'] && md5($password . $row['user_salt']) == $row['user_password']) || (!$row['user_salt'] && md5($password) == $row['user_password']))
 		{
-			if( !$row['user_salt'] )
+			if (!$row['user_salt'])
 			{
 				$salt = make_random_string(5);
 				
@@ -349,12 +349,12 @@ class user extends session
 			$this->db->query($sql);
 			*/
 			
-			if( $row['user_login_attempts'] )
+			if ($row['user_login_attempts'])
 			{
 				$this->user_update(array('user_login_attempts' => 0), $row['user_id']);
 			}
 			
-			if( !$row['user_active'] )
+			if (!$row['user_active'])
 			{
 				return array(
 					'message'  => 'Эта учетная запись отключена',
@@ -375,7 +375,7 @@ class user extends session
 		$this->user_update(array('user_login_attempts' => $row['user_login_attempts'] + 1), $row['user_id']);
 		
 		return array(
-			'message'  => ( $show_captcha ) ? 'Слишком много ошибок при авторизации. Введите код подтверждения' : 'Неверно указано имя или пароль',
+			'message'  => $show_captcha ? 'Слишком много ошибок при авторизации. Введите код подтверждения' : 'Неверно указано имя или пароль',
 			'status'   => 'ERROR_LOGIN',
 			'user_row' => $row
 		);
@@ -397,7 +397,7 @@ class user extends session
 	{
 		static $subnet = '';
 
-		if( !$subnet )
+		if (!$subnet)
 		{
 			list($ip1, $ip2, $ip3, $ip4) = explode('.', $this->ip);
 
@@ -413,7 +413,7 @@ class user extends session
 	*/
 	public function user_update($sql_ary, $user_id = false)
 	{
-		$user_id = ( $user_id ) ?: $this->data['user_id'];
+		$user_id = $user_id ?: $this->data['user_id'];
 		
 		$sql = '
 			UPDATE
@@ -433,26 +433,26 @@ class user extends session
 		global $site_info;
 		
 		$url = trim(htmlspecialchars_decode($this->page), '/');
-		$params = ( $url ) ? explode('/', $url) : array();
+		$params = $url ? explode('/', $url) : array();
 		
-		if( empty($params) )
+		if (empty($params))
 		{
 			return $site_info['language'];
 		}
 		
 		$language = $params[0];
 		
-		if( strlen($language) != 2 )
+		if (strlen($language) != 2)
 		{
 			return $site_info['language'];
 		}
 		
-		if( $site_info['default'] )
+		if ($site_info['default'])
 		{
 			/* Если выбрана локализация по умолчанию, то убираем язык из URL */
-			foreach( $this->cache->obtain_languages() as $id => $row )
+			foreach ($this->cache->obtain_languages() as $id => $row)
 			{
-				if( $language == $row['language_title'] )
+				if ($language == $row['language_title'])
 				{
 					redirect(ilink(mb_substr($this->page, 3)));
 				}
@@ -461,7 +461,7 @@ class user extends session
 			return $site_info['language'];
 		}
 			
-		if( $this->language_exists($language) )
+		if ($this->language_exists($language))
 		{
 			$this->page = mb_substr($this->page, 3);
 			return $language;
@@ -473,10 +473,10 @@ class user extends session
 	*/
 	private function get_i18n_data($site_id, $language, $lang_file, $force_update = false)
 	{
-		$prefix = ( $site_id === 0 ) ? 'src' : $this->domain;
+		$prefix = 0 === $site_id ? 'src' : $this->domain;
 		$cache_entry = sprintf('%s_i18n_%s_%s', $prefix, $lang_file, $language);
 		
-		if( $force_update || (false === $lang = $this->cache->_get($cache_entry)) )
+		if ($force_update || (false === $lang = $this->cache->_get($cache_entry)))
 		{
 			$sql = '
 				SELECT
@@ -495,9 +495,9 @@ class user extends session
 			$this->db->query($sql);
 			$lang = array();
 
-			while( $row = $this->db->fetchrow() )
+			while ($row = $this->db->fetchrow())
 			{
-				if( $row['i18n_subindex'] )
+				if ($row['i18n_subindex'])
 				{
 					$lang[$row['i18n_subindex']][$row['i18n_index']] = $row['i18n_translation'];
 				}
