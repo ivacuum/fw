@@ -121,13 +121,16 @@ class profiler extends console
 {
 	private $output = array();
 	private $start_time;
+	
+	private $template;
 
 	/**
 	* Время запуска профайлера
 	*/
-	function __construct()
+	function __construct($template)
 	{
 		$this->start_time = microtime(true);
+		$this->template   = $template;
 	}
 
 	/**
@@ -297,11 +300,11 @@ class profiler extends console
 	*/
 	private function display_profiler()
 	{
-		global $template, $user;
+		global $user;
 		
 		$user->load_language('profiler');
 		
-		$template->assign(array(
+		$this->template->assign(array(
 			'profiler_logs'    => $this->output['logs'],
 			'profiler_files'   => $this->output['files'],
 			'profiler_queries' => $this->output['queries'],
@@ -327,6 +330,6 @@ class profiler extends console
 			'QUERY_COUNT_TEXT' => plural($this->query_count, $user->lang['plural']['QUERIES'])
 		));
 		
-		$template->display('profiler.html');
+		$this->template->display('profiler.html');
 	}
 }

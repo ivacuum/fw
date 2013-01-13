@@ -19,6 +19,21 @@ $dbpers = false;
 $acm_prefix = 'src.ivacuum.ru';
 $acm_type   = 'memcache';
 
+$app = array(
+	/* Настройки подключения к БД */
+	'db.host' => 'localhost',
+	'db.port' => false,
+	'db.name' => '',
+	'db.user' => '',
+	'db.pass' => '',
+	'db.sock' => '',
+	'db.pers' => false,
+	
+	/* Настройки кэша */
+	'acm.prefix' => 'src.ivacuum.ru',
+	'acm.type'   => 'memcache',
+);
+
 /**
 * Константы
 * apc_delete($acm_prefix . '_constants');

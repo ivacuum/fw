@@ -6,6 +6,9 @@
 
 namespace fw;
 
+use fw\core\application;
+use fw\core\errorhandler;
+
 /**
 * Настройки, необходимые для
 * функционирования сайта
@@ -17,11 +20,9 @@ date_default_timezone_set('Europe/Moscow');
 error_reporting(E_ALL);
 mb_internal_encoding('utf-8');
 
-autoloader::register();
-
-/* Профайлер подключается первым */
-$profiler = new core\profiler();
-
+require(FW_DIR . 'core/profiler.php');
+require(FW_DIR . 'core/application.php');
+require(FW_DIR . 'core/autoloader.php');
 require(FW_DIR . 'functions.php');
 require(FW_DIR . 'config.php');
 
@@ -30,10 +31,30 @@ if (file_exists(SITE_DIR . '../config.php'))
 	require(SITE_DIR . '../config.php');
 }
 
-/* Собственный обработчик ошибок */
-core\errorhandler::register();
+$app = new application($app);
 
-$request = new core\request();
+$profiler = $app['profiler'];
+
+// $app['autoloader']->register_namespaces(array(
+// 	'fw'       => __DIR__,
+// 	'app'      => SITE_DIR . '../modules',
+// 	'Geocoder' => __DIR__ . '/../lib/geocoder/1.1.6/Geocoder',
+// 	'Imagine'  => __DIR__ . '/../lib/imagine/0.4.1/Imagine',
+// 	'Monolog'  => __DIR__ . '/../lib/monolog/1.0.3/Monolog',
+// 	'Swift'    => __DIR__ . '/../lib/swiftmailer/4.3/classes/Swift',
+// 	'Twig'     => __DIR__ . '/../lib/twig/1.12/Twig',
+// ));
+
+/* Внедрение зависимостей */
+// $app['cache']->_set_db($app['db']);
+// $app['db']->_set_cache($app['cache'])
+// 	->_set_profiler($app['profiler']);
+// $app['user']->_set_db($app['db']);
+
+/* Собственный обработчик ошибок */
+errorhandler::register();
+
+$request = $app['request'];
 
 /* Инициализация кэша */
 $factory = new cache\factory($acm_type, $acm_prefix);
@@ -50,7 +71,7 @@ if (false === $site_info = get_site_info_by_url($user->domain, $user->page))
 }
 
 $config   = new config\db($site_info);
-$template = new template\twig();
+$template = $app['template'];
 
 /* Планировщику задач понадобится путь к папке проекта */
 if (SITE_DIR != $config['site_dir'])
