@@ -20,19 +20,34 @@ class router
 	public $site_id;
 	public $url;
 	
+	protected $cache;
+	protected $config;
+	protected $db;
 	protected $namespace;
 	protected $params = array();
 	protected $params_count;
-
-	function __construct($url = '', $namespace = '\\app\\')
+	protected $request;
+	protected $site_info = array();
+	protected $template;
+	protected $user;
+	
+	function __construct($cache, $config, $db, $request, $template, $user)
 	{
-		global $config, $user;
-		
-		$this->format    = $config['router_default_extension'];
+		$this->cache    = $cache;
+		$this->config   = $config;
+		$this->db       = $db;
+		$this->request  = $request;
+		$this->template = $template;
+		$this->user     = $user;
+	}
+
+	public function _init($url = '', $namespace = '\\app\\')
+	{
+		$this->format    = $this->config['router_default_extension'];
 		$this->namespace = $namespace;
-		$this->page      = $config['router_directory_index'];
+		$this->page      = $this->config['router_directory_index'];
 		
-		$url = $url ?: htmlspecialchars_decode($user->page);
+		$url = $url ?: htmlspecialchars_decode($this->user->page);
 		
 		if (!$url)
 		{
@@ -40,7 +55,7 @@ class router
 		}
 		
 		/* Поиск сайта */
-		if (false === $this->site_id = $this->get_site_id($user->domain, $user->lang['.']))
+		if (false === $this->site_id = $this->get_site_id($this->user->domain, $this->user->lang['.']))
 		{
 			trigger_error('Сайт не найден');
 		}
@@ -56,7 +71,7 @@ class router
 		if (isset($ary['extension']))
 		{
 			/* Обращение к странице */
-			if (!in_array($ary['extension'], explode(';', $config['router_allowed_extensions']), true))
+			if (!in_array($ary['extension'], explode(';', $this->config['router_allowed_extensions']), true))
 			{
 				trigger_error('PAGE_NOT_FOUND');
 			}
@@ -72,7 +87,7 @@ class router
 			* Обращение к странице без расширения
 			* Проверяем, можно ли обращаться к страницам без расширения
 			*/
-			if (in_array('', explode(';', $config['router_allowed_extensions']), true))
+			if (in_array('', explode(';', $this->config['router_allowed_extensions']), true))
 			{
 				$this->params = $ary['dirname'] != '.' ? explode('/', $ary['dirname']) : array();
 				$this->page   = $ary['filename'];
@@ -90,6 +105,8 @@ class router
 		}
 		
 		$this->params_count = sizeof($this->params);
+		
+		return $this;
 	}
 	
 	/**
@@ -113,8 +130,6 @@ class router
 	*/
 	public function handle_request()
 	{
-		global $config;
-		
 		$dynamic_handle = false;
 		$handler_name = $handler_method = '';
 		$parent_id = 0;
@@ -133,7 +148,7 @@ class router
 				$handler_method = $row['handler_method'];
 			}
 			
-			if ($this->page != $config['router_directory_index'])
+			if ($this->page != $this->config['router_directory_index'])
 			{
 				$this->page_link[] = $this->format ? sprintf('%s.%s', $this->page, $this->format) : $this->page;
 			}
@@ -209,7 +224,7 @@ class router
 		*/
 		if ($this->params_count > 0 && !$dynamic_handle && false != $ary = $this->get_page_row_by_url($this->page, false, $parent_id))
 		{
-			if ($this->page != $config['router_directory_index'] || $ary['page_url'] != '*')
+			if ($this->page != $this->config['router_directory_index'] || $ary['page_url'] != '*')
 			{
 				$row = $ary;
 				
@@ -223,7 +238,7 @@ class router
 					$handler_method = 'static_page';
 				}
 
-				if ($this->page != $config['router_directory_index'])
+				if ($this->page != $this->config['router_directory_index'])
 				{
 					$this->page_link[] = $this->format ? sprintf('%s.%s', $this->page, $this->format) : $this->page;
 				}
@@ -301,21 +316,19 @@ class router
 	*/
  	protected function load_handler_with_params($params = array())
 	{
-		global $config, $request;
-		
-		$concrete_method = sprintf('%s_%s', $this->method, $request->method);
+		$concrete_method = sprintf('%s_%s', $this->method, $this->request->method);
 
 		/**
 		* Проверка существования необходимого метода у обработчика
 		*/
 		if (!method_exists($this->handler, $concrete_method) && !method_exists($this->handler, $this->method))
 		{
-			if ($config['router_send_status_codes'])
+			if ($this->config['router_send_status_codes'])
 			{
 				/**
 				* API-сайт должен отправлять соответствующие коды состояния HTTP
 				*/
-				if ($request->method == 'get' || !method_exists($this->handler, $this->method . '_get'))
+				if ($this->request->method == 'get' || !method_exists($this->handler, $this->method . '_get'))
 				{
 					/* Not Implemented */
 					send_status_line(501);
@@ -336,7 +349,7 @@ class router
 			}
 		}
 		
-		$full_url = $this->url . ($this->page != $config['router_directory_index'] ? ($this->format ? sprintf('/%s.%s', $this->page, $this->format) : $this->page) : '');
+		$full_url = $this->url . ($this->page != $this->config['router_directory_index'] ? ($this->format ? sprintf('/%s.%s', $this->page, $this->format) : $this->page) : '');
 		
 		/* Параметры обработчика */
 		$this->handler->data     = $this->page_row;
@@ -404,28 +417,26 @@ class router
 	*/
 	protected function get_page_row_by_url($page_url, $is_dir = 1, $parent_id = 0)
 	{
-		global $db;
-		
 		$sql = '
 			SELECT
 				*
 			FROM
 				' . PAGES_TABLE . '
 			WHERE
-				parent_id = ' . $db->check_value($parent_id) . '
+				parent_id = ' . $this->db->check_value($parent_id) . '
 			AND
-				site_id = ' . $db->check_value($this->site_id) . '
+				site_id = ' . $this->db->check_value($this->site_id) . '
 			AND
-				' . $db->in_set('page_url', array($page_url, '*')) . '
+				' . $this->db->in_set('page_url', array($page_url, '*')) . '
 			AND
-				is_dir = ' . $db->check_value($is_dir) . '
+				is_dir = ' . $this->db->check_value($is_dir) . '
 			AND
 				page_enabled = 1
 			ORDER BY
 				LENGTH(page_url) DESC';
-		$db->query_limit($sql, 1);
-		$row = $db->fetchrow();
-		$db->freeresult();
+		$this->db->query_limit($sql, 1);
+		$row = $this->db->fetchrow();
+		$this->db->freeresult();
 		
 		return $row;
 	}
@@ -437,9 +448,7 @@ class router
 	*/
 	protected function get_site_id($domain, $language)
 	{
-		global $cache;
-		
-		$sites = $cache->obtain_sites();
+		$sites = $this->cache->obtain_sites();
 		
 		foreach ($sites as $row)
 		{
