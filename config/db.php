@@ -23,7 +23,7 @@ class db extends config
 	{
 		global $cache, $db;
 		
-		if( !is_array($site_info) )
+		if (!is_array($site_info))
 		{
 			trigger_error('Сайт не найден', E_USER_ERROR);
 		}
@@ -33,7 +33,7 @@ class db extends config
 		$this->domain   = $site_info['domain'];
 		$this->language = $site_info['language'];
 		$this->site_id  = $site_info['id'];
-		$this->table    = ( $table ) ?: CONFIG_TABLE;
+		$this->table    = $table ?: CONFIG_TABLE;
 		
 		parent::__construct(array_merge($this->load_config(0), $this->load_config($this->site_id)));
 	}
@@ -43,7 +43,7 @@ class db extends config
 	*/
 	public function delete($key, $site_id = false)
 	{
-		$site_id = ( $site_id !== false ) ? intval($site_id) : $this->site_id;
+		$site_id = false !== $site_id ? intval($site_id) : $this->site_id;
 		
 		$sql = '
 			DELETE
@@ -55,23 +55,23 @@ class db extends config
 				site_id = ' . $this->db->check_value($site_id);
 		$this->db->query($sql);
 		
-		if( $site_id === $this->site_id )
+		if ($site_id === $this->site_id)
 		{
 			/* Настройки текущего сайта */
 			unset($this->config[$key]);
 			$this->cache->_delete(sprintf('%s_config_%s', $this->domain, $this->language));
 		}
-		elseif( $site_id === 0 )
+		elseif ($site_id === 0)
 		{
 			/* Настройки движка */
-			if( !isset($this->site_vars[$key]) )
+			if (!isset($this->site_vars[$key]))
 			{
 				unset($this->config[$key]);
 			}
 			
 			$this->cache->_delete('src_config');
 		}
-		elseif( $site_id > 0 && $site_id !== $this->site_id )
+		elseif ($site_id > 0 && $site_id !== $this->site_id)
 		{
 			/* Настройки другого сайта */
 			$site_info = get_site_info_by_id($site_id);
@@ -85,19 +85,19 @@ class db extends config
 	*/
 	public function increment($key, $increment = 1, $site_id = false)
 	{
-		$site_id = ( $site_id !== false ) ? intval($site_id) : $this->site_id;
+		$site_id = false !== $site_id ? intval($site_id) : $this->site_id;
 		
-		if( $site_id !== 0 && $site_id !== $this->site_id )
+		if ($site_id !== 0 && $site_id !== $this->site_id)
 		{
 			trigger_error('Метод increment можно вызывать только для текущего сайта и движка');
 		}
 		
-		if( $site_id === $this->site_id && !isset($this->site_vars[$key]) )
+		if ($site_id === $this->site_id && !isset($this->site_vars[$key]))
 		{
 			/* Настройка текущего сайта */
 			$this->set($key, 0);
 		}
-		elseif( $site_id === 0 && !isset($this->config[$key]) )
+		elseif ($site_id === 0 && !isset($this->config[$key]))
 		{
 			/* Настройка движка */
 			$this->set($key, 0, 0);
@@ -114,16 +114,16 @@ class db extends config
 				site_id = ' . $this->db->check_value($site_id);
 		$this->db->query($sql);
 		
-		if( $site_id > 0 )
+		if ($site_id > 0)
 		{
 			/* Настройки сайта */
 			$this->config[$key] += $increment;
 			$this->cache->_delete(sprintf('%s_config_%s', $this->domain, $this->language));
 		}
-		elseif( $site_id === 0 )
+		elseif ($site_id === 0)
 		{
 			/* Настройки движка */
-			if( !isset($this->site_vars[$key]) )
+			if (!isset($this->site_vars[$key]))
 			{
 				/**
 				* Текущее значение обновляется только если
@@ -149,7 +149,7 @@ class db extends config
 	*/
 	public function set_atomic($key, $old_value, $new_value, $site_id = false)
 	{
-		$site_id = ( $site_id !== false ) ? intval($site_id) : $this->site_id;
+		$site_id = false !== $site_id ? intval($site_id) : $this->site_id;
 		
 		$sql = '
 			UPDATE
@@ -161,27 +161,27 @@ class db extends config
 			AND
 				site_id = ' . $this->db->check_value($site_id);
 		
-		if( $old_value !== false )
+		if (false !== $old_value)
 		{
 			$sql .= ' AND config_value = ' . $this->db->check_value($old_value);
 		}
 		
 		$this->db->query($sql);
 		
-		if( !$this->db->affected_rows() )
+		if (!$this->db->affected_rows())
 		{
-			if( ($site_id === $this->site_id && isset($this->site_vars[$key])) ||
-				($site_id === 0 && isset($this->config[$key])) )
+			if (($site_id === $this->site_id && isset($this->site_vars[$key])) ||
+				($site_id === 0 && isset($this->config[$key])))
 			{
 				return false;
 			}
 		}
 		
-		if( ($site_id === $this->site_id && !isset($this->site_vars[$key])) ||
+		if (($site_id === $this->site_id && !isset($this->site_vars[$key])) ||
 			($site_id === 0 && !isset($this->config[$key]) && !isset($this->site_vars[$key])) ||
-			($site_id > 0 && $site_id !== $this->site_id) )
+			($site_id > 0 && $site_id !== $this->site_id))
 		{
-			$insert = ( $site_id > 0 && $site_id !== $this->site_id ) ? 'INSERT IGNORE' : 'INSERT';
+			$insert = $site_id > 0 && $site_id !== $this->site_id ? 'INSERT IGNORE' : 'INSERT';
 			
 			$sql = $insert . ' INTO ' . $this->table . ' ' . $this->db->build_array('INSERT', array(
 				'config_name'  => $key,
@@ -191,17 +191,17 @@ class db extends config
 			$this->db->query($sql);
 		}
 		
-		if( $site_id === $this->site_id )
+		if ($site_id === $this->site_id)
 		{
 			/* Настройки текущего сайта */
 			$this->config[$key] = $new_value;
 			$this->site_vars[$key] = true;
 			$this->cache->_delete(sprintf('%s_config_%s', $this->domain, $this->language));
 		}
-		elseif( $site_id === 0 )
+		elseif ($site_id === 0)
 		{
 			/* Настройки движка */
-			if( !isset($this->site_vars[$key]) )
+			if (!isset($this->site_vars[$key]))
 			{
 				/**
 				* Текущее значение обновляется только если
@@ -212,7 +212,7 @@ class db extends config
 			
 			$this->cache->_delete('src_config');
 		}
-		elseif( $site_id > 0 && $site_id !== $this->site_id )
+		elseif ($site_id > 0 && $site_id !== $this->site_id)
 		{
 			/* Настройки другого сайта */
 			$site_info = get_site_info_by_id($site_id);
@@ -228,9 +228,9 @@ class db extends config
 	*/
 	private function load_config($site_id)
 	{
-		$cache_entry = ( $site_id === 0 ) ? 'src_config' : sprintf('%s_config_%s', $this->domain, $this->language);
+		$cache_entry = 0 === $site_id ? 'src_config' : sprintf('%s_config_%s', $this->domain, $this->language);
 		
-		if( false === $config = $this->cache->_get($cache_entry) )
+		if (false === $config = $this->cache->_get($cache_entry))
 		{
 			$sql = '
 				SELECT
@@ -243,7 +243,7 @@ class db extends config
 			$this->db->query($sql);
 			$config = array();
 
-			while( $row = $this->db->fetchrow() )
+			while ($row = $this->db->fetchrow())
 			{
 				$config[$row['config_name']] = $row['config_value'];
 			}
@@ -252,9 +252,9 @@ class db extends config
 			$this->cache->_set($cache_entry, $config);
 		}
 		
-		if( $site_id )
+		if ($site_id)
 		{
-			foreach( $config as $key => $value )
+			foreach ($config as $key => $value)
 			{
 				$this->site_vars[$key] = true;
 			}
