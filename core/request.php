@@ -37,7 +37,7 @@ class request
 		$this->method    = strtolower($this->server('REQUEST_METHOD', 'get'));
 		
 		/* По умолчанию при использовании метода PUT данные не попадают в $_REQUEST */
-		if( $this->method == 'put' )
+		if ($this->method == 'put')
 		{
 			$_REQUEST = array_merge(json_decode(file_get_contents('php://input'), true), $_REQUEST);
 		}
@@ -112,7 +112,7 @@ class request
 	*/
 	public function server($var, $default = '')
 	{
-		if( $this->is_set($var, self::SERVER) )
+		if ($this->is_set($var, self::SERVER))
 		{
 			return $this->variable($var, $default, self::SERVER);
 		}
@@ -131,11 +131,11 @@ class request
 		$input = $this->globals[$global];
 		$path  = false;
 		
-		if( is_array($var) )
+		if (is_array($var))
 		{
 			$path = $var;
 			
-			if( empty($path) )
+			if (empty($path))
 			{
 				return is_array($default) ? array() : $default;
 			}
@@ -143,7 +143,7 @@ class request
 			$var = array_shift($path);
 		}
 		
-		if( !isset($GLOBALS[$input][$var]) )
+		if (!isset($GLOBALS[$input][$var]))
 		{
 			/**
 			* Переменная не установлена
@@ -154,11 +154,11 @@ class request
 		
 		$var = $GLOBALS[$input][$var];
 		
-		if( $path )
+		if ($path)
 		{
-			foreach( $path as $key )
+			foreach ($path as $key)
 			{
-				if( is_array($key) && isset($var[$key]) )
+				if (is_array($key) && isset($var[$key]))
 				{
 					$var = $var[$key];
 				}
@@ -183,7 +183,7 @@ class request
 		settype($var, $type);
 		$result = $var;
 		
-		if( $type == 'string' )
+		if ($type == 'string')
 		{
 			$result = trim(htmlspecialchars(str_replace(array("\r\n", "\r", "\0"), array("\n", "\n", ''), $result), ENT_COMPAT, 'UTF-8'));
 		}
@@ -194,20 +194,20 @@ class request
 	*/
 	private function recursive_set_type(&$var, $default)
 	{
-		if( is_array($var) !== is_array($default) )
+		if (is_array($var) !== is_array($default))
 		{
 			$var = is_array($default) ? array() : $default;
 			return;
 		}
 		
-		if( !is_array($default) )
+		if (!is_array($default))
 		{
 			$type = gettype($default);
 			$this->set_type($var, $var, $type);
 			return;
 		}
 		
-		if( empty($default) )
+		if (empty($default))
 		{
 			$var = array();
 			return;
@@ -220,7 +220,7 @@ class request
 		$_var = $var;
 		$var = array();
 		
-		foreach( $_var as $k => $v )
+		foreach ($_var as $k => $v)
 		{
 			$this->set_type($k, $k, $key_type);
 			$this->recursive_set_type($v, $default_value);
