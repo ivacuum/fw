@@ -31,7 +31,7 @@ if (file_exists(SITE_DIR . '../config.php'))
 }
 
 /* Собственный обработчик ошибок */
-core\error_handler::register();
+core\errorhandler::register();
 
 $request = new core\request();
 
