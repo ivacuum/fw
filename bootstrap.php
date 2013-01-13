@@ -33,15 +33,18 @@ if (file_exists(SITE_DIR . '../config.php'))
 
 $app = new application($app);
 
-$app['autoloader']->register_namespaces(array(
+$app['autoloader']->register_namespaces([
 	'fw'       => __DIR__,
 	'app'      => SITE_DIR . '../includes',
 	// 'Geocoder' => __DIR__ . '/../lib/geocoder/1.1.6/Geocoder',
 	// 'Imagine'  => __DIR__ . '/../lib/imagine/0.4.1/Imagine',
 	// 'Monolog'  => __DIR__ . '/../lib/monolog/1.0.3/Monolog',
-	// 'Swift'    => __DIR__ . '/../lib/swiftmailer/4.3/classes/Swift',
-	'Twig'     => __DIR__ . '/../lib/twig/1.12/Twig',
-));
+]);
+
+$app['autoloader']->register_prefixes([
+	// 'Swift' => __DIR__ . '/../lib/swiftmailer/4.3/classes/Swift',
+	'Twig'  => __DIR__ . '/../lib/twig/1.12/Twig',
+]);
 
 $profiler = $app['profiler'];
 
