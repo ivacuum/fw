@@ -22,12 +22,12 @@ class console
 	protected $speed_allowed = 0;
 	protected $speed_count   = 0;
 	protected $speed_total   = 0;
-	protected $queries       = array();
 	protected $query_cached  = 0;
 	protected $query_count   = 0;
 	protected $query_time    = 0;
 
 	protected $logs = array();
+	protected $queries = array();
 
 	/**
 	* Лог пользовательских данных

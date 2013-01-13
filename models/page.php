@@ -268,6 +268,8 @@ class page
 		
 		$this->user->load_language($filename);
 		$this->user->load_language($filename . '_' . $this->method);
+		
+		return $this;
 	}
 	
 	/**
@@ -292,6 +294,8 @@ class page
 				$this->urls[substr($method, $pos)] = $url;
 			}
 		}
+		
+		return $this;
 	}
 
 	/**
@@ -414,6 +418,8 @@ class page
 		}
 		
 		header('Content-type: ' . $type . '; charset=utf-8');
+		
+		return $this;
 	}
 
 	/**
@@ -448,6 +454,8 @@ class page
 		{
 			$this->template->file = sprintf('ajax/%s_%s.%s', $filename, $this->method, $this->format);
 		}
+		
+		return $this;
 	}
 	
 	/**
@@ -456,6 +464,8 @@ class page
 	public function set_page_data()
 	{
 		$this->template->assign('page', $this->data);
+		
+		return $this;
 	}
 
 	/**
@@ -491,6 +501,8 @@ class page
 			
 			$this->template->append('menu', $row);
 		}
+		
+		return $this;
 	}
 
 	/**
