@@ -15,7 +15,7 @@ class pages extends page
 {
 	public function _setup()
 	{
-		if( !$this->auth->acl_get('a_') )
+		if (!$this->auth->acl_get('a_'))
 		{
 			trigger_error('PAGE_NOT_FOUND');
 		}
@@ -32,17 +32,17 @@ class pages extends page
 		$page_id   = $this->request->variable('pid', 0);
 		$submit    = $this->request->is_set_post('submit');
 		
-		switch( $action )
+		switch ($action)
 		{
 			case 'delete':
 
-				if( !$page_id )
+				if (!$page_id)
 				{
 					trigger_error('NO_PAGE_ID', E_USER_WARNING);
 				}
 
 				// Make sure we are not directly within a page
-				if( $page_id == $parent_id )
+				if ($page_id == $parent_id)
 				{
 					$sql = '
 						SELECT
@@ -58,7 +58,7 @@ class pages extends page
 
 				$errors = $this->delete_page($page_id);
 					
-				if( !sizeof($errors) )
+				if (!sizeof($errors))
 				{
 					$this->remove_cache_file();
 					redirect($this->append_link_params(sprintf('parent_id=%d', $parent_id)));
@@ -69,7 +69,7 @@ class pages extends page
 			case 'enable':
 			case 'disable':
 
-				if( !$page_id )
+				if (!$page_id)
 				{
 					trigger_error('NO_PAGE_ID', E_USER_WARNING);
 				}
@@ -87,7 +87,7 @@ class pages extends page
 				$row = $this->db->fetchrow();
 				$this->db->freeresult();
 
-				if( !$row )
+				if (!$row)
 				{
 					trigger_error('NO_PAGE', E_USER_WARNING);
 				}
@@ -109,7 +109,7 @@ class pages extends page
 			case 'move_up':
 			case 'move_down':
 
-				if( !$page_id )
+				if (!$page_id)
 				{
 					trigger_error('NO_PAGE_ID', E_USER_WARNING);
 				}
@@ -127,14 +127,14 @@ class pages extends page
 				$row = $this->db->fetchrow();
 				$this->db->freeresult();
 
-				if( !$row )
+				if (!$row)
 				{
 					trigger_error('NO_PAGE', E_USER_WARNING);
 				}
 
 				$move_page_name = $this->move_page_by($row, $action, 1);
 
-				if( $move_page_name !== false )
+				if (false !== $move_page_name)
 				{
 					$this->remove_cache_file();
 				}
@@ -142,7 +142,7 @@ class pages extends page
 			break;
 			case 'edit':
 
-				if( !$page_id )
+				if (!$page_id)
 				{
 					trigger_error('NO_PAGE_ID', E_USER_WARNING);
 				}
@@ -152,7 +152,7 @@ class pages extends page
 			// no break
 			case 'add':
 			
-				if( $action == 'add' )
+				if ($action == 'add')
 				{
 					$page_row = array(
 						'page_name'      => $this->request->variable('page_name', ''),
@@ -187,24 +187,24 @@ class pages extends page
 					'handler_method' => $this->request->variable('handler_method', (string) $page_row['handler_method']),
 					'page_noindex'   => $this->request->variable('page_noindex', (int) $page_row['page_noindex']),
 					'page_image'     => $this->request->variable('page_image', (string) $page_row['page_image']),
-					'page_text'      => ( $this->request->is_set('page_text') ) ? $_REQUEST['page_text'] : (string) $page_row['page_text']
+					'page_text'      => $this->request->is_set('page_text') ? $_REQUEST['page_text'] : (string) $page_row['page_text']
 				);
 
-				if( $submit )
+				if ($submit)
 				{
-					if( !$page_data['page_name'] )
+					if (!$page_data['page_name'])
 					{
 						trigger_error('NO_PAGE_NAME', E_USER_WARNING);
 					}
 
-					if( $action == 'edit' )
+					if ($action == 'edit')
 					{
 						$page_data['page_id'] = $page_id;
 					}
 
 					$errors = $this->update_page_data($page_data);
 
-					if( !sizeof($errors) )
+					if (!sizeof($errors))
 					{
 						$this->remove_cache_file();
 
@@ -229,7 +229,7 @@ class pages extends page
 					array_change_key_case($page_data, CASE_UPPER)
 				));
 
-				if( sizeof($errors) )
+				if (sizeof($errors))
 				{
 					$this->template->assign(array(
 						'S_ERROR'   => true,
@@ -243,7 +243,7 @@ class pages extends page
 		}
 
 		// Default management page
-		if( sizeof($errors) )
+		if (sizeof($errors))
 		{
 			$this->template->assign(array(
 				'S_ERROR'   => true,
@@ -251,7 +251,7 @@ class pages extends page
 			));
 		}
 
-		if( !$parent_id )
+		if (!$parent_id)
 		{
 			$navigation = 'root';
 		}
@@ -261,9 +261,9 @@ class pages extends page
 
 			$pages_nav = $this->get_page_branch($parent_id, 'parents', 'descending');
 
-			foreach( $pages_nav as $row )
+			foreach ($pages_nav as $row)
 			{
-				if( $row['page_id'] == $parent_id )
+				if ($row['page_id'] == $parent_id)
 				{
 					$navigation .= ' &raquo; ' . $row['page_name'];
 				}
@@ -287,12 +287,12 @@ class pages extends page
 				left_id ASC';
 		$result = $this->db->query($sql);
 
-		if( $row = $this->db->fetchrow($result) )
+		if ($row = $this->db->fetchrow($result))
 		{
 			do
 			{
-				// $page_image = ( $row['page_image'] ) ? $row['page_image'] : (($row['is_dir']) ? 'folder' : 'blog');
-				$page_image = ( $row['is_dir'] ) ? 'folder_open' : 'blog';
+				// $page_image = $row['page_image'] ? $row['page_image'] : (($row['is_dir']) ? 'folder' : 'blog');
+				$page_image = $row['is_dir'] ? 'folder_open' : 'blog';
 
 				$url = ilink($this->url . '?parent_id=' . $parent_id . '&amp;pid=' . $row['page_id']);
 
@@ -320,11 +320,11 @@ class pages extends page
 					'U_DISABLE'   => $url . '&amp;action=disable'
 				));
 			}
-			while( $row = $this->db->fetchrow() );
+			while ($row = $this->db->fetchrow());
 
 			$this->template->assign('S_NO_PAGES', false);
 		}
-		elseif( $parent_id )
+		elseif ($parent_id)
 		{
 			$row = $this->get_page_row($parent_id);
 			$url = ilink($this->url . '?parent_id=' . $parent_id . '&amp;pid=' . $row['page_id']);
@@ -360,7 +360,7 @@ class pages extends page
 		$row = $this->get_page_row($page_id);
 		$branch = $this->get_page_branch($page_id, 'children', 'descending', false);
 
-		if( sizeof($branch) )
+		if (sizeof($branch))
 		{
 			return array('CANNOT_REMOVE_PAGE');
 		}
@@ -413,7 +413,7 @@ class pages extends page
 	*/
 	function get_page_branch($page_id, $type = 'all', $order = 'descending', $include_self = true)
 	{
-		switch( $type )
+		switch ($type)
 		{
 			case 'parents':  $condition = 'p1.left_id BETWEEN p2.left_id AND p2.right_id'; break;
 			case 'children': $condition = 'p2.left_id BETWEEN p1.left_id AND p1.right_id'; break;
@@ -439,9 +439,9 @@ class pages extends page
 				p2.left_id ' . (($order == 'descending') ? 'ASC' : 'DESC');
 		$this->db->query($sql);
 
-		while( $row = $this->db->fetchrow() )
+		while ($row = $this->db->fetchrow())
 		{
-			if( !$include_self && $row['page_id'] == $page_id )
+			if (!$include_self && $row['page_id'] == $page_id)
 			{
 				continue;
 			}
@@ -472,7 +472,7 @@ class pages extends page
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
 
-		if( !$row )
+		if (!$row)
 		{
 			trigger_error('NO_PAGE', E_USER_WARNING);
 		}
@@ -507,14 +507,14 @@ class pages extends page
 		$padding_store = array('0' => '');
 		$page_list = $padding = '';
 
-		while( $row = $this->db->fetchrow() )
+		while ($row = $this->db->fetchrow())
 		{
-			if( $row['left_id'] < $right )
+			if ($row['left_id'] < $right)
 			{
 				$padding .= '&nbsp; &nbsp;';
 				$padding_store[$row['parent_id']] = $padding;
 			}
-			elseif( $row['left_id'] > $right + 1 )
+			elseif ($row['left_id'] > $right + 1)
 			{
 				$padding = isset($padding_store[$row['parent_id']]) ? $padding_store[$row['parent_id']] : '';
 			}
@@ -522,26 +522,26 @@ class pages extends page
 			$right = $row['right_id'];
 
 			/* Пропускаем ненужные страницы */
-			if( (is_array($ignore_id) && in_array($row['page_id'], $ignore_id)) || $row['page_id'] == $ignore_id )
+			if ((is_array($ignore_id) && in_array($row['page_id'], $ignore_id)) || $row['page_id'] == $ignore_id)
 			{
 				continue;
 			}
 
 			/* Пустые папки */
-			if( $row['is_dir'] && ($row['left_id'] + 1 == $row['right_id']) && $ignore_emptycat )
+			if ($row['is_dir'] && ($row['left_id'] + 1 == $row['right_id']) && $ignore_emptycat)
 			{
 				continue;
 			}
 			
 			/* Пропускаем страницы, оставляем только папки */
-			if( !$row['is_dir'] && $ignore_noncat )
+			if (!$row['is_dir'] && $ignore_noncat)
 			{
 				continue;
 			}
 
-			$selected = ( is_array($select_id) ) ? ((in_array($row['page_id'], $select_id)) ? ' selected="selected"' : '') : (($row['page_id'] == $select_id) ? ' selected="selected"' : '');
+			$selected = is_array($select_id) ? (in_array($row['page_id'], $select_id) ? ' selected="selected"' : '') : ($row['page_id'] == $select_id ? ' selected="selected"' : '');
 
-			$page_list .= '<option value="' . $row['page_id'] . '"' . $selected . ((!$row['page_enabled']) ? ' class="disabled"' : '') . '>' . $padding . $row['page_name'] . '</option>';
+			$page_list .= '<option value="' . $row['page_id'] . '"' . $selected . (!$row['page_enabled'] ? ' class="disabled"' : '') . '>' . $padding . $row['page_name'] . '</option>';
 		}
 
 		$this->db->freeresult();
@@ -561,7 +561,7 @@ class pages extends page
 		$diff = sizeof($moved_pages) * 2;
 
 		$moved_ids = array();
-		for( $i = 0, $len = sizeof($moved_pages); $i < $len; ++$i )
+		for ($i = 0, $len = sizeof($moved_pages); $i < $len; ++$i)
 		{
 			$moved_ids[] = $moved_pages[$i]['page_id'];
 		}
@@ -593,7 +593,7 @@ class pages extends page
 				left_id > ' . (int) $from_data['right_id'];
 		$this->db->query($sql);
 
-		if( $to_parent_id > 0 )
+		if ($to_parent_id > 0)
 		{
 			$to_data = $this->get_page_row($to_parent_id);
 
@@ -629,7 +629,7 @@ class pages extends page
 			/* Синхронизация перемещенной ветви */
 			$to_data['right_id'] += $diff;
 			
-			if( $to_data['right_id'] > $from_data['right_id'] )
+			if ($to_data['right_id'] > $from_data['right_id'])
 			{
 				$diff = '+ ' . ($to_data['right_id'] - $from_data['right_id'] - 1);
 			}
@@ -697,14 +697,14 @@ class pages extends page
 		$this->db->query_limit($sql, $steps);
 		$target = array();
 
-		while( $row = $this->db->fetchrow() )
+		while ($row = $this->db->fetchrow())
 		{
 			$target = $row;
 		}
 
 		$this->db->freeresult();
 
-		if( !sizeof($target) )
+		if (!sizeof($target))
 		{
 			/* Страница уже в самом верху или низу дерева */
 			return false;
@@ -717,7 +717,7 @@ class pages extends page
 		* $move_up_left and $move_up_right define the scope of the nodes that are moving
 		* up. Other nodes in the scope of ($left_id, $right_id) are considered to move down.
 		*/
-		if( $action == 'move_up' )
+		if ($action == 'move_up')
 		{
 			$left_id = (int) $target['left_id'];
 			$right_id = (int) $page_row['right_id'];
@@ -786,10 +786,10 @@ class pages extends page
 	*/
 	function update_page_data(&$page_data, $run_inline = false)
 	{
-		if( !isset($page_data['page_id']) )
+		if (!isset($page_data['page_id']))
 		{
 			/* Если page_id не указан, то создаем новую страницу */
-			if( $page_data['parent_id'] )
+			if ($page_data['parent_id'])
 			{
 				$sql = '
 					SELECT
@@ -805,9 +805,9 @@ class pages extends page
 				$row = $this->db->fetchrow();
 				$this->db->freeresult();
 
-				if( !$row )
+				if (!$row)
 				{
-					if( $run_inline )
+					if ($run_inline)
 					{
 						return 'PARENT_NO_EXIST';
 					}
@@ -871,18 +871,18 @@ class pages extends page
 		{
 			$row = $this->get_page_row($page_data['page_id']);
 
-			if( $page_data['is_dir'] && !$row['is_dir'] )
+			if ($page_data['is_dir'] && !$row['is_dir'])
 			{
 				/* Нельзя сделать папку страницей */
 				$branch = $this->get_page_branch($page_data['page_id'], 'children', 'descending', false);
 
-				if( sizeof($branch) )
+				if (sizeof($branch))
 				{
 					return array('NO_DIR_TO_PAGE');
 				}
 			}
 
-			if( $row['parent_id'] != $page_data['parent_id'] )
+			if ($row['parent_id'] != $page_data['parent_id'])
 			{
 				$this->move_page($page_data['page_id'], $page_data['parent_id']);
 			}

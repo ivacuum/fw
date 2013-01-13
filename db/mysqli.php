@@ -692,11 +692,11 @@ class mysqli
 		*/
 		if ($code === 145)
 		{
-			if( preg_match("#Table '.+/(.+)' is marked as crashed and should be repaired#", $message, $matches) )
+			if (preg_match("#Table '.+/(.+)' is marked as crashed and should be repaired#", $message, $matches))
 			{
 				$this->query('REPAIR TABLE ' . $matches[1]);
 			}
-			elseif( preg_match("#Can't open file: '(.+).MY[ID]'\.? \(errno: 145\)#", $message, $matches) )
+			elseif (preg_match("#Can't open file: '(.+).MY[ID]'\.? \(errno: 145\)#", $message, $matches))
 			{
 				$this->query('REPAIR TABLE ' . $matches[1]);
 			}

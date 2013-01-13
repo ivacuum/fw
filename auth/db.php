@@ -4,17 +4,12 @@
 * @copyright (c) 2010
 */
 
-if( !defined('IN_SITE') )
-{
-	exit;
-}
-
 function login_db(&$username, &$password)
 {
 	global $config, $db;
 
 	/* Нельзя вводить пустой пароль */
-	if( !$password )
+	if (!$password)
 	{
 		return array(
 			'status'    => 'LOGIN_ERROR_PASSWORD',
@@ -23,7 +18,7 @@ function login_db(&$username, &$password)
 		);
 	}
 
-	if( !$username )
+	if (!$username)
 	{
 		return array(
 			'status'    => 'LOGIN_ERROR_USERNAME',
@@ -48,7 +43,7 @@ function login_db(&$username, &$password)
 	$row = $db->fetchrow($result);
 	$db->freeresult($result);
 
-	if( !$row )
+	if (!$row)
 	{
 		return array(
 			'status'    => 'LOGIN_ERROR_USERNAME',
@@ -91,13 +86,13 @@ function login_db(&$username, &$password)
 	*/
 
 	/* Проверка пароля */
-	if( $password === $row['user_password'] )
+	if ($password === $row['user_password'])
 	{
-		if( !$row['user_salt'] )
+		if (!$row['user_salt'])
 		{
 		}
 
-		if( $row['user_login_attempts'] != 0 )
+		if ($row['user_login_attempts'] != 0)
 		{
 			$sql = '
 				UPDATE
@@ -109,7 +104,7 @@ function login_db(&$username, &$password)
 			$db->query($sql);
 		}
 
-		if( !$row['user_active'] )
+		if (!$row['user_active'])
 		{
 			return array(
 				'status'    => 'LOGIN_ERROR_ACTIVE',
@@ -137,8 +132,8 @@ function login_db(&$username, &$password)
 	$db->query($sql);
 
 	return array(
-		'status'    => ( $show_captcha ) ? 'LOGIN_ERROR_ATTEMPTS' : 'LOGIN_ERROR_PASSWORD',
-		'error_msg' => ( $show_captcha ) ? 'LOGIN_ERROR_ATTEMPTS' : 'LOGIN_ERROR_PASSWORD',
+		'status'    => $show_captcha ? 'LOGIN_ERROR_ATTEMPTS' : 'LOGIN_ERROR_PASSWORD',
+		'error_msg' => $show_captcha ? 'LOGIN_ERROR_ATTEMPTS' : 'LOGIN_ERROR_PASSWORD',
 		'user_row'  => $row
 	);
 }

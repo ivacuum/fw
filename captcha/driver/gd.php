@@ -43,7 +43,7 @@ class gd
 		
 		imagealphablending($image, true);
 
-		for( $i = 0, $posx = 8, $posy = 28, $len = mb_strlen($code); $i < $len; $i++ )
+		for ($i = 0, $posx = 8, $posy = 28, $len = mb_strlen($code); $i < $len; $i++)
 		{
 			$colortext = imagecolorallocatealpha($image, mt_rand(0, 200), mt_rand(0, 200), mt_rand(0, 200), mt_rand(0, 63));
 			$font_size = mt_rand(18, 23);

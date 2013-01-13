@@ -45,7 +45,7 @@ class comments
 	{
 		$post_text = $this->request->variable('post_text', '');
 		
-		if( !$post_text )
+		if (!$post_text)
 		{
 			trigger_error('EMPTY_MESSAGE');
 		}
@@ -97,7 +97,7 @@ class comments
 		$row = $this->db->fetchrow($result);
 		$this->db->freeresult($result);
 		
-		if( !$row )
+		if (!$row)
 		{
 			trigger_error('DATA_NOT_FOUND');
 		}
@@ -155,7 +155,7 @@ class comments
 				c.comm_time ' . $order;
 		$this->db->query_limit($sql, $on_page, $offset);
 		
-		while( $row = $this->db->fetchrow() )
+		while ($row = $this->db->fetchrow())
 		{
 			$this->template->append('comments', array(
 				'ID'         => $row['comm_id'],
@@ -185,7 +185,7 @@ class comments
 		$comment_id = getvar('comment_id', 0);
 		$post_text  = getvar('post_text', '');
 
-		if( $button == 'cancel' )
+		if ($button == 'cancel')
 		{
 			/**
 			* Отмена правки - возвращаем текст коммента
@@ -211,7 +211,7 @@ class comments
 			garbage_collection();
 			exit;
 		}
-		elseif( $button == 'submit' )
+		elseif ($button == 'submit')
 		{
 			/**
 			* Сохраняем изменённый текст
@@ -244,7 +244,7 @@ class comments
 			garbage_collection();
 			exit;
 		}
-		elseif( $comment_id )
+		elseif ($comment_id)
 		{
 			/**
 			* Текст для правки

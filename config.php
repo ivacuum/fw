@@ -23,7 +23,7 @@ $acm_type   = 'memcache';
 * Константы
 * apc_delete($acm_prefix . '_constants');
 */
-if( false === load_constants() )
+if (false === load_constants())
 {
 	set_constants(array(
 		/* Способы уведомления */

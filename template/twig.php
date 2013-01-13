@@ -114,7 +114,7 @@ class twig
 		$this->file = $file ?: $this->file;
 		$this->set_globals();
 		
-		// if( !file_exists($this->path . '/' . $this->file) )
+		// if (!file_exists($this->path . '/' . $this->file))
 		// {
 		// 	trigger_error('TEMPLATE_NOT_FOUND');
 		// }

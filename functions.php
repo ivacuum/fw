@@ -32,7 +32,7 @@ function build_hidden_fields($row)
 {
 	$string = '';
 
-	foreach( $row as $key => $value )
+	foreach ($row as $key => $value)
 	{
 		$string .= '<input type="hidden" name="' . $key . '" value="' . $value . '" />';
 	}
@@ -51,21 +51,21 @@ function build_hidden_fields($row)
 function create_time($time, $no_seconds = false)
 {
 	/* Дни */
-	$days = ( $time >= 86400 ) ? intval($time / 86400) : 0;
-	$days = ( $days > 0 ) ? $days . ' дн. ' : '';
-	$time -= ( $time >= 86400 ) ? 86400 * $days : 0;
+	$days = $time >= 86400 ? intval($time / 86400) : 0;
+	$days = $days > 0 ? $days . ' дн. ' : '';
+	$time -= $time >= 86400 ? 86400 * $days : 0;
 
 	/* Часы */
-	$hours = ( $time >= 3600 ) ? intval($time / 3600) : 0;
-	$hours = ( $hours > 0 ) ? $hours . ' ч. ' : '';
-	$time -= ( $time >= 3600 ) ? 3600 * $hours : 0;
+	$hours = $time >= 3600 ? intval($time / 3600) : 0;
+	$hours = $hours > 0 ? $hours . ' ч. ' : '';
+	$time -= $time >= 3600 ? 3600 * $hours : 0;
 
 	/* Минуты */
-	$minutes = ( $time >= 60 ) ? intval($time / 60) : 0;
-	$minutes = ( $minutes > 0 ) ? $minutes . ' мин.' : '';
-	$time -= ( $time >= 60 ) ? 60 * $minutes : 0;
+	$minutes = $time >= 60 ? intval($time / 60) : 0;
+	$minutes = $minutes > 0 ? $minutes . ' мин.' : '';
+	$time -= $time >= 60 ? 60 * $minutes : 0;
 
-	if( !$days && !$hours && !$minutes && $no_seconds !== false )
+	if (!$days && !$hours && !$minutes && false !== $no_seconds)
 	{
 		return '1 мин.';
 	}
@@ -82,28 +82,28 @@ function garbage_collection($display_profiler = true)
 {
 	global $auth, $config, $db, $profiler, $request;
 
-	if( !empty($profiler) )
+	if (!empty($profiler))
 	{
-		if( $display_profiler && !$request->is_ajax && !defined('IN_SQL_ERROR') )
+		if ($display_profiler && !$request->is_ajax && !defined('IN_SQL_ERROR'))
 		{
-			if( ($auth->acl_get('a_') || $_SERVER['REMOTE_ADDR'] == '192.168.1.1') && $config['profiler_display'] )
+			if (($auth->acl_get('a_') || $_SERVER['REMOTE_ADDR'] == '192.168.1.1') && $config['profiler_display'])
 			{
 				$profiler->display();
 			}
 		}
 
-		if( $config['profiler_send_stats'] )
+		if ($config['profiler_send_stats'])
 		{
 			$profiler->send_stats($config['profiler_ip'], $config['profiler_port']);
 		}
 	}
 	
-	if( !empty($cache) )
+	if (!empty($cache))
 	{
 		$cache->unload();
 	}
 
-	if( !empty($db) )
+	if (!empty($db))
 	{
 		$db->close();
 	}
@@ -116,17 +116,17 @@ function garbage_collection($display_profiler = true)
 */
 function generate_page_link($page, $base_url, $query_string)
 {
-	if( !$page )
+	if (!$page)
 	{
 		return false;
 	}
 
-	if( $page == 1 )
+	if ($page == 1)
 	{
 		return $base_url . $query_string;
 	}
 
-	$url_delim = ( !$query_string ) ? '?' : '&amp;';
+	$url_delim = !$query_string ? '?' : '&amp;';
 
 	return $base_url . sprintf('%s%sp=%d', $query_string, $url_delim, $page);
 }
@@ -157,9 +157,9 @@ function get_site_info_by_id($site_id)
 	
 	$sites = $cache->obtain_sites();
 	
-	foreach( $sites as $row )
+	foreach ($sites as $row)
 	{
-		if( $site_id == $row['site_id'] )
+		if ($site_id == $row['site_id'])
 		{
 			return array(
 				'domain'   => $row['site_url'],
@@ -185,18 +185,18 @@ function get_site_info_by_url($url, $page = '')
 
 	$language = '';
 	$page     = trim($page, '/');
-	$params   = ( $page ) ? explode('/', $page) : array();
+	$params   = $page ? explode('/', $page) : array();
 	
-	if( !empty($params) && strlen($params[0]) == 2 )
+	if (!empty($params) && strlen($params[0]) == 2)
 	{
 		$language = $params[0];
 	}
 	
 	$sites = $cache->obtain_sites();
 	
-	foreach( $sites as $row )
+	foreach ($sites as $row)
 	{
-		if( $url == $row['site_url'] && (($row['site_default'] && !$language) || ($language && $language == $row['site_language'])) )
+		if ($url == $row['site_url'] && (($row['site_default'] && !$language) || ($language && $language == $row['site_language'])))
 		{
 			return array(
 				'default'  => (int) $row['site_default'],
@@ -220,9 +220,9 @@ function get_site_info_by_url_lang($url, $lang)
 	
 	$sites = $cache->obtain_sites();
 	
-	foreach( $sites as $row )
+	foreach ($sites as $row)
 	{
-		if( $url == $row['site_url'] && $lang == $row['site_language'] )
+		if ($url == $row['site_url'] && $lang == $row['site_language'])
 		{
 			return array(
 				'id'    => (int) $row['site_id'],
@@ -255,7 +255,7 @@ function humn_size($size, $rounder = '', $min = '', $space = '&nbsp;')
 	$ext  = $sizes[0];
 	$rnd  = $rounders[0];
 
-	if( $min == $user->lang['SIZE_KB'] && $size < 1024 )
+	if ($min == $user->lang['SIZE_KB'] && $size < 1024)
 	{
 		$size    = $size / 1024;
 		$ext     = $user->lang['SIZE_KB'];
@@ -263,7 +263,7 @@ function humn_size($size, $rounder = '', $min = '', $space = '&nbsp;')
 	}
 	else
 	{
-		for( $i = 1, $cnt = sizeof($sizes); ($i < $cnt && $size >= 1024); $i++ )
+		for ($i = 1, $cnt = sizeof($sizes); ($i < $cnt && $size >= 1024); $i++)
 		{
 			$size = $size / 1024;
 			$ext  = $sizes[$i];
@@ -271,7 +271,7 @@ function humn_size($size, $rounder = '', $min = '', $space = '&nbsp;')
 		}
 	}
 
-	if( !$rounder )
+	if (!$rounder)
 	{
 		$rounder = $rnd;
 	}
@@ -297,7 +297,7 @@ function ilink($url = '', $prefix = false)
 	* 1а) /csstats		1б) http://wc3.ivacuum.ru/	1в) /
 	* 2а) /csstats/		2б) http://wc3.ivacuum.ru/	2в) /en/
 	*/
-	if( 0 === strpos($url, '/') )
+	if (0 === strpos($url, '/'))
 	{
 		/**
 		* Ссылка от корня сайта
@@ -308,20 +308,20 @@ function ilink($url = '', $prefix = false)
 		$link = $config['site_root_path'];
 		$url  = substr($url, 1);
 	}
-	elseif( 0 === strpos($url, 'http://') )
+	elseif (0 === strpos($url, 'http://'))
 	{
 		$link = 'http://';
 		$url  = substr($url, 7);
 	}
-	elseif( 0 === strpos($url, '//') )
+	elseif (0 === strpos($url, '//'))
 	{
 		$link = '//';
 		$url  = substr($url, 2);
 	}
 	else
 	{
-		$link = ( $prefix === false ) ? $config['site_root_path'] : $prefix;
-		$link .= ( substr($link, -1) == '/' ) ? '' : '/';
+		$link = false === $prefix ? $config['site_root_path'] : $prefix;
+		$link .= substr($link, -1) == '/' ? '' : '/';
 	}
 
 	/**
@@ -329,9 +329,9 @@ function ilink($url = '', $prefix = false)
 	*
 	* Если язык уже присутствует в ссылке, то пропускаем этот шаг
 	*/
-	if( ($link == $config['site_root_path'] && $prefix === false) || (false !== strpos($prefix, 'ivacuum.ru')) )
+	if (($link == $config['site_root_path'] && $prefix === false) || (false !== strpos($prefix, 'ivacuum.ru')))
 	{
-		if( !$site_info['default'] && (false === strpos($link . $url, sprintf('/%s/', $site_info['language']))) )
+		if (!$site_info['default'] && (false === strpos($link . $url, sprintf('/%s/', $site_info['language']))))
 		{
 			$link = sprintf('%s%s/', $link, $site_info['language']);
 		}
@@ -340,7 +340,7 @@ function ilink($url = '', $prefix = false)
 	$link .= $url;
 	$ary = pathinfo($url);
 	
-	if( isset($ary['extension']) || substr($link, -1) == '/' || !$config['router_default_extension'] )
+	if (isset($ary['extension']) || substr($link, -1) == '/' || !$config['router_default_extension'])
 	{
 		return $link;
 	}
@@ -368,7 +368,7 @@ function load_constants()
 {
 	global $acm_prefix;
 	
-	if( !function_exists('apc_fetch') )
+	if (!function_exists('apc_fetch'))
 	{
 		return false;
 	}
@@ -386,7 +386,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	$err = '';
 
 	/* Убеждаемся, что учтены настройки пользователя */
-	if( empty($user->lang) )
+	if (empty($user->lang))
 	{
 		$user->setup();
 	}
@@ -394,13 +394,13 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	/**
 	* Пользователь пытается авторизоваться как администратор не имея на то прав
 	*/
-	if( $admin && !$auth->acl_get('a_') )
+	if ($admin && !$auth->acl_get('a_'))
 	{
 		/**
 		* Анонимные/неактивные пользователи никак не смогут попасть в админку,
 		* даже если у них есть соответствующие привилегии
 		*/
-		// if( $user->is_registered )
+		// if ($user->is_registered)
 		// {
 		// 	add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
 		// }
@@ -408,16 +408,16 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		trigger_error('NO_AUTH_ADMIN');
 	}
 
-	if( $request->is_set_post('submit') )
+	if ($request->is_set_post('submit'))
 	{
-		$admin 		= ( $admin ) ? 1 : 0;
+		$admin 		= $admin ? 1 : 0;
 		$autologin	= $request->is_set_post('autologin');
 		$password	= $request->post('password', '');
 		$username	= $request->post('username', '');
-		$viewonline = ( $admin ) ? $user['session_viewonline'] : (int) !$request->is_set_post('viewonline');
+		$viewonline = $admin ? $user['session_viewonline'] : (int) !$request->is_set_post('viewonline');
 
 		// Check if the supplied username is equal to the one stored within the database if re-authenticating
-		if( $admin && $username != $user['username'] )
+		if ($admin && $username != $user['username'])
 		{
 			// add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
 			trigger_error('NO_AUTH_ADMIN_USER_DIFFER');
@@ -429,9 +429,9 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		/**
 		* Ведем лог всех авторизаций администраторов
 		*/
-		// if( $admin )
+		// if ($admin)
 		// {
-		// 	if( $result['status'] == 'OK' )
+		// 	if ($result['status'] == 'OK')
 		// 	{
 		// 		add_log('admin', 'LOG_ADMIN_AUTH_SUCCESS');
 		// 	}
@@ -440,19 +440,19 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		// 		/**
 		// 		* Анонимные/неактивные пользователя никогда не попадут в админку
 		// 		*/
-		// 		if( $user->is_registered )
+		// 		if ($user->is_registered)
 		// 		{
 		// 			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
 		// 		}
 		// 	}
 		// }
 
-		if( $result['status'] == 'OK' )
+		if ($result['status'] == 'OK')
 		{
-			$message  = ( $l_success ) ? $l_success : $user->lang['LOGIN_REDIRECT'];
+			$message  = $l_success ? $l_success : $user->lang['LOGIN_REDIRECT'];
 
 			/* Разрешаем создателю авторизоваться даже при бане */
-			if( defined('IN_CHECK_BAN') && $result['user_row']['user_id'] === 1 )
+			if (defined('IN_CHECK_BAN') && $result['user_row']['user_id'] === 1)
 			{
 				return;
 			}
@@ -461,7 +461,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		}
 
 		/* Неудалось создать сессию */
-		if( $result['status'] == 'LOGIN_BREAK' )
+		if ($result['status'] == 'LOGIN_BREAK')
 		{
 			trigger_error($result['message']);
 		}
@@ -473,7 +473,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	
 	$s_hidden_fields = array();
 
-	if( $redirect )
+	if ($redirect)
 	{
 		$s_hidden_fields['goto'] = $redirect;
 	}
@@ -483,14 +483,14 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	$template->assign(array(
 		'LOGIN_ERROR'   => $err,
 		'LOGIN_EXPLAIN' => $l_explain,
-		'USERNAME'      => ( $admin ) ? $user['username'] : '',
+		'USERNAME'      => $admin ? $user['username'] : '',
 
-		'U_SEND_PASSWORD' => ( $config['email_enable'] ) ? 'ucp/sendpassword.html' : '',
+		'U_SEND_PASSWORD' => $config['email_enable'] ? 'ucp/sendpassword.html' : '',
 		'U_TERMS_USE'     => 'ucp/terms.html',
 		'U_PRIVACY'       => 'ucp/privacy.html',
 
 		'S_ADMIN_AUTH'         => $admin,
-		'S_DISPLAY_FULL_LOGIN' => ( $s_display ) ? true : false,
+		'S_DISPLAY_FULL_LOGIN' => $s_display ? true : false,
 		'S_HIDDEN_FIELDS'      => $s_hidden_fields
 	));
 
@@ -525,9 +525,9 @@ function num_format($value, $decimals = 0)
 */
 function num_in_range($value, $min, $max = false)
 {
-	$max = ( $max ) ?: $value;
+	$max = $max ?: $value;
 
-	return ( $value < $min ) ? $min : (($value > $max) ? $max : $value);
+	return $value < $min ? $min : ($value > $max ? $max : $value);
 }
 
 /**
@@ -601,21 +601,21 @@ function pagination($on_page, $overall, $link, $page_var = 'p')
 	/**
 	* Нужно ли ссылки на страницы указывать с параметрами
 	*/
-	if( $sort_count != $on_page || $sort_dir != 'd' || $sort_key != 'a' )
+	if ($sort_count != $on_page || $sort_dir != 'd' || $sort_key != 'a')
 	{
-		if( $sort_count != $on_page )
+		if ($sort_count != $on_page)
 		{
-			$link .= ( ( strpos($link, '?') !== false ) ? '&' : '?' ) . 'sc=' . $sort_count;
+			$link .= false !== strpos($link, '?') ? '&' : '?' ) . 'sc=' . $sort_count;
 		}
 
-		if( $sort_dir != 'd' )
+		if ($sort_dir != 'd')
 		{
-			$link .= ( ( strpos($link, '?') !== false ) ? '&' : '?' ) . 'sd=' . $sort_dir;
+			$link .= false !== strpos($link, '?') ? '&' : '?' ) . 'sd=' . $sort_dir;
 		}
 
-		if( $sort_key != 'a' )
+		if ($sort_key != 'a')
 		{
-			$link .= ( ( strpos($link, '?') !== false ) ? '&' : '?' ) . 'sk=' . $sort_key;
+			$link .= false !== strpos($link, '?') ? '&' : '?' ) . 'sk=' . $sort_key;
 		}
 	}
 
@@ -623,12 +623,12 @@ function pagination($on_page, $overall, $link, $page_var = 'p')
 	$pages = max(1, intval(($overall - 1) / $sort_count) + 1);
 
 	/* Проверка номера страницы */
-	if( !$p || $p > $pages || $p <= 0 )
+	if (!$p || $p > $pages || $p <= 0)
 	{
 		trigger_error('PAGE_NOT_FOUND');
 	}
 
-	if( ( $q_pos = strpos($base_url, '?') ) !== false )
+	if (($q_pos = strpos($base_url, '?')) !== false)
 	{
 		/**
 		* Если в адресе присутствует query_string:
@@ -642,19 +642,19 @@ function pagination($on_page, $overall, $link, $page_var = 'p')
 		$base_url     = substr($base_url, 0, $q_pos);
 	}
 
-	$url_delim = ( !$query_string ) ? '?' : '&amp;';
+	$url_delim = !$query_string ? '?' : '&amp;';
 	$url_next = $url_prev = 0;
 
-	if( $pages > $p )
+	if ($pages > $p)
 	{
-		if( $p > 1 )
+		if ($p > 1)
 		{
 			$url_prev = $p - 1;
 		}
 
 		$url_next = $p + 1;
 	}
-	elseif( $pages == $p && $pages > 1 )
+	elseif ($pages == $p && $pages > 1)
 	{
 		$url_prev = $p - 1;
 	}
@@ -690,7 +690,7 @@ function parse_smilies($message, $force_option = false)
 {
 	global $config, $user;
 
-	if( $force_option || !$config['allow_smilies'] )
+	if ($force_option || !$config['allow_smilies'])
 	{
 		return preg_replace('#<!\-\- <smile name="(.*?)"><url>.*?</url><title>.*?</title></smile> \-\->#', '\1', $message);
 	}
@@ -712,21 +712,21 @@ function plural($n = 0, $forms, $format = '%s %s')
 {
 	global $user;
 
-	if( !$forms )
+	if (!$forms)
 	{
 		return;
 	}
 
 	$forms = explode(';', $forms);
 
-	switch( $user->lang['.'] )
+	switch ($user->lang['.'])
 	{
 		/**
 		* Русский язык
 		*/
 		case 'ru':
 
-			if( sizeof($forms) < 3 )
+			if (sizeof($forms) < 3)
 			{
 				$forms[2] = $forms[1];
 			}
@@ -778,7 +778,7 @@ function redirect($url, $status_code = 302)
 {
 	global $config, $user;
 	
-	if( false !== strpos(urldecode($url), "\n") || false !== strpos(urldecode($url), "\r") )
+	if (false !== strpos(urldecode($url), "\n") || false !== strpos(urldecode($url), "\r"))
 	{
 		trigger_error('Bad URL.', E_USER_ERROR);
 	}
@@ -787,15 +787,15 @@ function redirect($url, $status_code = 302)
 	* Если пользователь из локальной сети,
 	* то перенаправлять его следует на локальный домен
 	*/
-	if( $config['router_local_redirect'] )
+	if ($config['router_local_redirect'])
 	{
-		if( $user->isp == 'local' )
+		if ($user->isp == 'local')
 		{
 			$url = str_replace(array('ivacuum.ru/', 't.local.ivacuum.ru/'), array('local.ivacuum.ru/', 't.ivacuum.ru/'), $url);
 		}
 	}
 	
-	if( $status_code != 302 )
+	if ($status_code != 302)
 	{
 		send_status_line($status_code);
 	}
@@ -818,7 +818,7 @@ function rss_add($url, $root = false, $title = 'RSS 2.0')
 
 	$template->append('rss', array(
 		'TITLE' => $title,
-		'URL'   => ( $root !== false ) ? ilink($url, $config['site_root_path']) : ilink($url))
+		'URL'   => false !== $root ? ilink($url, $config['site_root_path']) : ilink($url))
 	);
 
 	return;
@@ -831,9 +831,9 @@ function set_constants($constants)
 {
 	global $acm_prefix;
 
-	if( !function_exists('apc_fetch') )
+	if (!function_exists('apc_fetch'))
 	{
-		foreach( $constants as $key => $value )
+		foreach ($constants as $key => $value)
 		{
 			define($key, $value);
 		}
@@ -855,9 +855,9 @@ function send_status_line($code, $message = '')
 {
 	global $request;
 	
-	if( !$message )
+	if (!$message)
 	{
-		switch( $code )
+		switch ($code)
 		{
 			case 200: $message = 'OK'; break;
 			case 201: $message = 'Created'; break;
@@ -887,13 +887,13 @@ function send_status_line($code, $message = '')
 		}
 	}
 	
-	if( substr(strtolower(PHP_SAPI), 0, 3) === 'cgi' )
+	if (substr(strtolower(PHP_SAPI), 0, 3) === 'cgi')
 	{
 		header(sprintf('Status: %d %s', $code, $message), true, $code);
 		return;
 	}
 	
-	if( false != $version = $request->server('SERVER_PROTOCOL') )
+	if (false != $version = $request->server('SERVER_PROTOCOL'))
 	{
 		header(sprintf('%s %d %s', $version, $code, $message), true, $code);
 		return;
@@ -911,7 +911,7 @@ function send_status_line($code, $message = '')
 */
 function seo_url($url, $lang = 'ru')
 {
-	switch( $lang )
+	switch ($lang)
 	{
 		case 'ru': $pattern = '/[^а-яa-z\d\.]/u'; break;
 		default:

@@ -37,12 +37,12 @@ class validator
 	*/
 	public function is_solved()
 	{
-		if( !$this->config['confirm_enable'] )
+		if (!$this->config['confirm_enable'])
 		{
 			return true;
 		}
 		
-		if( $this->request->is_set('confirm_code') && $this->solved === false )
+		if ($this->request->is_set('confirm_code') && $this->solved === false)
 		{
 			$this->validate();
 		}
@@ -55,12 +55,12 @@ class validator
 	*/
 	public function reset()
 	{
-		if( !$this->config['confirm_enable'] )
+		if (!$this->config['confirm_enable'])
 		{
 			return;
 		}
 		
-		if( $this->solved )
+		if ($this->solved)
 		{
 			$sql = '
 				DELETE
@@ -98,7 +98,7 @@ class validator
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
 		
-		if( !$row )
+		if (!$row)
 		{
 			return false;
 		}
@@ -111,7 +111,7 @@ class validator
 	*/
 	private function validate()
 	{
-		if( empty($this->code) )
+		if (empty($this->code))
 		{
 			$this->load_code();
 		}

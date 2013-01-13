@@ -29,14 +29,14 @@ class ajax
 		// $this->request = $_POST;
 		$this->request = $_REQUEST;
 
-		if( !isset($this->request['action']) || !$this->request['action'] || !is_string($this->request['action']) )
+		if (!isset($this->request['action']) || !$this->request['action'] || !is_string($this->request['action']))
 		{
 			$this->ajax_die('Метод не найден.');
 		}
 
 		$this->action = $this->request['action'];
 
-		if( !isset($this->valid_actions[$this->action]) )
+		if (!isset($this->valid_actions[$this->action]))
 		{
 			$this->ajax_die('Метод <b>' . $this->action . '</b> не найден.');
 		}
@@ -57,12 +57,12 @@ class ajax
 	*/
 	public function exec()
 	{
-		if( !empty($this->response['error_code']) )
+		if (!empty($this->response['error_code']))
 		{
 			$this->send();
 		}
 
-		switch( $this->valid_actions[$this->action] )
+		switch ($this->valid_actions[$this->action])
 		{
 			/**
 			* Все
@@ -76,7 +76,7 @@ class ajax
 
 				global $auth, $user;
 
-				if( empty($user->data) )
+				if (empty($user->data))
 				{
 					$user->session_begin(false);
 					$auth->init($user->data);
@@ -103,19 +103,19 @@ class ajax
 
 				global $auth, $user;
 
-				if( empty($user->data) )
+				if (empty($user->data))
 				{
 					$user->session_begin(false);
 					$auth->init($user->data);
 					$user->preferences();
 				}
 
-				if( !$user->is_registered )
+				if (!$user->is_registered)
 				{
 					$this->ajax_die('NOT_YET_LOGGED_IN');
 				}
 
-				if( !$auth->check('acp_enter') )
+				if (!$auth->check('acp_enter'))
 				{
 					$this->ajax_die('NOT_AN_ADMIN');
 				}
@@ -152,7 +152,7 @@ class ajax
 	{
 		global $user;
 
-		if( !$user['session_admin'] )
+		if (!$user['session_admin'])
 		{
 			$this->response['prompt_password'] = 1;
 			$this->send();
@@ -166,7 +166,7 @@ class ajax
 	{
 		global $user;
 
-		if( !$user->is_registered )
+		if (!$user->is_registered)
 		{
 			$this->response['prompt_login'] = 1;
 			$this->send();
@@ -184,7 +184,7 @@ class ajax
 		$auth->init($user->data);
 		$user->preferences();
 
-		if( $user->is_registered )
+		if ($user->is_registered)
 		{
 			$this->ajax_die('ALREADY_LOGGED_IN');
 		}
@@ -240,7 +240,7 @@ class ajax
 		$auth->init($user->data);
 		$user->preferences();
 
-		if( $user['session_admin'] )
+		if ($user['session_admin'])
 		{
 			$this->ajax_die('ALREADY_LOGGED_IN');
 		}
