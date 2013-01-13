@@ -102,11 +102,13 @@
 				{% if row.PAGE_IMG %}
 					<img src="{{ static('i', '_/' ~ row.PAGE_IMG) }}" alt="">
 				{% endif %}
-				<a href="{{ row.U_PAGE }}">{{ row.PAGE_NAME }}</a>
 				{% if row.IS_DIR %}
-					(/{{ row.PAGE_URL }}/)
+					<a href="{{ row.U_PAGE }}" title="/{{ row.PAGE_URL }}/">{{ row.PAGE_NAME }}</a>
 				{% else %}
-					({{ row.PAGE_URL }}.html)
+					<span title="{{ row.PAGE_URL }}.html">{{ row.PAGE_NAME }}</span>
+				{% endif %}
+				{% if row.PAGE_HANDLER and row.HANDLER_METHOD %}
+					<span class="muted">({{ row.PAGE_HANDLER }}::{{ row.HANDLER_METHOD }})</span>
 				{% endif %}
 				{% if row.PAGE_NOINDEX %}
 					<img src="{{ static('i', '_/monitor_off') }}" alt="">
@@ -118,9 +120,6 @@
 				{% endif %}
 				{% if row.PAGE_REDIRECT %}
 					<img src="{{ static('i', '_/road_sign') }}" alt="">
-				{% endif %}
-				{% if row.PAGE_HANDLER and row.HANDLER_METHOD %}
-					<br><span class="muted">{{ row.PAGE_HANDLER }}::{{ row.HANDLER_METHOD }}</span>
 				{% endif %}
 			</td>
 			<td style="width: 15%; white-space: nowrap; text-align: center; vertical-align: middle;">&nbsp;{% if row.PAGE_ENABLED %}<a href="{{ row.U_DISABLE }}">{{ lang('DISABLE') }}</a>{% else %}<a href="{{ row.U_ENABLE }}">{{ lang('ENABLE') }}</a>{% endif %}&nbsp;</td>
