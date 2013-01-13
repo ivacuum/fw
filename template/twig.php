@@ -21,17 +21,17 @@ class twig
 
 	function __construct()
 	{
-		global $config, $site_root_path, $src_root_path;
+		global $config;
 
-		require("{$src_root_path}../lib/twig/{$config['twig_version']}/Twig/Autoloader.php");
+		require(FW_DIR . "../lib/twig/{$config['twig_version']}/Twig/Autoloader.php");
 		\Twig_Autoloader::register();
 		
-		$this->path   = "{$site_root_path}../templates";
-		$this->loader = new \Twig_Loader_Filesystem(array($this->path, "{$src_root_path}templates"));
+		$this->path   = SITE_DIR . '../templates';
+		$this->loader = new \Twig_Loader_Filesystem(array($this->path, FW_DIR . 'templates'));
 		$this->env    = new \Twig_Environment($this->loader, array(
 			'auto_reload' => true,
 			'autoescape'  => false,
-			'cache'       => "{$site_root_path}../cache/templates",
+			'cache'       => SITE_DIR . '../cache/templates',
 		));
 	}
 	
@@ -154,14 +154,12 @@ class twig
 	*/
 	public function set_template_path($path)
 	{
-		global $site_root_path;
-		
 		$this->path   = $path;
 		$this->loader = new \Twig_Loader_Filesystem($this->path);
 		$this->env    = new \Twig_Environment($this->loader, array(
 			'auto_reload' => true,
 			'autoescape'  => false,
-			'cache'       => "{$site_root_path}cache/templates",
+			'cache'       => SITE_DIR . 'cache/templates',
 		));
 		$this->is_globals_set = false;
 	}

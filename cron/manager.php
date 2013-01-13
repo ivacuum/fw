@@ -25,11 +25,11 @@ class manager
 
 	function __construct()
 	{
-		global $db, $site_root_path;
+		global $db;
 
 		$this->start_time = time();
 
-		$this->cron_dir = $site_root_path . '../includes/cron/';
+		$this->cron_dir = SITE_DIR . '../includes/cron/';
 		$this->log_dir  = $this->cron_dir . 'log/';
 
 		$this->cron_allowed = $this->log_dir . 'allowed';
@@ -170,7 +170,7 @@ class manager
 	*/
 	private function set_includes_dir($site_id)
 	{
-		global $cache, $site_root_path;
+		global $cache;
 		static $id = 0;
 		
 		if ($site_id != $id)
@@ -190,10 +190,8 @@ class manager
 			$row = $this->db->fetchrow();
 			$this->db->freeresult();
 			
-			$site_root_path = $row['config_value'];
-			
 			/* Загрузка настроек сайта */
-			require_once($site_root_path . '../config.php');
+			require_once($row['config_value'] . '../config.php');
 			$cache->set_prefix($acm_prefix);
 		}
 	}

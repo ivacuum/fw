@@ -45,7 +45,7 @@ class error_handler
 			
 				if (defined('IN_SQL_ERROR'))
 				{
-					global $auth, $error_ary, $src_root_path, $template;
+					global $auth, $error_ary, $template;
 					
 					self::log_mail($error_ary);
 					

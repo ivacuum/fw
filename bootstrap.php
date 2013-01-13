@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2013
 */
 
 namespace fw;
@@ -10,24 +10,24 @@ namespace fw;
 * Настройки, необходимые для
 * функционирования сайта
 */
+define('FW_DIR', __DIR__ . '/');
+define('SITE_DIR', rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/');
+
 date_default_timezone_set('Europe/Moscow');
 error_reporting(E_ALL);
 mb_internal_encoding('utf-8');
-
-$site_root_path = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/';
-$src_root_path  = dirname(__FILE__) . '/';
 
 autoloader::register();
 
 /* Профайлер подключается первым */
 $profiler = new core\profiler();
 
-require($src_root_path . 'functions.php');
-require($src_root_path . 'config.php');
+require(FW_DIR . 'functions.php');
+require(FW_DIR . 'config.php');
 
-if (file_exists($site_root_path . '../config.php'))
+if (file_exists(SITE_DIR . '../config.php'))
 {
-	require($site_root_path . '../config.php');
+	require(SITE_DIR . '../config.php');
 }
 
 /* Собственный обработчик ошибок */
@@ -53,9 +53,9 @@ $config   = new config\db($site_info);
 $template = new template\twig();
 
 /* Планировщику задач понадобится путь к папке проекта */
-if ($site_root_path != $config['site_dir'])
+if (SITE_DIR != $config['site_dir'])
 {
-	$config->set('site_dir', $site_root_path);
+	$config->set('site_dir', SITE_DIR);
 }
 
 /**
@@ -68,8 +68,6 @@ class autoloader
 	*/
 	static public function autoload($class)
 	{
-		global $site_root_path, $src_root_path;
-
 		if (false === strpos($class, '\\'))
 		{
 			return;
@@ -77,14 +75,14 @@ class autoloader
 
 		list($prefix, $filename) = explode('/', str_replace('\\', '/', $class), 2);
 		
-		if ($prefix == 'fw' && file_exists("{$src_root_path}{$filename}.php"))
+		if ($prefix == 'fw' && file_exists(FW_DIR . "{$filename}.php"))
 		{
-			require("{$src_root_path}{$filename}.php");
+			require(FW_DIR . "{$filename}.php");
 			return true;
 		}
-		elseif ($prefix == 'app' && file_exists("{$site_root_path}../includes/{$filename}.php"))
+		elseif ($prefix == 'app' && file_exists(SITE_DIR . "../includes/{$filename}.php"))
 		{
-			require("{$site_root_path}../includes/{$filename}.php");
+			require(SITE_DIR . "../includes/{$filename}.php");
 			return true;
 		}
 		

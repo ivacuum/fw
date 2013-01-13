@@ -18,9 +18,7 @@ class gd
 	
 	function __construct()
 	{
-		global $src_root_path;
-		
-		$this->fonts_dir = $src_root_path . 'assets/fonts/';
+		$this->fonts_dir = FW_DIR . 'assets/fonts/';
 	}
 	
 	/**
