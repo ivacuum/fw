@@ -52,7 +52,7 @@ class manager
 	*/
 	public function run()
 	{
-		if( file_exists($this->cron_running) )
+		if (file_exists($this->cron_running))
 		{
 			/**
 			* До сих пор выполняются задачи в другом процессе
@@ -61,7 +61,7 @@ class manager
 			return;
 		}
 
-		if( !$this->get_file_lock() )
+		if (!$this->get_file_lock())
 		{
 			return;
 		}
@@ -72,9 +72,9 @@ class manager
 		$this->load_tasks();
 		$this->log(sprintf('Найдено готовых к запуску задач: %d', sizeof($this->tasks)));
 
-		if( $this->tasks )
+		if ($this->tasks)
 		{
-			foreach( $this->tasks as $task )
+			foreach ($this->tasks as $task)
 			{
 				$this->set_includes_dir($task['site_id']);
 				$this->log(sprintf('Выполнение задачи "%s" [%s] на сайте: #%d', $task['cron_title'], $task['cron_script'], $task['site_id']));
@@ -84,7 +84,7 @@ class manager
 				$cron_class = '\\app\\cron\\' . $task['cron_script'];
 				$cron = new $cron_class($task);
 				
-				if( $cron->run() )
+				if ($cron->run())
 				{
 					/* Установка времени следующего запуска */
 					$this->set_next_run_time($task['cron_id'], $task['cron_schedule']);
@@ -108,11 +108,11 @@ class manager
 	*/
 	private function get_file_lock()
 	{
-		if( file_exists($this->cron_allowed) )
+		if (file_exists($this->cron_allowed))
 		{
 			return rename($this->cron_allowed, $this->cron_running);
 		}
-		elseif( file_exists($this->cron_running) )
+		elseif (file_exists($this->cron_running))
 		{
 			$this->release_deadlock();
 		}
@@ -155,7 +155,7 @@ class manager
 	*/
 	private function release_deadlock()
 	{
-		if( !file_exists($this->cron_running) || time() - filemtime($this->cron_running) < $this->deadlock_timeout )
+		if (!file_exists($this->cron_running) || time() - filemtime($this->cron_running) < $this->deadlock_timeout)
 		{
 			return;
 		}
@@ -173,7 +173,7 @@ class manager
 		global $cache, $site_root_path;
 		static $id = 0;
 		
-		if( $site_id != $id )
+		if ($site_id != $id)
 		{
 			$id = (int) $site_id;
 			
@@ -227,12 +227,12 @@ class manager
 	{
 		$startmark = sprintf('%scron_started_at_%s', $this->log_dir, date('Y-m-d_H-i-s', $this->start_time));
 
-		if( $mode == 'start' )
+		if ($mode == 'start')
 		{
 			touch($this->cron_running);
 			touch($startmark);
 		}
-		elseif( $mode == 'end' )
+		elseif ($mode == 'end')
 		{
 			unlink($startmark);
 		}
