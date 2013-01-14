@@ -20,6 +20,7 @@ class router
 	public $site_id;
 	public $url;
 	
+	protected $auth;
 	protected $cache;
 	protected $config;
 	protected $db;
@@ -32,8 +33,9 @@ class router
 	protected $template;
 	protected $user;
 	
-	function __construct($cache, $config, $db, $profiler, $request, $template, $user)
+	function __construct($auth, $cache, $config, $db, $profiler, $request, $template, $user)
 	{
+		$this->auth     = $auth;
 		$this->cache    = $cache;
 		$this->config   = $config;
 		$this->db       = $db;
@@ -363,7 +365,8 @@ class router
 		$this->handler->url      = implode('/', $this->page_link);
 		
 		/* Настройка обработчика */
-		$this->handler->_set_cache($this->cache)
+		$this->handler->_set_auth($this->auth)
+			->_set_cache($this->cache)
 			->_set_config($this->config)
 			->_set_db($this->db)
 			->_set_profiler($this->profiler)
