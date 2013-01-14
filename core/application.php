@@ -65,6 +65,11 @@ class application implements \ArrayAccess
 		$this['user'] = $this->share(function() use ($app) {
 			return new user($app['request']);
 		});
+		
+		/* Привилегии */
+		$this->['auth'] = $this->share(function() {
+			return new auth();
+		});
 
 		/* Настройки сайта и движка */
 		$this['config'] = $this->share(function() use ($app) {
@@ -72,9 +77,9 @@ class application implements \ArrayAccess
 		});
 
 		/* Маршрутизатор запросов */
-		// $this['router'] = $this->share(function() use ($app) {
-		// 	return new router($app['cache'], $app['config'], $app['db'], $app['request'], $app['template'], $app['user']);
-		// });
+		$this['router'] = $this->share(function() use ($app) {
+			return new router($app['auth'], $app['cache'], $app['config'], $app['db'], $app['profiler'], $app['request'], $app['template'], $app['user']);
+		});
 
 		/* Информация об обслуживаемом сайте */
 		$this['site_info'] = $this->share(function() use ($app) {

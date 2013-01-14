@@ -62,7 +62,7 @@ $request  = $app['request'];
 $cache    = $app['cache'];
 $db       = $app['db'];
 $user     = $app['user'];
-$auth     = new core\auth();
+$auth     = $app['auth'];
 $config   = $app['config'];
 $template = $app['template'];
 
