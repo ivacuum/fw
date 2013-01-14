@@ -233,7 +233,7 @@ class pages extends page
 				{
 					$this->template->assign([
 						'S_ERROR'   => true,
-						'ERROR_MSG' => implode('<br />', $errors)
+						'ERROR_MSG' => implode('<br>', $errors)
 					]);
 				}
 
@@ -247,7 +247,7 @@ class pages extends page
 		{
 			$this->template->assign([
 				'S_ERROR'   => true,
-				'ERROR_MSG' => implode('<br />', $errors)
+				'ERROR_MSG' => implode('<br>', $errors)
 			]);
 		}
 

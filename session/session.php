@@ -202,7 +202,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 			}
 
 			$till_date = $ban_row['ban_end'] ? $this->create_date($ban_row['ban_end']) : 'не предвидится';
-			$message = '<b>Заблокирован</b>: ' . $ban_triggered_by . '<br /><b>Окончание бана</b>: ' . $till_date . '<br /><b>Причина</b>: ' . $ban_row['ban_reason'];
+			$message = '<b>Заблокирован</b>: ' . $ban_triggered_by . '<br><b>Окончание бана</b>: ' . $till_date . '<br><b>Причина</b>: ' . $ban_row['ban_reason'];
 
 			$this->session_end(false);
 

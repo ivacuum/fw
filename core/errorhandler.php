@@ -184,7 +184,7 @@ class errorhandler
 
 					$error['file'] = str_replace($_SERVER['DOCUMENT_ROOT'], '', $error['file']);
 
-					printf('<b style="color: red;">***</b> <b style="white-space: pre-line;">%s</b> on line <b>%d</b> in file <b>%s</b>.<br />', $error['message'], $error['line'], $error['file']);
+					printf('<b style="color: red;">***</b> <b style="white-space: pre-line;">%s</b> on line <b>%d</b> in file <b>%s</b>.<br>', $error['message'], $error['line'], $error['file']);
 
 					if (function_exists('xdebug_print_function_stack'))
 					{

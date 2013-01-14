@@ -11,12 +11,12 @@
 */
 function ajax_output($file = false)
 {
-	global $template;
+	global $app;
 	
-	$file = $file ?: $template->file;
+	$file = $file ?: $app['template']->file;
 
 	header('Content-type: text/xml; charset=utf-8');
-	$template->display('ajax/' . $file);
+	$app['template']->display('ajax/' . $file);
 	garbage_collection(false);
 	exit;
 }
@@ -34,7 +34,7 @@ function build_hidden_fields($row)
 
 	foreach ($row as $key => $value)
 	{
-		$string .= '<input type="hidden" name="' . $key . '" value="' . $value . '" />';
+		$string .= '<input type="hidden" name="' . $key . '" value="' . $value . '">';
 	}
 
 	return $string;
@@ -80,32 +80,32 @@ function create_time($time, $no_seconds = false)
 */
 function garbage_collection($display_profiler = true)
 {
-	global $auth, $config, $db, $profiler, $request;
+	global $app;
 
-	if (!empty($profiler))
+	if (!empty($app['profiler']))
 	{
-		if ($display_profiler && !$request->is_ajax && !defined('IN_SQL_ERROR'))
+		if ($display_profiler && !$app['request']->is_ajax && !defined('IN_SQL_ERROR'))
 		{
-			if (($auth->acl_get('a_') || $_SERVER['REMOTE_ADDR'] == '192.168.1.1') && $config['profiler_display'])
+			if (($app['auth']->acl_get('a_') || $_SERVER['REMOTE_ADDR'] == '192.168.1.1') && $app['config']['profiler_display'])
 			{
-				$profiler->display();
+				$app['profiler']->display();
 			}
 		}
 
-		if ($config['profiler_send_stats'])
+		if ($app['config']['profiler_send_stats'])
 		{
-			$profiler->send_stats($config['profiler_ip'], $config['profiler_port']);
+			$app['profiler']->send_stats($app['config']['profiler_ip'], $app['config']['profiler_port']);
 		}
 	}
 	
-	if (!empty($cache))
+	if (!empty($app['cache']))
 	{
-		$cache->unload();
+		$app['cache']->unload();
 	}
 
-	if (!empty($db))
+	if (!empty($app['db']))
 	{
-		$db->close();
+		$app['db']->close();
 	}
 }
 
@@ -153,9 +153,9 @@ function get_preg_expression($type)
 */
 function get_site_info_by_id($site_id)
 {
-	global $cache;
+	global $app;
 	
-	$sites = $cache->obtain_sites();
+	$sites = $app['cache']->obtain_sites();
 	
 	foreach ($sites as $row)
 	{
@@ -181,7 +181,7 @@ function get_site_info_by_id($site_id)
 */
 function get_site_info_by_url($url, $page = '')
 {
-	global $cache;
+	global $app;
 
 	$language = '';
 	$page     = trim($page, '/');
@@ -192,7 +192,7 @@ function get_site_info_by_url($url, $page = '')
 		$language = $params[0];
 	}
 	
-	$sites = $cache->obtain_sites();
+	$sites = $app['cache']->obtain_sites();
 	
 	foreach ($sites as $row)
 	{
@@ -216,9 +216,9 @@ function get_site_info_by_url($url, $page = '')
 */
 function get_site_info_by_url_lang($url, $lang)
 {
-	global $cache;
+	global $app;
 	
-	$sites = $cache->obtain_sites();
+	$sites = $app['cache']->obtain_sites();
 	
 	foreach ($sites as $row)
 	{
@@ -246,19 +246,19 @@ function get_site_info_by_url_lang($url, $lang)
 */
 function humn_size($size, $rounder = '', $min = '', $space = '&nbsp;')
 {
-	global $user;
+	global $app;
 
-	$sizes = [$user->lang['SIZE_BYTES'], $user->lang['SIZE_KB'], $user->lang['SIZE_MB'], $user->lang['SIZE_GB'], $user->lang['SIZE_TB'], $user->lang['SIZE_PB'], $user->lang['SIZE_EB'], $user->lang['SIZE_ZB'], $user->lang['SIZE_YB']];
+	$sizes = [$app['user']->lang['SIZE_BYTES'], $app['user']->lang['SIZE_KB'], $app['user']->lang['SIZE_MB'], $app['user']->lang['SIZE_GB'], $app['user']->lang['SIZE_TB'], $app['user']->lang['SIZE_PB'], $app['user']->lang['SIZE_EB'], $app['user']->lang['SIZE_ZB'], $app['user']->lang['SIZE_YB']];
 	static $rounders = [0, 0, 1, 2, 3, 3, 3, 3, 3];
 
 	$size = (float) $size;
 	$ext  = $sizes[0];
 	$rnd  = $rounders[0];
 
-	if ($min == $user->lang['SIZE_KB'] && $size < 1024)
+	if ($min == $app['user']->lang['SIZE_KB'] && $size < 1024)
 	{
 		$size    = $size / 1024;
-		$ext     = $user->lang['SIZE_KB'];
+		$ext     = $app['user']->lang['SIZE_KB'];
 		$rounder = 1;
 	}
 	else
@@ -283,7 +283,7 @@ function humn_size($size, $rounder = '', $min = '', $space = '&nbsp;')
 * Внутренняя ссылка
 *
 * @param	string	$url		ЧПУ ссылка
-* @param	string	$prefix		Префикс (по умолчанию $config['site_root_path'])
+* @param	string	$prefix		Префикс (по умолчанию $app['config']['site_root_path'])
 *
 * @return	string				Готовый URL
 */
@@ -381,26 +381,26 @@ function load_constants()
 */
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
 {
-	global $auth, $config, $db, $request, $template, $user;
+	global $app;
 
 	$err = '';
 
 	/* Убеждаемся, что учтены настройки пользователя */
-	if (empty($user->lang))
+	if (empty($app['user']->lang))
 	{
-		$user->setup();
+		$app['user']->setup();
 	}
 
 	/**
 	* Пользователь пытается авторизоваться как администратор не имея на то прав
 	*/
-	if ($admin && !$auth->acl_get('a_'))
+	if ($admin && !$app['auth']->acl_get('a_'))
 	{
 		/**
 		* Анонимные/неактивные пользователи никак не смогут попасть в админку,
 		* даже если у них есть соответствующие привилегии
 		*/
-		// if ($user->is_registered)
+		// if ($app['user']->is_registered)
 		// {
 		// 	add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
 		// }
@@ -408,23 +408,23 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		trigger_error('NO_AUTH_ADMIN');
 	}
 
-	if ($request->is_set_post('submit'))
+	if ($app['request']->is_set_post('submit'))
 	{
 		$admin 		= $admin ? 1 : 0;
-		$autologin	= $request->is_set_post('autologin');
-		$password	= $request->post('password', '');
-		$username	= $request->post('username', '');
-		$viewonline = $admin ? $user['session_viewonline'] : (int) !$request->is_set_post('viewonline');
+		$autologin	= $app['request']->is_set_post('autologin');
+		$password	= $app['request']->post('password', '');
+		$username	= $app['request']->post('username', '');
+		$viewonline = $admin ? $app['user']['session_viewonline'] : (int) !$app['request']->is_set_post('viewonline');
 
 		// Check if the supplied username is equal to the one stored within the database if re-authenticating
-		if ($admin && $username != $user['username'])
+		if ($admin && $username != $app['user']['username'])
 		{
 			// add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
 			trigger_error('NO_AUTH_ADMIN_USER_DIFFER');
 		}
 
 		// If authentication is successful we redirect user to previous page
-		$result = $auth->login($username, $password, $autologin, $viewonline, $admin);
+		$result = $app['auth']->login($username, $password, $autologin, $viewonline, $admin);
 
 		/**
 		* Ведем лог всех авторизаций администраторов
@@ -440,7 +440,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		// 		/**
 		// 		* Анонимные/неактивные пользователя никогда не попадут в админку
 		// 		*/
-		// 		if ($user->is_registered)
+		// 		if ($app['user']->is_registered)
 		// 		{
 		// 			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
 		// 		}
@@ -449,7 +449,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 		if ($result['status'] == 'OK')
 		{
-			$message  = $l_success ? $l_success : $user->lang['LOGIN_REDIRECT'];
+			$message  = $l_success ? $l_success : $app['user']->lang['LOGIN_REDIRECT'];
 
 			/* Разрешаем создателю авторизоваться даже при бане */
 			if (defined('IN_CHECK_BAN') && $result['user_row']['user_id'] === 1)
@@ -467,7 +467,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		}
 		
 		/* Различные ошибки авторизации */
-		// $err = $user->lang[$result['status']];
+		// $err = $app['user']->lang[$result['status']];
 		$err = $result['message'];
 	}
 	
@@ -480,12 +480,12 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 	$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 	
-	$template->assign([
+	$app['template']->assign([
 		'LOGIN_ERROR'   => $err,
 		'LOGIN_EXPLAIN' => $l_explain,
-		'USERNAME'      => $admin ? $user['username'] : '',
+		'USERNAME'      => $admin ? $app['user']['username'] : '',
 
-		'U_SEND_PASSWORD' => $config['email_enable'] ? 'ucp/sendpassword.html' : '',
+		'U_SEND_PASSWORD' => $app['config']['email_enable'] ? 'ucp/sendpassword.html' : '',
 		'U_TERMS_USE'     => 'ucp/terms.html',
 		'U_PRIVACY'       => 'ucp/privacy.html',
 
@@ -494,7 +494,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'S_HIDDEN_FIELDS'      => $s_hidden_fields
 	]);
 
-	$template->file = 'ucp_login.html';
+	$app['template']->file = 'ucp_login.html';
 }
 
 /**
@@ -509,9 +509,9 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 */
 function num_format($value, $decimals = 0)
 {
-	global $config;
+	global $app;
 	
-	return number_format($value, $decimals, $config['number_dec_point'], $config['number_thousands_sep']);
+	return number_format($value, $decimals, $app['config']['number_dec_point'], $app['config']['number_thousands_sep']);
 }
 
 /**
@@ -550,9 +550,9 @@ function make_random_string($length = 10)
 */
 function meta_refresh($time, $url)
 {
-	global $template;
-
-	$template->assign('META', sprintf('<meta http-equiv="refresh" content="%d;url=%s">', $time, $url));
+	global $app;
+	
+	$app['template']->assign('META', sprintf('<meta http-equiv="refresh" content="%d;url=%s">', $time, $url));
 }
 
 /**
@@ -564,9 +564,9 @@ function meta_refresh($time, $url)
 */
 function navigation_link($url, $text, $image = false)
 {
-	global $template;
+	global $app;
 	
-	$template->append('nav_links', [
+	$app['template']->append('nav_links', [
 		'IMAGE' => $image,
 		'TEXT'  => $text,
 		'URL'   => $url
@@ -585,17 +585,17 @@ function navigation_link($url, $text, $image = false)
 */
 function pagination($on_page, $overall, $link, $page_var = 'p')
 {
-	global $request, $template;
+	global $app;
 
 	/**
 	* Определяем переменные
 	*/
 	$base_url     = $link;
-	$p            = $request->variable($page_var, 1);
+	$p            = $app['request']->variable($page_var, 1);
 	$query_string = '';
-	$sort_count   = $request->variable('sc', $on_page);
-	$sort_dir     = $request->variable('sd', 'd');
-	$sort_key     = $request->variable('sk', 'a');
+	$sort_count   = $app['request']->variable('sc', $on_page);
+	$sort_dir     = $app['request']->variable('sd', 'd');
+	$sort_key     = $app['request']->variable('sk', 'a');
 	$start        = ($p * $sort_count) - $sort_count;
 
 	/**
@@ -659,7 +659,7 @@ function pagination($on_page, $overall, $link, $page_var = 'p')
 		$url_prev = $p - 1;
 	}
 	
-	$template->assign([
+	$app['template']->assign([
 		'pagination' => [
 			'ITEMS'   => $overall,
 			'NEXT'    => generate_page_link($url_next, $base_url, $query_string),
@@ -688,15 +688,15 @@ function pagination($on_page, $overall, $link, $page_var = 'p')
 */
 function parse_smilies($message, $force_option = false)
 {
-	global $config, $user;
+	global $app;
 
-	if ($force_option || !$config['allow_smilies'])
+	if ($force_option || !$app['config']['allow_smilies'])
 	{
 		return preg_replace('#<!\-\- <smile name="(.*?)"><url>.*?</url><title>.*?</title></smile> \-\->#', '\1', $message);
 	}
 	else
 	{
-		return preg_replace('#<!\-\- <smile name="(.*?)"><url>(.*?)</url><title>(.*?)</title></smile> \-\->#', '<img src="' . $config['smilies_path'] . '/\2" alt="\1" title="\3" />', $message);
+		return preg_replace('#<!\-\- <smile name="(.*?)"><url>(.*?)</url><title>(.*?)</title></smile> \-\->#', '<img src="' . $app['config']['smilies_path'] . '/\2" alt="\1" title="\3">', $message);
 	}
 }
 
@@ -710,7 +710,7 @@ function parse_smilies($message, $force_option = false)
 */
 function plural($n = 0, $forms, $format = '%s %s')
 {
-	global $user;
+	global $app;
 
 	if (!$forms)
 	{
@@ -719,7 +719,7 @@ function plural($n = 0, $forms, $format = '%s %s')
 
 	$forms = explode(';', $forms);
 
-	switch ($user->lang['.'])
+	switch ($app['user']->lang['.'])
 	{
 		/**
 		* Русский язык
@@ -776,7 +776,7 @@ function prepare_text_for_print($text)
 */
 function redirect($url, $status_code = 302)
 {
-	global $config, $user;
+	global $app;
 	
 	if (false !== strpos(urldecode($url), "\n") || false !== strpos(urldecode($url), "\r"))
 	{
@@ -787,9 +787,9 @@ function redirect($url, $status_code = 302)
 	* Если пользователь из локальной сети,
 	* то перенаправлять его следует на локальный домен
 	*/
-	if ($config['router_local_redirect'])
+	if ($app['config']['router_local_redirect'])
 	{
-		if ($user->isp == 'local')
+		if ($app['user']->isp == 'local')
 		{
 			$url = str_replace(['ivacuum.ru/', 't.local.ivacuum.ru/'], ['local.ivacuum.ru/', 't.ivacuum.ru/'], $url);
 		}
@@ -814,11 +814,11 @@ function redirect($url, $status_code = 302)
 */
 function rss_add($url, $root = false, $title = 'RSS 2.0')
 {
-	global $config, $template;
+	global $app;
 
-	$template->append('rss', [
+	$app['template']->append('rss', [
 		'TITLE' => $title,
-		'URL'   => false !== $root ? ilink($url, $config['site_root_path']) : ilink($url)
+		'URL'   => false !== $root ? ilink($url, $app['config']['site_root_path']) : ilink($url)
 	]);
 
 	return;
@@ -853,7 +853,7 @@ function set_constants($constants)
 */
 function send_status_line($code, $message = '')
 {
-	global $request;
+	global $app;
 	
 	if (!$message)
 	{
@@ -893,7 +893,7 @@ function send_status_line($code, $message = '')
 		return;
 	}
 	
-	if (false != $version = $request->server('SERVER_PROTOCOL'))
+	if (false != $version = $app['request']->server('SERVER_PROTOCOL'))
 	{
 		header(sprintf('%s %d %s', $version, $code, $message), true, $code);
 		return;
