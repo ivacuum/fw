@@ -52,7 +52,9 @@ $profiler = $app['profiler'];
 $app['cache']->_set_db($app['db']);
 $app['db']->_set_cache($app['cache'])
 	->_set_profiler($app['profiler']);
-// $app['user']->_set_db($app['db']);
+$app['user']->_set_cache($app['cache'])
+	->_set_config($app['config'])
+	->_set_db($app['db']);
 
 /* Собственный обработчик ошибок */
 errorhandler::register();
@@ -66,7 +68,7 @@ $cache = $app['cache'];
 
 /* Инициализация классов */
 $db   = $app['db'];
-$user = new session\user();
+$user = $app['user'];
 $auth = new core\auth();
 
 if (false === $site_info = get_site_info_by_url($user->domain, $user->page))

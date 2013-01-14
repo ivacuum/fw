@@ -32,18 +32,11 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 	protected $db;
 	protected $request;
 	
-	function __construct()
+	function __construct($request)
 	{
-		global $cache, $config, $db, $request;
-		
 		$this->request = $request;
-		$this->cache  =& $cache;
-		$this->config =& $config;
-		$this->db     =& $db;
 		
-		/**
-		* Данные посетителя
-		*/
+		/* Данные посетителя */
 		$this->browser       = $this->request->header('User-Agent');
 		$this->cookie        = ['u' => 0, 'k' => ''];
 		$this->ctime         = time();
@@ -53,6 +46,27 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 		$this->isp           = $this->request->header('Provider', 'internet');
 		$this->page          = $this->extract_page();
 		$this->referer       = $this->request->header('Referer');
+	}
+	
+	public function _set_cache($cache)
+	{
+		$this->cache = $cache;
+		
+		return $this;
+	}
+	
+	public function _set_config($config)
+	{
+		$this->config = $config;
+		
+		return $this;
+	}
+	
+	public function _set_db($db)
+	{
+		$this->db = $db;
+		
+		return $this;
 	}
 
 	/**

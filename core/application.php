@@ -61,9 +61,9 @@ class application implements \ArrayAccess
 		});
 
 		/* Пользователь */
-		// $this['user'] = $this->share(function() use ($app) {
-		// 	return new user($app['request']);
-		// });
+		$this['user'] = $this->share(function() use ($app) {
+			return new user($app['request']);
+		});
 
 		/* Настройки сайта и движка */
 		// $this['config'] = $this->share(function() use ($app) {
