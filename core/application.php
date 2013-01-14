@@ -67,7 +67,7 @@ class application implements \ArrayAccess
 		});
 		
 		/* Привилегии */
-		$this->['auth'] = $this->share(function() {
+		$this['auth'] = $this->share(function() {
 			return new auth();
 		});
 
