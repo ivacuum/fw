@@ -49,25 +49,25 @@ class application implements \ArrayAccess
 			return new request();
 		});
 		
+		/* Подключение к базе данных */
+		$this['db'] = $this->share(function() use ($app) {
+			return new db_mysqli($app['db.host'], $app['db.user'], $app['db.pass'], $app['db.name'], $app['db.port'], $app['db.sock'], $app['db.pers']);
+		});
+		
 		/* Инициализация кэша */
 		// $this['cache'] = $this->share(function() use ($app) {
 		// 	$class = '\\fw\\cache\\driver\\' . $app['acm.type'];
 		// 	return new cache_service(new $class($app['acm.prefix']));
 		// });
 
-		/* Подключение к базе данных */
-		// $this['db'] = $this->share(function() use ($app) {
-		// 	return new db_mysqli($app['db.host'], $app['db.user'], $app['db.pass'], $app['db.name'], $app['db.port'], $app['db.sock'], $app['db.pers']);
-		// });
-		
-		/* Настройки сайта и движка */
-		// $this['config'] = $this->share(function() use ($app) {
-		// 	return new config_db($app['cache'], $app['db'], $app['site_info'], CONFIG_TABLE);
-		// });
-
 		/* Пользователь */
 		// $this['user'] = $this->share(function() use ($app) {
 		// 	return new user($app['request']);
+		// });
+
+		/* Настройки сайта и движка */
+		// $this['config'] = $this->share(function() use ($app) {
+		// 	return new config_db($app['cache'], $app['db'], $app['site_info'], CONFIG_TABLE);
 		// });
 
 		/* Маршрутизатор запросов */

@@ -64,7 +64,7 @@ $factory = new cache\factory($acm_type, $acm_prefix);
 $cache   = $factory->get_service();
 
 /* Инициализация классов */
-$db   = new db\mysqli($dbhost, $dbuser, $dbpass, $dbname, $dbport, $dbsock, $dbpers);
+$db   = $app['db'];
 $user = new session\user();
 $auth = new core\auth();
 
