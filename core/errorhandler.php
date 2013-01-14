@@ -11,7 +11,7 @@ namespace fw\core;
 */
 class errorhandler
 {
-	static public function handle_error($type, $text, $file, $line)
+	public static function handle_error($type, $text, $file, $line)
 	{
 		global $profiler, $request;
 		
@@ -47,7 +47,7 @@ class errorhandler
 				{
 					global $auth, $error_ary, $template;
 					
-					self::log_mail($error_ary);
+					static::log_mail($error_ary);
 					
 					if ($auth->acl_get('a_'))
 					{
@@ -59,7 +59,7 @@ class errorhandler
 				}
 				else
 				{
-					self::log_mail($text);
+					static::log_mail($text);
 				}
 
 				send_status_line(503);
@@ -129,7 +129,7 @@ class errorhandler
 				if (!empty($matches) || 0 === strpos($text, 'ERR_'))
 				{
 					send_status_line(404);
-					// self::log_mail('Page http://' . $user->domain . $user->data['session_page'] . ' not found', '404 Not Found');
+					// static::log_mail('Page http://' . $user->domain . $user->data['session_page'] . ' not found', '404 Not Found');
 				}
 				
 				if (!$handler->format || $handler->format == 'json')
@@ -164,7 +164,7 @@ class errorhandler
 	/**
 	* Перехват критических ошибок
 	*/
-	static public function handle_fatal_error()
+	public static function handle_fatal_error()
 	{
 		if ($error = error_get_last())
 		{
@@ -175,7 +175,7 @@ class errorhandler
 				case E_COMPILE_ERROR:
 				case E_USER_ERROR:
 				
-					self::log_mail('Fatal error: ' . $error['message']);
+					static::log_mail('Fatal error: ' . $error['message']);
 
 					if ($_SERVER['REMOTE_ADDR'] != '192.168.1.1')
 					{
@@ -199,7 +199,7 @@ class errorhandler
 	/**
 	* Уведомление администратора о произошедшей ошибке
 	*/
-	static public function log_mail($text, $title = '')
+	public static function log_mail($text, $title = '')
 	{
 		global $request, $user;
 		
@@ -224,16 +224,16 @@ class errorhandler
 	/**
 	* Регистрация обработчика
 	*/
-	static public function register()
+	public static function register()
 	{
-		set_error_handler([new self, 'handle_error']);
-		register_shutdown_function([new self, 'handle_fatal_error']);
+		set_error_handler([new static, 'handle_error']);
+		register_shutdown_function([new static, 'handle_fatal_error']);
 	}
 	
 	/**
 	* Возврат обработчика по умолчанию
 	*/
-	static public function unregister()
+	public static function unregister()
 	{
 		restore_error_handler();
 	}
