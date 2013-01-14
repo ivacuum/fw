@@ -57,6 +57,7 @@ class application implements \ArrayAccess
 		/* Инициализация кэша */
 		$this['cache'] = $this->share(function() use ($app) {
 			$class = '\\fw\\cache\\driver\\' . $app['acm.type'];
+			
 			return new cache_service(new $class($app['acm.prefix']));
 		});
 
@@ -66,14 +67,21 @@ class application implements \ArrayAccess
 		});
 
 		/* Настройки сайта и движка */
-		// $this['config'] = $this->share(function() use ($app) {
-		// 	return new config_db($app['cache'], $app['db'], $app['site_info'], CONFIG_TABLE);
-		// });
+		$this['config'] = $this->share(function() use ($app) {
+			return new config_db($app['cache'], $app['db'], $app['site_info'], CONFIG_TABLE);
+		});
 
 		/* Маршрутизатор запросов */
 		// $this['router'] = $this->share(function() use ($app) {
 		// 	return new router($app['cache'], $app['config'], $app['db'], $app['request'], $app['template'], $app['user']);
 		// });
+
+		/* Информация об обслуживаемом сайте */
+		$this['site_info'] = $this->share(function() use ($app) {
+			$site_info = get_site_info_by_url($app['user']->domain, $app['user']->page);
+			
+			return false !== $site_info ? $site_info : get_site_info_by_url($app['user']->domain);
+		});
 	}
 	
 	/**

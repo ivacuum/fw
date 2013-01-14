@@ -98,7 +98,6 @@ class service
 	*/
 	public function obtain_handlers_urls($site_id)
 	{
-		global $config;
 		static $cache_entry, $handlers, $site_info;
 		
 		if (!$site_id)
@@ -237,8 +236,6 @@ class service
 	*/
 	public function obtain_menu($site_id)
 	{
-		global $config;
-		
 		if (!$site_id)
 		{
 			return false;

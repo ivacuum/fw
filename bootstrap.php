@@ -59,28 +59,18 @@ $app['user']->_set_cache($app['cache'])
 /* Собственный обработчик ошибок */
 errorhandler::register();
 
-$request = $app['request'];
-
-/* Инициализация кэша */
-// $factory = new cache\factory($acm_type, $acm_prefix);
-// $cache   = $factory->get_service();
-$cache = $app['cache'];
-
-/* Инициализация классов */
-$db   = $app['db'];
-$user = $app['user'];
-$auth = new core\auth();
-
-if (false === $site_info = get_site_info_by_url($user->domain, $user->page))
-{
-	$site_info = get_site_info_by_url($user->domain);
-}
-
-$config   = new config\db($site_info);
+$request  = $app['request'];
+$cache    = $app['cache'];
+$db       = $app['db'];
+$user     = $app['user'];
+$auth     = new core\auth();
+$config   = $app['config'];
 $template = $app['template'];
 
 /* Планировщику задач понадобится путь к папке проекта */
-if (SITE_DIR != $config['site_dir'])
+if (SITE_DIR != $app['config']['site_dir'])
 {
-	$config->set('site_dir', SITE_DIR);
+	$app['config']->set('site_dir', SITE_DIR);
 }
+
+$app['template']->assign('cfg', $app['config']);

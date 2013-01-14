@@ -172,9 +172,8 @@ class twig
 	*/
 	private function set_globals()
 	{
-		global $config, $user;
+		global $user;
 
-		$this->env->addGlobal('cfg', $config);
 		$this->env->addGlobal('lang', $user->lang);
 
 		if (false === $this->is_globals_set)
