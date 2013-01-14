@@ -430,24 +430,24 @@ class user extends session
 	*/
 	private function detect_language()
 	{
-		global $site_info;
+		global $app;
 		
 		$url = trim(htmlspecialchars_decode($this->page), '/');
 		$params = $url ? explode('/', $url) : [];
 		
 		if (empty($params))
 		{
-			return $site_info['language'];
+			return $app['site_info']['language'];
 		}
 		
 		$language = $params[0];
 		
 		if (strlen($language) != 2)
 		{
-			return $site_info['language'];
+			return $app['site_info']['language'];
 		}
 		
-		if ($site_info['default'])
+		if ($app['site_info']['default'])
 		{
 			/* Если выбрана локализация по умолчанию, то убираем язык из URL */
 			foreach ($this->cache->obtain_languages() as $id => $row)
@@ -458,7 +458,7 @@ class user extends session
 				}
 			}
 			
-			return $site_info['language'];
+			return $app['site_info']['language'];
 		}
 			
 		if ($this->language_exists($language))
