@@ -6,7 +6,7 @@
 
 function login_db(&$username, &$password)
 {
-	global $config, $db;
+	global $app;
 
 	/* Нельзя вводить пустой пароль */
 	if (!$password)
@@ -38,10 +38,10 @@ function login_db(&$username, &$password)
 		FROM
 			' . USERS_TABLE . '
 		WHERE
-			username_clean = ' . $db->check_value($username);
-	$result = $db->query($sql);
-	$row = $db->fetchrow($result);
-	$db->freeresult($result);
+			username_clean = ' . $app['db']->check_value($username);
+	$result = $app['db']->query($sql);
+	$row = $app['db']->fetchrow($result);
+	$app['db']->freeresult($result);
 
 	if (!$row)
 	{
@@ -52,7 +52,7 @@ function login_db(&$username, &$password)
 		];
 	}
 
-	// $show_captcha = $config['max_login_attempts'] && $row['user_login_attempts'] >= $config['max_login_attempts'];
+	// $show_captcha = $app['config']['max_login_attempts'] && $row['user_login_attempts'] >= $app['config']['max_login_attempts'];
 	$show_captcha = false;
 
 	// If there are too much login attempts, we need to check for an confirm image
@@ -67,7 +67,7 @@ function login_db(&$username, &$password)
 			include ($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
 		}
 
-		$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+		$captcha =& phpbb_captcha_factory::get_instance($app['config']['captcha_plugin']);
 		$captcha->init(CONFIRM_LOGIN);
 		$vc_response = $captcha->validate($row);
 		if ($vc_response)
@@ -100,8 +100,8 @@ function login_db(&$username, &$password)
 				SET
 					user_login_attempts = 0
 				WHERE
-					user_id = ' . $db->check_value($row['user_id']);
-			$db->query($sql);
+					user_id = ' . $app['db']->check_value($row['user_id']);
+			$app['db']->query($sql);
 		}
 
 		if (!$row['user_active'])
@@ -126,14 +126,14 @@ function login_db(&$username, &$password)
 		SET
 			user_login_attempts = user_login_attempts + 1
 		WHERE
-			user_id = ' . $db->check_value($row['user_id']) . '
+			user_id = ' . $app['db']->check_value($row['user_id']) . '
 		AND
-			user_login_attempts < ' . $db->check_value($config['max_login_attempts']);
-	$db->query($sql);
+			user_login_attempts < ' . $app['db']->check_value($app['config']['max_login_attempts']);
+	$app['db']->query($sql);
 
 	return [
 		'status'    => $show_captcha ? 'LOGIN_ERROR_ATTEMPTS' : 'LOGIN_ERROR_PASSWORD',
 		'error_msg' => $show_captcha ? 'LOGIN_ERROR_ATTEMPTS' : 'LOGIN_ERROR_PASSWORD',
-		'user_row'  => $row
+		'user_row'  => $row,
 	];
 }
