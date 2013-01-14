@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2013
 */
 
 namespace fw\helpers\traverse\tree;
@@ -14,6 +14,15 @@ use fw\helpers\traverse\tree;
 class site_pages extends tree
 {
 	protected $base_url = [];
+	
+	protected $config;
+	
+	public function _set_config($config)
+	{
+		$this->config = $config;
+		
+		return $this;
+	}
 
 	public function get_pages_data($pages)
 	{
@@ -27,9 +36,7 @@ class site_pages extends tree
 	*/
 	protected function get_data()
 	{
-		global $config;
-		
-		$this->base_url[] = $this->row['is_dir'] ? $this->row['page_url'] : ($this->row['page_url'] == $config['router_directory_index'] ? '' : ($config['router_default_extension'] ? sprintf('%s.%s', $this->row['page_url'], $config['router_default_extension']) : $this->row['page_url']));
+		$this->base_url[] = $this->row['is_dir'] ? $this->row['page_url'] : ($this->row['page_url'] == $this->config['router_directory_index'] ? '' : ($this->config['router_default_extension'] ? sprintf('%s.%s', $this->row['page_url'], $this->config['router_default_extension']) : $this->row['page_url']));
 		
 		return $this->return_as_tree ? ['url' => ilink(implode('/', $this->base_url)), 'children' => []] : ilink(implode('/', $this->base_url));
 	}
