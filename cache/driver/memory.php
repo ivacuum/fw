@@ -19,6 +19,8 @@ class memory
 	private $data = [];
 	private $is_modified = false;
 	
+	private $db;
+	
 	function __construct($prefix = '')
 	{
 		$this->set_prefix($prefix);
@@ -27,6 +29,13 @@ class memory
 		{
 			trigger_error(sprintf('Не удается найти расширение [%s] для ACM.', $this->extension), E_USER_ERROR);
 		}
+	}
+	
+	public function _set_db($db)
+	{
+		$this->db = $db;
+		
+		return $this;
 	}
 	
 	/**
@@ -256,8 +265,6 @@ class memory
 	*/
 	public function sql_save($query, &$query_result, $ttl)
 	{
-		global $db;
-		
 		$query = preg_replace('#[\n\r\s\t]+#', ' ', $query);
 		$hash  = md5($query);
 		
@@ -295,12 +302,12 @@ class memory
 		$this->sql_rowset[$query_id] = [];
 		$this->sql_row_pointer[$query_id] = 0;
 		
-		while ($row = $db->fetchrow($query_result))
+		while ($row = $this->db->fetchrow($query_result))
 		{
 			$this->sql_rowset[$query_id][] = $row;
 		}
 		
-		$db->freeresult($query_result);
+		$this->db->freeresult($query_result);
 		
 		$this->_set($this->prefix . 'sql_' . $hash, $this->sql_rowset[$query_id], $ttl);
 		

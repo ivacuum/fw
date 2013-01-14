@@ -55,10 +55,10 @@ class application implements \ArrayAccess
 		});
 		
 		/* Инициализация кэша */
-		// $this['cache'] = $this->share(function() use ($app) {
-		// 	$class = '\\fw\\cache\\driver\\' . $app['acm.type'];
-		// 	return new cache_service(new $class($app['acm.prefix']));
-		// });
+		$this['cache'] = $this->share(function() use ($app) {
+			$class = '\\fw\\cache\\driver\\' . $app['acm.type'];
+			return new cache_service(new $class($app['acm.prefix']));
+		});
 
 		/* Пользователь */
 		// $this['user'] = $this->share(function() use ($app) {

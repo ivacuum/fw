@@ -49,9 +49,9 @@ $app['autoloader']->register_prefixes([
 $profiler = $app['profiler'];
 
 /* Внедрение зависимостей */
-// $app['cache']->_set_db($app['db']);
-// $app['db']->_set_cache($app['cache'])
-// 	->_set_profiler($app['profiler']);
+$app['cache']->_set_db($app['db']);
+$app['db']->_set_cache($app['cache'])
+	->_set_profiler($app['profiler']);
 // $app['user']->_set_db($app['db']);
 
 /* Собственный обработчик ошибок */
@@ -60,8 +60,9 @@ errorhandler::register();
 $request = $app['request'];
 
 /* Инициализация кэша */
-$factory = new cache\factory($acm_type, $acm_prefix);
-$cache   = $factory->get_service();
+// $factory = new cache\factory($acm_type, $acm_prefix);
+// $cache   = $factory->get_service();
+$cache = $app['cache'];
 
 /* Инициализация классов */
 $db   = $app['db'];

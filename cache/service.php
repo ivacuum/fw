@@ -21,10 +21,15 @@ class service
 
 	function __construct($driver)
 	{
-		global $db;
-
-		$this->db =& $db;
 		$this->set_driver($driver);
+	}
+	
+	public function _set_db($db)
+	{
+		$this->db = $db;
+		$this->driver->_set_db($db);
+		
+		return $this;
 	}
 	
 	/**

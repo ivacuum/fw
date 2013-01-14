@@ -21,6 +21,8 @@ class file
 	private $data_expires = [];
 	private $is_modified = false;
 	
+	private $db;
+	
 	function __construct($prefix = '')
 	{
 		$this->set_prefix($prefix);
@@ -219,6 +221,13 @@ class file
 		}
 		
 		return false;
+	}
+	
+	public function _set_db($db)
+	{
+		$this->db = $db;
+		
+		return $this;
 	}
 	
 	/**
@@ -495,20 +504,18 @@ class file
 	*/
 	public function sql_save($query, &$query_result, $ttl)
 	{
-		global $db;
-		
 		$query = preg_replace('#[\n\r\s\t]+#', ' ', $query);
 		$query_id = sizeof($this->sql_rowset);
 		
 		$this->sql_rowset[$query_id] = [];
 		$this->sql_row_pointer[$query_id] = 0;
 		
-		while ($row = $db->fetchrow($query_result))
+		while ($row = $this->db->fetchrow($query_result))
 		{
 			$this->sql_rowset[$query_id][] = $row;
 		}
 		
-		$db->freeresult($query_result);
+		$this->db->freeresult($query_result);
 		
 		if ($this->_set($this->prefix . 'sql_' . md5($query), $this->sql_rowset[$query_id], time() + $ttl, $query))
 		{

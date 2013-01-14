@@ -11,6 +11,10 @@ class null
 	function __construct()
 	{
 	}
+	
+	public function _set_db()
+	{
+	}
 
 	public function clean($var, $table = '')
 	{
