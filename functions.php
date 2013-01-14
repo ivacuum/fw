@@ -289,7 +289,7 @@ function humn_size($size, $rounder = '', $min = '', $space = '&nbsp;')
 */
 function ilink($url = '', $prefix = false)
 {
-	global $config, $site_info;
+	global $app;
 
 	/**
 	* Этапы обработки URL: а) сайт, находящийся в дочерней папке; б) на другом домене; в) в корне;
@@ -305,7 +305,7 @@ function ilink($url = '', $prefix = false)
 		* /acp/
 		* /about.html
 		*/
-		$link = $config['site_root_path'];
+		$link = $app['config']['site_root_path'];
 		$url  = substr($url, 1);
 	}
 	elseif (0 === strpos($url, 'http://'))
@@ -320,7 +320,7 @@ function ilink($url = '', $prefix = false)
 	}
 	else
 	{
-		$link = false === $prefix ? $config['site_root_path'] : $prefix;
+		$link = false === $prefix ? $app['config']['site_root_path'] : $prefix;
 		$link .= substr($link, -1) == '/' ? '' : '/';
 	}
 
@@ -329,18 +329,18 @@ function ilink($url = '', $prefix = false)
 	*
 	* Если язык уже присутствует в ссылке, то пропускаем этот шаг
 	*/
-	if (($link == $config['site_root_path'] && $prefix === false) || (false !== strpos($prefix, 'ivacuum.ru')))
+	if (($link == $app['config']['site_root_path'] && $prefix === false) || (false !== strpos($prefix, 'ivacuum.ru')))
 	{
-		if (!$site_info['default'] && (false === strpos($link . $url, sprintf('/%s/', $site_info['language']))))
+		if (!$app['site_info']['default'] && (false === strpos($link . $url, sprintf('/%s/', $app['site_info']['language']))))
 		{
-			$link = sprintf('%s%s/', $link, $site_info['language']);
+			$link = sprintf('%s%s/', $link, $app['site_info']['language']);
 		}
 	}
 	
 	$link .= $url;
 	$ary = pathinfo($url);
 	
-	if (isset($ary['extension']) || substr($link, -1) == '/' || !$config['router_default_extension'])
+	if (isset($ary['extension']) || substr($link, -1) == '/' || !$app['config']['router_default_extension'])
 	{
 		return $link;
 	}
