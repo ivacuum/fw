@@ -173,45 +173,6 @@ function get_site_info_by_id($site_id)
 }
 
 /**
-* Поиск информации о сайте по его доменному имени
-* и языку, если передан просматриваемой URL страницы
-*
-* Если страница не указана, то будет выдан сайт
-* на языке по умолчанию (site_default = 1)
-*/
-function get_site_info_by_url($url, $page = '')
-{
-	global $app;
-
-	$language = '';
-	$page     = trim($page, '/');
-	$params   = $page ? explode('/', $page) : [];
-	
-	if (!empty($params) && strlen($params[0]) == 2)
-	{
-		$language = $params[0];
-	}
-	
-	$sites = $app['cache']->obtain_sites();
-	
-	foreach ($sites as $row)
-	{
-		if ($url == $row['site_url'] && (($row['site_default'] && !$language) || ($language && $language == $row['site_language'])))
-		{
-			return [
-				'default'  => (int) $row['site_default'],
-				'domain'   => $row['site_url'],
-				'id'       => (int) $row['site_id'],
-				'language' => $row['site_language'],
-				'title'    => $row['site_title']
-			];
-		}
-	}
-	
-	return false;
-}
-
-/**
 * Размер в понятной человеку форме, округленный к ближайшему ГБ, МБ, КБ
 *
 * @param	int		$size		Размер

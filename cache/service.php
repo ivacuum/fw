@@ -70,6 +70,43 @@ class service
 	}
 
 	/**
+	* Поиск информации о сайте по его доменному имени
+	* и языку, если передан просматриваемой URL страницы
+	*
+	* Если страница не указана, то будет выдан сайт
+	* на языке по умолчанию (site_default = 1)
+	*/
+	public function get_site_info_by_url($hostname, $page = '')
+	{
+		$language = '';
+		$page     = trim($page, '/');
+		$params   = $page ? explode('/', $page) : [];
+	
+		if (!empty($params) && strlen($params[0]) == 2)
+		{
+			$language = $params[0];
+		}
+	
+		$sites = $this->obtain_sites();
+	
+		foreach ($sites as $row)
+		{
+			if ($hostname == $row['site_url'] && (($row['site_default'] && !$language) || ($language && $language == $row['site_language'])))
+			{
+				return [
+					'default'  => (int) $row['site_default'],
+					'domain'   => $row['site_url'],
+					'id'       => (int) $row['site_id'],
+					'language' => $row['site_language'],
+					'title'    => $row['site_title']
+				];
+			}
+		}
+	
+		return false;
+	}
+
+	/**
 	* Поиск URL сайта по его доменному имени и локализации
 	*/
 	public function get_site_info_by_url_lang($hostname, $lang)

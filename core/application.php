@@ -83,9 +83,9 @@ class application implements \ArrayAccess
 
 		/* Информация об обслуживаемом сайте */
 		$this['site_info'] = $this->share(function() use ($app) {
-			$site_info = get_site_info_by_url($app['user']->domain, $app['user']->page);
+			$site_info = $app['cache']->get_site_info_by_url($app['request']->hostname, $app['request']->url);
 			
-			return false !== $site_info ? $site_info : get_site_info_by_url($app['user']->domain);
+			return false !== $site_info ? $site_info : $app['cache']->get_site_info_by_url($app['request']->hostname);
 		});
 	}
 	
