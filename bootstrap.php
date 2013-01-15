@@ -52,8 +52,6 @@ $profiler = $app['profiler'];
 $app['cache']->_set_db($app['db']);
 $app['db']->_set_cache($app['cache'])
 	->_set_profiler($app['profiler']);
-$app['user']->_set_cache($app['cache'])
-	->_set_db($app['db']);
 
 /* Собственный обработчик ошибок */
 errorhandler::register();
@@ -65,8 +63,6 @@ $user     = $app['user'];
 $auth     = $app['auth'];
 $config   = $app['config'];
 $template = $app['template'];
-
-$app['user']->_set_config($app['config']);
 
 /* Планировщику задач понадобится путь к папке проекта */
 if (SITE_DIR != $app['config']['site_dir'])

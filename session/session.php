@@ -32,8 +32,11 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 	protected $db;
 	protected $request;
 	
-	function __construct($request)
+	function __construct($cache, $config, $db, $request)
 	{
+		$this->cache   = $cache;
+		$this->config  = $config;
+		$this->db      = $db;
 		$this->request = $request;
 		
 		/* Данные посетителя */
@@ -48,27 +51,6 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 		$this->referer       = $this->request->header('Referer');
 	}
 	
-	public function _set_cache($cache)
-	{
-		$this->cache = $cache;
-		
-		return $this;
-	}
-	
-	public function _set_config($config)
-	{
-		$this->config = $config;
-		
-		return $this;
-	}
-	
-	public function _set_db($db)
-	{
-		$this->db = $db;
-		
-		return $this;
-	}
-
 	/**
 	* Забанен ли пользователь
 	*
