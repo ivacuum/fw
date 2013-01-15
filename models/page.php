@@ -434,19 +434,37 @@ class page
 			'U_COPYRIGHT' => ilink(sprintf('%s/vacuum.html', $this->get_handler_url('users::index')))
 		]);
 		
-		if ($this->template->file)
-		{
-			$this->template->assign('cfg', $this->config);
-			$this->template->assign('lang', $this->user->lang);
-			$this->template->display();
-		}
-		
 		$display_profiler = false;
 		
 		/* Вывод профайлера только для html-документов */
-		if ($this->format == 'html')
+		if ($this->format == 'html' && !$this->request->is_ajax && !defined('IN_SQL_ERROR'))
 		{
-			$display_profiler = true;
+			if (($this->auth->acl_get('a_') || $this->user->ip == '192.168.1.1') && $this->config['profiler_display'])
+			{
+				$display_profiler = true;
+				$this->user->load_language('profiler');
+			}
+		}
+
+
+		if ($this->template->file)
+		{
+			$this->template->assign([
+				'cfg'  => $this->config,
+				'lang' => $this->user->lang
+			]);
+			
+			$this->template->display();
+			
+			if ($display_profiler)
+			{
+				$this->profiler->display();
+			}
+		}
+		
+		if ($this->config['profiler_send_stats'])
+		{
+			$this->profiler->send_stats($this->config['profiler_ip'], $this->config['profiler_port']);
 		}
 
 		garbage_collection($display_profiler);

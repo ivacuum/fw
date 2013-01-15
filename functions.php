@@ -82,22 +82,6 @@ function garbage_collection($display_profiler = true)
 {
 	global $app;
 
-	if (!empty($app['profiler']))
-	{
-		if ($display_profiler && !$app['request']->is_ajax && !defined('IN_SQL_ERROR'))
-		{
-			if (($app['auth']->acl_get('a_') || $_SERVER['REMOTE_ADDR'] == '192.168.1.1') && $app['config']['profiler_display'])
-			{
-				$app['profiler']->display();
-			}
-		}
-
-		if ($app['config']['profiler_send_stats'])
-		{
-			$app['profiler']->send_stats($app['config']['profiler_ip'], $app['config']['profiler_port']);
-		}
-	}
-	
 	if (!empty($app['cache']))
 	{
 		$app['cache']->unload();

@@ -302,8 +302,6 @@ class profiler extends console
 	{
 		global $user;
 		
-		$user->load_language('profiler');
-		
 		$this->template->assign([
 			'profiler_logs'    => $this->output['logs'],
 			'profiler_files'   => $this->output['files'],
