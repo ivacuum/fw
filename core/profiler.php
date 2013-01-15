@@ -216,7 +216,7 @@ class profiler extends console
 	*/
 	private function get_console_data()
 	{
-		foreach ($this->logs as $key => $log)
+		foreach ($logs = $this->logs as $key => $log)
 		{
 			switch ($log['type'])
 			{
