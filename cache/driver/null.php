@@ -12,10 +12,6 @@ class null
 	{
 	}
 	
-	public function _set_db()
-	{
-	}
-
 	public function clean($var, $table = '')
 	{
 	}

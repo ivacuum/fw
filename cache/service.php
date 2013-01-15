@@ -19,17 +19,10 @@ class service
 	protected $db;
 	protected $driver;
 
-	function __construct($driver)
-	{
-		$this->set_driver($driver);
-	}
-	
-	public function _set_db($db)
+	function __construct($db, $driver)
 	{
 		$this->db = $db;
-		$this->driver->_set_db($db);
-		
-		return $this;
+		$this->set_driver($driver);
 	}
 	
 	/**

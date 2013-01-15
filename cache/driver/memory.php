@@ -21,21 +21,15 @@ class memory
 	
 	private $db;
 	
-	function __construct($prefix = '')
+	function __construct($db, $prefix = '')
 	{
+		$this->db = $db;
 		$this->set_prefix($prefix);
 		
 		if (!isset($this->extension) || !extension_loaded($this->extension))
 		{
 			trigger_error(sprintf('Не удается найти расширение [%s] для ACM.', $this->extension), E_USER_ERROR);
 		}
-	}
-	
-	public function _set_db($db)
-	{
-		$this->db = $db;
-		
-		return $this;
 	}
 	
 	/**

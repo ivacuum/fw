@@ -49,7 +49,6 @@ $app['autoloader']->register_prefixes([
 $profiler = $app['profiler'];
 
 /* Внедрение зависимостей */
-$app['cache']->_set_db($app['db']);
 $app['db']->_set_cache($app['cache'])
 	->_set_profiler($app['profiler']);
 
