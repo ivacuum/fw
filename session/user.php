@@ -209,7 +209,7 @@ class user extends session
 		if (0 !== strpos($lang_file, 'fw_'))
 		{
 			/* Локализация проекта */
-			$site_info = get_site_info_by_url_lang($this->domain, $language);
+			$site_info = $this->cache->get_site_info_by_url_lang($this->domain, $language);
 			
 			$lang = array_merge_recursive($lang, $this->get_i18n_data($site_info['id'], $language, $lang_file, $force_update));
 		}

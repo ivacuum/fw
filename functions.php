@@ -212,29 +212,6 @@ function get_site_info_by_url($url, $page = '')
 }
 
 /**
-* Поиск URL сайта по его доменному имени и локализации
-*/
-function get_site_info_by_url_lang($url, $lang)
-{
-	global $app;
-	
-	$sites = $app['cache']->obtain_sites();
-	
-	foreach ($sites as $row)
-	{
-		if ($url == $row['site_url'] && $lang == $row['site_language'])
-		{
-			return [
-				'id'    => (int) $row['site_id'],
-				'title' => $row['site_title']
-			];
-		}
-	}
-	
-	return false;
-}
-
-/**
 * Размер в понятной человеку форме, округленный к ближайшему ГБ, МБ, КБ
 *
 * @param	int		$size		Размер
