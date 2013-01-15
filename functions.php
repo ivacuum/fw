@@ -371,7 +371,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				return;
 			}
 			
-			redirect(ilink($redirect));
+			$app['request']->redirect(ilink($redirect));
 		}
 
 		/* Неудалось создать сессию */
@@ -684,42 +684,6 @@ function prepare_text_for_print($text)
 }
 
 /**
-* Переадресация
-*
-* @param	string	$url	Адрес для мгновенного перенаправления
-*/
-function redirect($url, $status_code = 302)
-{
-	global $app;
-	
-	if (false !== strpos(urldecode($url), "\n") || false !== strpos(urldecode($url), "\r"))
-	{
-		trigger_error('Bad URL.', E_USER_ERROR);
-	}
-	
-	/**
-	* Если пользователь из локальной сети,
-	* то перенаправлять его следует на локальный домен
-	*/
-	if ($app['config']['router_local_redirect'])
-	{
-		if ($app['user']->isp == 'local')
-		{
-			$url = str_replace(['ivacuum.ru/', 't.local.ivacuum.ru/'], ['local.ivacuum.ru/', 't.ivacuum.ru/'], $url);
-		}
-	}
-	
-	if ($status_code != 302)
-	{
-		send_status_line($status_code);
-	}
-
-	header('Location: ' . $url);
-	garbage_collection(false);
-	exit;
-}
-
-/**
 * Добавление RSS потока в шапку
 *
 * @param	string	$url	Путь к рассылке
@@ -756,64 +720,6 @@ function set_constants($constants)
 	}
 	
 	apc_define_constants($acm_prefix . '_constants', $constants);
-}
-
-/**
-* Вывод заголовка
-*
-* send_status_line(404, 'Not Found');
-*
-* HTTP/1.x 404 Not Found
-*/
-function send_status_line($code, $message = '')
-{
-	global $app;
-	
-	if (!$message)
-	{
-		switch ($code)
-		{
-			case 200: $message = 'OK'; break;
-			case 201: $message = 'Created'; break;
-			case 202: $message = 'Accepted'; break;
-			case 204: $message = 'No Content'; break;
-			
-			case 301: $message = 'Moved Permanently'; break;
-			case 302: $message = 'Found'; break;
-			case 303: $message = 'See Other'; break;
-			case 304: $message = 'Not Modified'; break;
-			
-			case 400: $message = 'Bad Request'; break;
-			case 401: $message = 'Unauthorized'; break;
-			case 403: $message = 'Forbidden'; break;
-			case 404: $message = 'Not Found'; break;
-			case 405: $message = 'Method Not Allowed'; break;
-			case 409: $message = 'Conflict'; break;
-			case 410: $message = 'Gone'; break;
-			
-			case 500: $message = 'Internal Server Error'; break;
-			case 501: $message = 'Not Implemented'; break;
-			case 502: $message = 'Bad Gateway'; break;
-			case 503: $message = 'Service Unavailable'; break;
-			case 504: $message = 'Gateway Timeout'; break;
-			
-			default: return;
-		}
-	}
-	
-	if (substr(strtolower(PHP_SAPI), 0, 3) === 'cgi')
-	{
-		header(sprintf('Status: %d %s', $code, $message), true, $code);
-		return;
-	}
-	
-	if (false != $version = $app['request']->server('SERVER_PROTOCOL'))
-	{
-		header(sprintf('%s %d %s', $version, $code, $message), true, $code);
-		return;
-	}
-	
-	header(sprintf('HTTP/1.0 %d %s', $code, $message), true, $code);
 }
 
 /**

@@ -55,7 +55,7 @@ class router
 		
 		if (!$url)
 		{
-			redirect(ilink());
+			$this->request->redirect(ilink());
 		}
 		
 		/* Поиск сайта */
@@ -99,7 +99,7 @@ class router
 			else
 			{
 				/* Перенаправление на одноименный каталог */
-				redirect(ilink($this->url), 301);
+				$this->request->redirect(ilink($this->url), 301);
 			}
 		}
 		elseif ($this->url)
@@ -190,7 +190,7 @@ class router
 			{
 				if (isset($row) && $row['page_redirect'])
 				{
-					redirect(ilink($row['page_redirect']), 301);
+					$this->request->redirect(ilink($row['page_redirect']), 301, $this->config['router_local_redirect']);
 				}
 				
 				trigger_error('PAGE_NOT_FOUND');
@@ -279,14 +279,14 @@ class router
 			/* Нужно ли переадресовать на другую страницу */
 			if ($row['page_redirect'])
 			{
-				redirect(ilink($row['page_redirect']), 301);
+				$this->request->redirect(ilink($row['page_redirect']), 301, $this->config['router_local_redirect']);
 			}
 			
 			return $this->load_handler('models\\page', 'static_page');
 		}
 		elseif ($handler_method == 'static_page' && $row['page_redirect'])
 		{
-			redirect(ilink($row['page_redirect']), 301);
+			$this->request->redirect(ilink($row['page_redirect']), 301, $this->config['router_local_redirect']);
 		}
 		
 		return $this->load_handler($handler_name, $handler_method, $this->params);
@@ -306,7 +306,7 @@ class router
 		{
 			if ($redirect)
 			{
-				redirect($redirect);
+				$this->request->redirect($redirect);
 			}
 			
 			return false;

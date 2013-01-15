@@ -61,7 +61,7 @@ class pages extends page
 				if (!sizeof($errors))
 				{
 					$this->remove_cache_file();
-					redirect($this->append_link_params(sprintf('parent_id=%d', $parent_id)));
+					$this->request->redirect($this->append_link_params(sprintf('parent_id=%d', $parent_id)));
 					trigger_error('PAGE_DELETED');
 				}
 
@@ -208,7 +208,7 @@ class pages extends page
 					{
 						$this->remove_cache_file();
 
-						redirect($this->append_link_params(sprintf('parent_id=%d', $parent_id)));
+						$this->request->redirect($this->append_link_params(sprintf('parent_id=%d', $parent_id)));
 						trigger_error((($action == 'add') ? 'PAGE_ADDED' : 'PAGE_EDITED'));
 					}
 				}

@@ -43,7 +43,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 		$this->domain        = $this->request->hostname;
 		$this->forwarded_for = $this->request->header('X-Forwarded-For');
 		$this->ip            = $this->request->server('REMOTE_ADDR');
-		$this->isp           = $this->request->header('Provider', 'internet');
+		$this->isp           = $this->request->isp;
 		$this->page          = $this->request->url;
 		$this->referer       = $this->request->header('Referer');
 	}

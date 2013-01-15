@@ -125,10 +125,10 @@ class user extends session
 			
 				if ($this->domain == 'dev.ivacuum.ru')
 				{
-					redirect(ilink(sprintf('/ucp/login.html?goto=%s', $this->get_back_url())));
+					$this->request->redirect(ilink(sprintf('/ucp/login.html?goto=%s', $this->get_back_url())), $this->config['router_local_redirect']);
 				}
 				
-				redirect(ilink(sprintf('http://ivacuum.ru/ucp/login.html?goto=%s', $this->get_back_url())));
+				$this->request->redirect(ilink(sprintf('http://ivacuum.ru/ucp/login.html?goto=%s', $this->get_back_url())), $this->config['router_local_redirect']);
 			
 			break;
 			/**
@@ -454,7 +454,7 @@ class user extends session
 			{
 				if ($language == $row['language_title'])
 				{
-					redirect(ilink(mb_substr($this->page, 3)));
+					$this->request->redirect(ilink(mb_substr($this->page, 3)));
 				}
 			}
 			
