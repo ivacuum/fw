@@ -68,5 +68,3 @@ if (SITE_DIR != $app['config']['site_dir'])
 {
 	$app['config']->set('site_dir', SITE_DIR);
 }
-
-$app['template']->assign('cfg', $app['config']);

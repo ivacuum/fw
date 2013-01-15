@@ -15,7 +15,6 @@ class twig
 	public $file;
 	public $path;
 
-	private $is_globals_set = false;
 	private $loader;
 	private $vars = [];
 
@@ -28,6 +27,10 @@ class twig
 			'autoescape'  => false,
 			'cache'       => SITE_DIR . '../cache/templates',
 		]);
+
+		$this->env->addFunction('lang', new \Twig_Function_Function('\\fw\\template\\twig_lang'));
+		$this->env->addFunction('static', new \Twig_Function_Function('\\fw\\template\\twig_static'));
+		$this->env->addFilter('truncate', new \Twig_Filter_Function('\\fw\\template\\twig_truncate'));
 	}
 	
 	/**
@@ -107,7 +110,6 @@ class twig
 	public function display($file = '')
 	{
 		$this->file = $file ?: $this->file;
-		$this->set_globals();
 		
 		// if (!file_exists($this->path . '/' . $this->file))
 		// {
@@ -165,24 +167,6 @@ class twig
 	public function vars($data)
 	{
 		return $this->assign($data);
-	}
-
-	/**
-	* Установка некоторых глобальных массивов
-	*/
-	private function set_globals()
-	{
-		global $user;
-
-		$this->env->addGlobal('lang', $user->lang);
-
-		if (false === $this->is_globals_set)
-		{
-			$this->env->addFunction('lang', new \Twig_Function_Function('\\fw\\template\\twig_lang'));
-			$this->env->addFunction('static', new \Twig_Function_Function('\\fw\\template\\twig_static'));
-			$this->env->addFilter('truncate', new \Twig_Filter_Function('\\fw\\template\\twig_truncate'));
-			$this->is_globals_set = true;
-		}
 	}
 }
 

@@ -436,6 +436,8 @@ class page
 		
 		if ($this->template->file)
 		{
+			$this->template->assign('cfg', $this->config);
+			$this->template->assign('lang', $this->user->lang);
 			$this->template->display();
 		}
 		
