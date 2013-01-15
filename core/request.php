@@ -17,10 +17,12 @@ class request
 	const REQUEST = 3;
 	const SERVER  = 4;
 	
+	public $hostname;
 	public $http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'];
 	public $is_ajax;
 	public $is_secure;
 	public $method;
+	public $url;
 	
 	private $globals = [
 		self::GET     => '_GET',
@@ -32,9 +34,11 @@ class request
 	
 	function __construct()
 	{
+		$this->hostname  = $this->get_hostname();
 		$this->is_ajax   = $this->header('X-Requested-With') == 'XMLHttpRequest';
 		$this->is_secure = $this->server('HTTPS') == 'on';
 		$this->method    = strtolower($this->server('REQUEST_METHOD', 'get'));
+		$this->url       = $this->get_requested_url();
 		
 		/* По умолчанию при использовании метода PUT данные не попадают в $_REQUEST */
 		if ($this->method == 'put')
@@ -49,6 +53,18 @@ class request
 	public function cookie($var, $default)
 	{
 		return $this->variable($var, $default, self::COOKIE);
+	}
+	
+	/**
+	* Доменное имя обслуживаемого сайта
+	*/
+	public function get_hostname()
+	{
+		$hostname = mb_strtolower($this->header('Host') ?: $this->server('SERVER_NAME'));
+		$hostname = 0 === strpos($hostname, 'www.') ? substr($hostname, 4) : $hostname;
+		$hostname = (false !== $pos = strpos($hostname, ':')) ? substr($hostname, 0, $pos) : $hostname;
+		
+		return $hostname;
 	}
 	
 	/**

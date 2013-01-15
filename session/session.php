@@ -40,11 +40,11 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 		$this->browser       = $this->request->header('User-Agent');
 		$this->cookie        = ['u' => 0, 'k' => ''];
 		$this->ctime         = time();
-		$this->domain        = $this->request->server('SERVER_NAME');
+		$this->domain        = $this->request->hostname;
 		$this->forwarded_for = $this->request->header('X-Forwarded-For');
 		$this->ip            = $this->request->server('REMOTE_ADDR');
 		$this->isp           = $this->request->header('Provider', 'internet');
-		$this->page          = $this->request->get_requested_url();
+		$this->page          = $this->request->url;
 		$this->referer       = $this->request->header('Referer');
 	}
 	
