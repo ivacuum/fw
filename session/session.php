@@ -44,7 +44,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 		$this->forwarded_for = $this->request->header('X-Forwarded-For');
 		$this->ip            = $this->request->server('REMOTE_ADDR');
 		$this->isp           = $this->request->header('Provider', 'internet');
-		$this->page          = $this->extract_page();
+		$this->page          = $this->request->get_requested_url();
 		$this->referer       = $this->request->header('Referer');
 	}
 	
@@ -807,42 +807,6 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 		return false;
 	}
 
-	/**
-	* Адрес страницы
-	*/
-	private function extract_page()
-	{
-		$page = $this->request->is_set('path') ? sprintf('/%s', $this->request->get('path', '')) : '';
-		
-		if (!$page)
-		{
-			$page = $this->request->server('PHP_SELF');
-			$page = $page ?: $this->request->server('REQUEST_URI');
-			$page = str_replace('index.php', '', $page);
-		}
-		
-		$query_string = '';
-
-		foreach ($_GET as $k => $v)
-		{
-			if ($k == 'path' || $k == 'sid')
-			{
-				continue;
-			}
-
-			if ($query_string)
-			{
-				$query_string .= '&';
-			}
-
-			$query_string .= sprintf('%s=%s', $k, $v);
-		}
-		
-		$page .= $query_string ? '?' . $query_string : '';
-		
-		return $page;
-	}
-	
 	/**
 	* Стандартные установки гостя
 	*/

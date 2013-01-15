@@ -52,6 +52,42 @@ class request
 	}
 	
 	/**
+	* Адрес страницы
+	*/
+	public function get_requested_url()
+	{
+		$url = $this->is_set('path') ? sprintf('/%s', $this->get('path', '')) : '';
+		
+		if (!$url)
+		{
+			$url = $this->server('PHP_SELF');
+			$url = $url ?: $this->server('REQUEST_URI');
+			$url = str_replace('index.php', '', $url);
+		}
+		
+		$query_string = '';
+
+		foreach ($_GET as $k => $v)
+		{
+			if ($k == 'path' || $k == 'sid')
+			{
+				continue;
+			}
+
+			if ($query_string)
+			{
+				$query_string .= '&';
+			}
+
+			$query_string .= @sprintf('%s=%s', $k, $v);
+		}
+		
+		$url .= $query_string ? '?' . $query_string : '';
+		
+		return $url;
+	}
+	
+	/**
 	* Данные из $_GET
 	*/
 	public function get($var, $default)
