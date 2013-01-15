@@ -70,6 +70,28 @@ class service
 	}
 
 	/**
+	* Поиск URL сайта по его уникальному идентификатору
+	*/
+	public function get_site_info_by_id($site_id)
+	{
+		$sites = $this->obtain_sites();
+	
+		foreach ($sites as $row)
+		{
+			if ($site_id == $row['site_id'])
+			{
+				return [
+					'domain'   => $row['site_url'],
+					'language' => $row['site_language'],
+					'title'    => $row['site_title']
+				];
+			}
+		}
+	
+		return false;
+	}
+
+	/**
 	* Поиск информации о сайте по его доменному имени
 	* и языку, если передан просматриваемой URL страницы
 	*
@@ -165,7 +187,7 @@ class service
 		
 		if (empty($handlers))
 		{
-			$site_info = get_site_info_by_id($site_id);
+			$site_info = $this->get_site_info_by_id($site_id);
 			$cache_entry = sprintf('%s_handlers_%s', $site_info['domain'], $site_info['language']);
 		}
 		
@@ -299,7 +321,7 @@ class service
 			return false;
 		}
 		
-		$site_info = get_site_info_by_id($site_id);
+		$site_info = $this->get_site_info_by_id($site_id);
 		$cache_entry = sprintf('%s_menu_%s', $site_info['domain'], $site_info['language']);
 		
 		if (false === $menu = $this->driver->_get($cache_entry))

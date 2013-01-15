@@ -74,7 +74,7 @@ class db extends config
 		elseif ($site_id > 0 && $site_id !== $this->site_id)
 		{
 			/* Настройки другого сайта */
-			$site_info = get_site_info_by_id($site_id);
+			$site_info = $this->cache->get_site_info_by_id($site_id);
 			
 			$this->cache->_delete(sprintf('%s_config_%s', $site_info['domain'], $site_info['language']));
 		}
@@ -215,7 +215,7 @@ class db extends config
 		elseif ($site_id > 0 && $site_id !== $this->site_id)
 		{
 			/* Настройки другого сайта */
-			$site_info = get_site_info_by_id($site_id);
+			$site_info = $this->cache->get_site_info_by_id($site_id);
 			
 			$this->cache->_delete(sprintf('%s_config_%s', $site_info['domain'], $site_info['language']));
 		}

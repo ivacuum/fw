@@ -149,30 +149,6 @@ function get_preg_expression($type)
 }
 
 /**
-* Поиск URL сайта по его уникальному идентификатору
-*/
-function get_site_info_by_id($site_id)
-{
-	global $app;
-	
-	$sites = $app['cache']->obtain_sites();
-	
-	foreach ($sites as $row)
-	{
-		if ($site_id == $row['site_id'])
-		{
-			return [
-				'domain'   => $row['site_url'],
-				'language' => $row['site_language'],
-				'title'    => $row['site_title']
-			];
-		}
-	}
-	
-	return false;
-}
-
-/**
 * Размер в понятной человеку форме, округленный к ближайшему ГБ, МБ, КБ
 *
 * @param	int		$size		Размер

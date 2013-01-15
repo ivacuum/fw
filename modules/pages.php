@@ -771,12 +771,10 @@ class pages extends page
 	*/
 	function remove_cache_file()
 	{
-		global $cache;
+		$site_info = $this->cache->get_site_info_by_id($this->data['site_id']);
 		
-		$site_info = get_site_info_by_id($this->data['site_id']);
-		
-		$cache->_delete(sprintf('%s_handlers_%s', $site_info['domain'], $site_info['language']));
-		$cache->_delete(sprintf('%s_menu_%s', $site_info['domain'], $site_info['language']));
+		$this->cache->_delete(sprintf('%s_handlers_%s', $site_info['domain'], $site_info['language']));
+		$this->cache->_delete(sprintf('%s_menu_%s', $site_info['domain'], $site_info['language']));
 	}
 	
 	/**
