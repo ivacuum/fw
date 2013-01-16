@@ -262,21 +262,6 @@ function json_output($output)
 }
 
 /**
-* Загрузка констант
-*/
-function load_constants()
-{
-	global $app;
-	
-	if (!function_exists('apc_fetch'))
-	{
-		return false;
-	}
-
-	return apc_load_constants($app['acm.prefix'] . '_constants');
-}
-
-/**
 * Generate login box or verify password
 */
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
@@ -686,26 +671,6 @@ function rss_add($url, $root = false, $title = 'RSS 2.0')
 	]);
 
 	return;
-}
-
-/**
-* Установка констант
-*/
-function set_constants($constants)
-{
-	global $app;
-
-	if (!function_exists('apc_fetch'))
-	{
-		foreach ($constants as $key => $value)
-		{
-			define($key, $value);
-		}
-		
-		return;
-	}
-	
-	apc_define_constants($app['acm.prefix'] . '_constants', $constants);
 }
 
 /**

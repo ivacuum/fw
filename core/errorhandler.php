@@ -134,7 +134,8 @@ class errorhandler
 				{
 					$error = ['code' => $text];
 
-					json_output(['errors' => [$error]]);
+					echo json_encode(['errors' => [$error]]);
+					garbage_collection();
 				}
 
 				$template->assign([

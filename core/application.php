@@ -11,12 +11,15 @@ use fw\config\db as config_db;
 use fw\db\mysqli as db_mysqli;
 use fw\session\user;
 use fw\template\twig;
+use fw\traits\constants;
 
 /**
 * Контейнер приложения
 */
 class application implements \ArrayAccess
 {
+	use constants;
+	
 	const VERSION = '1.0-dev';
 	
 	private $values;

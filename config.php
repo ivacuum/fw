@@ -38,9 +38,9 @@ $app = [
 * Константы
 * apc_delete($acm_prefix . '_constants');
 */
-if (false === load_constants())
+if (false === $app->load_constants($app['acm.prefix']))
 {
-	set_constants([
+	$app->set_constants($app['acm.prefix'], [
 		/* Способы уведомления */
 		'NOTIFY_EMAIL' => 0,
 		'NOTIFY_IM'    => 1,
