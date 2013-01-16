@@ -62,9 +62,3 @@ $user     = $app['user'];
 $auth     = $app['auth'];
 $config   = $app['config'];
 $template = $app['template'];
-
-/* Планировщику задач понадобится путь к папке проекта */
-if (SITE_DIR != $app['config']['site_dir'])
-{
-	$app['config']->set('site_dir', SITE_DIR);
-}

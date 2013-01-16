@@ -36,6 +36,12 @@ class db extends config
 		$this->table    = $table ?: CONFIG_TABLE;
 		
 		parent::__construct(array_merge($this->load_config(0), $this->load_config($this->site_id)));
+
+		/* Планировщику задач понадобится путь к папке проекта */
+		if (SITE_DIR != $this->config['site_dir'])
+		{
+			$this->set('site_dir', SITE_DIR);
+		}
 	}
 	
 	/**
