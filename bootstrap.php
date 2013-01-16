@@ -20,6 +20,7 @@ date_default_timezone_set('Europe/Moscow');
 error_reporting(E_ALL);
 mb_internal_encoding('utf-8');
 
+require(FW_DIR . 'traits/constants.php');
 require(FW_DIR . 'core/profiler.php');
 require(FW_DIR . 'core/application.php');
 require(FW_DIR . 'core/autoloader.php');
@@ -32,6 +33,13 @@ if (file_exists(SITE_DIR . '../config.php'))
 }
 
 $app = new application($app);
+
+require(FW_DIR . 'constants.php');
+
+if (file_exists(SITE_DIR . '../constants.php'))
+{
+	require(SITE_DIR . '../constants.php');
+}
 
 $app['autoloader']->register_namespaces([
 	'fw'       => __DIR__,
