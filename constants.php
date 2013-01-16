@@ -10,9 +10,9 @@ namespace fw;
 * Константы
 * apc_delete($acm_prefix . '_constants');
 */
-if (false === $app->load_constants($app['acm.prefix']))
+if (false === $app->load_constants($app['fw.prefix']))
 {
-	$app->set_constants($app['acm.prefix'], [
+	$app->set_constants($app['fw.prefix'], [
 		/* Способы уведомления */
 		'NOTIFY_EMAIL' => 0,
 		'NOTIFY_IM'    => 1,

@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2013
 */
 
 namespace fw;
@@ -30,6 +30,6 @@ $app = [
 	'db.pers' => false,
 	
 	/* Настройки кэша */
-	'acm.prefix' => 'src.ivacuum.ru',
-	'acm.type'   => 'memcache',
+	'acm.fw_prefix' => 'fw.ivacuum.ru',
+	'acm.type'      => 'memcache',
 ];
