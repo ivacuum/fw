@@ -67,9 +67,7 @@ class service
 	*/
 	public function get_site_info_by_id($site_id)
 	{
-		$sites = $this->obtain_sites();
-	
-		foreach ($sites as $row)
+		foreach ($this->obtain_sites() as $row)
 		{
 			if ($site_id == $row['site_id'])
 			{
@@ -102,9 +100,7 @@ class service
 			$language = $params[0];
 		}
 	
-		$sites = $this->obtain_sites();
-	
-		foreach ($sites as $row)
+		foreach ($this->obtain_sites() as $row)
 		{
 			if ($hostname == $row['site_url'] && (($row['site_default'] && !$language) || ($language && $language == $row['site_language'])))
 			{
@@ -126,9 +122,7 @@ class service
 	*/
 	public function get_site_info_by_url_lang($hostname, $lang)
 	{
-		$sites = $this->obtain_sites();
-	
-		foreach ($sites as $row)
+		foreach ($this->obtain_sites() as $row)
 		{
 			if ($hostname == $row['site_url'] && $lang == $row['site_language'])
 			{
