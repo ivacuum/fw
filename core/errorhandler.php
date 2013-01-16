@@ -61,7 +61,8 @@ class errorhandler
 					static::log_mail($text);
 				}
 
-				send_status_line(503);
+				/* Service Unavailable */
+				http_response_code(503);
 				echo '<!DOCTYPE html>';
 				echo '<html lang="ru">';
 				echo '<head>';
@@ -123,7 +124,7 @@ class errorhandler
 
 				if (!empty($matches) || 0 === strpos($text, 'ERR_'))
 				{
-					send_status_line(404);
+					http_response_code(404);
 					// static::log_mail('Page http://' . $app['user']->domain . $app['user']->data['session_page'] . ' not found', '404 Not Found');
 				}
 				

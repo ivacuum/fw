@@ -17,6 +17,7 @@ class request
 	const REQUEST = 3;
 	const SERVER  = 4;
 	
+	public $code;
 	public $hostname;
 	public $http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'];
 	public $is_ajax;
@@ -35,6 +36,7 @@ class request
 	
 	function __construct()
 	{
+		$this->code      = http_response_code();
 		$this->hostname  = $this->get_hostname();
 		$this->is_ajax   = $this->header('X-Requested-With') == 'XMLHttpRequest';
 		$this->is_secure = $this->server('HTTPS') == 'on';
@@ -176,7 +178,7 @@ class request
 	
 		if ($status_code != 302)
 		{
-			$this->send_status_line($status_code);
+			http_response_code($status_code);
 		}
 
 		header('Location: ' . $url);
@@ -191,62 +193,6 @@ class request
 		return $this->variable($var, $default, self::REQUEST);
 	}
 	
-	/**
-	* Вывод заголовка
-	*
-	* send_status_line(404, 'Not Found');
-	*
-	* HTTP/1.x 404 Not Found
-	*/
-	public function send_status_line($code, $message = '')
-	{
-		if (!$message)
-		{
-			switch ($code)
-			{
-				case 200: $message = 'OK'; break;
-				case 201: $message = 'Created'; break;
-				case 202: $message = 'Accepted'; break;
-				case 204: $message = 'No Content'; break;
-			
-				case 301: $message = 'Moved Permanently'; break;
-				case 302: $message = 'Found'; break;
-				case 303: $message = 'See Other'; break;
-				case 304: $message = 'Not Modified'; break;
-			
-				case 400: $message = 'Bad Request'; break;
-				case 401: $message = 'Unauthorized'; break;
-				case 403: $message = 'Forbidden'; break;
-				case 404: $message = 'Not Found'; break;
-				case 405: $message = 'Method Not Allowed'; break;
-				case 409: $message = 'Conflict'; break;
-				case 410: $message = 'Gone'; break;
-			
-				case 500: $message = 'Internal Server Error'; break;
-				case 501: $message = 'Not Implemented'; break;
-				case 502: $message = 'Bad Gateway'; break;
-				case 503: $message = 'Service Unavailable'; break;
-				case 504: $message = 'Gateway Timeout'; break;
-			
-				default: return;
-			}
-		}
-	
-		if (substr(strtolower(PHP_SAPI), 0, 3) === 'cgi')
-		{
-			header(sprintf('Status: %d %s', $code, $message), true, $code);
-			return;
-		}
-	
-		if (false != $version = $this->server('SERVER_PROTOCOL'))
-		{
-			header(sprintf('%s %d %s', $version, $code, $message), true, $code);
-			return;
-		}
-	
-		header(sprintf('HTTP/1.0 %d %s', $code, $message), true, $code);
-	}
-
 	/**
 	* Данные из $_SERVER
 	*/

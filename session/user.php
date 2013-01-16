@@ -107,7 +107,7 @@ class user extends session
 			*/
 			case 'deny':
 			
-				send_status_line(401);
+				http_response_code(401);
 				// \fw\core\errorhandler::log_mail('Unauthorized access to http://' . $this->domain . $this->page . ' page', '401 Unauthorized');
 
 				if ($this->domain == 'dev.ivacuum.ru')

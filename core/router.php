@@ -335,12 +335,12 @@ class router
 				if ($this->request->method == 'get' || !method_exists($this->handler, $this->method . '_get'))
 				{
 					/* Not Implemented */
-					send_status_line(501);
+					http_response_code(501);
 				}
 				else
 				{
 					/* Method Not Allowed */
-					send_status_line(405);
+					http_reponse_code(405);
 				}
 				
 				return false;
@@ -348,7 +348,7 @@ class router
 			else
 			{
 				/* Обычный сайт может сразу возвращать 404 Not Found */
-				send_status_line(404);
+				http_response_code(404);
 				return false;
 			}
 		}
