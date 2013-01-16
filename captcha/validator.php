@@ -20,14 +20,12 @@ class validator
 	private $confirm_code;
 	private $solved = false;
 	
-	function __construct()
+	function __construct($config, $db, $request, $user)
 	{
-		global $config, $db, $request, $user;
-		
-		$this->config  =& $config;
-		$this->db      =& $db;
-		$this->request =& $request;
-		$this->user    =& $user;
+		$this->config  = $config;
+		$this->db      = $db;
+		$this->request = $request;
+		$this->user    = $user;
 		
 		$this->confirm_code = mb_strtoupper($this->request->variable('confirm_code', ''));
 	}
@@ -42,7 +40,7 @@ class validator
 			return true;
 		}
 		
-		if ($this->request->is_set('confirm_code') && $this->solved === false)
+		if ($this->request->is_set('confirm_code') && false === $this->solved)
 		{
 			$this->validate();
 		}

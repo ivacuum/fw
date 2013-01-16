@@ -15,11 +15,11 @@ class captcha extends page
 {
 	public function index()
 	{
-		$factory = new \fw\captcha\factory($this->config['confirm_type']);
-		$captcha = $factory->get_service();
+		$class = '\\fw\\captcha\\driver\\' . $this->config['confirm_type'];
+
+		$captcha = new captcha_service($this->config, $this->db, $this->request, $this->user, new $class());
 		$captcha->send();
 		
-		garbage_collection(false);
-		exit;
+		garbage_collection();
 	}
 }

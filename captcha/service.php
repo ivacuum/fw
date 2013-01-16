@@ -19,14 +19,12 @@ class service
 	
 	private $code;
 
-	function __construct($driver)
+	function __construct($config, $db, $request, $user, $driver)
 	{
-		global $config, $db, $request, $user;
-
-		$this->config  =& $config;
-		$this->db      =& $db;
-		$this->request =& $request;
-		$this->user    =& $user;
+		$this->config  = $config;
+		$this->db      = $db;
+		$this->request = $request;
+		$this->user    = $user;
 		
 		$this->set_driver($driver);
 	}
