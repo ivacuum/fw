@@ -13,7 +13,7 @@ class errorhandler
 {
 	public static function handle_error($type, $text, $file, $line)
 	{
-		global $profiler, $request;
+		global $app;
 		
 		/* Выходим, если проверка отключена через @ */
 		/*
@@ -23,7 +23,7 @@ class errorhandler
 		}
 		*/
 		
-		$file = str_replace($request->server('DOCUMENT_ROOT'), '', $file);
+		$file = str_replace($app['request']->server('DOCUMENT_ROOT'), '', $file);
 		
 		switch ($type)
 		{
@@ -33,7 +33,7 @@ class errorhandler
 			case E_NOTICE:
 			case E_WARNING:
 			
-				$profiler->log_error($text, $line, $file);
+				$app['profiler']->log_error($text, $line, $file);
 				return;
 
 			break;
@@ -45,16 +45,15 @@ class errorhandler
 			
 				if (defined('IN_SQL_ERROR'))
 				{
-					global $auth, $error_ary, $template;
+					global $error_ary;
 					
 					static::log_mail($error_ary);
 					
-					if ($auth->acl_get('a_'))
+					if ($app['auth']->acl_get('a_'))
 					{
-						$template->assign('error', $error_ary);
-						$template->display('sql_error.html');
-						garbage_collection(false);
-						exit;
+						$app['template']->assign('error', $error_ary);
+						$app['template']->display('sql_error.html');
+						garbage_collection();
 					}
 				}
 				else
@@ -86,33 +85,31 @@ class errorhandler
 			case E_USER_NOTICE:
 			case E_USER_WARNING:
 
-				global $auth, $config, $router, $site_info, $template, $user;
-
 				if (!defined('IN_CHECK_BAN'))
 				{
-					if (empty($user->data))
+					if (empty($app['user']->data))
 					{
-						$user->session_begin();
+						$app['user']->session_begin();
 					}
 
-					$auth->init($user->data);
+					$app['auth']->init($user->data);
 
 					if (empty($user->lang))
 					{
-						$user->setup();
+						$app['user']->setup();
 					}
 				}
 				
-				if (!empty($router) && is_object($router->handler))
+				if (!empty($app['router']) && is_object($app['router']->handler))
 				{
-					$handler =& $router->handler;
+					$handler = $app['router']->handler;
 				}
 				else
 				{
 					$handler = new \app\models\page();
-					$handler->data['site_id'] = $site_info['id'];
+					$handler->data['site_id'] = $app['site_info']['id'];
 					$handler->set_site_menu();
-					$handler->format = !empty($router) ? $router->format : $config['router_default_extension'];
+					$handler->format = !empty($app['router']) ? $app['router']->format : $app['config']['router_default_extension'];
 				}
 				
 				/* Запрет индексирования страницы */
@@ -127,7 +124,7 @@ class errorhandler
 				if (!empty($matches) || 0 === strpos($text, 'ERR_'))
 				{
 					send_status_line(404);
-					// static::log_mail('Page http://' . $user->domain . $user->data['session_page'] . ' not found', '404 Not Found');
+					// static::log_mail('Page http://' . $app['user']->domain . $app['user']->data['session_page'] . ' not found', '404 Not Found');
 				}
 				
 				if (!$handler->format || $handler->format == 'json')
@@ -138,14 +135,14 @@ class errorhandler
 					garbage_collection();
 				}
 
-				$template->assign([
+				$app['template']->assign([
 					'page' => $handler->data,
 					
-					'MESSAGE_TEXT'  => isset($user->lang[$text]) ? $user->lang[$text] : $text,
-					'MESSAGE_TITLE' => $user->lang['SITE_MESSAGE']
+					'MESSAGE_TEXT'  => isset($app['user']->lang[$text]) ? $app['user']->lang[$text] : $text,
+					'MESSAGE_TITLE' => $app['user']->lang['SITE_MESSAGE']
 				]);
 				
-				$template->file = 'message_body.html';
+				$app['template']->file = 'message_body.html';
 				
 				$handler->page_header();
 				$handler->page_footer();
@@ -200,7 +197,7 @@ class errorhandler
 	*/
 	public static function log_mail($text, $title = '')
 	{
-		global $request, $user;
+		global $app;
 		
 		$call_stack = '';
 		$text       = is_array($text) ? print_r($text, true) : $text;
@@ -217,7 +214,7 @@ class errorhandler
 			$call_stack = str_replace(['/srv/www/vhosts'], [''], ob_get_clean());
 		}
 		
-		mail('vacuum@ivacuum.ru', $title, sprintf("%s\n%s%s\n%s\n%s", $text, $call_stack, print_r($user->data, true), print_r($_SERVER, true), print_r($_REQUEST, true)), sprintf("From: %s@%s\r\n", $user->domain ?: 'fw', gethostname()));
+		mail('vacuum@ivacuum.ru', $title, sprintf("%s\n%s%s\n%s\n%s", $text, $call_stack, print_r($app['user']->data, true), print_r($_SERVER, true), print_r($_REQUEST, true)), sprintf("From: %s@%s\r\n", $app['user']->domain ?: 'fw', gethostname()));
 	}
 
 	/**
