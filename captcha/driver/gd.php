@@ -51,7 +51,7 @@ class gd
 			imagecolordeallocate($image, $colortext);
 			
 			$dim = imagettfbbox($font_size, $font_angle, $font_file, mb_substr($code, $i, 1));
-			$posx += $dim[2] - $dim[0] + (($font_size > 20) ? 6 : 12);
+			$posx += $dim[2] - $dim[0] + ($font_size > 20 ? 6 : 12);
 		}
 
 		header('Content-type: image/png');

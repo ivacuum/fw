@@ -63,8 +63,6 @@ class errorhandler
 				}
 
 				send_status_line(503);
-				garbage_collection(false);
-
 				echo '<!DOCTYPE html>';
 				echo '<html lang="ru">';
 				echo '<head>';
@@ -78,7 +76,7 @@ class errorhandler
 				echo '<p>Приносим извинения за доставленные неудобства.</p>';
 				echo '</body>';
 				echo '</html>';
-				exit;
+				garbage_collection();
 
 			break;
 			/**

@@ -91,6 +91,8 @@ function garbage_collection($display_profiler = true)
 	{
 		$app['db']->close();
 	}
+	
+	exit;
 }
 
 /**
