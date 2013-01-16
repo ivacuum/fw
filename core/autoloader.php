@@ -150,6 +150,8 @@ class autoloader
 	public function register($prepend = false)
 	{
 		spl_autoload_register([$this, 'autoload'], true, $prepend);
+		
+		return $this;
 	}
 	
 	/**
@@ -158,6 +160,8 @@ class autoloader
 	public function register_namespace($namespace, $dirs)
 	{
 		$this->namespaces[$namespace] = (array) $dirs;
+		
+		return $this;
 	}
 	
 	/**
@@ -166,6 +170,8 @@ class autoloader
 	public function register_namespace_fallback($dir)
 	{
 		$this->namespace_fallbacks[] = $dir;
+		
+		return $this;
 	}
 	
 	/**
@@ -174,6 +180,8 @@ class autoloader
 	public function register_namespace_fallbacks(array $dirs)
 	{
 		$this->namespace_fallbacks = $dirs;
+		
+		return $this;
 	}
 	
 	/**
@@ -185,6 +193,8 @@ class autoloader
 		{
 			$this->namespaces[$namespace] = (array) $dirs;
 		}
+		
+		return $this;
 	}
 	
 	/**
@@ -193,6 +203,8 @@ class autoloader
 	public function register_prefix($prefix, $dirs)
 	{
 		$this->prefixes[$prefix] = (array) $dirs;
+		
+		return $this;
 	}
 	
 	/**
@@ -201,6 +213,8 @@ class autoloader
 	public function register_prefix_fallback($dir)
 	{
 		$this->prefix_fallbacks[] = $dir;
+		
+		return $this;
 	}
 	
 	/**
@@ -209,6 +223,8 @@ class autoloader
 	public function register_prefix_fallbacks(array $dirs)
 	{
 		$this->prefix_fallbacks = $dirs;
+		
+		return $this;
 	}
 	
 	/**
@@ -220,6 +236,8 @@ class autoloader
 		{
 			$this->prefixes[$prefix] = (array) $dirs;
 		}
+		
+		return $this;
 	}
 	
 	/**
@@ -228,5 +246,7 @@ class autoloader
 	public function use_include_path($flag)
 	{
 		$this->use_include_path = $flag;
+		
+		return $this;
 	}
 }

@@ -32,10 +32,7 @@ class application implements \ArrayAccess
 		
 		/* Автозагрузчик классов */
 		$this['autoloader'] = $this->share(function() use ($app) {
-			$loader = new autoloader($app['acm.prefix']);
-			$loader->register();
-			
-			return $loader;
+			return (new autoloader($app['acm.prefix']))->register();
 		});
 		
 		/* Шаблонизатор */
@@ -90,6 +87,18 @@ class application implements \ArrayAccess
 			
 			return false !== $site_info ? $site_info : $app['cache']->get_site_info_by_url($app['request']->hostname);
 		});
+
+		/* Явный вызов автозагрузчика, чтобы он начал свою работу */
+		$this['autoloader']->register_namespaces([
+			'fw'       => __DIR__,
+			'app'      => SITE_DIR . '../includes',
+			// 'Geocoder' => __DIR__ . '/../lib/geocoder/1.1.6/Geocoder',
+			// 'Imagine'  => __DIR__ . '/../lib/imagine/0.4.1/Imagine',
+			// 'Monolog'  => __DIR__ . '/../lib/monolog/1.0.3/Monolog',
+		])->register_prefixes([
+			// 'Swift' => __DIR__ . '/../lib/swiftmailer/4.3/classes',
+			'Twig'  => __DIR__ . '/../lib/twig/1.12',
+		]);
 	}
 	
 	/**

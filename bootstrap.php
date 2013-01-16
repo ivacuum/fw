@@ -26,33 +26,12 @@ require(FW_DIR . 'core/application.php');
 require(FW_DIR . 'core/autoloader.php');
 require(FW_DIR . 'functions.php');
 require(FW_DIR . 'config.php');
-
-if (file_exists(SITE_DIR . '../config.php'))
-{
-	require(SITE_DIR . '../config.php');
-}
+require(SITE_DIR . '../config.php');
 
 $app = new application($app);
 
 require(FW_DIR . 'constants.php');
-
-if (file_exists(SITE_DIR . '../constants.php'))
-{
-	require(SITE_DIR . '../constants.php');
-}
-
-$app['autoloader']->register_namespaces([
-	'fw'       => __DIR__,
-	'app'      => SITE_DIR . '../includes',
-	// 'Geocoder' => __DIR__ . '/../lib/geocoder/1.1.6/Geocoder',
-	// 'Imagine'  => __DIR__ . '/../lib/imagine/0.4.1/Imagine',
-	// 'Monolog'  => __DIR__ . '/../lib/monolog/1.0.3/Monolog',
-]);
-
-$app['autoloader']->register_prefixes([
-	// 'Swift' => __DIR__ . '/../lib/swiftmailer/4.3/classes',
-	'Twig'  => __DIR__ . '/../lib/twig/1.12',
-]);
+require(SITE_DIR . '../constants.php');
 
 $profiler = $app['profiler'];
 
