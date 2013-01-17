@@ -87,6 +87,9 @@ class application implements \ArrayAccess
 			
 			return false !== $site_info ? $site_info : $app['cache']->get_site_info_by_url($app['request']->hostname);
 		});
+		
+		/* Профайлер должен начать работать как можно раньше */
+		$this['profiler'];
 
 		/* Явный вызов автозагрузчика, чтобы он начал свою работу */
 		$this['autoloader']->register_namespaces([

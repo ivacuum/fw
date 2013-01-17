@@ -33,8 +33,6 @@ $app = new application($app);
 require(FW_DIR . 'constants.php');
 require(SITE_DIR . '../constants.php');
 
-$profiler = $app['profiler'];
-
 /* Внедрение зависимостей */
 $app['db']->_set_cache($app['cache'])
 	->_set_profiler($app['profiler']);
