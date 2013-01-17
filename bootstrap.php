@@ -40,10 +40,8 @@ $app['db']->_set_cache($app['cache'])
 /* Собственный обработчик ошибок */
 errorhandler::register();
 
-$request  = $app['request'];
 $cache    = $app['cache'];
 $db       = $app['db'];
 $user     = $app['user'];
-$auth     = $app['auth'];
 $config   = $app['config'];
 $template = $app['template'];
