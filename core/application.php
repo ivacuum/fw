@@ -88,9 +88,6 @@ class application implements \ArrayAccess
 			return false !== $site_info ? $site_info : $app['cache']->get_site_info_by_url($app['request']->hostname);
 		});
 		
-		/* Профайлер должен начать работать как можно раньше */
-		$this['profiler'];
-
 		/* Явный вызов автозагрузчика, чтобы он начал свою работу */
 		$this['autoloader']->register_namespaces([
 			'fw'       => __DIR__,
@@ -102,6 +99,12 @@ class application implements \ArrayAccess
 			// 'Swift' => __DIR__ . '/../lib/swiftmailer/4.3/classes',
 			'Twig'  => __DIR__ . '/../lib/twig/1.12',
 		]);
+
+		/**
+		* Профайлер должен начать работать как можно раньше
+		* Но не раньше автозагрузчика, так как профайлер зависит от шаблонизатора
+		*/
+		$this['profiler'];
 	}
 	
 	/**
