@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2013
 */
 
 namespace fw\cron;
@@ -30,10 +30,10 @@ class manager
 		$this->start_time = time();
 
 		$this->cron_dir = SITE_DIR . '../includes/cron/';
-		$this->log_dir  = $this->cron_dir . 'log/';
+		$this->log_dir  = SITE_DIR . '../logs/';
 
-		$this->cron_allowed = $this->log_dir . 'allowed';
-		$this->cron_running = $this->log_dir . 'running';
+		$this->cron_allowed = $this->log_dir . 'cron_allowed';
+		$this->cron_running = $this->log_dir . 'cron_running';
 
 		$this->db = $db;
 	}
