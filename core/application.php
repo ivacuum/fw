@@ -90,14 +90,14 @@ class application implements \ArrayAccess
 		
 		/* Явный вызов автозагрузчика, чтобы он начал свою работу */
 		$this['autoloader']->register_namespaces([
-			'fw'       => __DIR__,
+			'fw'       => FW_DIR,
 			'app'      => SITE_DIR . '../includes',
-			// 'Geocoder' => __DIR__ . '/../lib/geocoder/1.1.6/Geocoder',
-			// 'Imagine'  => __DIR__ . '/../lib/imagine/0.4.1/Imagine',
-			// 'Monolog'  => __DIR__ . '/../lib/monolog/1.0.3/Monolog',
+			// 'Geocoder' => FW_DIR . '../lib/geocoder/1.1.6/Geocoder',
+			// 'Imagine'  => FW_DIR . '../lib/imagine/0.4.1/Imagine',
+			// 'Monolog'  => FW_DIR . '../lib/monolog/1.0.3/Monolog',
 		])->register_prefixes([
-			// 'Swift' => __DIR__ . '/../lib/swiftmailer/4.3/classes',
-			'Twig'  => __DIR__ . '/../lib/twig/1.12.1',
+			// 'Swift' => FW_DIR . '../lib/swiftmailer/4.3/classes',
+			'Twig'  => FW_DIR . '../lib/twig/1.12.1',
 		]);
 
 		/**
