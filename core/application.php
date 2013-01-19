@@ -97,7 +97,7 @@ class application implements \ArrayAccess
 			// 'Monolog'  => __DIR__ . '/../lib/monolog/1.0.3/Monolog',
 		])->register_prefixes([
 			// 'Swift' => __DIR__ . '/../lib/swiftmailer/4.3/classes',
-			'Twig'  => __DIR__ . '/../lib/twig/1.12',
+			'Twig'  => __DIR__ . '/../lib/twig/1.12.1',
 		]);
 
 		/**
