@@ -24,6 +24,7 @@ require(FW_DIR . 'traits/constants.php');
 require(FW_DIR . 'core/profiler.php');
 require(FW_DIR . 'core/application.php');
 require(FW_DIR . 'core/autoloader.php');
+require(FW_DIR . 'template/twig.php');
 require(FW_DIR . 'functions.php');
 require(FW_DIR . 'config.php');
 require(SITE_DIR . '../config.php');
