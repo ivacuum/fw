@@ -141,8 +141,7 @@ class profiler extends console
 			->get_file_data()
 			->get_memory_data()
 			->get_query_data()
-			->get_speed_data()
-			->display_profiler();
+			->get_speed_data();
 
 		return [
 			'profiler_logs'    => $this->output['logs'],
