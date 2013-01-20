@@ -121,16 +121,13 @@ class profiler extends console
 {
 	private $output = [];
 	private $start_time;
-	
-	private $template;
 
 	/**
 	* Время запуска профайлера
 	*/
-	function __construct($template)
+	function __construct()
 	{
 		$this->start_time = microtime(true);
-		$this->template   = $template;
 	}
 
 	/**
@@ -151,13 +148,37 @@ class profiler extends console
 			->display_profiler();
 	}
 	
+	public function get_stats()
+	{
+		return [
+			'profiler_logs'    => $this->output['logs'],
+			'profiler_files'   => $this->output['files'],
+			'profiler_queries' => $this->output['queries'],
+			
+			'FILE_COUNT'      => $this->file_count,
+			'FILE_SIZE'       => humn_size($this->file_size),
+			'FILE_LARGEST'    => humn_size($this->file_largest),
+			'LOG_COUNT'       => $this->log_count,
+			'LOGS_COUNT'      => sizeof($this->output['logs']),
+			'ERROR_COUNT'     => $this->error_count,
+			'MEMORY_COUNT'    => $this->memory_count,
+			'MEMORY_TOTAL'    => $this->memory_total,
+			'MEMORY_USED'     => humn_size($this->memory_used),
+			'SERVER_HOSTNAME' => gethostname(),
+			'SPEED_ALLOWED'   => $this->speed_allowed,
+			'SPEED_COUNT'     => $this->speed_count,
+			'SPEED_TOTAL'     => $this->get_readable_time($this->speed_total),
+			'QUERY_CACHED'    => $this->query_cached,
+			'QUERY_COUNT'     => $this->query_count,
+			'QUERY_TIME'      => $this->get_readable_time($this->query_time),
+		];
+	}
+	
 	/**
 	* Отправка данных внешнему профайлеру
 	*/
-	public function send_stats($ip, $port)
+	public function send_stats($ip, $port, $hostname = '', $url = '')
 	{
-		global $user;
-		
 		if (PHP_SAPI == 'cli')
 		{
 			return;
@@ -178,8 +199,8 @@ class profiler extends console
 		}
 
 		fwrite($fp, json_encode([
-			'domain' => $user->domain,
-			'page'   => $user->page,
+			'domain' => $hostname,
+			'page'   => $url,
 			
 			'logs' => $this->output['logs'],
 			
@@ -293,41 +314,5 @@ class profiler extends console
 		$this->speed_total   = (microtime(true) - $this->start_time) * 1000;
 		
 		return $this;
-	}
-
-	/**
-	* Вывод собранных профайлером данных на страницу
-	*/
-	private function display_profiler()
-	{
-		global $user;
-		
-		$this->template->assign([
-			'profiler_logs'    => $this->output['logs'],
-			'profiler_files'   => $this->output['files'],
-			'profiler_queries' => $this->output['queries'],
-			
-			'FILE_COUNT'      => $this->file_count,
-			'FILE_SIZE'       => humn_size($this->file_size),
-			'FILE_LARGEST'    => humn_size($this->file_largest),
-			'LOG_COUNT'       => $this->log_count,
-			'LOGS_COUNT'      => sizeof($this->output['logs']),
-			'ERROR_COUNT'     => $this->error_count,
-			'MEMORY_COUNT'    => $this->memory_count,
-			'MEMORY_TOTAL'    => $this->memory_total,
-			'MEMORY_USED'     => humn_size($this->memory_used),
-			'SERVER_HOSTNAME' => gethostname(),
-			'SPEED_ALLOWED'   => $this->speed_allowed,
-			'SPEED_COUNT'     => $this->speed_count,
-			'SPEED_TOTAL'     => $this->get_readable_time($this->speed_total),
-			'QUERY_CACHED'    => $this->query_cached,
-			'QUERY_COUNT'     => $this->query_count,
-			'QUERY_TIME'      => $this->get_readable_time($this->query_time),
-
-			'FILE_COUNT_TEXT'  => plural($this->file_count, $user->lang['plural']['FILES']),
-			'QUERY_COUNT_TEXT' => plural($this->query_count, $user->lang['plural']['QUERIES'])
-		]);
-		
-		$this->template->display('profiler.html');
 	}
 }

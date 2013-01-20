@@ -30,31 +30,29 @@ class application implements \ArrayAccess
 		
 		$app = $this;
 		
-		/* Автозагрузчик классов */
+		$this['profiler'] = $this->share(function() use ($app) {
+			return new profiler();
+		});
+		
+		/* Профайлер должен начать работать как можно раньше */
+		$this['profiler'];
+
 		$this['autoloader'] = $this->share(function() use ($app) {
 			return (new autoloader($app['acm.prefix']))->register();
 		});
 		
-		/* Шаблонизатор */
 		$this['template'] = $this->share(function() {
 			return new twig();
 		});
 		
-		$this['profiler'] = $this->share(function() use ($app) {
-			return new profiler($app['template']);
-		});
-
-		/* Данные запроса */
 		$this['request'] = $this->share(function() {
 			return new request();
 		});
 		
-		/* Подключение к базе данных */
 		$this['db'] = $this->share(function() use ($app) {
 			return new db_mysqli($app['db.host'], $app['db.user'], $app['db.pass'], $app['db.name'], $app['db.port'], $app['db.sock'], $app['db.pers']);
 		});
 		
-		/* Инициализация кэша */
 		$this['cache'] = $this->share(function() use ($app) {
 			$class = '\\fw\\cache\\driver\\' . $app['acm.type'];
 			
@@ -66,7 +64,6 @@ class application implements \ArrayAccess
 			return new user($app['cache'], $app['config'], $app['db'], $app['request']);
 		});
 		
-		/* Привилегии */
 		$this['auth'] = $this->share(function() use ($app) {
 			return new auth($app['cache'], $app['db'], $app['user']);
 		});
@@ -76,7 +73,6 @@ class application implements \ArrayAccess
 			return new config_db($app['cache'], $app['db'], $app['site_info'], CONFIG_TABLE);
 		});
 
-		/* Маршрутизатор запросов */
 		$this['router'] = $this->share(function() use ($app) {
 			return new router($app['auth'], $app['cache'], $app['config'], $app['db'], $app['profiler'], $app['request'], $app['template'], $app['user']);
 		});
@@ -99,12 +95,6 @@ class application implements \ArrayAccess
 			// 'Swift' => FW_DIR . '../lib/swiftmailer/4.3/classes',
 			'Twig'  => FW_DIR . '../lib/twig/1.12.1',
 		]);
-
-		/**
-		* Профайлер должен начать работать как можно раньше
-		* Но не раньше автозагрузчика, так как профайлер зависит от шаблонизатора
-		*/
-		$this['profiler'];
 	}
 	
 	/**

@@ -458,13 +458,20 @@ class page
 			
 			if ($display_profiler)
 			{
-				$this->profiler->display();
+				$stats = $this->profiler->get_stats();
+				
+				$this->template->assign(array_merge([
+					'FILE_COUNT_TEXT'  => plural($stats['file_count'], $this->user->lang['plural']['FILES']),
+					'QUERY_COUNT_TEXT' => plural($stats['query_count'], $this->user->lang['plural']['QUERIES']),
+				], $stats));
+				
+				$this->template->display('profiler.html');
 			}
 		}
 		
 		if ($this->config['profiler_send_stats'])
 		{
-			$this->profiler->send_stats($this->config['profiler_ip'], $this->config['profiler_port']);
+			$this->profiler->send_stats($this->config['profiler_ip'], $this->config['profiler_port'], $this->request->hostname, $this->request->url);
 		}
 
 		garbage_collection($display_profiler);
