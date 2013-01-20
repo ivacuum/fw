@@ -130,10 +130,7 @@ class profiler extends console
 		$this->start_time = microtime(true);
 	}
 
-	/**
-	* Получение и печать данных профайлера
-	*/
-	public function display()
+	public function get_stats()
 	{
 		if (PHP_SAPI == 'cli')
 		{
@@ -146,10 +143,7 @@ class profiler extends console
 			->get_query_data()
 			->get_speed_data()
 			->display_profiler();
-	}
-	
-	public function get_stats()
-	{
+
 		return [
 			'profiler_logs'    => $this->output['logs'],
 			'profiler_files'   => $this->output['files'],
