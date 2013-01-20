@@ -461,8 +461,8 @@ class page
 				$stats = $this->profiler->get_stats();
 				
 				$this->template->assign(array_merge([
-					'FILE_COUNT_TEXT'  => plural($stats['file_count'], $this->user->lang['plural']['FILES']),
-					'QUERY_COUNT_TEXT' => plural($stats['query_count'], $this->user->lang['plural']['QUERIES']),
+					'FILE_COUNT_TEXT'  => plural($stats['FILE_COUNT'], $this->user->lang['plural']['FILES']),
+					'QUERY_COUNT_TEXT' => plural($stats['QUERY_COUNT'], $this->user->lang['plural']['QUERIES']),
 				], $stats));
 				
 				$this->template->display('profiler.html');
