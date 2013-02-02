@@ -95,7 +95,7 @@ class errorhandler
 
 					$app['auth']->init($user->data);
 
-					if (empty($user->lang))
+					if (empty($app['user']->lang))
 					{
 						$app['user']->setup();
 					}
