@@ -13,6 +13,7 @@ use fw\helpers\traverse\tree\site_pages;
 */
 class service
 {
+	protected $config;
 	protected $db;
 	protected $driver;
 
@@ -20,6 +21,13 @@ class service
 	{
 		$this->db = $db;
 		$this->set_driver($driver);
+	}
+	
+	public function _set_config($config)
+	{
+		$this->config = $config;
+		
+		return $this;
 	}
 	
 	/**
