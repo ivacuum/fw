@@ -256,7 +256,7 @@ function ilink($url = '', $prefix = false)
 function json_output($output)
 {
 	header('Content-Type: application/json; charset=utf-8');
-	echo json_encode($output);
+	echo json_encode($output, JSON_UNESCAPED_UNICODE);
 	garbage_collection(false);
 	exit;
 }
