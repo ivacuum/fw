@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2013
 */
 
 namespace fw\cache;
@@ -13,9 +13,6 @@ use fw\helpers\traverse\tree\site_pages;
 */
 class service
 {
-	public $sql_rowset;
-	public $sql_row_pointer;
-	
 	protected $db;
 	protected $driver;
 
@@ -39,9 +36,6 @@ class service
 	public function set_driver($driver)
 	{
 		$this->driver = $driver;
-		
-		$this->sql_rowset      =& $this->driver->sql_rowset;
-		$this->sql_row_pointer =& $this->driver->sql_row_pointer;
 	}
 
 	/**
