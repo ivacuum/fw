@@ -324,6 +324,7 @@ class service
 					left_id ASC';
 			$this->db->query($sql);
 			$traversal = new traverse_menu(true);
+			$traversal->_set_config($this->config);
 			
 			while ($row = $this->db->fetchrow())
 			{
