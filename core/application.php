@@ -30,7 +30,7 @@ class application implements \ArrayAccess
 		
 		$app = $this;
 		
-		$this['profiler'] = $this->share(function() use ($app) {
+		$this['profiler'] = $this->share(function() {
 			return new profiler();
 		});
 		
