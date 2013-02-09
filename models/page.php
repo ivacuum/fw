@@ -404,7 +404,7 @@ class page
 			'LOGIN'        => $this->user->is_registered ? sprintf($this->user->lang['LOGOUT'], $this->user['username']) : $this->user->lang['LOGIN'],
 
 			'S_BOT'                => $this->user->is_bot,
-			'S_ISP'                => $this->user->isp,
+			'S_ISP'                => $this->request->isp,
 			'S_LANGUAGE'           => $this->user->lang['.'],
 			'S_LANGUAGE_DIRECTION' => $language_ary['language_direction'],
 			'S_OPENID_PROVIDER'    => $this->user['openid_provider'],
@@ -429,7 +429,7 @@ class page
 	{
 		$this->template->assign([
 			'S_ACP'      => $this->auth->acl_get('a_'),
-			'S_INTERNET' => $this->user->isp == 'internet' || $this->user->isp == 'corbina-kaluga',
+			'S_INTERNET' => $this->request->isp == 'internet' || $this->request->isp == 'corbina-kaluga',
 
 			'U_COPYRIGHT' => ilink(sprintf('%s/vacuum.html', $this->get_handler_url('users::index')))
 		]);
