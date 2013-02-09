@@ -103,7 +103,7 @@ class mysqli
 				$values[] = $key . ' = ' . $this->check_value($value);
 			}
 
-			$query = implode(($query == 'UPDATE') ? ', ' : ' AND ', $values);
+			$query = implode($query == 'UPDATE' ? ', ' : ' AND ', $values);
 		}
 
 		return $query;
@@ -121,7 +121,7 @@ class mysqli
 			case 'SELECT':
 			case 'SELECT_DISTINCT':
 			
-				$sql = str_replace('_', '', $query) . ' ' . ((is_array($array['SELECT'])) ? implode(', ', $array['SELECT']) : $array['SELECT']) . ' FROM ';
+				$sql = str_replace('_', '', $query) . ' ' . (is_array($array['SELECT']) ? implode(', ', $array['SELECT']) : $array['SELECT']) . ' FROM ';
 				
 				if (is_array($array['FROM']))
 				{
@@ -450,7 +450,7 @@ class mysqli
 		{
 			if (!is_array($_sql_ary))
 			{
-				return $this->query('INSERT INTO ' . $table . ' ' . $this->build_array('INSERT', $sql_ary) . (($on_duplicate_action) ? ' ON DUPLICATE KEY UPDATE ' . $on_duplicate_action : ''));
+				return $this->query('INSERT INTO ' . $table . ' ' . $this->build_array('INSERT', $sql_ary) . ($on_duplicate_action ? ' ON DUPLICATE KEY UPDATE ' . $on_duplicate_action : ''));
 			}
 			
 			$values = [];
@@ -463,7 +463,7 @@ class mysqli
 			$ary[] = '(' . implode(', ', $values) . ')';
 		}
 		
-		return $this->query('INSERT INTO ' . $table . ' (' . implode(', ', array_keys($sql_ary[0])) . ') VALUES ' . implode(', ', $ary) . (($on_duplicate_action) ? ' ON DUPLICATE KEY UPDATE ' . $on_duplicate_action : ''));
+		return $this->query('INSERT INTO ' . $table . ' (' . implode(', ', array_keys($sql_ary[0])) . ') VALUES ' . implode(', ', $ary) . ($on_duplicate_action ? ' ON DUPLICATE KEY UPDATE ' . $on_duplicate_action : ''));
 	}
 	
 	/**
@@ -539,7 +539,7 @@ class mysqli
 			$on_page = '18446744073709551615';
 		}
 		
-		$query .= "\n LIMIT " . ((!empty($offset)) ? $offset . ', ' . $on_page : $on_page);
+		$query .= "\n LIMIT " . (!empty($offset) ? $offset . ', ' . $on_page : $on_page);
 		
 		return $this->query($query, $cache_ttl);
 	}

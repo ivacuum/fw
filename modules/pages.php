@@ -96,7 +96,7 @@ class pages extends page
 					UPDATE
 						' . PAGES_TABLE . '
 					SET
-						page_enabled = ' . (($action == 'enable') ? 1 : 0) . '
+						page_enabled = ' . ($action == 'enable' ? 1 : 0) . '
 					WHERE
 						site_id = ' . $this->db->check_value($this->data['site_id']) . '
 					AND
@@ -209,11 +209,11 @@ class pages extends page
 						$this->remove_cache_file();
 
 						$this->request->redirect($this->append_link_params(sprintf('parent_id=%d', $parent_id)));
-						trigger_error((($action == 'add') ? 'PAGE_ADDED' : 'PAGE_EDITED'));
+						trigger_error($action == 'add' ? 'PAGE_ADDED' : 'PAGE_EDITED');
 					}
 				}
 
-				$s_cat_option = '<option value="0"' . (($page_data['parent_id'] == 0) ? ' selected="selected"' : '') . '>' . 'NO_PARENT' . '</option>';
+				$s_cat_option = '<option value="0"' . ($page_data['parent_id'] == 0 ? ' selected="selected"' : '') . '>' . 'NO_PARENT' . '</option>';
 
 				$this->template->assign(array_merge([
 					'S_EDIT_PAGE'   => true,
@@ -291,7 +291,7 @@ class pages extends page
 		{
 			do
 			{
-				// $page_image = $row['page_image'] ? $row['page_image'] : (($row['is_dir']) ? 'folder' : 'blog');
+				// $page_image = $row['page_image'] ? $row['page_image'] : ($row['is_dir'] ? 'folder' : 'blog');
 				$page_image = $row['is_dir'] ? 'folder_open' : 'blog';
 
 				$url = ilink($this->url . '?parent_id=' . $parent_id . '&amp;pid=' . $row['page_id']);
@@ -436,7 +436,7 @@ class pages extends page
 			AND
 				p1.page_id = ' . $this->db->check_value($page_id) . '
 			ORDER BY
-				p2.left_id ' . (($order == 'descending') ? 'ASC' : 'DESC');
+				p2.left_id ' . ($order == 'descending' ? 'ASC' : 'DESC');
 		$this->db->query($sql);
 
 		while ($row = $this->db->fetchrow())
@@ -693,7 +693,7 @@ class pages extends page
 			AND
 				parent_id = ' . (int) $page_row['parent_id'] . '
 			AND
-				' . (($action == 'move_up') ? 'right_id < ' . (int) $page_row['right_id'] . ' ORDER BY right_id DESC' : 'left_id > ' . (int) $page_row['left_id'] . ' ORDER BY left_id ASC');
+				' . ($action == 'move_up' ? 'right_id < ' . (int) $page_row['right_id'] . ' ORDER BY right_id DESC' : 'left_id > ' . (int) $page_row['left_id'] . ' ORDER BY left_id ASC');
 		$this->db->query_limit($sql, $steps);
 		$target = [];
 

@@ -158,7 +158,7 @@ class page
 			AND
 				p1.page_id = ' . $this->db->check_value($page_id) . '
 			ORDER BY
-				p2.left_id ' . (($order == 'descending') ? 'ASC' : 'DESC');
+				p2.left_id ' . ($order == 'descending' ? 'ASC' : 'DESC');
 		$this->db->query($sql);
 
 		while ($row = $this->db->fetchrow())

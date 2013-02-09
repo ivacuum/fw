@@ -284,7 +284,7 @@ class auth
 				a.auth_role_id = 0
 			AND
 				a.auth_option_id = ao.auth_id ' .
-				(($sql_group) ? 'AND a.' . $sql_group : '') .
+				($sql_group ? 'AND a.' . $sql_group : '') .
 				$sql_local . $sql_opts . '
 			ORDER BY
 				a.local_id,
@@ -357,8 +357,8 @@ class auth
 				' . $sql_opts_from . '
 			WHERE
 				a.auth_role_id = 0 ' .
-				(($sql_opts_from) ? 'AND a.auth_option_id = ao.auth_id ' : '') .
-				(($sql_user) ? 'AND a.' . $sql_user : '') .
+				($sql_opts_from ? 'AND a.auth_option_id = ao.auth_id ' : '') .
+				($sql_user ? 'AND a.' . $sql_user : '') .
 				$sql_local . $sql_opts;
 
 		/* Права пользователя на основе ролей */
@@ -409,7 +409,7 @@ class auth
 				' . $sql_opts_from . '
 			WHERE
 				a.auth_role_id = 0 ' .
-				(($sql_opts_from) ? 'AND a.auth_option_id = ao.auth_id ' : '') . '
+				($sql_opts_from ? 'AND a.auth_option_id = ao.auth_id ' : '') . '
 			AND
 				a.group = ug.group_id
 			AND
@@ -418,7 +418,7 @@ class auth
 				ug.user_pending = 0
 			AND NOT
 				(ug.group_leader = 1 AND g.group_skip_auth = 1)
-				' . (($sql_user) ? 'AND ug.' . $sql_user : '') .
+				' . ($sql_user ? 'AND ug.' . $sql_user : '') .
 				$sql_local . $sql_opts;
 
 		/* Права группы на основе ролей */
@@ -497,7 +497,7 @@ class auth
 				a.' . $sql_id . ',
 				a.local_id
 			FROM
-				' . (($user_type == 'user') ? AUTH_GROUPS_TABLE : AUTH_USERS_TABLE) . ' a,
+				' . ($user_type == 'user' ? AUTH_GROUPS_TABLE : AUTH_USERS_TABLE) . ' a,
 				' . AUTH_ROLES_TABLE . ' r
 			WHERE
 				a.auth_role_id = r.role_id
@@ -551,7 +551,7 @@ class auth
 				a.auth_role_id = 0
 			AND
 				a.auth_option_id = ao.auth_id ' .
-				(($sql_user) ? 'AND a.' . $sql_user : '') .
+				($sql_user ? 'AND a.' . $sql_user : '') .
 				$sql_local . $sql_opts . '
 			ORDER BY
 				a.local_id,

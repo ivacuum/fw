@@ -221,7 +221,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 				' . SESSIONS_TABLE . '
 			WHERE
 				user_id = ' . $this->db->check_value($user_id) .
-			(($user_id === $this->data) ? ' AND session_id <> ' . $this->db->check_value($this->session_id) : '');
+			($user_id === $this->data ? ' AND session_id <> ' . $this->db->check_value($this->session_id) : '');
 		$this->db->query($sql);
 
 		if (false !== $set_new_key && $user_id === $this->data['user_id'] && $this->cookie['k'])
@@ -475,7 +475,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 		*/
 		if ($this->data['user_id'] > 0 && !$bot)
 		{
-			$this->data['session_last_visit'] = isset($this->data['session_time']) && $this->data['session_time'] ? $this->data['session_time'] : ((isset($this->data['user_last_visit'])) ? $this->data['user_last_visit'] : $this->ctime);
+			$this->data['session_last_visit'] = isset($this->data['session_time']) && $this->data['session_time'] ? $this->data['session_time'] : (isset($this->data['user_last_visit']) ? $this->data['user_last_visit'] : $this->ctime);
 		}
 		else
 		{
@@ -607,7 +607,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 		if (!$bot)
 		{
 			/* Устанавливаем куки */
-			$cookie_expire = $this->ctime + (($this->config['autologin_time']) ? 86400 * $this->config['autologin_time'] : 31536000);
+			$cookie_expire = $this->ctime + ($this->config['autologin_time'] ? 86400 * $this->config['autologin_time'] : 31536000);
 			$this->set_cookie('k', $this->cookie['k'], $cookie_expire);
 			$this->set_cookie('u', $this->cookie['u'], $cookie_expire);
 			$this->set_cookie('sid', $this->session_id, $cookie_expire);
@@ -740,7 +740,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 		$cookie_expire = gmdate('D, d-M-Y H:i:s \\G\\M\\T', $time);
 		$cookie_domain = !$this->config['cookie_domain'] || $this->config['cookie_domain'] == 'localhost' || $this->config['cookie_domain'] == '127.0.0.1' ? '' : '; domain=' . $this->config['cookie_domain'];
 
-		header('Set-Cookie: ' . $cookie_name . (($cookie_expire) ? '; expires=' . $cookie_expire : '') . '; path=' . $this->config['cookie_path'] . $cookie_domain . ((!$this->config['cookie_secure']) ? '' : '; secure') . '; HttpOnly', false);
+		header('Set-Cookie: ' . $cookie_name . ($cookie_expire ? '; expires=' . $cookie_expire : '') . '; path=' . $this->config['cookie_path'] . $cookie_domain . (!$this->config['cookie_secure'] ? '' : '; secure') . '; HttpOnly', false);
 	}
 
 	/**
@@ -753,7 +753,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 	{
 		$user_id = $user_id ?: $this->data['user_id'];
 		$user_ip = $user_ip ?: $this->ip;
-		$key = $key ?: (($this->cookie['k']) ? $this->cookie['k'] : false);
+		$key = $key ?: ($this->cookie['k'] ? $this->cookie['k'] : false);
 
 		$key_id = make_random_string(16);
 

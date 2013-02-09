@@ -71,7 +71,7 @@ function create_time($time, $no_seconds = false)
 	}
 	else
 	{
-		return $days . $hours . $minutes . (($no_seconds === false) ? ((!$days && !$hours && !$minutes && $time < 60) ? '' : ' и ') . $time . ' сек.' : '');
+		return $days . $hours . $minutes . ($no_seconds === false ? (!$days && !$hours && !$minutes && $time < 60 ? '' : ' и ') . $time . ' сек.' : '');
 	}
 }
 
