@@ -79,6 +79,7 @@ class page
 	public function _set_template($template)
 	{
 		$this->template = $template;
+		$this->template->add_function('static', [$this, 'template_function_static']);
 		$this->template->add_function('url_for', [$this, 'get_handler_url']);
 		
 		return $this;
@@ -648,6 +649,41 @@ class page
 		$this->template->file = 'static_page_index.html';
 	}
 	
+	/**
+	* Локальная или внешняя ссылка на статичные файлы
+	*/
+	public function template_function_static($type, $url)
+	{
+		switch ($type)
+		{
+			case 'd':
+			case 'download': $prefix = $this->config['download_path']; break;
+			case 'flag':
+			case 'flag24':   $prefix = $this->config['flags_path'] . '/24'; break;
+			case 'flag16':   $prefix = $this->config['flags_path'] . '/16'; break;
+			case 'flag32':   $prefix = $this->config['flags_path'] . '/32'; break;
+			case 'flag48':   $prefix = $this->config['flags_path'] . '/48'; break;
+			case 'g':
+			case 'gallery':  $prefix = $this->config['gallery_path']; break;
+			case 'i':
+			case 'img':
+			case 'image':    $prefix = $this->config['images_path']; break;
+			case 'js':       $prefix = $this->config['js_path']; break;
+			case 'rank':     $prefix = $this->config['ranks_path']; break;
+			case 'smile':
+			case 'smiley':   $prefix = $this->config['smilies_path']; break;
+		
+			default: $prefix = '';
+		}
+	
+		if ($this->request->isp === 'local' && $prefix)
+		{
+			$prefix = str_replace(['ivacuum.ru', 'ivacuum.org'], ['local.ivacuum.ru', '0.ivacuum.org'], $prefix);
+		}
+	
+		return sprintf('%s/%s', $prefix, $url);
+	}
+
 	/**
 	* Ссылка на просмотр профиля
 	*

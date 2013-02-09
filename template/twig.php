@@ -28,7 +28,6 @@ class twig
 			'cache'       => SITE_DIR . '../cache/templates',
 		]);
 
-		$this->env->addFunction('static', new \Twig_Function_Function('\\fw\\template\\twig_static'));
 		$this->env->addFilter('truncate', new \Twig_Filter_Function('\\fw\\template\\twig_truncate'));
 	}
 	
@@ -172,56 +171,6 @@ class twig
 	{
 		return $this->assign($data);
 	}
-}
-
-/**
-* Локальная или внешняя ссылка на статичные файлы
-*
-* 'image', '/_/application
-*/
-function twig_static($type, $url, $custom_extension = false)
-{
-	global $app;
-	static $is_local = null;
-	
-	if (is_null($is_local))
-	{
-		$is_local = $app['request']->isp === 'local';
-	}
-	
-	switch ($type)
-	{
-		case 'd':
-		case 'download': $prefix = $app['config']['download_path']; $ext = 'html'; break;
-		case 'flag':
-		case 'flag24':   $prefix = $app['config']['flags_path'] . '/24'; $ext = 'png'; break;
-		case 'flag16':   $prefix = $app['config']['flags_path'] . '/16'; $ext = 'png'; break;
-		case 'flag32':   $prefix = $app['config']['flags_path'] . '/32'; $ext = 'png'; break;
-		case 'flag48':   $prefix = $app['config']['flags_path'] . '/48'; $ext = 'png'; break;
-		case 'g':
-		case 'gallery':  $prefix = $app['config']['gallery_path']; break;
-		case 'i':
-		case 'img':
-		case 'image':    $prefix = $app['config']['images_path']; $ext = 'png'; break;
-		case 'js':       $prefix = $app['config']['js_path']; $ext = 'js'; break;
-		case 'rank':     $prefix = $app['config']['ranks_path']; $ext = ''; break;
-		case 'smile':
-		case 'smiley':   $prefix = $app['config']['smilies_path']; $ext = 'gif'; break;
-		
-		default: $prefix = ''; $ext = 'png';
-	}
-	
-	if ($is_local)
-	{
-		$prefix = str_replace(['ivacuum.ru', 'ivacuum.org'], ['local.ivacuum.ru', '0.ivacuum.org'], $prefix);
-	}
-	
-	if (false !== $custom_extension)
-	{
-		$ext = $custom_extension;
-	}
-	
-	return $ext ? sprintf('%s/%s.%s', $prefix, $url, $ext) : sprintf('%s/%s', $prefix, $url);
 }
 
 /**
