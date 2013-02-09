@@ -6,10 +6,8 @@
 
 namespace fw;
 
-/**
-* Константы
-* apc_delete($acm_prefix . '_constants');
-*/
+$app['acm.fw_prefix'] = 'fw-' . $app::VERSION;
+
 if (false === $app->load_constants($app['acm.fw_prefix']))
 {
 	$app->set_constants($app['acm.fw_prefix'], [

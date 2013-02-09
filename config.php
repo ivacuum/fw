@@ -6,19 +6,6 @@
 
 namespace fw;
 
-/* Настройки подключения к БД */
-$dbhost = 'localhost';
-$dbport = false;
-$dbname = '';
-$dbuser = '';
-$dbpass = '';
-$dbsock = '/tmp/mysql.sock';
-$dbpers = false;
-
-/* Настройки кэша */
-$acm_prefix = 'src.ivacuum.ru';
-$acm_type   = 'memcache';
-
 $app = [
 	/* Настройки подключения к БД */
 	'db.host' => 'localhost',
@@ -26,10 +13,9 @@ $app = [
 	'db.name' => '',
 	'db.user' => '',
 	'db.pass' => '',
-	'db.sock' => '',
+	'db.sock' => '/tmp/mysql.sock',
 	'db.pers' => false,
 	
 	/* Настройки кэша */
-	'acm.fw_prefix' => 'fw.ivacuum.ru',
-	'acm.type'      => 'memcache',
+	'acm.type' => 'memcache',
 ];
