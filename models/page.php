@@ -652,7 +652,7 @@ class page
 	/**
 	* Локальный или внешний домен
 	*/
-	public function template_function_hostname($type)
+	public function template_function_hostname($type = '')
 	{
 		switch ($type)
 		{
