@@ -28,7 +28,6 @@ class twig
 			'cache'       => SITE_DIR . '../cache/templates',
 		]);
 
-		$this->env->addFunction('lang', new \Twig_Function_Function('\\fw\\template\\twig_lang'));
 		$this->env->addFunction('static', new \Twig_Function_Function('\\fw\\template\\twig_static'));
 		$this->env->addFilter('truncate', new \Twig_Filter_Function('\\fw\\template\\twig_truncate'));
 	}
@@ -173,18 +172,6 @@ class twig
 	{
 		return $this->assign($data);
 	}
-}
-
-/**
-* Языковые переменные
-*/
-function twig_lang()
-{
-	global $app;
-	
-	$args = func_get_args();
-	
-	return call_user_func_array([$app['user'], 'lang'], $args);
 }
 
 /**
