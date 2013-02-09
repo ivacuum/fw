@@ -93,7 +93,7 @@ class errorhandler
 						$app['user']->session_begin();
 					}
 
-					$app['auth']->init($user->data);
+					$app['auth']->init($app['user']->data);
 
 					if (empty($app['user']->lang))
 					{

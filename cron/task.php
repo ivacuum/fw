@@ -20,13 +20,13 @@ class task
 
 	function __construct(array $row)
 	{
-		global $cache, $config, $db;
+		global $app;
 
-		$this->cache  =& $cache;
-		$this->config =& $config;
+		$this->cache  = $app['cache'];
+		$this->config = $app['config'];
 		$this->ctime  = time();
 		$this->data   = $row;
-		$this->db     =& $db;
+		$this->db     = $app['db'];
 	}
 	
 	/**

@@ -25,7 +25,7 @@ class manager
 
 	function __construct()
 	{
-		global $db;
+		global $app;
 
 		$this->start_time = time();
 
@@ -35,7 +35,7 @@ class manager
 		$this->cron_allowed = $this->log_dir . 'cron_allowed';
 		$this->cron_running = $this->log_dir . 'cron_running';
 
-		$this->db = $db;
+		$this->db = $app['db'];
 	}
 
 	/**
@@ -170,7 +170,7 @@ class manager
 	*/
 	private function set_includes_dir($site_id)
 	{
-		global $cache;
+		global $app;
 		static $id = 0;
 		
 		if ($site_id != $id)
@@ -192,7 +192,7 @@ class manager
 			
 			/* Загрузка настроек сайта */
 			require_once($row['config_value'] . '../config.php');
-			$cache->set_prefix($acm_prefix);
+			$app['cache']->set_prefix($acm_prefix);
 		}
 	}
 

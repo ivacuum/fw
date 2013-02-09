@@ -166,7 +166,7 @@ class user extends session
 		/**
 		* Запрос с параметрами:
 		*
-		* $user->lang('INDEX', 5, 'some text', 2.39)
+		* $this->lang('INDEX', 5, 'some text', 2.39)
 		*/
 		$args[0] = $this->lang[$key];
 		return call_user_func_array('sprintf', $args);

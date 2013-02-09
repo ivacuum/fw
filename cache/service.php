@@ -349,11 +349,8 @@ class service
 	{
 		if (false === $data = $this->driver->get('online_userlist_' . $language))
 		{
-			global $config, $user;
+			global $app;
 
-			/**
-			* Определяем необходимые переменные
-			*/
 			$data['guests_online'] = 0;
 			$data['users_online'] = 0;
 			$data['online_list'] = '';
@@ -362,8 +359,8 @@ class service
 			$prev_ip = [];
 
 			/**
-			* Получаем данные пользователей, которые посетили сайт в последние $config['load_online_time'] минут
-			*
+			* Получаем данные пользователей, которые посетили сайт
+			* в последние $this->config['load_online_time'] минут
 			*/
 			$sql = '
 				SELECT
@@ -377,7 +374,7 @@ class service
 				LEFT JOIN
 					' . USERS_TABLE . ' u ON (u.user_id = s.user_id)
 				WHERE
-					s.session_time >= ' . $this->db->check_value($user->ctime - $config['load_online_time']) . '
+					s.session_time >= ' . $this->db->check_value(time() - $this->config['load_online_time']) . '
 				ORDER BY
 					s.session_time DESC';
 			$result = $this->db->query($sql);
@@ -410,7 +407,7 @@ class service
 				WHERE
 					user_id = 0
 				AND
-					session_time >= ' . $this->db->check_value($user->ctime - $config['load_online_time']);
+					session_time >= ' . $this->db->check_value(time() - $this->config['load_online_time']);
 			$result = $this->db->query($sql);
 
 			while ($row = $this->db->fetchrow($result))
@@ -429,15 +426,15 @@ class service
 				/**
 				* Если на сайте нет зарегистрированных пользователей, то сообщаем об этом
 				*/
-				$data['online_userlist'] = $user->lang['ONLINE_LIST_EMPTY'];
+				$data['online_userlist'] = $app['user']->lang['ONLINE_LIST_EMPTY'];
 			}
 
 			/**
 			* Текстовое сообщение для сайта
 			*/
-			$data['online_list'] = sprintf($user->lang['ONLINE_LIST_TOTAL'], $data['users_online'] + $data['guests_online']);
-			$data['online_list'] .= sprintf($user->lang['ONLINE_LIST_REG'], $data['users_online']);
-			$data['online_list'] .= sprintf($user->lang['ONLINE_LIST_GUESTS'], $data['guests_online']);
+			$data['online_list'] = sprintf($app['user']->lang['ONLINE_LIST_TOTAL'], $data['users_online'] + $data['guests_online']);
+			$data['online_list'] .= sprintf($app['user']->lang['ONLINE_LIST_REG'], $data['users_online']);
+			$data['online_list'] .= sprintf($app['user']->lang['ONLINE_LIST_GUESTS'], $data['guests_online']);
 
 			$this->driver->set('online_userlist_' . $language, $data, 180);
 		}

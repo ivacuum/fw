@@ -306,11 +306,11 @@ class filespec
 	*/
 	public function trigger_error($errors = array())
 	{
-		global $template;
+		global $app;
 		
 		$this->error = array_merge($this->error, $errors);
 		
-		$template->append('upload_errors', [
+		$app['template']->append('upload_errors', [
 			'ERRORS' => $this->error,
 			'FILE'   => $this->uploadname,
 		]);

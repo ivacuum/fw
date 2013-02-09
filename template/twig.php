@@ -175,11 +175,11 @@ class twig
 */
 function twig_lang()
 {
-	global $user;
+	global $app;
 	
 	$args = func_get_args();
 	
-	return call_user_func_array([$user, 'lang'], $args);
+	return call_user_func_array([$app['user'], 'lang'], $args);
 }
 
 /**
@@ -189,34 +189,32 @@ function twig_lang()
 */
 function twig_static($type, $url, $custom_extension = false)
 {
-	global $config;
+	global $app;
 	static $is_local = null;
 	
 	if (is_null($is_local))
 	{
-		global $user;
-		
-		$is_local = $user->isp === 'local';
+		$is_local = $app['request']->isp === 'local';
 	}
 	
 	switch ($type)
 	{
 		case 'd':
-		case 'download': $prefix = $config['download_path']; $ext = 'html'; break;
+		case 'download': $prefix = $this->config['download_path']; $ext = 'html'; break;
 		case 'flag':
-		case 'flag24':   $prefix = $config['flags_path'] . '/24'; $ext = 'png'; break;
-		case 'flag16':   $prefix = $config['flags_path'] . '/16'; $ext = 'png'; break;
-		case 'flag32':   $prefix = $config['flags_path'] . '/32'; $ext = 'png'; break;
-		case 'flag48':   $prefix = $config['flags_path'] . '/48'; $ext = 'png'; break;
+		case 'flag24':   $prefix = $this->config['flags_path'] . '/24'; $ext = 'png'; break;
+		case 'flag16':   $prefix = $this->config['flags_path'] . '/16'; $ext = 'png'; break;
+		case 'flag32':   $prefix = $this->config['flags_path'] . '/32'; $ext = 'png'; break;
+		case 'flag48':   $prefix = $this->config['flags_path'] . '/48'; $ext = 'png'; break;
 		case 'g':
-		case 'gallery':  $prefix = $config['gallery_path']; break;
+		case 'gallery':  $prefix = $this->config['gallery_path']; break;
 		case 'i':
 		case 'img':
-		case 'image':    $prefix = $config['images_path']; $ext = 'png'; break;
-		case 'js':       $prefix = $config['js_path']; $ext = 'js'; break;
-		case 'rank':     $prefix = $config['ranks_path']; $ext = ''; break;
+		case 'image':    $prefix = $this->config['images_path']; $ext = 'png'; break;
+		case 'js':       $prefix = $this->config['js_path']; $ext = 'js'; break;
+		case 'rank':     $prefix = $this->config['ranks_path']; $ext = ''; break;
 		case 'smile':
-		case 'smiley':   $prefix = $config['smilies_path']; $ext = 'gif'; break;
+		case 'smiley':   $prefix = $this->config['smilies_path']; $ext = 'gif'; break;
 		
 		default: $prefix = ''; $ext = 'png';
 	}
