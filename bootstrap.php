@@ -34,9 +34,9 @@ require(FW_DIR . 'constants.php');
 require(SITE_DIR . '../constants.php');
 
 /* Внедрение зависимостей */
-$app['cache']->_set_config($app['config']);
 $app['db']->_set_cache($app['cache'])
 	->_set_profiler($app['profiler']);
+$app['cache']->_set_config($app['config']);
 
 /* Собственный обработчик ошибок */
 errorhandler::register();
