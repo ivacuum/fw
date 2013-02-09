@@ -33,6 +33,11 @@ class twig
 		$this->env->addFilter('truncate', new \Twig_Filter_Function('\\fw\\template\\twig_truncate'));
 	}
 	
+	public function add_function($function_name, $handler)
+	{
+		$this->env->addFunction(new \Twig_SimpleFunction($function_name, $handler));
+	}
+	
 	/**
 	* Переменные цикла
 	*/

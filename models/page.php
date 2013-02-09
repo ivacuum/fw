@@ -79,6 +79,7 @@ class page
 	public function _set_template($template)
 	{
 		$this->template = $template;
+		$this->template->add_function('url_for', [$this, 'get_handler_url']);
 		
 		return $this;
 	}
