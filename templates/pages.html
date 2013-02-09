@@ -90,17 +90,17 @@
 		</thead>
 		{% for row in pages %}
 		<tr ondblclick="document.location='{{ row.U_EDIT }}';">
-			<td style="width: 25px; text-align: right;"><img src="{{ static('i', '_/' ~ row.PAGE_IMAGE) }}" alt=""></td>
+			<td style="width: 25px; text-align: right;"><img src="{{ hostname() }}/i/_/{{ row.PAGE_IMAGE }}.png" alt=""></td>
 			<td style="width: 25px; text-align: center;">
 				{% if row.PAGE_ENABLED %}
-					<img src="{{ static('i', '_/status_online') }}" alt="">
+					<img src="{{ hostname() }}/i/_/status_online.png" alt="">
 				{% else %}
-					<img src="{{ static('i', '_/status_offline') }}" alt="">
+					<img src="{{ hostname() }}/i/_/status_offline.png" alt="">
 				{% endif %}
 			</td>
 			<td>
 				{% if row.PAGE_IMG %}
-					<img src="{{ static('i', '_/' ~ row.PAGE_IMG) }}" alt="">
+					<img src="{{ hostname() }}/i/_/{{ row.PAGE_IMG }}.png" alt="">
 				{% endif %}
 				{% if row.IS_DIR %}
 					<a href="{{ row.U_PAGE }}" title="/{{ row.PAGE_URL }}/">{{ row.PAGE_NAME }}</a>
@@ -111,34 +111,34 @@
 					<span class="muted">({{ row.PAGE_HANDLER }}::{{ row.HANDLER_METHOD }})</span>
 				{% endif %}
 				{% if row.PAGE_NOINDEX %}
-					<img src="{{ static('i', '_/monitor_off') }}" alt="">
+					<img src="{{ hostname() }}/i/_/monitor_off.png" alt="">
 				{% endif %}
 				{% if row.PAGE_DISPLAYED == 2 %}
-					<img src="{{ static('i', '_/sitemap_application_blue') }}" alt="">
+					<img src="{{ hostname() }}/i/_/sitemap_application_blue.png" alt="">
 				{% elseif row.PAGE_DISPLAYED == 1 %}
-					<img src="{{ static('i', '_/sitemap_application') }}" alt="">
+					<img src="{{ hostname() }}/i/_/sitemap_application.png" alt="">
 				{% endif %}
 				{% if row.PAGE_REDIRECT %}
-					<img src="{{ static('i', '_/road_sign') }}" alt="">
+					<img src="{{ hostname() }}/i/_/road_sign.png" alt="">
 				{% endif %}
 			</td>
 			<td style="width: 15%; white-space: nowrap; text-align: center; vertical-align: middle;">&nbsp;{% if row.PAGE_ENABLED %}<a href="{{ row.U_DISABLE }}">{{ lang('DISABLE') }}</a>{% else %}<a href="{{ row.U_ENABLE }}">{{ lang('ENABLE') }}</a>{% endif %}&nbsp;</td>
 			<td style="width:90px; white-space: nowrap; text-align: right; vertical-align: middle;">
 				{% if loop.first and not loop.last %}
 					{{ ICON_MOVE_UP_DISABLED }}
-					<a href="{{ row.U_MOVE_DOWN }}"><img src="{{ static('i', '_/arrow_270') }}" alt=""></a>
+					<a href="{{ row.U_MOVE_DOWN }}"><img src="{{ hostname() }}/i/_/arrow_270.png" alt=""></a>
 				{% elseif not loop.first and not loop.last %}
-					<a href="{{ row.U_MOVE_UP }}"><img src="{{ static('i', '_/arrow_090') }}" alt=""></a> 
-					<a href="{{ row.U_MOVE_DOWN }}"><img src="{{ static('i', '_/arrow_270') }}" alt=""></a> 
+					<a href="{{ row.U_MOVE_UP }}"><img src="{{ hostname() }}/i/_/arrow_090.png" alt=""></a> 
+					<a href="{{ row.U_MOVE_DOWN }}"><img src="{{ hostname() }}/i/_/arrow_270.png" alt=""></a> 
 				{% elseif not loop.first and loop.last %}
-					<a href="{{ row.U_MOVE_UP }}"><img src="{{ static('i', '_/arrow_090') }}" alt=""></a>	
+					<a href="{{ row.U_MOVE_UP }}"><img src="{{ hostname() }}/i/_/arrow_090.png" alt=""></a>	
 					{{ ICON_MOVE_DOWN_DISABLED }}
 				{% else %}
 					{{ ICON_MOVE_UP_DISABLED }}
 					{{ ICON_MOVE_DOWN_DISABLED }}
 				{% endif %}
-				<a href="{{ row.U_EDIT }}"><img src="{{ static('i', '_/pencil') }}" alt=""></a> 
-				<a href="#" onclick="if(confirm('Будет удалена вся информация, связанная с этой записью! Продолжить?')) { document.location = '{{ row.U_DELETE }}'; return false; }"><img src="{{ static('i', '_/cross') }}" alt=""></a>
+				<a href="{{ row.U_EDIT }}"><img src="{{ hostname() }}/i/_/pencil.png" alt=""></a> 
+				<a href="#" onclick="if(confirm('Будет удалена вся информация, связанная с этой записью! Продолжить?')) { document.location = '{{ row.U_DELETE }}'; return false; }"><img src="{{ hostname() }}/i/_/cross.png" alt=""></a>
 			</td>
 		</tr>
 		{% endfor %}
