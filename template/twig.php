@@ -200,21 +200,21 @@ function twig_static($type, $url, $custom_extension = false)
 	switch ($type)
 	{
 		case 'd':
-		case 'download': $prefix = $this->config['download_path']; $ext = 'html'; break;
+		case 'download': $prefix = $app['config']['download_path']; $ext = 'html'; break;
 		case 'flag':
-		case 'flag24':   $prefix = $this->config['flags_path'] . '/24'; $ext = 'png'; break;
-		case 'flag16':   $prefix = $this->config['flags_path'] . '/16'; $ext = 'png'; break;
-		case 'flag32':   $prefix = $this->config['flags_path'] . '/32'; $ext = 'png'; break;
-		case 'flag48':   $prefix = $this->config['flags_path'] . '/48'; $ext = 'png'; break;
+		case 'flag24':   $prefix = $app['config']['flags_path'] . '/24'; $ext = 'png'; break;
+		case 'flag16':   $prefix = $app['config']['flags_path'] . '/16'; $ext = 'png'; break;
+		case 'flag32':   $prefix = $app['config']['flags_path'] . '/32'; $ext = 'png'; break;
+		case 'flag48':   $prefix = $app['config']['flags_path'] . '/48'; $ext = 'png'; break;
 		case 'g':
-		case 'gallery':  $prefix = $this->config['gallery_path']; break;
+		case 'gallery':  $prefix = $app['config']['gallery_path']; break;
 		case 'i':
 		case 'img':
-		case 'image':    $prefix = $this->config['images_path']; $ext = 'png'; break;
-		case 'js':       $prefix = $this->config['js_path']; $ext = 'js'; break;
-		case 'rank':     $prefix = $this->config['ranks_path']; $ext = ''; break;
+		case 'image':    $prefix = $app['config']['images_path']; $ext = 'png'; break;
+		case 'js':       $prefix = $app['config']['js_path']; $ext = 'js'; break;
+		case 'rank':     $prefix = $app['config']['ranks_path']; $ext = ''; break;
 		case 'smile':
-		case 'smiley':   $prefix = $this->config['smilies_path']; $ext = 'gif'; break;
+		case 'smiley':   $prefix = $app['config']['smilies_path']; $ext = 'gif'; break;
 		
 		default: $prefix = ''; $ext = 'png';
 	}

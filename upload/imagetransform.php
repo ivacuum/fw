@@ -98,10 +98,10 @@ class imagetransform
 			FROM
 				' . IMAGE_WATERMARKS_TABLE . '
 			WHERE
-				wm_file = ' . $this->db->check_value($watermark);
-		$this->db->query($sql);
-		$row = $this->db->fetchrow();
-		$this->db->freeresult();
+				wm_file = ' . $app['db']->check_value($watermark);
+		$app['db']->query($sql);
+		$row = $app['db']->fetchrow();
+		$app['db']->freeresult();
 		
 		if (!$row)
 		{
@@ -109,7 +109,7 @@ class imagetransform
 			return false;
 		}
 		
-		$watermark = sprintf('%swatermark_%s.png', $this->config['watermarks_dir'], $watermark);
+		$watermark = sprintf('%swatermark_%s.png', $app['config']['watermarks_dir'], $watermark);
 		
 		if (!file_exists($watermark))
 		{
