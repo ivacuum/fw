@@ -79,7 +79,7 @@ class page
 	public function _set_template($template)
 	{
 		$this->template = $template;
-		$this->template->add_function('static', [$this, 'template_function_static']);
+		$this->template->add_function('hostname', [$this, 'template_function_hostname']);
 		$this->template->add_function('url_for', [$this, 'get_handler_url']);
 		
 		return $this;
@@ -650,40 +650,25 @@ class page
 	}
 	
 	/**
-	* Локальная или внешняя ссылка на статичные файлы
+	* Локальный или внешний домен
 	*/
-	public function template_function_static($type, $url)
+	public function template_function_hostname($type)
 	{
 		switch ($type)
 		{
-			case 'd':
-			case 'download': $prefix = $this->config['download_path']; break;
-			case 'flag':
-			case 'flag24':   $prefix = $this->config['flags_path'] . '/24'; break;
-			case 'flag16':   $prefix = $this->config['flags_path'] . '/16'; break;
-			case 'flag32':   $prefix = $this->config['flags_path'] . '/32'; break;
-			case 'flag48':   $prefix = $this->config['flags_path'] . '/48'; break;
-			case 'g':
-			case 'gallery':  $prefix = $this->config['gallery_path']; break;
-			case 'i':
-			case 'img':
-			case 'image':    $prefix = $this->config['images_path']; break;
-			case 'js':       $prefix = $this->config['js_path']; break;
-			case 'rank':     $prefix = $this->config['ranks_path']; break;
-			case 'smile':
-			case 'smiley':   $prefix = $this->config['smilies_path']; break;
+			case 'dl': $hostname = $this->config['dl.hostname']; break;
+			
+			default: $hostname = $this->config['static.hostname'];
+		}
 		
-			default: $prefix = '';
-		}
-	
-		if ($this->request->isp === 'local' && $prefix)
+		if ($this->request->isp === 'local')
 		{
-			$prefix = str_replace(['ivacuum.ru', 'ivacuum.org'], ['local.ivacuum.ru', '0.ivacuum.org'], $prefix);
+			return str_replace(['ivacuum.ru', 'ivacuum.org'], ['local.ivacuum.ru', '0.ivacuum.org'], $hostname);
 		}
 	
-		return sprintf('%s/%s', $prefix, $url);
+		return $hostname;
 	}
-
+	
 	/**
 	* Ссылка на просмотр профиля
 	*
