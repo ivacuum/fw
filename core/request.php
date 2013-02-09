@@ -76,7 +76,7 @@ class request
 	*/
 	public function get_requested_url()
 	{
-		$url = $this->is_set('path') ? sprintf('/%s', $this->get('path', '')) : '';
+		$url = $this->is_set('path') ? $this->get('path', '') : '';
 		
 		if (!$url)
 		{
