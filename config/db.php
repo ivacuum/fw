@@ -11,7 +11,7 @@ namespace fw\config;
 */
 class db extends config
 {
-	protected $domain;
+	protected $hostname;
 	protected $language;
 	protected $site_id;
 	protected $site_vars;
@@ -30,7 +30,7 @@ class db extends config
 		$this->cache = $cache;
 		$this->db    = $db;
 		
-		$this->domain   = $site_info['domain'];
+		$this->hostname = $site_info['domain'];
 		$this->language = $site_info['language'];
 		$this->site_id  = $site_info['id'];
 		$this->table    = $table ?: CONFIG_TABLE;
@@ -65,7 +65,7 @@ class db extends config
 		{
 			/* Настройки текущего сайта */
 			unset($this->config[$key]);
-			$this->cache->_delete(sprintf('%s_config_%s', $this->domain, $this->language));
+			$this->cache->_delete(sprintf('%s_config_%s', $this->hostname, $this->language));
 		}
 		elseif ($site_id === 0)
 		{
@@ -124,7 +124,7 @@ class db extends config
 		{
 			/* Настройки сайта */
 			$this->config[$key] += $increment;
-			$this->cache->_delete(sprintf('%s_config_%s', $this->domain, $this->language));
+			$this->cache->_delete(sprintf('%s_config_%s', $this->hostname, $this->language));
 		}
 		elseif ($site_id === 0)
 		{
@@ -202,7 +202,7 @@ class db extends config
 			/* Настройки текущего сайта */
 			$this->config[$key] = $new_value;
 			$this->site_vars[$key] = true;
-			$this->cache->_delete(sprintf('%s_config_%s', $this->domain, $this->language));
+			$this->cache->_delete(sprintf('%s_config_%s', $this->hostname, $this->language));
 		}
 		elseif ($site_id === 0)
 		{
@@ -234,7 +234,7 @@ class db extends config
 	*/
 	private function load_config($site_id)
 	{
-		$cache_entry = 0 === $site_id ? 'src_config' : sprintf('%s_config_%s', $this->domain, $this->language);
+		$cache_entry = 0 === $site_id ? 'src_config' : sprintf('%s_config_%s', $this->hostname, $this->language);
 		
 		if (false === $config = $this->cache->_get($cache_entry))
 		{
