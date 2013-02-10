@@ -493,25 +493,6 @@ function prepare_text_for_print($text)
 }
 
 /**
-* Добавление RSS потока в шапку
-*
-* @param	string	$url	Путь к рассылке
-* @param	bool	$root	Следует ли делать ссылку на RSS от корня сайта
-* @param	string	$title	Заголовок рассылки
-*/
-function rss_add($url, $root = false, $title = 'RSS 2.0')
-{
-	global $app;
-
-	$app['template']->append('rss', [
-		'TITLE' => $title,
-		'URL'   => false !== $root ? ilink($url, $app['config']['site_root_path']) : ilink($url)
-	]);
-
-	return;
-}
-
-/**
 * Создание ЧПУ ссылки с использованием символов выбранного языка сайта
 *
 * @param	string	$url	Входная ссылка
@@ -523,11 +504,7 @@ function seo_url($url, $lang = 'ru')
 	switch ($lang)
 	{
 		case 'ru': $pattern = '/[^а-яa-z\d\.]/u'; break;
-		default:
-
-			$pattern = '/[^a-z\d\.]/u'; break;
-
-		break;
+		default:   $pattern = '/[^a-z\d\.]/u';
 	}
 
 	/* Отсекаем неподходящие символы */
