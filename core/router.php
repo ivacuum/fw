@@ -54,21 +54,14 @@ class router
 		$this->format    = $this->config['router_default_extension'];
 		$this->namespace = $namespace;
 		$this->page      = $this->config['router_directory_index'];
+		$this->url       = $url ?: htmlspecialchars_decode($this->request->url);
 		
-		$url = $url ?: htmlspecialchars_decode($this->request->url);
-		
-		if (!$url)
+		if (false !== $query_string_pos = strpos($this->url, '?'))
 		{
-			$this->request->redirect(ilink());
+			$this->url = substr($this->url, 0, $query_string_pos);
 		}
 		
-		if (false !== $query_string_pos = strpos($url, '?'))
-		{
-			$url = substr($url, 0, $query_string_pos);
-		}
-		
-		$this->url = trim($url, '/');
-		$ary = pathinfo($this->url);
+		$ary = pathinfo(trim($this->url, '/'));
 		
 		if (isset($ary['extension']))
 		{
@@ -83,22 +76,20 @@ class router
 			$this->page   = $ary['filename'];
 			$this->url    = $ary['dirname'] != '.' ? $ary['dirname'] : '';
 		}
-		elseif (substr($url, -1) != '/')
+		elseif (substr($this->url, -1) != '/')
 		{
 			/**
 			* Обращение к странице без расширения
 			* Проверяем, можно ли обращаться к страницам без расширения
 			*/
-			if (in_array('', explode(';', $this->config['router_allowed_extensions']), true))
-			{
-				$this->params = $ary['dirname'] != '.' ? explode('/', $ary['dirname']) : [];
-				$this->page   = $ary['filename'];
-			}
-			else
+			if (!in_array('', explode(';', $this->config['router_allowed_extensions']), true))
 			{
 				/* Перенаправление на одноименный каталог */
 				$this->request->redirect(ilink($this->url), 301);
 			}
+
+			$this->params = $ary['dirname'] != '.' ? explode('/', $ary['dirname']) : [];
+			$this->page   = $ary['filename'];
 		}
 		elseif ($this->url)
 		{
