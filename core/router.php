@@ -295,7 +295,7 @@ class router
 	/**
 	* Загрузка модуля
 	*/
-	protected function load_handler($handler, $method, $params = array(), $redirect = false)
+	protected function load_handler($handler, $method, $params = array())
 	{
 		$class_name = 0 !== strpos($handler, '\\') ? $this->namespace . $handler : $handler;
 		
@@ -304,11 +304,6 @@ class router
 		
 		if (!$this->load_handler_with_params($params))
 		{
-			if ($redirect)
-			{
-				$this->request->redirect($redirect);
-			}
-			
 			return false;
 		}
 		
