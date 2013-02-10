@@ -14,15 +14,17 @@ class twig
 	public $env;
 	public $file;
 	public $path;
+	public $path_fw;
 
 	private $loader;
 	private $vars = [];
 
 	function __construct()
 	{
-		$this->path   = SITE_DIR . '../templates';
-		$this->loader = new \Twig_Loader_Filesystem([$this->path, FW_DIR . 'templates']);
-		$this->env    = new \Twig_Environment($this->loader, [
+		$this->path    = SITE_DIR . '../templates';
+		$this->path_fw = FW_DIR . 'templates';
+		$this->loader  = new \Twig_Loader_Filesystem([$this->path, $this->path_fw]);
+		$this->env     = new \Twig_Environment($this->loader, [
 			'auto_reload' => true,
 			'autoescape'  => false,
 			'cache'       => SITE_DIR . '../cache/templates',
@@ -106,10 +108,10 @@ class twig
 	{
 		$this->file = $file ?: $this->file;
 		
-		// if (!file_exists($this->path . '/' . $this->file))
-		// {
-		// 	trigger_error('TEMPLATE_NOT_FOUND');
-		// }
+		if (!file_exists("{$this->path}/{$this->file}") && !file_exists("{$this->path_fw}/{$this->file}"))
+		{
+			trigger_error('TEMPLATE_NOT_FOUND');
+		}
 
 		echo $this->env->render($this->file, $this->vars);
 	}
