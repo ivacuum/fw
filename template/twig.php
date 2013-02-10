@@ -100,14 +100,6 @@ class twig
 	}
 
 	/**
-	* Переменные цикла
-	*/
-	public function cycle_vars($loop_name, $vars_array)
-	{
-		return $this->append($loop_name, $vars_array);
-	}
-
-	/**
 	* Обработка и вывод шаблона
 	*/
 	public function display($file = '')
@@ -134,22 +126,6 @@ class twig
 	}
 
 	/**
-	* Обработка и вывод шаблона
-	*/
-	public function go($file = '')
-	{
-		$this->display($file);
-	}
-
-	/**
-	* Одиночная переменная
-	*/
-	public function setvar($key, $value)
-	{
-		return $this->assign($key, $value);
-	}
-	
-	/**
 	* Установка нового пути к шаблонам
 	*/
 	public function set_template_path($path)
@@ -162,14 +138,6 @@ class twig
 			'cache'       => SITE_DIR . 'cache/templates',
 		]);
 		$this->is_globals_set = false;
-	}
-
-	/**
-	* Массив переменных
-	*/
-	public function vars($data)
-	{
-		return $this->assign($data);
 	}
 
 	/**
