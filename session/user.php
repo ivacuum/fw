@@ -87,7 +87,7 @@ class user extends session
 
 	public function get_back_url()
 	{
-		return urlencode('//' . $this->request->hostname . $this->page);
+		return urlencode('//' . $this->request->hostname . $this->request->url);
 	}
 	
 	/**
@@ -108,7 +108,7 @@ class user extends session
 			case 'deny':
 			
 				http_response_code(401);
-				// \fw\core\errorhandler::log_mail('Unauthorized access to http://' . $this->request->hostname . $this->page . ' page', '401 Unauthorized');
+				// \fw\core\errorhandler::log_mail('Unauthorized access to http://' . $this->request->hostname . $this->request->url . ' page', '401 Unauthorized');
 
 				if ($this->request->hostname == 'dev.ivacuum.ru')
 				{
@@ -432,7 +432,7 @@ class user extends session
 	{
 		global $app;
 		
-		$url = trim(htmlspecialchars_decode($this->page), '/');
+		$url = trim(htmlspecialchars_decode($this->request->url), '/');
 		$params = $url ? explode('/', $url) : [];
 		
 		if (empty($params))
@@ -454,7 +454,7 @@ class user extends session
 			{
 				if ($language == $row['language_title'])
 				{
-					$this->request->redirect(ilink(mb_substr($this->page, 3)));
+					$this->request->redirect(ilink(mb_substr($this->request->url, 3)));
 				}
 			}
 			
@@ -463,7 +463,7 @@ class user extends session
 			
 		if ($this->language_exists($language))
 		{
-			$this->page = mb_substr($this->page, 3);
+			$this->request->url = mb_substr($this->request->url, 3);
 			return $language;
 		}
 	}

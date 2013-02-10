@@ -51,7 +51,7 @@ class router
 		$this->namespace = $namespace;
 		$this->page      = $this->config['router_directory_index'];
 		
-		$url = $url ?: htmlspecialchars_decode($this->user->page);
+		$url = $url ?: htmlspecialchars_decode($this->request->url);
 		
 		if (!$url)
 		{

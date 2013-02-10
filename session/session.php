@@ -44,7 +44,6 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 		$this->ctime         = time();
 		$this->forwarded_for = $this->request->header('X-Forwarded-For');
 		$this->ip            = $this->request->server('REMOTE_ADDR');
-		$this->page          = $this->request->url;
 		$this->referer       = $this->request->header('Referer');
 	}
 	
@@ -328,7 +327,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 		if (!$session_expired)
 		{
 			/* Обновляем информацию о местонахождении не чаще раза в минуту */
-			if ($update_page && ($this->ctime - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->page))
+			if ($update_page && ($this->ctime - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->request->url))
 			{
 				$this->data['session_time'] = $this->ctime;
 				$sql_ary = ['session_time' => $this->ctime];
@@ -338,9 +337,9 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 					$sql_ary['session_domain'] = $this->data['session_domain'] = (string) $this->request->hostname;
 				}
 				
-				if ($update_page && $this->data['session_page'] != $this->page)
+				if ($update_page && $this->data['session_page'] != $this->request->url)
 				{
-					$sql_ary['session_page'] = $this->data['session_page'] = (string) $this->page;
+					$sql_ary['session_page'] = $this->data['session_page'] = (string) $this->request->url;
 				}
 				
 				$this->session_update($sql_ary);
@@ -516,22 +515,22 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 				$this->session_id = $this->data['session_id'];
 
 				/* Обновляем информацию о местонахождении не чаще раза в минуту */
-				if ($this->ctime - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->page)
+				if ($this->ctime - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->request->url)
 				{
 					$this->data['session_time'] = $this->data['session_last_visit'] = $this->ctime;
-					$this->data['session_page'] = $this->page;
+					$this->data['session_page'] = $this->request->url;
 
 					$this->session_update([
 						'session_last_visit'      => $this->ctime,
 						'session_time'            => $this->ctime,
 						'session_domain'          => $this->request->hostname,
-						'session_page'            => $this->page,
+						'session_page'            => $this->request->url,
 						'session_referer'         => $this->referer,
 					]);
 
 					$this->user_update([
 						'user_session_time' => (int) $this->data['session_time'],
-						'user_session_page' => (string) $this->page,
+						'user_session_page' => (string) $this->request->url,
 						'user_last_visit'   => (int) $this->data['session_last_visit'],
 						'user_ip'           => (string) $this->ip,
 					]);
@@ -569,7 +568,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 			'session_browser'         => (string) trim(substr($this->browser, 0, 149)),
 			'session_forwarded_for'   => (string) $this->forwarded_for,
 			'session_domain'          => (string) $this->request->hostname,
-			'session_page'            => (string) $this->page,
+			'session_page'            => (string) $this->request->url,
 			'session_referer'         => (string) $this->referer,
 			'session_ip'              => (string) $this->ip,
 			'session_viewonline'      => (int) $viewonline,
@@ -641,7 +640,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 			*/
 			$this->user_update([
 				'user_session_time' => (int) $this->ctime,
-				'user_session_page' => (string) $this->page,
+				'user_session_page' => (string) $this->request->url,
 				'user_last_visit'   => (int) $this->ctime,
 				'user_ip'           => (string) $this->ip
 			]);
