@@ -59,7 +59,7 @@ class router
 		}
 		
 		/* Поиск сайта */
-		if (false === $this->site_id = $this->get_site_id($this->user->domain, $this->user->lang['.']))
+		if (false === $this->site_id = $this->get_site_id($this->request->hostname, $this->user->lang['.']))
 		{
 			trigger_error('Сайт не найден');
 		}

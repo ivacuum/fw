@@ -87,7 +87,7 @@ class user extends session
 
 	public function get_back_url()
 	{
-		return urlencode('//' . $this->domain . $this->page);
+		return urlencode('//' . $this->request->hostname . $this->page);
 	}
 	
 	/**
@@ -108,9 +108,9 @@ class user extends session
 			case 'deny':
 			
 				http_response_code(401);
-				// \fw\core\errorhandler::log_mail('Unauthorized access to http://' . $this->domain . $this->page . ' page', '401 Unauthorized');
+				// \fw\core\errorhandler::log_mail('Unauthorized access to http://' . $this->request->hostname . $this->page . ' page', '401 Unauthorized');
 
-				if ($this->domain == 'dev.ivacuum.ru')
+				if ($this->request->hostname == 'dev.ivacuum.ru')
 				{
 					trigger_error(sprintf($this->lang['NEED_LOGIN'], ilink(sprintf('/ucp/login.html?goto=%s', $this->get_back_url()))));
 				}
@@ -123,7 +123,7 @@ class user extends session
 			*/
 			case 'redirect':
 			
-				if ($this->domain == 'dev.ivacuum.ru')
+				if ($this->request->hostname == 'dev.ivacuum.ru')
 				{
 					$this->request->redirect(ilink(sprintf('/ucp/login.html?goto=%s', $this->get_back_url())), $this->config['router_local_redirect']);
 				}
@@ -181,7 +181,7 @@ class user extends session
 		
 		foreach ($sites as $row)
 		{
-			if ($this->domain == $row['site_url'] && $language == $row['site_language'])
+			if ($this->request->hostname == $row['site_url'] && $language == $row['site_language'])
 			{
 				return true;
 			}
@@ -209,7 +209,7 @@ class user extends session
 		if (0 !== strpos($lang_file, 'fw_'))
 		{
 			/* Локализация проекта */
-			$site_info = $this->cache->get_site_info_by_url_lang($this->domain, $language);
+			$site_info = $this->cache->get_site_info_by_url_lang($this->request->hostname, $language);
 			
 			$lang = array_merge_recursive($lang, $this->get_i18n_data($site_info['id'], $language, $lang_file, $force_update));
 		}
@@ -473,7 +473,7 @@ class user extends session
 	*/
 	private function get_i18n_data($site_id, $language, $lang_file, $force_update = false)
 	{
-		$prefix = 0 === $site_id ? 'src' : $this->domain;
+		$prefix = 0 === $site_id ? 'src' : $this->request->hostname;
 		$cache_entry = sprintf('%s_i18n_%s_%s', $prefix, $lang_file, $language);
 		
 		if ($force_update || (false === $lang = $this->cache->_get($cache_entry)))

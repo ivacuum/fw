@@ -15,7 +15,6 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 	public $cookie         = [];
 	public $ctime          = 0;
 	public $data           = [];
-	public $domain         = '';
 	public $forwarded_for  = '';
 	public $ip             = '';
 	public $isp;
@@ -43,7 +42,6 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 		$this->browser       = $this->request->header('User-Agent');
 		$this->cookie        = ['u' => 0, 'k' => ''];
 		$this->ctime         = time();
-		$this->domain        = $this->request->hostname;
 		$this->forwarded_for = $this->request->header('X-Forwarded-For');
 		$this->ip            = $this->request->server('REMOTE_ADDR');
 		$this->page          = $this->request->url;
@@ -335,9 +333,9 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 				$this->data['session_time'] = $this->ctime;
 				$sql_ary = ['session_time' => $this->ctime];
 
-				if ($update_page && $this->data['session_domain'] != $this->domain)
+				if ($update_page && $this->data['session_domain'] != $this->request->hostname)
 				{
-					$sql_ary['session_domain'] = $this->data['session_domain'] = (string) $this->domain;
+					$sql_ary['session_domain'] = $this->data['session_domain'] = (string) $this->request->hostname;
 				}
 				
 				if ($update_page && $this->data['session_page'] != $this->page)
@@ -526,7 +524,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 					$this->session_update([
 						'session_last_visit'      => $this->ctime,
 						'session_time'            => $this->ctime,
-						'session_domain'          => $this->domain,
+						'session_domain'          => $this->request->hostname,
 						'session_page'            => $this->page,
 						'session_referer'         => $this->referer,
 					]);
@@ -570,7 +568,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 			'session_time'            => (int) $this->ctime,
 			'session_browser'         => (string) trim(substr($this->browser, 0, 149)),
 			'session_forwarded_for'   => (string) $this->forwarded_for,
-			'session_domain'          => (string) $this->domain,
+			'session_domain'          => (string) $this->request->hostname,
 			'session_page'            => (string) $this->page,
 			'session_referer'         => (string) $this->referer,
 			'session_ip'              => (string) $this->ip,

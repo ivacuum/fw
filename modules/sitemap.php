@@ -79,7 +79,7 @@ class sitemap extends page
 		$this->template->assign([
 			'pages' => $traversal->get_tree_data(),
 			
-			'DOMAIN' => $this->user->domain
+			'DOMAIN' => $this->request->hostname,
 		]);
 	}
 }

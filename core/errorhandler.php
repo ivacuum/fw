@@ -140,7 +140,7 @@ class errorhandler
 				if (!empty($matches) || 0 === strpos($text, 'ERR_'))
 				{
 					http_response_code(404);
-					// static::log_mail('Page http://' . $app['user']->domain . $app['user']->data['session_page'] . ' not found', '404 Not Found');
+					// static::log_mail('Page http://' . $app['request']->hostname . $app['user']->data['session_page'] . ' not found', '404 Not Found');
 				}
 				
 				if (!$handler->format || $handler->format == 'json')
@@ -230,7 +230,7 @@ class errorhandler
 			$call_stack = str_replace(['/srv/www/vhosts'], [''], ob_get_clean());
 		}
 		
-		mail('vacuum@ivacuum.ru', $title, sprintf("%s\n%s%s\n%s\n%s", $text, $call_stack, print_r($app['user']->data, true), print_r($_SERVER, true), print_r($_REQUEST, true)), sprintf("From: %s@%s\r\n", $app['user']->domain ?: 'fw', gethostname()));
+		mail('vacuum@ivacuum.ru', $title, sprintf("%s\n%s%s\n%s\n%s", $text, $call_stack, print_r($app['user']->data, true), print_r($_SERVER, true), print_r($_REQUEST, true)), sprintf("From: %s@%s\r\n", $app['request']->hostname ?: 'fw', gethostname()));
 	}
 
 	/**

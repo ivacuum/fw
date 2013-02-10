@@ -375,7 +375,7 @@ class page
 
 		foreach ($sites as $row)
 		{
-			if ($this->user->domain != $row['site_url'])
+			if ($this->request->hostname != $row['site_url'])
 			{
 				continue;
 			}
