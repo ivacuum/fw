@@ -303,23 +303,6 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 }
 
 /**
-* Возвращает число в заданном формате
-*
-* В данный момент для всех языков оформление едино:
-* 12345678 -> 12 345 678
-*
-* @param	int	$value	Число
-*
-* @return	int			Число в заданном формате
-*/
-function num_format($value, $decimals = 0)
-{
-	global $app;
-	
-	return number_format($value, $decimals, $app['config']['number_dec_point'], $app['config']['number_thousands_sep']);
-}
-
-/**
 * Возвращает число в пределах $min:$max
 *
 * @param	int	$value	Число

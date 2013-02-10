@@ -160,7 +160,7 @@ class comments
 			$this->template->append('comments', [
 				'ID'         => $row['comm_id'],
 				'ONLINE'     => ($this->user->ctime - $row['user_session_time']) < $this->config['load_online_time'],
-				'POSTS'      => num_format($row['user_posts']),
+				'POSTS'      => $row['user_posts'],
 				'RANK_IMG'   => $ranks[$row['user_rank']]['rank_image'],
 				'RANK_TITLE' => $ranks[$row['user_rank']]['rank_title'],
 				'TEXT'       => prepare_text_for_print(nl2br($row['comm_text'])),

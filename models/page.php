@@ -623,13 +623,11 @@ class page
 			'ONLINE_LIST'     => $online_userlist['online_list'],
 			'ONLINE_TIME'     => sprintf($this->user->lang['ONLINE_TIME'], $this->config['load_online_time'] / 60),
 			'ONLINE_USERLIST' => $online_userlist['online_userlist'],
-			'STAT_COMMENTS'   => num_format($this->config['num_comments']),
-			'STAT_NEWS'       => num_format($this->config['num_news']),
-			'STAT_USERS'      => num_format($this->config['num_users']),
+			'STAT_COMMENTS'   => $this->config['num_comments'],
+			'STAT_NEWS'       => $this->config['num_news'],
+			'STAT_USERS'      => $this->config['num_users'],
 
 			'S_WHO_IS_ONLINE' => true,
-
-			'U_WHO_IS_ONLINE' => ilink($this->user->lang['URL_WHO_IS_ONLINE'])
 		]);
 	}
 	
