@@ -444,7 +444,6 @@ class page
 			if (($this->auth->acl_get('a_') || $this->user->ip == '192.168.1.1') && $this->config['profiler_display'])
 			{
 				$display_profiler = true;
-				$this->user->load_language('profiler');
 			}
 		}
 
@@ -460,6 +459,7 @@ class page
 			
 			if ($display_profiler)
 			{
+				$this->user->load_language('profiler');
 				$stats = $this->profiler->get_stats();
 				
 				$this->template->assign(array_merge([
