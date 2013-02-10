@@ -240,24 +240,6 @@ class user extends session
 	}
 
 	/**
-	* Вычисление подсети абонента
-	*/
-	public function spark_subnet()
-	{
-		static $subnet = '';
-
-		if (!$subnet)
-		{
-			list($ip1, $ip2, $ip3, $ip4) = explode('.', $this->ip);
-
-			$ip4 -= $ip4 % 8;
-			$subnet = sprintf('%d.%d.%d.%d', $ip1, $ip2, $ip3, $ip4);
-		}
-
-		return $subnet;
-	}
-
-	/**
 	* Обновление данных пользователя
 	*/
 	public function user_update($sql_ary, $user_id = false)
