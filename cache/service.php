@@ -114,6 +114,7 @@ class service
 					'domain'   => $row['site_url'],
 					'id'       => (int) $row['site_id'],
 					'language' => $row['site_language'],
+					'locale'   => $row['site_locale'],
 					'title'    => $row['site_title'],
 				];
 			}

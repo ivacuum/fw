@@ -74,21 +74,19 @@ class application implements \ArrayAccess
 		});
 
 		$this['router'] = $this->share(function() use ($app) {
-			return new router($app['auth'], $app['cache'], $app['config'], $app['db'], $app['profiler'], $app['request'], $app['template'], $app['user']);
+			return new router($app['auth'], $app['cache'], $app['config'], $app['db'], $app['profiler'], $app['request'], $app['site_info'], $app['template'], $app['user']);
 		});
 
 		/* Информация об обслуживаемом сайте */
 		$this['site_info'] = $this->share(function() use ($app) {
-			$site_info = $app['cache']->get_site_info_by_url($app['request']->hostname, $app['request']->url);
-			
-			if (false !== $site_info)
+			if (false === $site_info = $app['cache']->get_site_info_by_url($app['request']->hostname, $app['request']->url))
 			{
-				$app['request']->set_language($site_info['language']);
-				
-				return $site_info;
+				trigger_error('Сайт не найден', E_USER_ERROR);
 			}
 			
-			return false;
+			$app['request']->set_language($site_info['language']);
+			
+			return $site_info;
 		});
 		
 		/* Явный вызов автозагрузчика, чтобы он начал свою работу */

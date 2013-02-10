@@ -22,11 +22,6 @@ class db extends config
 	
 	function __construct($cache, $db, $site_info, $table = false)
 	{
-		if (!is_array($site_info))
-		{
-			trigger_error('Сайт не найден', E_USER_ERROR);
-		}
-		
 		$this->cache = $cache;
 		$this->db    = $db;
 		

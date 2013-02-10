@@ -29,20 +29,23 @@ class router
 	protected $params_count;
 	protected $profiler;
 	protected $request;
-	protected $site_info = [];
 	protected $template;
 	protected $user;
 	
-	function __construct($auth, $cache, $config, $db, $profiler, $request, $template, $user)
+	function __construct($auth, $cache, $config, $db, $profiler, $request, $site_info, $template, $user)
 	{
-		$this->auth     = $auth;
-		$this->cache    = $cache;
-		$this->config   = $config;
-		$this->db       = $db;
-		$this->profiler = $profiler;
-		$this->request  = $request;
-		$this->template = $template;
-		$this->user     = $user;
+		$this->auth      = $auth;
+		$this->cache     = $cache;
+		$this->config    = $config;
+		$this->db        = $db;
+		$this->profiler  = $profiler;
+		$this->request   = $request;
+		$this->template  = $template;
+		$this->user      = $user;
+		
+		$this->site_id = $site_info['id'];
+		
+		setlocale(LC_ALL, $site_info['locale']);
 	}
 
 	public function _init($url = '', $namespace = '\\app\\')
@@ -56,12 +59,6 @@ class router
 		if (!$url)
 		{
 			$this->request->redirect(ilink());
-		}
-		
-		/* Поиск сайта */
-		if (false === $this->site_id = $this->get_site_id($this->request->hostname, $this->user->lang['.']))
-		{
-			trigger_error('Сайт не найден');
 		}
 		
 		if (false !== $query_string_pos = strpos($url, '?'))
@@ -446,27 +443,5 @@ class router
 		$this->db->freeresult();
 		
 		return $row;
-	}
-
-	/**
-	* Возврат данных сайта
-	*
-	* Главным образом это проверка сайта (и определенной локализации) на существование
-	*/
-	protected function get_site_id($domain, $language)
-	{
-		$sites = $this->cache->obtain_sites();
-		
-		foreach ($sites as $row)
-		{
-			if ($domain == $row['site_url'] && $language == $row['site_language'])
-			{
-				setlocale(LC_ALL, $row['site_locale']);
-				
-				return (int) $row['site_id'];
-			}
-		}
-		
-		return false;
 	}
 }
