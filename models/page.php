@@ -87,6 +87,7 @@ class page
 	public function _set_user($user)
 	{
 		$this->user = $user;
+		$this->template->add_function('humn_size', [$this->user, 'humn_size']);
 		$this->template->add_function('lang', [$this->user, 'lang']);
 		$this->template->add_function('plural', [$this->user, 'plural']);
 		
