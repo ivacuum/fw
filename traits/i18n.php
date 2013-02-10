@@ -106,7 +106,7 @@ trait i18n
 			return;
 		}
 		
-		$forms = explode(';', isset($this->lang[$forms]) ? $this->lang[$forms] : $forms);
+		$forms = explode(';', isset($this->lang['plural'][$forms]) ? $this->lang['plural'][$forms] : $forms);
 
 		switch ($this->request->language)
 		{
