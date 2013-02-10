@@ -458,7 +458,7 @@ class page
 			{
 				$stats = $this->profiler->get_stats();
 				$this->user->load_language('profiler');
-				$this->template->assign($stats);
+				$this->template->assign([$stats]);
 				$this->template->display('profiler.html');
 			}
 		}
