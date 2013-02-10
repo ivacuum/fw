@@ -11,6 +11,45 @@ trait i18n
 	public $lang = [];
 
 	/**
+	* Продолжительность
+	*
+	* @param	int		$time		Время в секундах
+	* @param	bool	$no_seconds	Выводить ли секунды
+	* @param	bool	$only_days	Выводить ли только дни
+	*
+	* @return	string				Сформированная строка
+	*/
+	public function create_time($time, $no_seconds = false, $only_days = false)
+	{
+		/* Дни */
+		$days = $time >= 86400 ? intval($time / 86400) : 0;
+		$days = $days > 0 ? "{$days} дн." : '';
+		$time -= $time >= 86400 ? 86400 * $days : 0;
+		
+		if ($only_days)
+		{
+			return $days;
+		}
+
+		/* Часы */
+		$hours = $time >= 3600 ? intval($time / 3600) : 0;
+		$hours = $hours > 0 ? "{$hours} ч." : '';
+		$time -= $time >= 3600 ? 3600 * $hours : 0;
+
+		/* Минуты */
+		$minutes = $time >= 60 ? intval($time / 60) : 0;
+		$minutes = $minutes > 0 ? "{$minutes} мин." : '';
+		$time -= $time >= 60 ? 60 * $minutes : 0;
+
+		if (!$days && !$hours && !$minutes && false !== $no_seconds)
+		{
+			return '1 мин.';
+		}
+		
+		return "{$days} {$hours} {$minutes}" . ($no_seconds === false ? (!$days && !$hours && !$minutes && $time < 60 ? '' : ' и ') . $time . ' сек.' : '');
+	}
+
+	/**
 	* Размер в понятной человеку форме, округленный к ближайшему ГБ, МБ, КБ
 	*
 	* @param	int		$size		Размер
@@ -20,7 +59,7 @@ trait i18n
 	*
 	* @return	string				Размер в понятной человеку форме
 	*/
-	function humn_size($size, $rounder = '', $min = '', $space = '&nbsp;')
+	public function humn_size($size, $rounder = '', $min = '', $space = '&nbsp;')
 	{
 		$sizes = [$this->lang['SIZE_BYTES'], $this->lang['SIZE_KB'], $this->lang['SIZE_MB'], $this->lang['SIZE_GB'], $this->lang['SIZE_TB'], $this->lang['SIZE_PB'], $this->lang['SIZE_EB'], $this->lang['SIZE_ZB'], $this->lang['SIZE_YB']];
 		static $rounders = [0, 0, 1, 2, 3, 3, 3, 3, 3];

@@ -41,41 +41,6 @@ function build_hidden_fields($row)
 }
 
 /**
-* Текстовое представление метки времени
-*
-* @param	int		$time		Метка времени
-* @param	bool	$no_seconds	Следует ли выводить секунды
-*
-* @return	string				Текстовое представление метки времени
-*/
-function create_time($time, $no_seconds = false)
-{
-	/* Дни */
-	$days = $time >= 86400 ? intval($time / 86400) : 0;
-	$days = $days > 0 ? $days . ' дн. ' : '';
-	$time -= $time >= 86400 ? 86400 * $days : 0;
-
-	/* Часы */
-	$hours = $time >= 3600 ? intval($time / 3600) : 0;
-	$hours = $hours > 0 ? $hours . ' ч. ' : '';
-	$time -= $time >= 3600 ? 3600 * $hours : 0;
-
-	/* Минуты */
-	$minutes = $time >= 60 ? intval($time / 60) : 0;
-	$minutes = $minutes > 0 ? $minutes . ' мин.' : '';
-	$time -= $time >= 60 ? 60 * $minutes : 0;
-
-	if (!$days && !$hours && !$minutes && false !== $no_seconds)
-	{
-		return '1 мин.';
-	}
-	else
-	{
-		return $days . $hours . $minutes . ($no_seconds === false ? (!$days && !$hours && !$minutes && $time < 60 ? '' : ' и ') . $time . ' сек.' : '');
-	}
-}
-
-/**
 * Сборщик мусора
 */
 function garbage_collection($display_profiler = true)
