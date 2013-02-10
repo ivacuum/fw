@@ -6,11 +6,15 @@
 
 namespace fw\core;
 
+use fw\traits\breadcrumbs;
+
 /**
 * Маршрутизатор запросов
 */
 class router
 {
+	use breadcrumbs;
+	
 	public $format;
 	public $handler;
 	public $method;
@@ -152,7 +156,7 @@ class router
 
 			if ($row['page_url'] != '*')
 			{
-				navigation_link(ilink($this->page_link[0]), $row['page_name'], $row['page_image']);
+				$this->breadcrumbs(ilink($this->page_link[0]), $row['page_name'], $row['page_image']);
 			}
 		}
 		
@@ -206,7 +210,7 @@ class router
 			
 			if ($row['page_url'] != '*')
 			{
-				navigation_link(ilink(implode('/', $this->page_link)), $row['page_name'], $row['page_image']);
+				$this->breadcrumbs(ilink(implode('/', $this->page_link)), $row['page_name'], $row['page_image']);
 				
 				unset($this->params[$i]);
 			}
@@ -238,7 +242,7 @@ class router
 
 				if ($row['page_url'] != '*')
 				{
-					navigation_link(ilink(implode('/', $this->page_link)), $row['page_name'], $row['page_image']);
+					$this->breadcrumbs(ilink(implode('/', $this->page_link)), $row['page_name'], $row['page_image']);
 				}
 			}
 		}

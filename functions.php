@@ -344,24 +344,6 @@ function meta_refresh($time, $url)
 }
 
 /**
-* Навигационная ссылка
-*
-* @param	string	$url	Ссылка на страницу
-* @param	string	$text	Название страницы
-* @param	string	$image	Изображение
-*/
-function navigation_link($url, $text, $image = false)
-{
-	global $app;
-	
-	$app['template']->append('nav_links', [
-		'IMAGE' => $image,
-		'TEXT'  => $text,
-		'URL'   => $url
-	]);
-}
-
-/**
 * Переход по страницам
 *
 * Проверяем наличие выбранной страницы. Устанавливаем данные шаблона.

@@ -6,11 +6,15 @@
 
 namespace fw\models;
 
+use fw\traits\breadcrumbs;
+
 /**
 * Страница сайта
 */
 class page
 {
+	use breadcrumbs;
+	
 	public $data;
 	public $format;
 	public $full_url;
