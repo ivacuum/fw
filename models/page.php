@@ -88,6 +88,7 @@ class page
 	{
 		$this->user = $user;
 		$this->template->add_function('lang', [$this->user, 'lang']);
+		$this->template->add_function('plural', [$this->user, 'plural']);
 		
 		return $this;
 	}
@@ -455,14 +456,9 @@ class page
 			
 			if ($display_profiler)
 			{
-				$this->user->load_language('profiler');
 				$stats = $this->profiler->get_stats();
-				
-				$this->template->assign(array_merge([
-					'FILE_COUNT_TEXT'  => plural($stats['FILE_COUNT'], $this->user->lang['plural']['FILES']),
-					'QUERY_COUNT_TEXT' => plural($stats['QUERY_COUNT'], $this->user->lang['plural']['QUERIES']),
-				], $stats));
-				
+				$this->user->load_language('profiler');
+				$this->template->assign($stats);
 				$this->template->display('profiler.html');
 			}
 		}

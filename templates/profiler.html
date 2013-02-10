@@ -30,7 +30,7 @@ function hideProfiler() {
 			<h4>{{ lang('LOAD_TIME') }}</h4>
 		</td>
 		<td class="purple" onclick="changeTab('queries');">
-			<var>{{ QUERY_COUNT_TEXT }}</var>
+			<var>{{ plural(QUERY_COUNT, 'QUERIES') }}</var>
 			<h4>{{ lang('DATABASE') }}</h4>
 		</td>
 		<td class="orange" onclick="changeTab('memory');">
@@ -38,7 +38,7 @@ function hideProfiler() {
 			<h4>{{ lang('MEMORY_USED') }}</h4>
 		</td>
 		<td class="red" onclick="changeTab('files');">
-			<var>{{ FILE_COUNT_TEXT }}</var>
+			<var>{{ plural(FILE_COUNT, 'FILES') }}</var>
 			<h4>{{ lang('INCLUDED') }}</h4>
 		</td>
 	</tr>
