@@ -11,6 +11,49 @@ trait i18n
 	public $lang = [];
 
 	/**
+	* Размер в понятной человеку форме, округленный к ближайшему ГБ, МБ, КБ
+	*
+	* @param	int		$size		Размер
+	* @param	int		$rounder	Необходимое количество знаков после запятой
+	* @param	string	$min		Минимальный размер ('КБ', 'МБ' и т.п.)
+	* @param	string	$space		Разделитель между числами и текстом (1< >МБ)
+	*
+	* @return	string				Размер в понятной человеку форме
+	*/
+	function humn_size($size, $rounder = '', $min = '', $space = '&nbsp;')
+	{
+		$sizes = [$this->lang['SIZE_BYTES'], $this->lang['SIZE_KB'], $this->lang['SIZE_MB'], $this->lang['SIZE_GB'], $this->lang['SIZE_TB'], $this->lang['SIZE_PB'], $this->lang['SIZE_EB'], $this->lang['SIZE_ZB'], $this->lang['SIZE_YB']];
+		static $rounders = [0, 0, 1, 2, 3, 3, 3, 3, 3];
+
+		$size = (float) $size;
+		$ext  = $sizes[0];
+		$rnd  = $rounders[0];
+
+		if ($min == $this->lang['SIZE_KB'] && $size < 1024)
+		{
+			$size    = $size / 1024;
+			$ext     = $this->lang['SIZE_KB'];
+			$rounder = 1;
+		}
+		else
+		{
+			for ($i = 1, $cnt = sizeof($sizes); $i < $cnt && $size >= 1024; $i++)
+			{
+				$size = $size / 1024;
+				$ext  = $sizes[$i];
+				$rnd  = $rounders[$i];
+			}
+		}
+
+		if (!$rounder)
+		{
+			$rounder = $rnd;
+		}
+
+		return round($size, $rounder) . $space . $ext;
+	}
+
+	/**
 	* Возвращаем перевод
 	* Если языковый элемент не найден, то возвращаем пустую строку
 	*/

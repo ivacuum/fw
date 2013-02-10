@@ -135,51 +135,6 @@ function get_preg_expression($type)
 }
 
 /**
-* Размер в понятной человеку форме, округленный к ближайшему ГБ, МБ, КБ
-*
-* @param	int		$size		Размер
-* @param	int		$rounder	Необходимое количество знаков после запятой
-* @param	string	$min		Минимальный размер ('КБ', 'МБ' и т.п.)
-* @param	string	$space		Разделитель между числами и текстом (1< >МБ)
-*
-* @return	string				Размер в понятной человеку форме
-*/
-function humn_size($size, $rounder = '', $min = '', $space = '&nbsp;')
-{
-	global $app;
-
-	$sizes = [$app['user']->lang['SIZE_BYTES'], $app['user']->lang['SIZE_KB'], $app['user']->lang['SIZE_MB'], $app['user']->lang['SIZE_GB'], $app['user']->lang['SIZE_TB'], $app['user']->lang['SIZE_PB'], $app['user']->lang['SIZE_EB'], $app['user']->lang['SIZE_ZB'], $app['user']->lang['SIZE_YB']];
-	static $rounders = [0, 0, 1, 2, 3, 3, 3, 3, 3];
-
-	$size = (float) $size;
-	$ext  = $sizes[0];
-	$rnd  = $rounders[0];
-
-	if ($min == $app['user']->lang['SIZE_KB'] && $size < 1024)
-	{
-		$size    = $size / 1024;
-		$ext     = $app['user']->lang['SIZE_KB'];
-		$rounder = 1;
-	}
-	else
-	{
-		for ($i = 1, $cnt = sizeof($sizes); ($i < $cnt && $size >= 1024); $i++)
-		{
-			$size = $size / 1024;
-			$ext  = $sizes[$i];
-			$rnd  = $rounders[$i];
-		}
-	}
-
-	if (!$rounder)
-	{
-		$rounder = $rnd;
-	}
-
-	return round($size, $rounder) . $space . $ext;
-}
-
-/**
 * Внутренняя ссылка
 *
 * @param	string	$url		ЧПУ ссылка

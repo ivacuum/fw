@@ -149,14 +149,14 @@ class profiler extends console
 			'profiler_queries' => $this->output['queries'],
 			
 			'FILE_COUNT'      => $this->file_count,
-			'FILE_SIZE'       => humn_size($this->file_size),
-			'FILE_LARGEST'    => humn_size($this->file_largest),
+			'FILE_SIZE'       => $this->file_size,
+			'FILE_LARGEST'    => $this->file_largest,
 			'LOG_COUNT'       => $this->log_count,
 			'LOGS_COUNT'      => sizeof($this->output['logs']),
 			'ERROR_COUNT'     => $this->error_count,
 			'MEMORY_COUNT'    => $this->memory_count,
 			'MEMORY_TOTAL'    => $this->memory_total,
-			'MEMORY_USED'     => humn_size($this->memory_used),
+			'MEMORY_USED'     => $this->memory_used,
 			'SERVER_HOSTNAME' => gethostname(),
 			'SPEED_ALLOWED'   => $this->speed_allowed,
 			'SPEED_COUNT'     => $this->speed_count,
@@ -235,7 +235,7 @@ class profiler extends console
 			switch ($log['type'])
 			{
 				case 'log':    $logs[$key]['data'] = print_r($log['data'], true); break;
-				case 'memory': $logs[$key]['data'] = humn_size($log['data'], 2); break;
+				case 'memory': $logs[$key]['data'] = $log['data']; break;
 				case 'speed':  $logs[$key]['data'] = $this->get_readable_time(($log['data'] - $this->start_time) * 1000); break;
 			}
 		}
@@ -264,7 +264,7 @@ class profiler extends console
 
 			$file_list[] = [
 				'name' => str_replace(['/srv/www/vhosts'], [''], $file),
-				'size' => humn_size($size, 2)
+				'size' => $size,
 			];
 
 			$this->file_size += $size;

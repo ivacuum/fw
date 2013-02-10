@@ -132,7 +132,7 @@ function hideProfiler() {
 			<table class="main" cellspacing="0">
 				{% for row in profiler_logs %}
 					{% if row.type == 'memory' %}
-						<tr class="log-{{ row.type }}"><td class="{{ cycle(['alt', ''], loop.index) }}"><b>{{ row.data }}</b> <em>{{ row.data_type }}</em>: {{ row.name }}</td></tr>
+						<tr class="log-{{ row.type }}"><td class="{{ cycle(['alt', ''], loop.index) }}"><b>{{ humn_size(row.data, 2) }}</b> <em>{{ row.data_type }}</em>: {{ row.name }}</td></tr>
 					{% endif %}
 				{% endfor %}
 			</table>
@@ -146,13 +146,13 @@ function hideProfiler() {
 		{% else %}
 			<table class="side" cellspacing="0">
 				<tr><td><var>{{ FILE_COUNT }}</var><h4>{{ lang('TOTAL_FILES') }}</h4></td></tr>
-				<tr><td class="alt"><var>{{ FILE_SIZE }}</var><h4>{{ lang('TOTAL_SIZE') }}</h4></td></tr>
-				<tr><td><var>{{ FILE_LARGEST }}</var><h4>{{ lang('LARGEST') }}</h4></td></tr>
+				<tr><td class="alt"><var>{{ humn_size(FILE_SIZE) }}</var><h4>{{ lang('TOTAL_SIZE') }}</h4></td></tr>
+				<tr><td><var>{{ humn_size(FILE_LARGEST) }}</var><h4>{{ lang('LARGEST') }}</h4></td></tr>
 			</table>
 			<div style="float: left; overflow: auto; width: 80%;">
 			<table class="main" cellspacing="0">
 				{% for row in profiler_files %}
-					<tr><td class="{{ cycle(['alt', ''], loop.index) }}"><b>{{ row.size }}</b> {{ row.name }}</td></tr>
+					<tr><td class="{{ cycle(['alt', ''], loop.index) }}"><b>{{ humn_size(row.size, 2) }}</b> {{ row.name }}</td></tr>
 				{% endfor %}
 			</table>
 			</div>
@@ -166,7 +166,7 @@ function hideProfiler() {
 					<li><img src="//ivacuum.org/i/_/application_monitor.png" title="{{ lang('CONSOLE') }}"> <span class="green">{{ LOGS_COUNT }}</span></li>
 					<li><img src="//ivacuum.org/i/_/dashboard.png" title="{{ lang('LOAD_TIME') }}"> <span class="blue">{{ SPEED_TOTAL }}</span></li>
 					<li><img src="//ivacuum.org/i/_/database.png" title="{{ lang('DATABASE') }}"> <span class="purple">{{ plural(QUERY_COUNT, 'QUERIES') }}</span></li>
-					<li><img src="//ivacuum.org/i/_/memory.png" title="{{ lang('MEMORY_USED') }}"> <span class="orange">{{ MEMORY_USED }}</span></li>
+					<li><img src="//ivacuum.org/i/_/memory.png" title="{{ lang('MEMORY_USED') }}"> <span class="orange">{{ humn_size(MEMORY_USED) }}</span></li>
 					<li><img src="//ivacuum.org/i/_/document_php.png" title="{{ lang('INCLUDED') }}"> <span class="red">{{ plural(FILE_COUNT, 'FILES') }}</span></li>
 					<li><img src="//ivacuum.org/i/_/server_network.png"> <span class="green">{{ SERVER_HOSTNAME }}</span></li>
 				</ul>
