@@ -90,6 +90,7 @@ class page
 		$this->template->add_function('duration', [$this->user, 'create_time']);
 		$this->template->add_function('humn_size', [$this->user, 'humn_size']);
 		$this->template->add_function('lang', [$this->user, 'lang']);
+		$this->template->add_function('num_format', [$this->user, 'num_format']);
 		$this->template->add_function('plural', [$this->user, 'plural']);
 		
 		return $this;
