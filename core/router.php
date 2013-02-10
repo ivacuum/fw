@@ -94,7 +94,7 @@ class router
 		elseif ($this->url)
 		{
 			/* Обращение к каталогу */
-			$this->params = explode('/', $this->url);
+			$this->params = explode('/', trim($this->url, '/'));
 		}
 		
 		$this->params_count = sizeof($this->params);
