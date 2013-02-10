@@ -28,7 +28,7 @@ class twig
 			'cache'       => SITE_DIR . '../cache/templates',
 		]);
 
-		$this->env->addFilter('truncate', new \Twig_Filter_Function('\\fw\\template\\twig_truncate'));
+		$this->env->addFilter(new \Twig_SimpleFilter('truncate', [$this, 'filter_truncate']));
 	}
 	
 	public function add_function($function_name, $handler)
@@ -171,34 +171,34 @@ class twig
 	{
 		return $this->assign($data);
 	}
-}
 
-/**
-* Вывод части строки
-*/
-function twig_truncate($string, $length = 80, $etc = '...', $break_words = false, $middle = false)
-{
-	if (!$length)
+	/**
+	* Вывод части строки
+	*/
+	protected function filter_truncate($string, $length = 80, $etc = '...', $break_words = false, $middle = false)
 	{
-		return;
-	}
-
-	if (mb_strlen($string) > $length)
-	{
-		$length -= min($length, mb_strlen($etc));
-
-		if (!$break_words && !$middle)
+		if (!$length)
 		{
-			$string = preg_replace('#\s+?(\S+)?$#u', '', mb_substr($string, 0, $length + 1));
+			return;
 		}
 
-		if (!$middle)
+		if (mb_strlen($string) > $length)
 		{
-			return mb_substr($string, 0, $length) . $etc;
-		}
+			$length -= min($length, mb_strlen($etc));
+
+			if (!$break_words && !$middle)
+			{
+				$string = preg_replace('#\s+?(\S+)?$#u', '', mb_substr($string, 0, $length + 1));
+			}
+
+			if (!$middle)
+			{
+				return mb_substr($string, 0, $length) . $etc;
+			}
 		
-		return mb_substr($string, 0, $length / 2) . $etc . mb_substr($string, - $length / 2);
-	}
+			return mb_substr($string, 0, $length / 2) . $etc . mb_substr($string, - $length / 2);
+		}
 	
-	return $string;
+		return $string;
+	}
 }
