@@ -79,7 +79,6 @@ class page
 	public function _set_template($template)
 	{
 		$this->template = $template;
-		$this->template->add_function('hostname', [$this, 'template_function_hostname']);
 		$this->template->add_function('url_for', [$this, 'get_handler_url']);
 		
 		return $this;
@@ -647,26 +646,6 @@ class page
 	public function static_page()
 	{
 		$this->template->file = 'static_page_index.html';
-	}
-	
-	/**
-	* Локальный или внешний домен
-	*/
-	public function template_function_hostname($type = '')
-	{
-		switch ($type)
-		{
-			case 'dl': $hostname = $this->config['dl.hostname']; break;
-			
-			default: $hostname = $this->config['static.hostname'];
-		}
-		
-		if ($this->request->isp === 'local')
-		{
-			return str_replace(['ivacuum.ru', 'ivacuum.org'], ['local.ivacuum.ru', '0.ivacuum.org'], $hostname);
-		}
-	
-		return $hostname;
 	}
 	
 	/**
