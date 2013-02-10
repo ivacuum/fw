@@ -586,53 +586,6 @@ function parse_smilies($message, $force_option = false)
 }
 
 /**
-* Формы слова во множественном числе
-*
-* @param	int		$n		Число
-* @param	array	$forms	Формы слова
-*
-* @param	string			Фраза во множественном числе
-*/
-function plural($n = 0, $forms, $format = '%s %s')
-{
-	global $app;
-
-	if (!$forms)
-	{
-		return;
-	}
-
-	$forms = explode(';', $forms);
-
-	switch ($app['user']->lang['.'])
-	{
-		/**
-		* Русский язык
-		*/
-		case 'ru':
-
-			if (sizeof($forms) < 3)
-			{
-				$forms[2] = $forms[1];
-			}
-
-			$plural = ($n % 10 == 1 && $n % 100 != 11) ? 0 : ($n % 10 >= 2 && $n % 10 <= 4 && ($n % 100 < 10 || $n % 100 >= 20) ? 1 : 2);
-
-		break;
-		/**
-		* Язык по умолчанию - английский
-		*/
-		default:
-
-			$plural = ($n == 1) ? 0 : 1;
-
-		break;
-	}
-	
-	return sprintf($format, num_format($n), $forms[$plural]);
-}
-
-/**
 * Подготовка сообщения для правки
 *
 * @param	string	$text	Обрабатываемый текст

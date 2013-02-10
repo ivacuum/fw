@@ -92,6 +92,42 @@ trait i18n
 	}
 
 	/**
+	* Формы слова во множественном числе
+	*
+	* @param	int		$n		Число
+	* @param	array	$forms	Формы слова или индекс в массиве $this->lang['plural']
+	*
+	* @param	string			Фраза во множественном числе
+	*/
+	public function plural($n = 0, $forms, $format = '%s %s')
+	{
+		if (!$forms)
+		{
+			return;
+		}
+		
+		$forms = explode(';', isset($this->lang[$forms]) ? $this->lang[$forms] : $forms);
+
+		switch ($this->request->language)
+		{
+			/* Русский язык */
+			case 'ru':
+
+				$forms[2] = sizeof($forms) < 3 ? $forms[1] : $forms[2];
+
+				$plural = ($n % 10 == 1 && $n % 100 != 11) ? 0 : ($n % 10 >= 2 && $n % 10 <= 4 && ($n % 100 < 10 || $n % 100 >= 20) ? 1 : 2);
+
+			break;
+			/* Язык по умолчанию - английский */
+			default:
+			
+				$plural = $n == 1 ? 0 : 1;
+		}
+	
+		return sprintf($format, num_format($n), $forms[$plural]);
+	}
+
+	/**
 	* Определение языка сайта по URL
 	*/
 	protected function detect_language()
