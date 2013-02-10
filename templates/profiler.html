@@ -34,7 +34,7 @@ function hideProfiler() {
 			<h4>{{ lang('DATABASE') }}</h4>
 		</td>
 		<td class="orange" onclick="changeTab('memory');">
-			<var>{{ MEMORY_USED }}</var>
+			<var>{{ humn_size(MEMORY_USED) }}</var>
 			<h4>{{ lang('MEMORY_USED') }}</h4>
 		</td>
 		<td class="red" onclick="changeTab('files');">
@@ -125,7 +125,7 @@ function hideProfiler() {
 			<h3>{{ lang('NO_DATA') }}</h3>
 		{% else %}
 			<table class="side" cellspacing="0">
-				<tr><td><var>{{ MEMORY_USED }}</var><h4>Used Memory</h4></td></tr>
+				<tr><td><var>{{ humn_size(MEMORY_USED) }}</var><h4>Used Memory</h4></td></tr>
 				<tr><td class="alt"><var>{{ MEMORY_TOTAL }}</var> <h4>Total Available</h4></td></tr>
 			</table>
 			<div style="float: left; overflow: auto; width: 80%;">
