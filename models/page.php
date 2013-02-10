@@ -450,11 +450,7 @@ class page
 
 		if ($this->template->file)
 		{
-			$this->template->assign([
-				'cfg'  => $this->config,
-				'lang' => $this->user->lang
-			]);
-			
+			$this->template->assign('cfg', $this->config);
 			$this->template->display();
 			
 			if ($display_profiler)
