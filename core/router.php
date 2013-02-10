@@ -20,13 +20,14 @@ class router
 	public $site_id;
 	public $url;
 	
+	protected $namespace;
+	protected $params = [];
+	protected $params_count;
+
 	protected $auth;
 	protected $cache;
 	protected $config;
 	protected $db;
-	protected $namespace;
-	protected $params = [];
-	protected $params_count;
 	protected $profiler;
 	protected $request;
 	protected $template;
