@@ -61,8 +61,8 @@
 				</div>
 				<div class="span2">
 					<label for="page_noindex">Индексируется</label>
-					<label class="radio"><input type="radio" name="page_noindex" id="page_noindex" value="0"{% if not PAGE_NOINDEX %} checked="checked"{% endif %}> {{ lang.YES }}</label>
-					<label class="radio"><input type="radio" name="page_noindex" value="1"{% if PAGE_NOINDEX %} checked="checked"{% endif %}> {{ lang.NO }}</label>
+					<label class="radio"><input type="radio" name="page_noindex" id="page_noindex" value="0"{% if not PAGE_NOINDEX %} checked="checked"{% endif %}> {{ lang('YES') }}</label>
+					<label class="radio"><input type="radio" name="page_noindex" value="1"{% if PAGE_NOINDEX %} checked="checked"{% endif %}> {{ lang('NO') }}</label>
 				</div>
 			</div>
 			<input class="span8" name="page_redirect" type="text" id="page_redirect" value="{{ PAGE_REDIRECT }}" placeholder="Редирект">
@@ -75,7 +75,7 @@
 			<div class="form-actions">
 				<input type="hidden" name="action" value="{{ ACTION }}">
 				<input type="hidden" name="pid" value="{{ PAGE_ID }}">
-				<input class="btn btn-primary btn-large" type="submit" id="submit" name="submit" value="{{ lang.SAVE }}">
+				<input class="btn btn-primary btn-large" type="submit" id="submit" name="submit" value="{{ lang('SAVE') }}">
 			</div>
 			{{ S_FORM_TOKEN }}
 		</fieldset>
