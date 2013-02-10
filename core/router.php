@@ -91,7 +91,7 @@ class router
 			$this->params = $ary['dirname'] != '.' ? explode('/', $ary['dirname']) : [];
 			$this->page   = $ary['filename'];
 		}
-		elseif ($this->url)
+		elseif ($this->url && $this->url != '/')
 		{
 			/* Обращение к каталогу */
 			$this->params = explode('/', trim($this->url, '/'));
