@@ -165,9 +165,9 @@ function hideProfiler() {
 				<ul id="profiler_short_data">
 					<li><img src="//ivacuum.org/i/_/application_monitor.png" title="{{ lang('CONSOLE') }}"> <span class="green">{{ LOGS_COUNT }}</span></li>
 					<li><img src="//ivacuum.org/i/_/dashboard.png" title="{{ lang('LOAD_TIME') }}"> <span class="blue">{{ SPEED_TOTAL }}</span></li>
-					<li><img src="//ivacuum.org/i/_/database.png" title="{{ lang('DATABASE') }}"> <span class="purple">{{ QUERY_COUNT_TEXT }}</span></li>
+					<li><img src="//ivacuum.org/i/_/database.png" title="{{ lang('DATABASE') }}"> <span class="purple">{{ plural(QUERY_COUNT, 'QUERIES') }}</span></li>
 					<li><img src="//ivacuum.org/i/_/memory.png" title="{{ lang('MEMORY_USED') }}"> <span class="orange">{{ MEMORY_USED }}</span></li>
-					<li><img src="//ivacuum.org/i/_/document_php.png" title="{{ lang('INCLUDED') }}"> <span class="red">{{ FILE_COUNT_TEXT }}</span></li>
+					<li><img src="//ivacuum.org/i/_/document_php.png" title="{{ lang('INCLUDED') }}"> <span class="red">{{ plural(FILE_COUNT, 'FILES') }}</span></li>
 					<li><img src="//ivacuum.org/i/_/server_network.png"> <span class="green">{{ SERVER_HOSTNAME }}</span></li>
 				</ul>
 			</td>
