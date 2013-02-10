@@ -81,7 +81,14 @@ class application implements \ArrayAccess
 		$this['site_info'] = $this->share(function() use ($app) {
 			$site_info = $app['cache']->get_site_info_by_url($app['request']->hostname, $app['request']->url);
 			
-			return false !== $site_info ? $site_info : $app['cache']->get_site_info_by_url($app['request']->hostname);
+			if (false !== $site_info)
+			{
+				$app['request']->set_language($site_info['language']);
+				
+				return $site_info;
+			}
+			
+			return false;
 		});
 		
 		/* Явный вызов автозагрузчика, чтобы он начал свою работу */

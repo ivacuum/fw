@@ -99,26 +99,31 @@ class service
 	*/
 	public function get_site_info_by_url($hostname, $page = '')
 	{
-		$language = '';
 		$page     = trim($page, '/');
-		$params   = $page ? explode('/', $page) : [];
-	
-		if (!empty($params) && strlen($params[0]) == 2)
-		{
-			$language = $params[0];
-		}
-	
+		$param    = $page ? explode('/', $page)[0] : '';
+		$language = strlen($param) === 2 ? $param : '';
+		$sites    = [];
+		
+		/* Все локализации сайта */
 		foreach ($this->obtain_sites() as $row)
 		{
-			if ($hostname == $row['site_url'] && (($row['site_default'] && !$language) || ($language && $language == $row['site_language'])))
+			if ($hostname == $row['site_url'])
 			{
-				return [
+				$sites[] = [
 					'default'  => (int) $row['site_default'],
 					'domain'   => $row['site_url'],
 					'id'       => (int) $row['site_id'],
 					'language' => $row['site_language'],
-					'title'    => $row['site_title']
+					'title'    => $row['site_title'],
 				];
+			}
+		}
+		
+		foreach ($sites as $row)
+		{
+			if ($row['default'] && !$language or $language && $language == $row['language'])
+			{
+				return $row;
 			}
 		}
 	

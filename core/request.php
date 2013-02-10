@@ -23,6 +23,7 @@ class request
 	public $is_ajax;
 	public $is_secure;
 	public $isp;
+	public $language;
 	public $method;
 	public $url;
 	
@@ -207,6 +208,15 @@ class request
 		$this->recursive_set_type($var, $default);
 		
 		return $var;
+	}
+	
+	/**
+	* Язык сайта
+	* Устанавливается во время определения обслуживаемого сайта
+	*/
+	public function set_language($language)
+	{
+		$this->language = $language;
 	}
 	
 	/**
