@@ -409,9 +409,7 @@ class page
 		}
 
 		$this->template->assign([
-			'CURRENT_TIME' => sprintf($this->user->lang['CURRENT_TIME'], $this->user->create_date($this->user->ctime, false, true)),
-			'LAST_VISIT'   => $this->user->is_registered ? sprintf($this->user->lang['LAST_VISIT'], $this->user->create_date($this->user['user_last_visit'])) : '',
-			'LOGIN'        => $this->user->is_registered ? sprintf($this->user->lang['LOGOUT'], $this->user['username']) : $this->user->lang['LOGIN'],
+			'LOGIN' => $this->user->is_registered ? sprintf($this->user->lang['LOGOUT'], $this->user['username']) : $this->user->lang['LOGIN'],
 
 			'S_BOT'                => $this->user->is_bot,
 			'S_ISP'                => $this->request->isp,
@@ -420,7 +418,6 @@ class page
 			'S_OPENID_PROVIDER'    => $this->user['openid_provider'],
 			'S_USER_REGISTERED'    => $this->user->is_registered,
 			'S_USERNAME'           => $this->user['username'],
-			'S_YEAR'               => $this->user->create_date($this->user->ctime, 'Y', true),
 
 			/* Ссылки */
 			'U_INDEX'     => ilink(),
