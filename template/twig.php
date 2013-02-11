@@ -126,6 +126,11 @@ class twig
 		garbage_collection(false);
 		exit;
 	}
+	
+	public function set_number_format($decimals, $dec_point, $thousands_sep)
+	{
+		$this->env->getExtension('core')->setNumberFormat($decimals, $dec_point, $thousands_sep);
+	}
 
 	/**
 	* Установка нового пути к шаблонам
