@@ -20,13 +20,13 @@ class twig
 
 	function __construct()
 	{
-		$this->path    = "{SITE_DIR}../templates";
-		$this->path_fw = "{FW_DIR}templates";
+		$this->path    = SITE_DIR . '../templates';
+		$this->path_fw = FW_DIR . 'templates';
 		
 		$this->env     = new \Twig_Environment(new \Twig_Loader_Filesystem([$this->path, $this->path_fw]), [
 			'auto_reload' => true,
 			'autoescape'  => false,
-			'cache'       => "{SITE_DIR}../cache/templates",
+			'cache'       => SITE_DIR . '../cache/templates',
 		]);
 
 		$this->env->addFilter(new \Twig_SimpleFilter('truncate', [$this, 'filter_truncate']));
