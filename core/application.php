@@ -55,7 +55,7 @@ class application implements \ArrayAccess
 		$this['cache'] = $this->share(function() use ($app) {
 			$class = "\\fw\\cache\\driver\\{$app['acm.type']}";
 			
-			if (file_exists(SITE_DIR . "../includes/cache/service.php"))
+			if (file_exists("{$app['dir.app']}/cache/service.php"))
 			{
 				return new \app\cache\service($app['db'], new $class($app['db'], $app['acm.prefix']));
 			}
@@ -96,14 +96,14 @@ class application implements \ArrayAccess
 		
 		/* Явный вызов автозагрузчика, чтобы он начал свою работу */
 		$this['autoloader']->register_namespaces([
-			'fw'       => FW_DIR,
-			'app'      => SITE_DIR . '../includes',
-			// 'Geocoder' => FW_DIR . "../lib/geocoder/{$this['version.geocoder']}/Geocoder",
-			// 'Imagine'  => FW_DIR . "../lib/imagine/{$this['version.imagine']}/Imagine",
-			// 'Monolog'  => FW_DIR . "../lib/monolog/{$this['version.monolog']}/Monolog",
+			'fw'       => $this['dir.fw'],
+			'app'      => $this['dir.app'],
+			// 'Geocoder' => "{$this['dir.lib']}/geocoder/{$this['version.geocoder']}/Geocoder",
+			// 'Imagine'  => "{$this['dir.lib']}/imagine/{$this['version.imagine']}/Imagine",
+			// 'Monolog'  => "{$this['dir.lib']}/monolog/{$this['version.monolog']}/Monolog",
 		])->register_prefixes([
-			// 'Swift' => FW_DIR . "../lib/swiftmailer/{$this['version.swift']}/classes",
-			'Twig'  => FW_DIR . "../lib/twig/{$this['version.twig']}",
+			// 'Swift' => "{$this['dir.lib']}/swiftmailer/{$this['version.swift']}/classes",
+			'Twig'  => "{$this['dir.lib']}/twig/{$this['version.twig']}",
 		]);
 	}
 	

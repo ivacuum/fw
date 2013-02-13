@@ -19,6 +19,11 @@ $app = [
 	/* Настройки кэша */
 	'acm.type' => 'memcache',
 	
+	/* Пути */
+	'dir.app' => SITE_DIR . '../includes',
+	'dir.fw'  => FW_DIR,
+	'dir.lib' => FW_DIR . '../lib',
+	
 	/* Версии библиотек */
 	'version.geocoder' => '1.1.6',
 	'version.imagine'  => '0.4.1.',
