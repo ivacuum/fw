@@ -16,18 +16,17 @@ class twig
 	public $path;
 	public $path_fw;
 
-	private $loader;
-	private $vars = [];
+	protected $vars = [];
 
 	function __construct()
 	{
-		$this->path    = SITE_DIR . '../templates';
-		$this->path_fw = FW_DIR . 'templates';
-		$this->loader  = new \Twig_Loader_Filesystem([$this->path, $this->path_fw]);
-		$this->env     = new \Twig_Environment($this->loader, [
+		$this->path    = "{SITE_DIR}../templates";
+		$this->path_fw = "{FW_DIR}templates";
+		
+		$this->env     = new \Twig_Environment(new \Twig_Loader_Filesystem([$this->path, $this->path_fw]), [
 			'auto_reload' => true,
 			'autoescape'  => false,
-			'cache'       => SITE_DIR . '../cache/templates',
+			'cache'       => "{SITE_DIR}../cache/templates",
 		]);
 
 		$this->env->addFilter(new \Twig_SimpleFilter('truncate', [$this, 'filter_truncate']));
@@ -130,21 +129,6 @@ class twig
 	public function set_number_format($decimals, $dec_point, $thousands_sep)
 	{
 		$this->env->getExtension('core')->setNumberFormat($decimals, $dec_point, $thousands_sep);
-	}
-
-	/**
-	* Установка нового пути к шаблонам
-	*/
-	public function set_template_path($path)
-	{
-		$this->path   = $path;
-		$this->loader = new \Twig_Loader_Filesystem($this->path);
-		$this->env    = new \Twig_Environment($this->loader, [
-			'auto_reload' => true,
-			'autoescape'  => false,
-			'cache'       => SITE_DIR . 'cache/templates',
-		]);
-		$this->is_globals_set = false;
 	}
 
 	/**
