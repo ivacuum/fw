@@ -11,22 +11,19 @@ namespace fw\template;
 */
 class twig
 {
-	public $env;
 	public $file;
-	public $path;
-	public $path_fw;
 
+	protected $dirs = [];
+	protected $env;
 	protected $vars = [];
 
-	function __construct()
+	function __construct(array $dirs, $cache_dir)
 	{
-		$this->path    = SITE_DIR . '../templates';
-		$this->path_fw = FW_DIR . 'templates';
-		
-		$this->env     = new \Twig_Environment(new \Twig_Loader_Filesystem([$this->path, $this->path_fw]), [
+		$this->dirs = $dirs;
+		$this->env  = new \Twig_Environment(new \Twig_Loader_Filesystem($this->dirs), [
 			'auto_reload' => true,
 			'autoescape'  => false,
-			'cache'       => SITE_DIR . '../cache/templates',
+			'cache'       => $cache_dir,
 		]);
 
 		$this->env->addFilter(new \Twig_SimpleFilter('truncate', [$this, 'filter_truncate']));
@@ -106,12 +103,22 @@ class twig
 	public function display($file = '')
 	{
 		$this->file = $file ?: $this->file;
+		$found = false;
 		
-		if (!file_exists("{$this->path}/{$this->file}") && !file_exists("{$this->path_fw}/{$this->file}"))
+		foreach ($this->dirs as $dir)
+		{
+			if (file_exists("{$dir}/{$this->file}"))
+			{
+				$found = true;
+				break;
+			}
+		}
+		
+		if (!$found)
 		{
 			trigger_error('TEMPLATE_NOT_FOUND');
 		}
-
+		
 		echo $this->env->render($this->file, $this->vars);
 	}
 	

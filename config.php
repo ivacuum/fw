@@ -7,6 +7,9 @@
 namespace fw;
 
 $app = [
+	/* Настройки кэша */
+	'acm.type' => 'memcache',
+	
 	/* Настройки подключения к БД */
 	'db.host' => 'localhost',
 	'db.port' => false,
@@ -16,13 +19,13 @@ $app = [
 	'db.sock' => '/tmp/mysql.sock',
 	'db.pers' => false,
 	
-	/* Настройки кэша */
-	'acm.type' => 'memcache',
-	
 	/* Пути */
-	'dir.app' => SITE_DIR . '../includes',
-	'dir.fw'  => FW_DIR,
-	'dir.lib' => FW_DIR . '../lib',
+	'dir.app'             => SITE_DIR . '../includes',
+	'dir.fw'              => FW_DIR,
+	'dir.lib'             => FW_DIR . '../lib',
+	'dir.templates.app'   => SITE_DIR . '../templates',
+	'dir.templates.cache' => SITE_DIR . '../cache/templates',
+	'dir.templates.fw'    => FW_DIR . 'templates',
 	
 	/* Версии библиотек */
 	'version.geocoder' => '1.1.6',

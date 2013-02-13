@@ -40,8 +40,8 @@ class application implements \ArrayAccess
 			return (new autoloader($app['acm.prefix']))->register();
 		});
 		
-		$this['template'] = $this->share(function() {
-			return new twig();
+		$this['template'] = $this->share(function() use ($app) {
+			return new twig([$app['dir.templates.app'], $app['dir.templates.fw']], $app['dir.templates.cache']);
 		});
 		
 		$this['request'] = $this->share(function() {
