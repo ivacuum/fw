@@ -53,7 +53,7 @@ class errorhandler
 					{
 						$app['template']->assign('error', $error_ary);
 						$app['template']->display('sql_error.html');
-						garbage_collection();
+						exit;
 					}
 				}
 				else
@@ -76,7 +76,7 @@ class errorhandler
 				echo '<p>Приносим извинения за доставленные неудобства.</p>';
 				echo '</body>';
 				echo '</html>';
-				garbage_collection();
+				exit;
 
 			break;
 			/**
@@ -148,7 +148,7 @@ class errorhandler
 					$error = ['code' => $text];
 
 					echo json_encode(['errors' => [$error]]);
-					garbage_collection();
+					exit;
 				}
 
 				$app['template']->assign([

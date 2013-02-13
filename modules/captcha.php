@@ -20,6 +20,6 @@ class captcha extends page
 		$captcha = new captcha_service($this->config, $this->db, $this->request, $this->user, new $class());
 		$captcha->send();
 		
-		garbage_collection();
+		exit;
 	}
 }

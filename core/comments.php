@@ -208,7 +208,6 @@ class comments
 			]);
 
 			$template->go('comments_quickedit.html');
-			garbage_collection();
 			exit;
 		}
 		elseif ($button == 'submit')
@@ -241,7 +240,6 @@ class comments
 			]);
 
 			$template->go('comments_quickedit.html');
-			garbage_collection();
 			exit;
 		}
 		elseif ($comment_id)
@@ -268,7 +266,6 @@ class comments
 			]);
 
 			$template->go('comments_quickedit.html');
-			garbage_collection();
 			exit;
 		}
 	}

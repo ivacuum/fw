@@ -129,7 +129,6 @@ class twig
 	{
 		header('Content-type: text/xml; charset=utf-8');
 		$this->display($file);
-		garbage_collection(false);
 		exit;
 	}
 	

@@ -17,7 +17,6 @@ function ajax_output($file = false)
 
 	header('Content-type: text/xml; charset=utf-8');
 	$app['template']->display("ajax/{$file}");
-	garbage_collection(false);
 	exit;
 }
 
@@ -38,26 +37,6 @@ function build_hidden_fields($row)
 	}
 
 	return $string;
-}
-
-/**
-* Сборщик мусора
-*/
-function garbage_collection($display_profiler = true)
-{
-	global $app;
-
-	if (!empty($app['cache']))
-	{
-		$app['cache']->unload();
-	}
-
-	if (!empty($app['db']))
-	{
-		$app['db']->close();
-	}
-	
-	exit;
 }
 
 /**
@@ -177,7 +156,6 @@ function json_output($output)
 {
 	header('Content-Type: application/json; charset=utf-8');
 	echo json_encode($output, JSON_UNESCAPED_UNICODE);
-	garbage_collection(false);
 	exit;
 }
 

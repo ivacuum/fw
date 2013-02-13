@@ -48,6 +48,11 @@ class mysqli
 			$this->server = 'p:' . $this->server;
 		}
 	}
+	
+	function __destruct()
+	{
+		$this->close();
+	}
 
 	public function _set_cache($cache)
 	{

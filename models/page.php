@@ -471,7 +471,6 @@ class page
 			$this->profiler->send_stats($this->config['profiler_ip'], $this->config['profiler_port'], $this->request->hostname, $this->request->url);
 		}
 
-		garbage_collection($display_profiler);
 		exit;
 	}
 	

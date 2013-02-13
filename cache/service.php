@@ -26,6 +26,11 @@ class service
 		$this->set_driver($driver);
 	}
 	
+	function __destruct()
+	{
+		$this->unload();
+	}
+	
 	public function _set_config($config)
 	{
 		$this->config = $config;
