@@ -11,33 +11,26 @@ namespace fw\cron;
 */
 class manager
 {
-	private $cron_dir;
-	private $log_dir;
+	protected $cron_allowed;
+	protected $cron_running;
+	protected $db;
+	protected $deadlock_timeout = 900;
+	protected $logs_dir;
+	protected $start_time;
+	protected $task_time_limit = 300;
+	protected $tasks = [];
+	protected $tasks_timeout = 1;
 
-	private $cron_allowed;
-	private $cron_running;
-	private $db;
-	private $deadlock_timeout = 900;
-	private $start_time;
-	private $task_time_limit = 300;
-	private $tasks = [];
-	private $tasks_timeout = 1;
-
-	function __construct()
+	function __construct($logs_dir, $cron_allowed, $cron_running, $db)
 	{
-		global $app;
+		$this->start_time   = time();
+		$this->logs_dir     = $logs_dir;
+		$this->cron_allowed = "{$this->logs_dir}/{$cron_allowed}";
+		$this->cron_running = "{$this->logs_dir}/{$cron_running}";
 
-		$this->start_time = time();
-
-		$this->cron_dir = SITE_DIR . '../includes/cron/';
-		$this->log_dir  = SITE_DIR . '../logs/';
-
-		$this->cron_allowed = "{$this->log_dir}cron_allowed";
-		$this->cron_running = "{$this->log_dir}cron_running";
-
-		$this->db = $app['db'];
+		$this->db = $db;
 	}
-
+	
 	/**
 	* Освобождение блокировки
 	*/
@@ -81,7 +74,7 @@ class manager
 				set_time_limit($this->task_time_limit);
 
 				/* Выполнение задачи */
-				$cron_class = '\\app\\cron\\' . $task['cron_script'];
+				$cron_class = "\\app\\cron\\{$task['cron_script']}";
 				$cron = new $cron_class($task);
 				
 				if ($cron->run())
@@ -223,7 +216,7 @@ class manager
 	*/
 	private function track_running($mode)
 	{
-		$startmark = sprintf('%scron_started_at_%s', $this->log_dir, date('Y-m-d_H-i-s', $this->start_time));
+		$startmark = sprintf('%s/cron_started_at_%s', $this->logs_dir, date('Y-m-d_H-i-s', $this->start_time));
 
 		if ($mode == 'start')
 		{
