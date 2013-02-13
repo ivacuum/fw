@@ -253,7 +253,7 @@ trait i18n
 	*
 	* @param	string			Фраза во множественном числе
 	*/
-	public function plural($n = 0, $forms, $format = '%s %s')
+	public function plural($n = 0, $forms, $format = '%1$s %2$s')
 	{
 		if (!$forms)
 		{
@@ -280,6 +280,74 @@ trait i18n
 	
 		return sprintf($format, $n, $forms[$plural]);
 	}
+
+	/**
+	* Относительная дата
+	*/
+	/*
+	public function relative_date($ts, $ts2 = time())
+	{
+		$ts   = !ctype_digit($ts) ? strtotime($ts) : $ts;
+		$diff = $ts2 - $ts;
+		
+		if ($diff >= 0)
+		{
+			if ($diff < 60)
+			{
+				return 'just now';
+			}
+			if ($diff < 3600)
+			{
+				return floor($diff / 60) . ' minutes ago';
+			}
+			if ($diff < 86400)
+			{
+				return floor($diff / 3600) . ' hours ago';
+			}
+			
+			$day_diff = floor($diff / 86400);
+			
+			if ($day_diff === 1)
+			{
+				return 'yesterday';
+			}
+			if ($day_diff < 28)
+			{
+				return $day_diff . ' days ago';
+			}
+			
+			return $this->create_date($ts);
+		}
+		
+		$diff = abs($diff);
+		
+		if ($diff < 120)
+		{
+			return 'in a minute';
+		}
+		if ($diff < 3600)
+		{
+			return 'in ' . floor($diff / 60) . ' minutes';
+		}
+		if ($diff < 86400)
+		{
+			return 'in ' . floor($diff / 3600) . ' hours';
+		}
+		
+		$day_diff = floor($diff / 86400);
+		
+		if ($day_diff === 1)
+		{
+			return 'tomorrow';
+		}
+		if ($day_diff < 28)
+		{
+			return "in {$day_diff} days";
+		}
+		
+		return $this->create_date($ts);
+	}
+	*/
 
 	/**
 	* Определение языка сайта по URL
