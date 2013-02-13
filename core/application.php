@@ -6,7 +6,6 @@
 
 namespace fw\core;
 
-use fw\cache\service as cache_service;
 use fw\config\db as config_db;
 use fw\db\mysqli as db_mysqli;
 use fw\session\user;
@@ -56,7 +55,12 @@ class application implements \ArrayAccess
 		$this['cache'] = $this->share(function() use ($app) {
 			$class = "\\fw\\cache\\driver\\{$app['acm.type']}";
 			
-			return new cache_service($app['db'], new $class($app['db'], $app['acm.prefix']));
+			if (file_exists("{SITE_DIR}../includes/cache/service.php"))
+			{
+				return new \app\cache\service($app['db'], new $class($app['db'], $app['acm.prefix']));
+			}
+			
+			return new \fw\cache\service($app['db'], new $class($app['db'], $app['acm.prefix']));
 		});
 
 		/* Пользователь */
