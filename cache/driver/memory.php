@@ -54,17 +54,17 @@ class memory
 			
 			foreach ($table as $table_name)
 			{
-				if (false === $temp = $this->_get($this->prefix . 'sql_' . $table_name))
+				if (false === $temp = $this->_get("{$this->prefix}sql_{$table_name}"))
 				{
 					continue;
 				}
 				
 				foreach ($temp as $md5 => $void)
 				{
-					$this->_delete($this->prefix . 'sql_' . $md5);
+					$this->_delete("{$this->prefix}sql_{$md5}");
 				}
 				
-				$this->_delete($this->prefix . 'sql_' . $table_name);
+				$this->_delete("{$this->prefix}sql_{$table_name}");
 			}
 			
 			return;
@@ -112,7 +112,7 @@ class memory
 	*/
 	private function load()
 	{
-		$this->data = $this->_get($this->prefix . 'global');
+		$this->data = $this->_get("{$this->prefix}global");
 
 		return false !== $this->data;
 	}
@@ -154,7 +154,7 @@ class memory
 	*/
 	public function set_prefix($prefix = '')
 	{
-		$this->prefix = $prefix ? $prefix . '_' : '';
+		$this->prefix = $prefix ? "{$prefix}_" : '';
 	}
 
 	/**
@@ -228,7 +228,7 @@ class memory
 		$query    = preg_replace('#[\n\r\s\t]+#', ' ', $query);
 		$query_id = sizeof($this->sql_rowset);
 		
-		if (false === $result = $this->_get($this->prefix . 'sql_' . md5($query)))
+		if (false === $result = $this->_get("{$this->prefix}sql_" . md5($query)))
 		{
 			return false;
 		}
@@ -282,14 +282,14 @@ class memory
 				$table_name = substr($table_name, 0, $pos);
 			}
 			
-			if (false === $temp = $this->_get($this->prefix . 'sql_' . $table_name))
+			if (false === $temp = $this->_get("{$this->prefix}sql_{$table_name}"))
 			{
 				$temp = [];
 			}
 			
 			$temp[$hash] = true;
 			
-			$this->_set($this->prefix . 'sql_' . $table_name, $temp);
+			$this->_set("{$this->prefix}sql_{$table_name}", $temp);
 		}
 		
 		$query_id = sizeof($this->sql_rowset);
@@ -303,7 +303,7 @@ class memory
 		
 		$this->db->freeresult($query_result);
 		
-		$this->_set($this->prefix . 'sql_' . $hash, $this->sql_rowset[$query_id], $ttl);
+		$this->_set("{$this->prefix}sql_{$hash}", $this->sql_rowset[$query_id], $ttl);
 		
 		$query_result = $query_id;
 	}
@@ -353,7 +353,7 @@ class memory
 			return;
 		}
 
-		$this->_set($this->prefix . 'global', $this->data, 2592000);
+		$this->_set("{$this->prefix}global", $this->data, 2592000);
 		$this->is_modified = false;
 	}
 }

@@ -16,7 +16,7 @@ function ajax_output($file = false)
 	$file = $file ?: $app['template']->file;
 
 	header('Content-type: text/xml; charset=utf-8');
-	$app['template']->display('ajax/' . $file);
+	$app['template']->display("ajax/{$file}");
 	garbage_collection(false);
 	exit;
 }
@@ -34,7 +34,7 @@ function build_hidden_fields($row)
 
 	foreach ($row as $key => $value)
 	{
-		$string .= '<input type="hidden" name="' . $key . '" value="' . $value . '">';
+		$string .= sprintf('<input type="hidden" name="%s" value="%s">', $key, $value);
 	}
 
 	return $string;
@@ -79,7 +79,7 @@ function generate_page_link($page, $base_url, $query_string)
 
 	$url_delim = !$query_string ? '?' : '&amp;';
 
-	return $base_url . sprintf('%s%sp=%d', $query_string, $url_delim, $page);
+	return sprintf('%s%s%sp=%d', $base_url, $query_string, $url_delim, $page);
 }
 
 /**
@@ -151,7 +151,7 @@ function ilink($url = '', $prefix = false)
 	*/
 	if (($link == $app['config']['site_root_path'] && $prefix === false) || (false !== strpos($prefix, 'ivacuum.ru')))
 	{
-		if (!$app['site_info']['default'] && (false === strpos($link . $url, sprintf('/%s/', $app['site_info']['language']))))
+		if (!$app['site_info']['default'] && (false === strpos($link . $url, "/{$app['site_info']['language']}/")))
 		{
 			$link = sprintf('%s%s/', $link, $app['site_info']['language']);
 		}

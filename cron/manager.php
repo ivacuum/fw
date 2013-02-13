@@ -29,11 +29,11 @@ class manager
 
 		$this->start_time = time();
 
-		$this->cron_dir = SITE_DIR . '../includes/cron/';
-		$this->log_dir  = SITE_DIR . '../logs/';
+		$this->cron_dir = "{SITE_DIR}../includes/cron/";
+		$this->log_dir  = "{SITE_DIR}../logs/";
 
-		$this->cron_allowed = $this->log_dir . 'cron_allowed';
-		$this->cron_running = $this->log_dir . 'cron_running';
+		$this->cron_allowed = "{$this->log_dir}cron_allowed";
+		$this->cron_running = "{$this->log_dir}cron_running";
 
 		$this->db = $app['db'];
 	}

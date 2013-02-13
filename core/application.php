@@ -54,7 +54,7 @@ class application implements \ArrayAccess
 		});
 		
 		$this['cache'] = $this->share(function() use ($app) {
-			$class = '\\fw\\cache\\driver\\' . $app['acm.type'];
+			$class = "\\fw\\cache\\driver\\{$app['acm.type']}";
 			
 			return new cache_service($app['db'], new $class($app['db'], $app['acm.prefix']));
 		});

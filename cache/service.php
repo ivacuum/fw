@@ -359,7 +359,7 @@ class service
 	*/
 	public function obtain_online_userlist($language)
 	{
-		if (false === $data = $this->driver->get('online_userlist_' . $language))
+		if (false === $data = $this->driver->get("online_userlist_{$language}"))
 		{
 			global $app;
 
@@ -400,7 +400,7 @@ class service
 				{
 					$user_link = $this->user_profile_link('', $row['username'], $row['user_colour'], $row['user_url'], $row['user_id'], $row['session_time']);
 
-					$data['online_userlist'] .= $data['online_userlist'] ? ', ' . $user_link : $user_link;
+					$data['online_userlist'] .= $data['online_userlist'] ? ", {$user_link}" : $user_link;
 					$prev_id[$row['user_id']] = 1;
 					$data['users_online']++;
 				}
@@ -448,7 +448,7 @@ class service
 			$data['online_list'] .= sprintf($app['user']->lang['ONLINE_LIST_REG'], $data['users_online']);
 			$data['online_list'] .= sprintf($app['user']->lang['ONLINE_LIST_GUESTS'], $data['guests_online']);
 
-			$this->driver->set('online_userlist_' . $language, $data, 180);
+			$this->driver->set("online_userlist_{$language}", $data, 180);
 		}
 
 		return $data;
@@ -526,7 +526,7 @@ class traverse_handlers_urls extends site_pages
 			$data = substr_replace($data, '$' . $i++, $pos, 1);
 		}
 		
-		$this->tree[$this->row['page_handler'] . '::' . $this->row['handler_method']] = $data;
+		$this->tree["{$this->row['page_handler']}::{$this->row['handler_method']}"] = $data;
 	}
 }
 

@@ -27,7 +27,7 @@ class file
 	{
 		$this->db = $db;
 		$this->set_prefix($prefix);
-		$this->cache_dir = SITE_DIR . 'cache/';
+		$this->cache_dir = "{SITE_DIR}cache/";
 	}
 	
 	/**
@@ -35,7 +35,7 @@ class file
 	*/
 	public function _get($filename)
 	{
-		$file = $this->cache_dir . $filename . '.php';
+		$file = "{$this->cache_dir}{$filename}.php";
 		
 		if (!file_exists($file))
 		{
@@ -50,7 +50,7 @@ class file
 		/* Пропуск заголовка */
 		fgets($handle);
 		
-		if ($filename == $this->prefix . 'global')
+		if ($filename == "{$this->prefix}global")
 		{
 			$this->data = $this->data_expires = [];
 			$time = time();
@@ -119,7 +119,7 @@ class file
 						break;
 					}
 					
-					if (0 === strpos($filename, $this->prefix . 'sql_'))
+					if (0 === strpos($filename, "{$this->prefix}sql_"))
 					{
 						fgets($handle);
 					}
@@ -176,14 +176,14 @@ class file
 	*/
 	public function _set($filename, $data = null, $expires = 2592000, $query = '')
 	{
-		$file = $this->cache_dir . $filename . '.php';
+		$file = "{$this->cache_dir}{$filename}.php";
 		
 		if ($handle = fopen($file, 'wb'))
 		{
 			flock($handle, LOCK_EX);
 			fwrite($handle, '<' . '?php exit; ?' . '>');
 			
-			if ($filename == $this->prefix . 'global')
+			if ($filename == "{$this->prefix}global")
 			{
 				foreach ($this->data as $var => $data)
 				{
@@ -194,9 +194,9 @@ class file
 					
 					$data = serialize($data);
 					
-					fwrite($handle, "\n" . $this->data_expires[$var] . "\n");
+					fwrite($handle, "\n{$this->data_expires[$var]}\n");
 					fwrite($handle, strlen($data . $var) . "\n");
-					fwrite($handle, $var . "\n");
+					fwrite($handle, "{$var}\n");
 					fwrite($handle, $data);
 				}
 			}
@@ -204,9 +204,9 @@ class file
 			{
 				fwrite($handle, "\n" . (time() + $expires) . "\n");
 				
-				if (0 === strpos($filename, $this->prefix . 'sql_'))
+				if (0 === strpos($filename, "{$this->prefix}sql_"))
 				{
-					fwrite($handle, $query . "\n");
+					fwrite($handle, "{$query}\n");
 				}
 				
 				$data = serialize($data);
@@ -300,7 +300,7 @@ class file
 		}
 		elseif ($var[0] != '_')
 		{
-			$this->remove_file($this->prefix . $var . '.php', true);
+			$this->remove_file("{$this->prefix}{$var}.php", true);
 		}
 	}
 
@@ -327,7 +327,7 @@ class file
 	*/
 	public function load()
 	{
-		return $this->_get($this->prefix . 'global');
+		return $this->_get("{$this->prefix}global");
 	}
 
 	/**
@@ -393,7 +393,7 @@ class file
 	*/
 	public function set_prefix($prefix = '')
 	{
-		$this->prefix = $prefix ? $prefix . '_' : '';
+		$this->prefix = $prefix ? "{$prefix}_" : '';
 	}
 
 	/**
@@ -467,7 +467,7 @@ class file
 		$query    = preg_replace('#[\n\r\s\t]+#', ' ', $query);
 		$query_id = sizeof($this->sql_rowset);
 		
-		if (false === $result = $this->_get($this->prefix . 'sql_' . md5($query)))
+		if (false === $result = $this->_get("{$this->prefix}sql_" . md5($query)))
 		{
 			return false;
 		}
@@ -511,7 +511,7 @@ class file
 		
 		$this->db->freeresult($query_result);
 		
-		if ($this->_set($this->prefix . 'sql_' . md5($query), $this->sql_rowset[$query_id], time() + $ttl, $query))
+		if ($this->_set("{$this->prefix}sql_" . md5($query), $this->sql_rowset[$query_id], time() + $ttl, $query))
 		{
 			$query_result = $query_id;
 		}
@@ -531,7 +531,7 @@ class file
 		
 		while (false !== $entry = readdir($dir))
 		{
-			if (0 !== strpos($entry, $this->prefix . 'sql_') && 0 !== strpos($entry, $this->prefix . 'global'))
+			if (0 !== strpos($entry, "{$this->prefix}sql_") && 0 !== strpos($entry, "{$this->prefix}global"))
 			{
 				continue;
 			}
@@ -556,7 +556,7 @@ class file
 		
 		closedir($dir);
 		
-		if (file_exists($this->cache_dir . $this->prefix . 'global.php'))
+		if (file_exists("{$this->cache_dir}{$this->prefix}global.php"))
 		{
 			if (!sizeof($this->data))
 			{
@@ -606,7 +606,7 @@ class file
 		}
 		else
 		{
-			return file_exists($this->cache_dir . $this->prefix . $var . '.php');
+			return file_exists("{$this->cache_dir}{$this->prefix}{$var}.php");
 		}
 		
 	}
@@ -621,7 +621,7 @@ class file
 			return;
 		}
 		
-		if (!$this->_set($this->prefix . 'global'))
+		if (!$this->_set("{$this->prefix}global"))
 		{
 			if (!is_writable($this->cache_dir))
 			{
