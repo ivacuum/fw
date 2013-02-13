@@ -93,13 +93,13 @@ class application implements \ArrayAccess
 		/* Явный вызов автозагрузчика, чтобы он начал свою работу */
 		$this['autoloader']->register_namespaces([
 			'fw'       => FW_DIR,
-			'app'      => SITE_DIR . '../includes',
-			// 'Geocoder' => FW_DIR . '../lib/geocoder/1.1.6/Geocoder',
-			// 'Imagine'  => FW_DIR . '../lib/imagine/0.4.1/Imagine',
-			// 'Monolog'  => FW_DIR . '../lib/monolog/1.0.3/Monolog',
+			'app'      => "{SITE_DIR}../includes",
+			// 'Geocoder' => "{FW_DIR}../lib/geocoder/{$this['version.geocoder']}/Geocoder",
+			// 'Imagine'  => "{FW_DIR}../lib/imagine/{$this['version.imagine']}/Imagine",
+			// 'Monolog'  => "{FW_DIR}../lib/monolog/{$this['version.monolog']}/Monolog",
 		])->register_prefixes([
-			// 'Swift' => FW_DIR . '../lib/swiftmailer/4.3/classes',
-			'Twig'  => FW_DIR . '../lib/twig/1.12.1',
+			// 'Swift' => "{FW_DIR}../lib/swiftmailer/{$this['version.swift']}/classes",
+			'Twig'  => "{FW_DIR}../lib/twig/{$this['version.twig']}",
 		]);
 	}
 	
