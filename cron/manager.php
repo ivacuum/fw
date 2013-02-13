@@ -15,6 +15,7 @@ class manager
 	protected $cron_running;
 	protected $db;
 	protected $deadlock_timeout = 900;
+	protected $hostname;
 	protected $logs_dir;
 	protected $start_time;
 	protected $task_time_limit = 300;
@@ -24,6 +25,7 @@ class manager
 	function __construct($logs_dir, $cron_allowed, $cron_running, $db)
 	{
 		$this->start_time   = time();
+		$this->hostname     = $_SERVER['SERVER_NAME'];
 		$this->logs_dir     = $logs_dir;
 		$this->cron_allowed = "{$this->logs_dir}/{$cron_allowed}";
 		$this->cron_running = "{$this->logs_dir}/{$cron_running}";
@@ -69,7 +71,6 @@ class manager
 		{
 			foreach ($this->tasks as $task)
 			{
-				$this->set_includes_dir($task['site_id']);
 				$this->log(sprintf('Выполнение задачи "%s" [%s] на сайте: #%d', $task['cron_title'], $task['cron_script'], $task['site_id']));
 				set_time_limit($this->task_time_limit);
 
@@ -120,10 +121,29 @@ class manager
 	{
 		$sql = '
 			SELECT
+				site_id
+			FROM
+				' . SITES_TABLE . '
+			WHERE
+				site_url = ' . $this->db->check_value($this->hostname);
+		$result = $this->db->query($sql);
+		$site_ids = [];
+		
+		while ($row = $this->db->fetchrow($result))
+		{
+			$site_ids[] = (int) $row['site_id'];
+		}
+		
+		$this->db->freeresult($result);
+		
+		$sql = '
+			SELECT
 				*
 			FROM
 				' . CRON_TABLE . '
 			WHERE
+				' . $this->db->in_set('site_id', $site_ids) . '
+			AND
 				cron_active = 1
 			AND
 				next_run <= ' . $this->start_time . '
@@ -157,38 +177,6 @@ class manager
 		$this->release_file_lock();
 	}
 	
-	/**
-	* Задачи следующего проекта. Необходимо сменить site_root_path,
-	* чтобы соориентировать загрузчик классов
-	*/
-	private function set_includes_dir($site_id)
-	{
-		global $app;
-		static $id = 0;
-		
-		if ($site_id != $id)
-		{
-			$id = (int) $site_id;
-			
-			$sql = '
-				SELECT
-					config_value
-				FROM
-					' . CONFIG_TABLE . '
-				WHERE
-					config_name = ' . $this->db->check_value('site_dir') . '
-				AND
-					site_id = ' . $id;
-			$this->db->query($sql);
-			$row = $this->db->fetchrow();
-			$this->db->freeresult();
-			
-			/* Загрузка настроек сайта */
-			require_once($row['config_value'] . '../config.php');
-			$app['cache']->set_prefix($acm_prefix);
-		}
-	}
-
 	/**
 	* Установка времени следующего запуска
 	*/
