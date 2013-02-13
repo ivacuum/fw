@@ -402,7 +402,7 @@ class page
 				'URL'   => ilink('', $this->config['site_root_path'] . $row['site_language'])
 			]);
 			
-			if ($this->user->lang['.'] == $ary['language_title'])
+			if ($this->request->language == $ary['language_title'])
 			{
 				$language_ary = $ary;
 			}
@@ -413,7 +413,7 @@ class page
 
 			'S_BOT'                => $this->user->is_bot,
 			'S_ISP'                => $this->request->isp,
-			'S_LANGUAGE'           => $this->user->lang['.'],
+			'S_LANGUAGE'           => $this->request->language,
 			'S_LANGUAGE_DIRECTION' => $language_ary['language_direction'],
 			'S_OPENID_PROVIDER'    => $this->user['openid_provider'],
 			'S_USER_REGISTERED'    => $this->user->is_registered,
@@ -601,7 +601,7 @@ class page
 	*/
 	public function show_who_is_online()
 	{
-		$online_userlist = $this->cache->obtain_online_userlist($this->user->lang['.']);
+		$online_userlist = $this->cache->obtain_online_userlist($this->request->language);
 
 		/* Список групп (для легенды) */
 		$groups      = $this->cache->obtain_groups();

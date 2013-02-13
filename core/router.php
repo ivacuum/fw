@@ -49,6 +49,12 @@ class router
 		$this->user      = $user;
 		
 		$this->site_id = $site_info['id'];
+		
+		/* Если выбрана локализация по умолчанию, то убираем язык из URL */
+		if ($site_info['default'] && 0 === strpos($this->request->url, "/{$this->request->language}/"))
+		{
+			$this->request->redirect(ilink(mb_substr($this->request->url, 3)));
+		}
 	}
 
 	public function _init($url = '', $namespace = '\\app\\')
@@ -57,6 +63,11 @@ class router
 		$this->namespace = $namespace;
 		$this->page      = $this->config['router_directory_index'];
 		$this->url       = $url ?: htmlspecialchars_decode($this->request->url);
+		
+		if (0 === strpos($this->url, "/{$this->request->language}/"))
+		{
+			$this->url = mb_substr($this->url, 3);
+		}
 		
 		if (false !== $query_string_pos = strpos($this->url, '?'))
 		{

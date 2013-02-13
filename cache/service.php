@@ -100,8 +100,8 @@ class service
 	public function get_site_info_by_url($hostname, $page = '')
 	{
 		$page     = trim($page, '/');
-		$param    = $page ? explode('/', $page)[0] : '';
-		$language = strlen($param) === 2 ? $param : '';
+		$language = $page ? explode('/', $page)[0] : '';
+		$language = strlen($language) === 2 ? $language : '';
 		$sites    = [];
 		
 		/* Все локализации сайта */

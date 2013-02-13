@@ -222,7 +222,7 @@ trait i18n
 	public function load_language($lang_file, $force_update = false, $language = false)
 	{
 		$lang      = [];
-		$language  = $language ?: $this->lang['.'];
+		$language  = $language ?: $this->request->language;
 		$lang_file = str_replace('/', '_', $lang_file);
 		
 		/* Общая локализация */
@@ -236,7 +236,7 @@ trait i18n
 			$lang = array_merge_recursive($lang, $this->get_i18n_data($site_info['id'], $language, $lang_file, $force_update));
 		}
 		
-		if ($language == $this->lang['.'])
+		if ($language == $this->request->language)
 		{
 			$this->lang = array_merge_recursive($this->lang, $lang);
 			return;
@@ -349,49 +349,6 @@ trait i18n
 	}
 	*/
 
-	/**
-	* Определение языка сайта по URL
-	*/
-	protected function detect_language()
-	{
-		global $app;
-		
-		$url = trim(htmlspecialchars_decode($this->request->url), '/');
-		$params = $url ? explode('/', $url) : [];
-		
-		if (empty($params))
-		{
-			return $app['site_info']['language'];
-		}
-		
-		$language = $params[0];
-		
-		if (strlen($language) != 2)
-		{
-			return $app['site_info']['language'];
-		}
-		
-		if ($app['site_info']['default'])
-		{
-			/* Если выбрана локализация по умолчанию, то убираем язык из URL */
-			foreach ($this->cache->obtain_languages() as $id => $row)
-			{
-				if ($language == $row['language_title'])
-				{
-					$this->request->redirect(ilink(mb_substr($this->request->url, 3)));
-				}
-			}
-			
-			return $app['site_info']['language'];
-		}
-			
-		if ($this->language_exists($language))
-		{
-			$this->request->url = mb_substr($this->request->url, 3);
-			return $language;
-		}
-	}
-	
 	/**
 	* Извлечение переводов
 	*/
