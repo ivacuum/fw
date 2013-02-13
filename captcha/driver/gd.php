@@ -18,7 +18,7 @@ class gd
 	
 	function __construct()
 	{
-		$this->fonts_dir = "{FW_DIR}assets/fonts/";
+		$this->fonts_dir = FW_DIR . 'assets/fonts/';
 	}
 	
 	/**

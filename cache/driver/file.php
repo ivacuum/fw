@@ -27,7 +27,7 @@ class file
 	{
 		$this->db = $db;
 		$this->set_prefix($prefix);
-		$this->cache_dir = "{SITE_DIR}cache/";
+		$this->cache_dir = SITE_DIR . 'cache/';
 	}
 	
 	/**
