@@ -49,8 +49,6 @@ class router
 		$this->user      = $user;
 		
 		$this->site_id = $site_info['id'];
-		
-		setlocale(LC_ALL, $site_info['locale']);
 	}
 
 	public function _init($url = '', $namespace = '\\app\\')
