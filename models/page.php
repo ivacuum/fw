@@ -41,6 +41,8 @@ class page
 			->add_function('plural', [$this->user, 'plural'])
 			->add_function('url_for', [$this, 'get_handler_url'])
 			->set_number_format(0, $this->config['number_dec_point'], $this->config['number_thousands_sep']);
+		
+		return $this;
 	}
 	
 	/**
