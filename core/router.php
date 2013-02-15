@@ -1,19 +1,20 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2013
 */
 
 namespace fw\core;
 
 use fw\traits\breadcrumbs;
+use fw\traits\injection;
 
 /**
 * Маршрутизатор запросов
 */
 class router
 {
-	use breadcrumbs;
+	use breadcrumbs, injection;
 	
 	public $format;
 	public $handler;
@@ -28,33 +29,15 @@ class router
 	protected $params = [];
 	protected $params_count;
 
-	protected $auth;
-	protected $cache;
-	protected $config;
-	protected $db;
-	protected $profiler;
-	protected $request;
-	protected $template;
-	protected $user;
+	protected $app;
 	
-	function __construct($auth, $cache, $config, $db, $profiler, $request, $site_info, $template, $user)
+	function __construct()
 	{
-		$this->auth      = $auth;
-		$this->cache     = $cache;
-		$this->config    = $config;
-		$this->db        = $db;
-		$this->profiler  = $profiler;
-		$this->request   = $request;
-		$this->template  = $template;
-		$this->user      = $user;
-		
-		$this->site_id = $site_info['id'];
-		
-		/* Если выбрана локализация по умолчанию, то убираем язык из URL */
-		if ($site_info['default'] && 0 === strpos($this->request->url, "/{$this->request->language}/"))
-		{
-			$this->request->redirect(ilink(mb_substr($this->request->url, 3)));
-		}
+	}
+	
+	function __get($name)
+	{
+		return $this->app[$name];
 	}
 
 	public function _init($url = '', $namespace = '\\app\\')
@@ -62,10 +45,17 @@ class router
 		$this->format    = $this->config['router_default_extension'];
 		$this->namespace = $namespace;
 		$this->page      = $this->config['router_directory_index'];
+		$this->site_id   = $this->site_info['id'];
 		$this->url       = $url ?: htmlspecialchars_decode($this->request->url);
 		
 		if (0 === strpos($this->url, "/{$this->request->language}/"))
 		{
+			if ($this->site_info['default'])
+			{
+				/* Если выбрана локализация по умолчанию, то убираем язык из URL */
+				$this->request->redirect(ilink(mb_substr($this->request->url, 3)));
+			}
+			
 			$this->url = mb_substr($this->url, 3);
 		}
 		
@@ -362,14 +352,8 @@ class router
 		$this->handler->url      = implode('/', $this->page_link);
 		
 		/* Настройка обработчика */
-		$this->handler->_set_auth($this->auth)
-			->_set_cache($this->cache)
-			->_set_config($this->config)
-			->_set_db($this->db)
-			->_set_profiler($this->profiler)
-			->_set_request($this->request)
-			->_set_template($this->template)
-			->_set_user($this->user)
+		$this->handler->_set_app($this->app)
+			->additional_tplengine_features()
 			->load_translations()
 			->obtain_handlers_urls()
 			->set_default_template()

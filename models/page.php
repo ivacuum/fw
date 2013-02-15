@@ -1,19 +1,20 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2013
 */
 
 namespace fw\models;
 
 use fw\traits\breadcrumbs;
+use fw\traits\injection;
 
 /**
 * Страница сайта
 */
 class page
 {
-	use breadcrumbs;
+	use breadcrumbs, injection;
 	
 	public $data;
 	public $format;
@@ -25,79 +26,23 @@ class page
 	public $url;
 	public $urls = [];
 	
-	protected $auth;
-	protected $cache;
-	protected $config;
-	protected $db;
-	protected $profiler;
-	protected $request;
-	protected $template;
-	protected $user;
+	protected $app;
 	
 	function __construct()
 	{
 	}
-	
-	public function _set_auth($auth)
+
+	/**
+	* Включение дополнительных функций и фильтров для использования в шаблонах
+	*/
+	public function additional_tplengine_features()
 	{
-		$this->auth = $auth;
-		
-		return $this;
-	}
-	
-	public function _set_cache($cache)
-	{
-		$this->cache = $cache;
-		
-		return $this;
-	}
-	
-	public function _set_config($config)
-	{
-		$this->config = $config;
-		
-		return $this;
-	}
-	
-	public function _set_db($db)
-	{
-		$this->db = $db;
-		
-		return $this;
-	}
-	
-	public function _set_profiler($profiler)
-	{
-		$this->profiler = $profiler;
-		
-		return $this;
-	}
-	
-	public function _set_request($request)
-	{
-		$this->request = $request;
-		
-		return $this;
-	}
-	
-	public function _set_template($template)
-	{
-		$this->template = $template;
-		$this->template->add_function('url_for', [$this, 'get_handler_url']);
-		$this->template->set_number_format(0, $this->config['number_dec_point'], $this->config['number_thousands_sep']);
-		
-		return $this;
-	}
-	
-	public function _set_user($user)
-	{
-		$this->user = $user;
-		$this->template->add_function('duration', [$this->user, 'create_time']);
-		$this->template->add_function('humn_size', [$this->user, 'humn_size']);
-		$this->template->add_function('lang', [$this->user, 'lang']);
-		$this->template->add_function('plural', [$this->user, 'plural']);
-		
-		return $this;
+		$this->template->add_function('duration', [$this->user, 'create_time'])
+			->add_function('humn_size', [$this->user, 'humn_size'])
+			->add_function('lang', [$this->user, 'lang'])
+			->add_function('plural', [$this->user, 'plural'])
+			->add_function('url_for', [$this, 'get_handler_url'])
+			->set_number_format(0, $this->config['number_dec_point'], $this->config['number_thousands_sep']);
 	}
 	
 	/**

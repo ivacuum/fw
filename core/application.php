@@ -78,7 +78,7 @@ class application implements \ArrayAccess
 		});
 
 		$this['router'] = $this->share(function() use ($app) {
-			return new router($app['auth'], $app['cache'], $app['config'], $app['db'], $app['profiler'], $app['request'], $app['site_info'], $app['template'], $app['user']);
+			return (new router())->_set_app($app);
 		});
 
 		/* Информация об обслуживаемом сайте */

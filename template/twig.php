@@ -32,6 +32,8 @@ class twig
 	public function add_function($function_name, $handler)
 	{
 		$this->env->addFunction(new \Twig_SimpleFunction($function_name, $handler));
+		
+		return $this;
 	}
 	
 	/**
@@ -135,6 +137,8 @@ class twig
 	public function set_number_format($decimals, $dec_point, $thousands_sep)
 	{
 		$this->env->getExtension('core')->setNumberFormat($decimals, $dec_point, $thousands_sep);
+		
+		return $this;
 	}
 
 	/**
