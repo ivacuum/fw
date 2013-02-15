@@ -26,12 +26,10 @@ class page
 	public $url;
 	public $urls = [];
 	
-	protected $app;
-	
 	function __construct()
 	{
 	}
-
+	
 	/**
 	* Включение дополнительных функций и фильтров для использования в шаблонах
 	*/

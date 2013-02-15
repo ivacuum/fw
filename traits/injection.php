@@ -8,6 +8,13 @@ namespace fw\traits;
 
 trait injection
 {
+	protected $app;
+	
+	function __get($name)
+	{
+		return $this->app[$name];
+	}
+
 	public function _set_app($app)
 	{
 		$this->app = $app;

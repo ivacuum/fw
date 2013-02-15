@@ -29,17 +29,10 @@ class router
 	protected $params = [];
 	protected $params_count;
 
-	protected $app;
-	
 	function __construct()
 	{
 	}
 	
-	function __get($name)
-	{
-		return $this->app[$name];
-	}
-
 	public function _init($url = '', $namespace = '\\app\\')
 	{
 		$this->format    = $this->config['router_default_extension'];
