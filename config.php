@@ -10,6 +10,10 @@ $app = [
 	/* Настройки кэша */
 	'acm.type' => 'memcache',
 	
+	/* Настройки кода подтверждения */
+	'captcha.fonts' => ['tremble.ttf'],
+	'captcha.type'  => 'gd',
+	
 	/* Настройки подключения к БД */
 	'db.host' => 'localhost',
 	'db.port' => false,
@@ -21,6 +25,7 @@ $app = [
 	
 	/* Пути к папкам */
 	'dir.app'             => SITE_DIR . '../includes',
+	'dir.fonts'           => FW_DIR . 'assets/fonts',
 	'dir.fw'              => FW_DIR,
 	'dir.lib'             => FW_DIR . '../lib',
 	'dir.logs'            => SITE_DIR . '../logs',

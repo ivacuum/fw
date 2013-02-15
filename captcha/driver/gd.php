@@ -11,14 +11,15 @@ namespace fw\captcha\driver;
 */
 class gd
 {
-	private $fonts = ['tremble'];
+	private $fonts;
 	private $fonts_dir;
 	private $height;
 	private $width;
 	
-	function __construct()
+	function __construct($fonts_dir, array $fonts)
 	{
-		$this->fonts_dir = FW_DIR . 'assets/fonts/';
+		$this->fonts_dir = $fonts_dir;
+		$this->fonts     = $fonts;
 	}
 	
 	/**
@@ -26,7 +27,7 @@ class gd
 	*/
 	public function send($code)
 	{
-		$font_file = $this->fonts_dir . $this->fonts[mt_rand(0, sizeof($this->fonts) - 1)] . '.ttf';
+		$font_file = $this->fonts_dir . '/' . $this->fonts[mt_rand(0, sizeof($this->fonts) - 1)];
 		
 		$this->set_dimensions(180, 40);
 		

@@ -15,11 +15,7 @@ class captcha extends page
 {
 	public function index()
 	{
-		$class = '\\fw\\captcha\\driver\\' . $this->config['confirm_type'];
-
-		$captcha = new captcha_service($this->config, $this->db, $this->request, $this->user, new $class());
-		$captcha->send();
-		
+		$this->captcha->send();
 		exit;
 	}
 }

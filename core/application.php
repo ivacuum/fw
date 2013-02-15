@@ -6,6 +6,7 @@
 
 namespace fw\core;
 
+use fw\captcha\service as captcha_service;
 use fw\config\db as config_db;
 use fw\db\mysqli as db_mysqli;
 use fw\session\user;
@@ -92,6 +93,12 @@ class application implements \ArrayAccess
 			setlocale(LC_ALL, $site_info['locale']);
 			
 			return $site_info;
+		});
+		
+		$this['captcha'] = $this->share(function() use ($app) {
+			$class = "\\fw\\captcha\\driver\\{$app['captcha.type']}";
+
+			return new captcha_service($app['config'], $app['db'], $app['request'], $app['user'], new $class($app['dir.fonts'], $app['captcha.fonts']));
 		});
 		
 		/* Явный вызов автозагрузчика, чтобы он начал свою работу */
