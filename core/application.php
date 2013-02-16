@@ -7,6 +7,7 @@
 namespace fw\core;
 
 use fw\captcha\service as captcha_service;
+use fw\cron\manager as cron_manager;
 use fw\config\db as config_db;
 use fw\db\mysqli as db_mysqli;
 use fw\session\user;
@@ -99,6 +100,10 @@ class application implements \ArrayAccess
 			$class = "\\fw\\captcha\\driver\\{$app['captcha.type']}";
 
 			return new captcha_service($app['config'], $app['db'], $app['request'], $app['user'], new $class($app['dir.fonts'], $app['captcha.fonts']));
+		});
+		
+		$this['cron'] = $this->share(function() use ($app) {
+			return (new cron_manager($app['dir.logs'], $app['file.cron.allowed'], $app['file.cron.running']))->_set_app($app);
 		});
 		
 		/* Явный вызов автозагрузчика, чтобы он начал свою работу */

@@ -6,14 +6,17 @@
 
 namespace fw\cron;
 
+use fw\traits\injection;
+
 /**
 * Задачи по расписанию
 */
 class manager
 {
+	use injection;
+	
 	protected $cron_allowed;
 	protected $cron_running;
-	protected $db;
 	protected $deadlock_timeout = 900;
 	protected $hostname;
 	protected $logs_dir;
@@ -22,15 +25,13 @@ class manager
 	protected $tasks = [];
 	protected $tasks_timeout = 1;
 
-	function __construct($logs_dir, $cron_allowed, $cron_running, $db)
+	function __construct($logs_dir, $cron_allowed, $cron_running)
 	{
 		$this->start_time   = time();
 		$this->hostname     = $_SERVER['SERVER_NAME'];
 		$this->logs_dir     = $logs_dir;
 		$this->cron_allowed = "{$this->logs_dir}/{$cron_allowed}";
 		$this->cron_running = "{$this->logs_dir}/{$cron_running}";
-
-		$this->db = $db;
 	}
 	
 	/**
@@ -76,7 +77,7 @@ class manager
 
 				/* Выполнение задачи */
 				$cron_class = "\\app\\cron\\{$task['cron_script']}";
-				$cron = new $cron_class($task);
+				$cron = (new $cron_class($task))->_set_app($this->app);
 				
 				if ($cron->run())
 				{

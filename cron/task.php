@@ -1,32 +1,28 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2013
 */
 
 namespace fw\cron;
+
+use fw\traits\injection;
 
 /**
 * Задача по расписанию
 */
 class task
 {
+	use injection;
+	
 	public $data = [];
 
-	protected $cache;
-	protected $config;
 	protected $ctime;
-	protected $db;
 
 	function __construct(array $row)
 	{
-		global $app;
-
-		$this->cache  = $app['cache'];
-		$this->config = $app['config'];
-		$this->ctime  = time();
-		$this->data   = $row;
-		$this->db     = $app['db'];
+		$this->ctime = time();
+		$this->data  = $row;
 	}
 	
 	/**
