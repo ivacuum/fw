@@ -10,6 +10,7 @@ use fw\captcha\service as captcha_service;
 use fw\cron\manager as cron_manager;
 use fw\config\db as config_db;
 use fw\db\mysqli as db_mysqli;
+use fw\db\sphinx as db_sphinx;
 use fw\session\user;
 use fw\template\twig;
 use fw\traits\constants;
@@ -104,6 +105,10 @@ class application implements \ArrayAccess
 		
 		$this['cron'] = $this->share(function() use ($app) {
 			return (new cron_manager($app['dir.logs'], $app['file.cron.allowed'], $app['file.cron.running']))->_set_app($app);
+		});
+		
+		$this['sphinx'] = $this->share(function() use ($app) {
+			return new db_sphinx($app['sphinx.host'], '', '', '', $app['sphinx.port'], $app['sphinx.sock']);
 		});
 		
 		/* Явный вызов автозагрузчика, чтобы он начал свою работу */

@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2013
 */
 
 namespace fw\db;
@@ -11,9 +11,6 @@ namespace fw\db;
 */
 class sphinx extends mysqli
 {
-	/**
-	* Установка подключения к БД
-	*/
 	protected function connect()
 	{
 		$this->connect_id = mysqli_connect($this->server, '', '', '', $this->port, $this->socket);

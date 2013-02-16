@@ -37,6 +37,11 @@ $app = [
 	'file.cron.allowed' => 'cron_allowed',
 	'file.cron.running' => 'cron_running',
 	
+	/* Настройки подключения к поисковику sphinx */
+	'sphinx.host' => 'localhost',
+	'sphinx.port' => false,
+	'sphinx.sock' => '/tmp/sphinx.sock',
+	
 	/* Версии библиотек */
 	'version.geocoder' => '1.1.6',
 	'version.imagine'  => '0.4.1.',
