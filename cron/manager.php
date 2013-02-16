@@ -23,6 +23,7 @@ class manager
 	protected $start_time;
 	protected $task_time_limit = 300;
 	protected $tasks = [];
+	protected $tasks_count = ['complete' => 0, 'incomplete' => 0, 'total' => 0];
 	protected $tasks_timeout = 1;
 
 	function __construct($logs_dir, $cron_allowed, $cron_running)
@@ -66,12 +67,18 @@ class manager
 
 		$this->track_running('start');
 		$this->load_tasks();
-		$this->log(sprintf('Найдено готовых к запуску задач: %d', sizeof($this->tasks)));
+		$this->log(sprintf('Найдено готовых к запуску задач: %d', $this->tasks_count['total']));
 
 		if ($this->tasks)
 		{
 			foreach ($this->tasks as $task)
 			{
+				if ($this->tasks['complete'] || $this->tasks['incomplete'])
+				{
+					/* Перерыв между задачами */
+					sleep($this->tasks_timeout);
+				}
+
 				$this->log(sprintf('Выполнение задачи "%s" [%s] на сайте: #%d', $task['cron_title'], $task['cron_script'], $task['site_id']));
 				set_time_limit($this->task_time_limit);
 
@@ -84,13 +91,13 @@ class manager
 					/* Установка времени следующего запуска */
 					$this->set_next_run_time($task['cron_id'], $task['cron_schedule']);
 					$this->log('Задача выполнена');
+					$this->tasks_count['complete']++;
 				}
 				else
 				{
 					$this->log('Не удалось выполнить задачу');
+					$this->tasks_count['incomplete']++;
 				}
-
-				sleep($this->tasks_timeout);
 			}
 		}
 
@@ -154,6 +161,8 @@ class manager
 		$result = $this->db->query($sql);
 		$this->tasks = $this->db->fetchall($result);
 		$this->db->freeresult($result);
+		
+		$this->tasks_count['total'] = sizeof($this->tasks);
 	}
 	
 	/**
