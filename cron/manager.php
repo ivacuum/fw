@@ -100,7 +100,7 @@ class manager
 	/**
 	* Получаем блокировку для выполнения задач
 	*/
-	private function get_file_lock()
+	protected function get_file_lock()
 	{
 		if (file_exists($this->cron_allowed))
 		{
@@ -117,7 +117,7 @@ class manager
 	/**
 	* Загрузка задач, готовых к выполнению
 	*/
-	private function load_tasks()
+	protected function load_tasks()
 	{
 		$sql = '
 			SELECT
@@ -158,7 +158,7 @@ class manager
 	/**
 	* Лог операций
 	*/
-	private function log($text)
+	protected function log($text)
 	{
 		printf("%s: %s\n", date('Y-m-d H:i:s'), $text);
 	}
@@ -166,7 +166,7 @@ class manager
 	/**
 	* Выход из тупика
 	*/
-	private function release_deadlock()
+	protected function release_deadlock()
 	{
 		if (!file_exists($this->cron_running) || time() - filemtime($this->cron_running) < $this->deadlock_timeout)
 		{
@@ -180,7 +180,7 @@ class manager
 	/**
 	* Установка времени следующего запуска
 	*/
-	private function set_next_run_time($cron_id, $cron_schedule)
+	protected function set_next_run_time($cron_id, $cron_schedule)
 	{
 		$next_run = date_create();
 		date_modify($next_run, $cron_schedule);
@@ -202,7 +202,7 @@ class manager
 	*
 	* В случае возникновения ошибок в папке логов останется файл
 	*/
-	private function track_running($mode)
+	protected function track_running($mode)
 	{
 		$startmark = sprintf('%s/cron_started_at_%s', $this->logs_dir, date('Y-m-d_H-i-s', $this->start_time));
 
