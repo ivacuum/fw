@@ -81,7 +81,8 @@ class application implements \ArrayAccess
 		});
 
 		$this['router'] = $this->share(function() use ($app) {
-			return (new router())->_set_app($app);
+			return (new router())
+				->_set_app($app);
 		});
 
 		/* Информация об обслуживаемом сайте */
@@ -104,11 +105,14 @@ class application implements \ArrayAccess
 		});
 		
 		$this['cron'] = $this->share(function() use ($app) {
-			return (new cron_manager($app['dir.logs'], $app['file.cron.allowed'], $app['file.cron.running']))->_set_app($app);
+			return (new cron_manager($app['dir.logs'], $app['file.cron.allowed'], $app['file.cron.running']))
+				->_set_app($app);
 		});
 		
 		$this['sphinx'] = $this->share(function() use ($app) {
-			return new db_sphinx($app['sphinx.host'], '', '', '', $app['sphinx.port'], $app['sphinx.sock']);
+			return (new db_sphinx($app['sphinx.host'], '', '', '', $app['sphinx.port'], $app['sphinx.sock']))
+				->_set_cache($app['cache'])
+				->_set_profiler($app['profiler']);
 		});
 		
 		/* Явный вызов автозагрузчика, чтобы он начал свою работу */
