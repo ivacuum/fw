@@ -125,9 +125,9 @@ class profiler extends console
 	/**
 	* Время запуска профайлера
 	*/
-	function __construct()
+	function __construct($start_time = false)
 	{
-		$this->start_time = microtime(true);
+		$this->start_time = $start_time ?: microtime(true);
 	}
 
 	public function get_stats()

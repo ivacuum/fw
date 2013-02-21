@@ -33,12 +33,9 @@ class application implements \ArrayAccess
 		$app = $this;
 		
 		$this['profiler'] = $this->share(function() {
-			return new profiler();
+			return new profiler(START_TIME);
 		});
 		
-		/* Профайлер должен начать работать как можно раньше */
-		$this['profiler'];
-
 		$this['autoloader'] = $this->share(function() use ($app) {
 			return (new autoloader($app['acm.prefix']))->register();
 		});
