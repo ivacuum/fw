@@ -673,7 +673,10 @@ class mysqli
 		$code    = $this->connect_id ? mysqli_errno($this->connect_id) : mysqli_connect_errno();
 		$message = $this->connect_id ? mysqli_error($this->connect_id) : mysqli_connect_error();
 		
-		define('IN_SQL_ERROR', true);
+		if (!defined('IN_SQL_ERROR'))
+		{
+			define('IN_SQL_ERROR', true);
+		}
 		
 		/* Подсветка ключевых слов */
 		$sql = preg_replace('#(SELECT|INSERT INTO|UPDATE|SET|DELETE|FROM|LEFT JOIN|WHERE|AND|GROUP BY|ORDER BY|LIMIT|AS|ON)#', '<em>${1}</em>', $sql);
