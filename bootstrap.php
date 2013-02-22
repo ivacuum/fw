@@ -26,6 +26,8 @@ require(FW_DIR . 'config.php');
 require(SITE_DIR . '../config.php');
 
 $app = new application($app);
+$app['autoloader']->register_namespaces(['fw' => $app['dir.fw'], 'app' => $app['dir.app']])
+	->register_prefix('Twig', "{$app['dir.lib']}/twig/{$app['version.twig']}");
 
 require(FW_DIR . 'constants.php');
 require(SITE_DIR . '../constants.php');

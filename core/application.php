@@ -111,18 +111,6 @@ class application implements \ArrayAccess
 				->_set_cache($app['cache'])
 				->_set_profiler($app['profiler']);
 		});
-		
-		/* Явный вызов автозагрузчика, чтобы он начал свою работу */
-		$this['autoloader']->register_namespaces([
-			'fw'       => $this['dir.fw'],
-			'app'      => $this['dir.app'],
-			// 'Geocoder' => "{$this['dir.lib']}/geocoder/{$this['version.geocoder']}/Geocoder",
-			// 'Imagine'  => "{$this['dir.lib']}/imagine/{$this['version.imagine']}/Imagine",
-			// 'Monolog'  => "{$this['dir.lib']}/monolog/{$this['version.monolog']}/Monolog",
-		])->register_prefixes([
-			// 'Swift' => "{$this['dir.lib']}/swiftmailer/{$this['version.swift']}/classes",
-			'Twig'  => "{$this['dir.lib']}/twig/{$this['version.twig']}",
-		]);
 	}
 	
 	/**
