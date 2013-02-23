@@ -604,34 +604,10 @@ class auth
 
 		if ($login['status'] == 'OK')
 		{
-			$old_session_id = $this->user->session_id;
+			$this->user->session_end(false);
 
-			if ($admin)
+			if (true === $result = $this->user->session_create(false, $login['user_row']['user_id'], $autologin, $admin, $viewonline))
 			{
-				$cookie_expire = $this->user->ctime - 31536000;
-				$this->user->set_cookie('u', '', $cookie_expire);
-				$this->user->set_cookie('sid', '', $cookie_expire);
-				unset($cookie_expire);
-
-				$this->user->session_id = '';
-			}
-
-			if (true === $result = $this->user->session_create($login['user_row']['user_id'], $autologin, $admin, $viewonline))
-			{
-				/* Реаутентификация, удаляем прежнюю сессию */
-				if ($admin)
-				{
-					$sql = '
-						DELETE
-						FROM
-							' . SESSIONS_TABLE . '
-						WHERE
-							session_id = ' . $this->db->check_value($old_session_id) . '
-						AND
-							user_id = ' . $this->db->check_value($login['user_row']['user_id']);
-					$this->db->query($sql);
-				}
-
 				return $login;
 			}
 
