@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2013
 */
 
 namespace fw\session;
@@ -9,7 +9,7 @@ namespace fw\session;
 /**
 * Сеанс
 */
-class session implements \ArrayAccess, \IteratorAggregate, \Countable
+class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionHandlerInterface
 {
 	public $browser        = '';
 	public $cookie         = [];
@@ -31,7 +31,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 	protected $db;
 	protected $request;
 	
-	function __construct($cache, $config, $db, $request)
+	function __construct($cache, $config, $db, $request, array $session_config = [])
 	{
 		$this->cache   = $cache;
 		$this->config  = $config;
@@ -45,6 +45,156 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 		$this->forwarded_for = $this->request->header('X-Forwarded-For');
 		$this->ip            = $this->request->server('REMOTE_ADDR');
 		$this->referer       = $this->request->header('Referer');
+		
+		foreach ($session_config as $key => $value)
+		{
+			ini_set("session.{$key}", $value);
+		}
+		
+		session_set_save_handler($this);
+		session_start();
+	}
+	
+	public function close()
+	{
+		return true;
+	}
+	
+	public function delete_login_key($key_id, $user_id = false)
+	{
+		$user_id = $user_id ?: $this->data['user_id'];
+
+		$sql = '
+			DELETE
+			FROM
+				' . SESSIONS_KEYS_TABLE . '
+			WHERE
+				user_id = ' . $this->db->check_value($user_id) . '
+			AND
+				key_id = ' . $this->db->check_value(md5($key_id));
+		$this->db->query($sql);
+		
+		return $this;
+	}
+	
+	public function destroy($session_id = false)
+	{
+		$session_id = $session_id ?: $this->session_id;
+		
+		$sql = '
+			DELETE
+			FROM
+				' . SESSIONS_TABLE . '
+			WHERE
+				session_id = ' . $this->db->check_value($session_id) . '
+			AND
+				user_id = ' . $this->db->check_value($this->data['user_id']);
+		$this->db->query($sql);
+
+		if ($this->data['user_id'] > 0)
+		{
+			register_shutdown_function([$this, 'user_update'], ['user_last_visit' => $this->ctime]);
+
+			if ($this->cookie['k'])
+			{
+				$this->delete_login_key($this->cookie['k']);
+			}
+		}
+
+		$cookie_expire = $this->ctime - 31536000;
+		$this->set_cookie('k', '', $cookie_expire);
+		$this->set_cookie('u', '', $cookie_expire);
+		$this->set_cookie('sid', '', $cookie_expire);
+		
+		$_SESSION = $this->data = [];
+		$this->cookie = ['u' => 0, 'k' => ''];
+		$this->session_id = '';
+
+		return true;
+	}
+	
+	public function gc($maxlifetime)
+	{
+		return true;
+	}
+	
+	public function open($save_path, $name)
+	{
+		return true;
+	}
+	
+	public function read($session_id)
+	{
+		/* Отличительные черты пользователя */
+		$this->cookie['k'] = $this->request->cookie('k', '');
+		$this->cookie['u'] = $this->request->cookie('u', 0);
+		$this->session_id  = $this->request->cookie('sid', '');
+		
+		if (!$this->session_id)
+		{
+			/* Пользователь зашел впервые, надо создать сессию */
+			$this->session_create($session_id);
+			
+			return $this->data['session_data'];
+		}
+
+		$this->data = $this->cookie['u'] ? $this->get_user_session() : $this->get_guest_session();		
+		
+		/* Сессия не найдена или IP, браузер или прокси отличаются */
+		if (empty($this->data) || !$this->is_session_params_valid())
+		{
+			$this->session_create();
+			
+			return $this->data['session_data'];
+		}
+		
+		$this->page_prev = $this->data['session_page'];
+
+		if (!$this->is_session_expired())
+		{
+			/* Обновляем информацию о местонахождении не чаще раза в минуту */
+			if ($this->ctime - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->request->url)
+			{
+				$sql_ary = [];
+				$sql_ary['session_time'] = $this->data['session_time'] = $this->ctime;
+
+				if ($this->data['session_domain'] != $this->request->hostname)
+				{
+					$sql_ary['session_domain'] = $this->data['session_domain'] = (string) $this->request->hostname;
+				}
+				
+				if ($this->data['session_page'] != $this->request->url)
+				{
+					$sql_ary['session_page'] = $this->data['session_page'] = (string) $this->request->url;
+				}
+				
+				register_shutdown_function([$this, 'session_update'], $sql_ary);
+			}
+
+			$this->is_bot = false;
+			$this->is_registered = $this->data['user_id'] > 0;
+
+			return $this->data['session_data'];
+		}
+
+		$this->session_create();
+	
+		return $this->data['session_data'];
+	}
+	
+	/**
+	* Сохранение массива $_SESSION
+	*/
+	public function write($session_id, $session_data)
+	{
+		if ($this->data['session_data'] === $session_data)
+		{
+			return true;
+		}
+		
+		register_shutdown_function([$this, 'session_update'], ['session_data' => $session_data], $session_id);
+	
+		return true;
 	}
 	
 	/**
@@ -229,166 +379,21 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 	}
 	
 	/**
-	* Основная функция сессий
-	* Вызывается на всех страницах
-	*
-	* Получаем данные пользоваля (браузер, ip, страницу, установленные cookie, session_id)
-	*
-	* Если cookie включены, то ищем session_id в них
-	* Если выключены - ищем в адресной строке
-	*
-	* Если session_id не найден, то это новый посетитель => отправляем обработку методу session_create()
-	*/
-	public function session_begin($update_page = true)
-	{
-		$update_last_visit_time = false;
-
-		/**
-		* Отличительные черты пользователя
-		*/
-		$this->cookie['k'] = $this->request->cookie($this->config['cookie_name'] . '_k', '');
-		$this->cookie['u'] = $this->request->cookie($this->config['cookie_name'] . '_u', 0);
-		$this->session_id  = $this->request->cookie($this->config['cookie_name'] . '_sid', '');
-		
-		if (!$this->session_id)
-		{
-			/* Пользователь зашел впервые, надо создать сессию */
-			return $this->session_create();
-		}
-		
-		if (!$this->cookie['u'])
-		{
-			/* Гость */
-			$sql = '
-				SELECT
-					*
-				FROM
-					' . SESSIONS_TABLE . '
-				WHERE
-					session_id = ' . $this->db->check_value($this->session_id) . '
-				AND
-					user_id = 0';
-			$this->db->query($sql);
-			$this->data = $this->db->fetchrow();
-			$this->db->freeresult();
-
-			if (!empty($this->data))
-			{
-				$this->guest_defaults();
-			}
-		}
-		else
-		{
-			/* Зарегистрированный пользователь */
-			$sql = '
-				SELECT
-					s.*,
-					u.*
-				FROM
-					' . SESSIONS_TABLE . ' s
-				LEFT JOIN
-					' . USERS_TABLE . ' u ON (u.user_id = s.user_id)
-				WHERE
-					s.session_id = ' . $this->db->check_value($this->session_id);
-			$this->db->query($sql);
-			$this->data = $this->db->fetchrow();
-			$this->db->freeresult();
-		}
-		
-		if (!isset($this->data['user_id']))
-		{
-			/* Сессия не найдена, создаем новую */
-			return $this->session_create();
-		}
-		
-		/**
-		* Проверяем в IP только первые два числа
-		*/
-		$ip_check = 2;
-
-		$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $ip_check));
-		$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $ip_check));
-
-		$s_browser = trim(strtolower(substr($this->data['session_browser'], 0, 149)));
-		$u_browser = trim(strtolower(substr($this->browser, 0, 149)));
-
-		$s_forwarded_for = substr($this->data['session_forwarded_for'], 0, 254);
-		$u_forwarded_for = substr($this->forwarded_for, 0, 254);
-
-		/* Сверяем текущие данные с табличными */
-		if ($s_ip !== $u_ip || $s_browser !== $u_browser || $s_forwarded_for !== $u_forwarded_for)
-		{
-			return $this->session_create();
-		}
-		
-		$session_expired = $this->is_session_expired();
-		$this->page_prev = $this->data['session_page'];
-
-		if (!$session_expired)
-		{
-			/* Обновляем информацию о местонахождении не чаще раза в минуту */
-			if ($update_page && ($this->ctime - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->request->url))
-			{
-				$this->data['session_time'] = $this->ctime;
-				$sql_ary = ['session_time' => $this->ctime];
-
-				if ($update_page && $this->data['session_domain'] != $this->request->hostname)
-				{
-					$sql_ary['session_domain'] = $this->data['session_domain'] = (string) $this->request->hostname;
-				}
-				
-				if ($update_page && $this->data['session_page'] != $this->request->url)
-				{
-					$sql_ary['session_page'] = $this->data['session_page'] = (string) $this->request->url;
-				}
-				
-				$this->session_update($sql_ary);
-			}
-
-			$this->is_bot = false;
-			$this->is_registered = $this->data['user_id'] > 0;
-
-			return true;
-		}
-
-		return $this->session_create();
-	}
-
-	/**
 	* Создание новой сессии
 	*
 	* @param	int		$user_id	ID пользователя, false или 0 - анонимный
 	* @param	bool	$autologin	Автовход, используя cookie
 	*/
-	public function session_create($user_id = false, $autologin = false, $set_admin = false, $viewonline = true, $openid_provider = '')
+	public function session_create($session_id = false, $user_id = false, $autologin = false, $set_admin = false, $viewonline = true, $openid_provider = '')
 	{
-		$this->data = [];
+		$_SESSION = $this->data = [];
 
 		if (!$this->config['autologin_allow'])
 		{
 			$this->cookie['k'] = $autologin = false;
 		}
 
-		/**
-		* А не бот ли к нам заглянул?
-		*/
-		$bot = false;
-		$bots = $this->cache->obtain_bots();
-
-		foreach ($bots as $row)
-		{
-			/**
-			* Сравниваем браузер бота с данными в базе
-			* Если что-то совпало, то бот зарегистрирован
-			*/
-			if ($row['bot_agent'] && preg_match('#' . str_replace('\*', '.*?', preg_quote($row['bot_agent'], '#')) . '#i', $this->browser))
-			{
-				$bot = (int) $row['user_id'];
-				break;
-			}
-		}
-
-		if (isset($this->cookie['k']) && $this->cookie['k'] && $this->cookie['u'] && !sizeof($this->data))
+		if ($this->cookie['k'] && $this->cookie['u'])
 		{
 			$sql = '
 				SELECT
@@ -408,7 +413,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 			$bot = false;
 			$openid_provider = $this->data['openid_provider'] ?: $openid_provider;
 		}
-		elseif (false !== $user_id && !sizeof($this->data))
+		elseif (false !== $user_id)
 		{
 			$this->cookie['k'] = '';
 			$this->cookie['u'] = $user_id;
@@ -429,42 +434,22 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 			$this->db->freeresult($result);
 			$bot = false;
 		}
+		else
+		{
+			/* А не бот ли к нам заглянул? */
+			$bot = $this->check_for_bot();
+		}
 
-		if (!sizeof($this->data) || !is_array($this->data))
+		if (empty($this->data))
 		{
 			/**
 			* Если массив данных пользователя до сих пор не сформирован, то это анонимный
 			* пользатель или бот. Настало время получить его данные из базы.
 			*/
 			$this->cookie['k'] = '';
-			$this->cookie['u'] = $bot ? $bot : 0;
+			$this->cookie['u'] = 0;
 
-			if ($bot)
-			{
-				/* Бот получает одну и ту же сессию */
-				$sql = '
-					SELECT
-						u.*,
-						s.*
-					FROM
-						' . USERS_TABLE . ' u
-					LEFT JOIN
-						' . SESSIONS_TABLE . ' s ON (s.user_id = u.user_id)
-					WHERE
-						u.user_id = ' . $this->db->check_value($bot);
-				$result = $this->db->query($sql);
-				$this->data = $this->db->fetchrow($result);
-				$this->db->freeresult($result);
-				
-				$this->data['user_id'] = $bot;
-			}
-			else
-			{
-				/**
-				* Для гостя данные более не берутся из базы
-				*/
-				$this->guest_defaults();
-			}
+			$this->data = $bot ? $this->get_bot_data($bot) : $this->get_guest_defaults();
 		}
 
 		/**
@@ -482,6 +467,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 		/**
 		* Проверка бана
 		*/
+/*
 		if (!$this->config['forwarded_for_check'])
 		{
 			$this->check_ban($this->data['user_id'], $this->ip);
@@ -492,25 +478,14 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 			$ips[] = $this->ip;
 			$this->check_ban($this->data['user_id'], $ips);
 		}
+*/
 
 		$this->is_bot = $bot ? true : false;
 		$this->is_registered = !$bot && $this->data['user_id'] > 0 ? true : false;
 
 		if ($this->is_bot && $bot == $this->data['user_id'] && $this->data['session_id'])
 		{
-			$ip_check = 2;
-
-			$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $ip_check));
-			$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $ip_check));
-
-			$s_browser = trim(strtolower(substr($this->data['session_browser'], 0, 149)));
-			$u_browser = trim(strtolower(substr($this->browser, 0, 149)));
-
-			$s_forwarded_for = substr($this->data['session_forwarded_for'], 0, 254);
-			$u_forwarded_for = substr($this->forwarded_for, 0, 254);
-
-			/* Сверяем текущие данные с табличными */
-			if ($s_ip === $u_ip && $s_browser === $u_browser && $s_forwarded_for === $u_forwarded_for)
+			if ($this->is_session_params_valid())
 			{
 				$this->session_id = $this->data['session_id'];
 
@@ -519,16 +494,16 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 				{
 					$this->data['session_time'] = $this->data['session_last_visit'] = $this->ctime;
 					$this->data['session_page'] = $this->request->url;
-
-					$this->session_update([
-						'session_last_visit'      => $this->ctime,
-						'session_time'            => $this->ctime,
-						'session_domain'          => $this->request->hostname,
-						'session_page'            => $this->request->url,
-						'session_referer'         => $this->referer,
+					
+					register_shutdown_function([$this, 'session_update'], [
+						'session_last_visit' => $this->ctime,
+						'session_time'       => $this->ctime,
+						'session_domain'     => $this->request->hostname,
+						'session_page'       => $this->request->url,
+						'session_referer'    => $this->referer,
 					]);
 
-					$this->user_update([
+					register_shutdown_function([$this, 'user_update'], [
 						'user_session_time' => (int) $this->data['session_time'],
 						'user_session_page' => (string) $this->request->url,
 						'user_last_visit'   => (int) $this->data['session_last_visit'],
@@ -540,9 +515,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 			}
 			else
 			{
-				/**
-				* Для каждого бота должна остаться только одна сессия
-				*/
+				/* Для каждого бота должна остаться только одна сессия */
 				$sql = '
 					DELETE
 					FROM
@@ -556,15 +529,13 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 		$session_autologin = ($this->cookie['k'] || $autologin) && $this->is_registered ? true : false;
 		$set_admin = $set_admin && $this->is_registered ? true : false;
 
-		/**
-		* Массив данных сессии
-		*/
 		$sql_ary = [
 			'user_id'                 => (int) $this->data['user_id'],
 			'openid_provider'         => (string) $openid_provider,
 			'session_last_visit'      => (int) $this->data['session_last_visit'],
 			'session_start'           => (int) $this->ctime,
 			'session_time'            => (int) $this->ctime,
+			'session_data'            => '',
 			'session_browser'         => (string) trim(substr($this->browser, 0, 149)),
 			'session_forwarded_for'   => (string) $this->forwarded_for,
 			'session_domain'          => (string) $this->request->hostname,
@@ -575,20 +546,18 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 			'session_autologin'       => (int) $autologin,
 			'session_admin'           => (int) $set_admin
 		];
-
-		$sql = '
-			DELETE
-			FROM
-				' . SESSIONS_TABLE . '
-			WHERE
-				session_id = ' . $this->db->check_value($this->session_id) . '
-			AND
-				user_id = 0';
-		$this->db->query($sql);
-
-		/* Уникальный ID сессии */
-		$this->session_id = $this->data['session_id'] = md5(make_random_string());
-		$sql_ary['session_id'] = (string) $this->session_id;
+		
+		if (false === $session_id)
+		{
+			session_id(strtolower(make_random_string(32)));
+			$this->session_id = session_id();
+		}
+		else
+		{
+			$this->session_id = $session_id;
+		}
+		
+		$sql_ary['session_id'] = $this->data['session_id'] = $this->session_id;
 
 		/* Добавляем информацию о сессии в базу */
 		$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $this->db->build_array('INSERT', $sql_ary);
@@ -600,19 +569,32 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 		}
 
 		$this->data = array_merge($this->data, $sql_ary);
-
-		if (!$bot)
+		
+		if ($bot)
 		{
-			/* Устанавливаем куки */
-			$cookie_expire = $this->ctime + ($this->config['autologin_time'] ? 86400 * $this->config['autologin_time'] : 31536000);
-			$this->set_cookie('k', $this->cookie['k'], $cookie_expire);
-			$this->set_cookie('u', $this->cookie['u'], $cookie_expire);
-			$this->set_cookie('sid', $this->session_id, $cookie_expire);
-			unset($cookie_expire);
+			/* Обновление даты последнего визита бота */
+			register_shutdown_function([$this, 'user_update'], [
+				'user_session_time' => (int) $this->ctime,
+				'user_session_page' => (string) $this->request->url,
+				'user_last_visit'   => (int) $this->ctime,
+				'user_ip'           => (string) $this->ip
+			]);
 
-			/**
-			* Соль для форм
-			*/
+			return true;
+		}
+
+		$cookie_expire = $this->ctime + ($this->config['autologin_time'] ? 86400 * $this->config['autologin_time'] : 31536000);
+		$this->set_cookie('k', $this->cookie['k'], $cookie_expire);
+		$this->set_cookie('u', $this->cookie['u'], $cookie_expire);
+		
+		if (false === $session_id)
+		{
+			$this->set_cookie('sid', $this->session_id);
+		}
+
+		if ($this->data['user_id'] > 0)
+		{
+			/* Соль для форм */
 			$sql = '
 				SELECT
 					COUNT(*) AS sessions
@@ -630,72 +612,8 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 			{
 				$this->data['user_form_salt'] = make_random_string();
 				
-				$this->user_update(['user_form_salt' => (string) $this->data['user_form_salt']]);
+				register_shutdown_function([$this, 'user_update'], ['user_form_salt' => (string) $this->data['user_form_salt']]);
 			}
-		}
-		else
-		{
-			/**
-			* Обновляем дату последнего визита бота
-			*/
-			$this->user_update([
-				'user_session_time' => (int) $this->ctime,
-				'user_session_page' => (string) $this->request->url,
-				'user_last_visit'   => (int) $this->ctime,
-				'user_ip'           => (string) $this->ip
-			]);
-		}
-
-		return true;
-	}
-
-	/**
-	* Завершение сессии текущего пользователя
-	*/
-	public function session_end($new_session = true)
-	{
-		$sql = '
-			DELETE
-			FROM
-				' . SESSIONS_TABLE . '
-			WHERE
-				session_id = ' . $this->db->check_value($this->session_id) . '
-			AND
-				user_id = ' . $this->db->check_value($this->data['user_id']);
-		$this->db->query($sql);
-
-		if ($this->data['user_id'] > 0)
-		{
-			$this->user_update(['user_last_visit' => $this->ctime]);
-
-			if ($this->cookie['k'])
-			{
-				$sql = '
-					DELETE
-					FROM
-						' . SESSIONS_KEYS_TABLE . '
-					WHERE
-						user_id = ' . $this->db->check_value($this->data['user_id']) . '
-					AND
-						key_id = ' . $this->db->check_value(md5($this->cookie['k']));
-				$this->db->query($sql);
-			}
-		}
-
-		/* Трём куки */
-		$cookie_expire = $this->ctime - 31536000;
-		$this->set_cookie('k', '', $cookie_expire);
-		$this->set_cookie('u', '', $cookie_expire);
-		$this->set_cookie('sid', '', $cookie_expire);
-		unset($cookie_expire);
-		
-		$this->data = [];
-		$this->session_id = '';
-
-		if (false !== $new_session)
-		{
-			/* Создаём новую сессию для анонимного пользователя */
-			$this->session_create();
 		}
 
 		return true;
@@ -723,7 +641,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 	*/
 	public function set_admin()
 	{
-		$this->session_update(['session_admin' => 1]);
+		register_shutdown_function([$this, 'session_update'], ['session_admin' => 1]);
 	}
 
 	/**
@@ -731,13 +649,13 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 	*
 	* @param int $time Метка времени, до которой cookie будет действительна (0 - в течение сеанса)
 	*/
-	public function set_cookie($name, $data, $time)
+	public function set_cookie($name, $data, $time = 0)
 	{
-		$cookie_name   = rawurlencode($this->config['cookie_name'] . '_' . $name) . '=' . rawurlencode($data);
+		$cookie_name   = rawurlencode($name) . '=' . rawurlencode($data);
 		$cookie_expire = gmdate('D, d-M-Y H:i:s \\G\\M\\T', $time);
 		$cookie_domain = !$this->config['cookie_domain'] || $this->config['cookie_domain'] == 'localhost' || $this->config['cookie_domain'] == '127.0.0.1' ? '' : '; domain=' . $this->config['cookie_domain'];
 
-		header('Set-Cookie: ' . $cookie_name . ($cookie_expire ? '; expires=' . $cookie_expire : '') . '; path=' . $this->config['cookie_path'] . $cookie_domain . (!$this->config['cookie_secure'] ? '' : '; secure') . '; HttpOnly', false);
+		header('Set-Cookie: ' . $cookie_name . ($time ? '; expires=' . $cookie_expire : '') . '; path=' . $this->config['cookie_path'] . $cookie_domain . (!$this->config['cookie_secure'] ? '' : '; secure') . '; HttpOnly', false);
 	}
 
 	/**
@@ -750,7 +668,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 	{
 		$user_id = $user_id ?: $this->data['user_id'];
 		$user_ip = $user_ip ?: $this->ip;
-		$key = $key ?: ($this->cookie['k'] ? $this->cookie['k'] : false);
+		$key = $key ?: $this->cookie['k'] ?: false;
 
 		$key_id = make_random_string(16);
 
@@ -758,7 +676,7 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 			'key_id'          => (string) md5($key_id),
 			'openid_provider' => (string) $openid_provider,
 			'last_ip'         => (string) $this->ip,
-			'last_login'      => (int) $this->ctime
+			'last_login'      => (int) $this->ctime,
 		];
 
 		if ($key)
@@ -784,45 +702,148 @@ class session implements \ArrayAccess, \IteratorAggregate, \Countable
 		
 		return false;
 	}
+	
+	protected function check_for_bot()
+	{
+		$bots = $this->cache->obtain_bots();
 
+		/**
+		* Сравнение браузера бота с данными в базе
+		* Если что-то совпало, значит бот известен
+		*/
+		foreach ($bots as $row)
+		{
+			if ($row['bot_agent'] && preg_match('#' . str_replace('\*', '.*?', preg_quote($row['bot_agent'], '#')) . '#i', $this->browser))
+			{
+				return (int) $row['user_id'];
+			}
+		}
+
+		return false;
+	}
+	
+	/**
+	* Бот получает одну и ту же сессию
+	*/
+	protected function get_bot_data($bot_id)
+	{
+		$sql = '
+			SELECT
+				u.*,
+				s.*
+			FROM
+				' . USERS_TABLE . ' u
+			LEFT JOIN
+				' . SESSIONS_TABLE . ' s ON (s.user_id = u.user_id)
+			WHERE
+				u.user_id = ' . $this->db->check_value($bot_id);
+		$result = $this->db->query($sql);
+		$row = $this->db->fetchrow($result);
+		$this->db->freeresult($result);
+		$row['user_id'] = $bot_id;
+		
+		return $row;
+	}
+	
 	/**
 	* Стандартные установки гостя
 	*/
-	private function guest_defaults()
+	protected function get_guest_defaults()
 	{
-		$this->data['user_id'] = 0;
-		$this->data['user_access'] = '';
-		$this->data['user_active'] = 0;
-		$this->data['username'] = 'Guest';
+		return [
+			'user_id'     => 0,
+			'user_access' => '',
+			'user_active' => 0,
+			'username'    => 'Guest',
+		];
 	}
 
+	protected function get_guest_session($session_id = false)
+	{
+		$session_id = $session_id ?: $this->session_id;
+		
+		$sql = '
+			SELECT
+				*
+			FROM
+				' . SESSIONS_TABLE . '
+			WHERE
+				session_id = ' . $this->db->check_value($session_id) . '
+			AND
+				user_id = 0';
+		$result = $this->db->query($sql);
+		$row = $this->db->fetchrow($result);
+		$this->db->freeresult($result);
+
+		if (!empty($row))
+		{
+			return array_merge($row, $this->get_guest_defaults());
+		}
+		
+		return $row;
+	}
+	
+	protected function get_user_session($session_id = false)
+	{
+		$session = $session_id ?: $this->session_id;
+		
+		$sql = '
+			SELECT
+				s.*,
+				u.*
+			FROM
+				' . SESSIONS_TABLE . ' s
+			LEFT JOIN
+				' . USERS_TABLE . ' u ON (u.user_id = s.user_id)
+			WHERE
+				s.session_id = ' . $this->db->check_value($session_id);
+		$result = $this->db->query($sql);
+		$row = $this->db->fetchrow($result);
+		$this->db->freeresult($result);
+		
+		return $row;
+	}
+	
 	/**
 	* Устарела ли сессия
 	*/
-	private function is_session_expired()
+	protected function is_session_expired()
 	{
+		/* Не превышает ли время простоя время жизни сессии */
 		if (!$this->data['session_autologin'])
 		{
-			/**
-			* Если используется автовход, то проверяем включен ли он на сайте
-			* и не превышает ли максимальное время действия автовхода
-			*/
-			if ($this->data['session_time'] < $this->ctime - ($this->config['session_length'] + 60))
-			{
-				return true;
-			}
+			return $this->data['session_time'] < $this->ctime - ($this->config['session_length'] + 60);
 		}
-		elseif (!$this->config['autologin_allow'] || ($this->config['autologin_time'] && $this->data['session_time'] < $this->ctime - (86400 * $this->config['autologin_time']) + 60))
+		
+		/**
+		* Если используется автовход, то проверяем включен ли он на сайте
+		* и не превышает ли максимальное время действия автовхода
+		*/
+		if (!$this->config['autologin_allow'] || ($this->config['autologin_time'] && $this->data['session_time'] < $this->ctime - (86400 * $this->config['autologin_time']) + 60))
 		{
-			/**
-			* Иначе - проверяем не превышает ли время простоя время жизни сессии
-			*/
 			return true;
 		}
 		
 		return false;
 	}
 	
+	protected function is_session_params_valid()
+	{
+		/* Проверка в IP только первых двух чисел */
+		$ip_check = 2;
+
+		$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $ip_check));
+		$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $ip_check));
+
+		$s_browser = trim(strtolower(substr($this->data['session_browser'], 0, 149)));
+		$u_browser = trim(strtolower(substr($this->browser, 0, 149)));
+
+		$s_forwarded_for = substr($this->data['session_forwarded_for'], 0, 254);
+		$u_forwarded_for = substr($this->forwarded_for, 0, 254);
+		
+		return $s_ip === $u_ip && $s_browser === $u_browser && $s_forwarded_for === $u_forwarded_for;
+	}
+
 	/**
 	* Реализация интерфейса Countable
 	*/

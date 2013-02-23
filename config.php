@@ -37,6 +37,18 @@ $app = [
 	'file.cron.allowed' => 'cron_allowed',
 	'file.cron.running' => 'cron_running',
 	
+	/* Настройки сессий */
+	'session.config' => [
+		'name'            => 'sid',
+		'cookie_path'     => '/',
+		'cookie_domain'   => '',
+		'cookie_secure'   => false,
+		'cookie_httponly' => true,
+		'cookie_lifetime' => 0,
+		'referer_check'   => false,
+		'hash_function'   => 'sha1',
+	],
+	
 	/* Настройки подключения к поисковику sphinx */
 	'sphinx.host' => 'localhost',
 	'sphinx.port' => false,
