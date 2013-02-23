@@ -95,7 +95,7 @@ trait i18n
 	{
 		/* Дни */
 		$days = $time >= 86400 ? intval($time / 86400) : 0;
-		$days = $days > 0 ? "{$days} дн." : '';
+		$days = $days > 0 ? $this->plural($days, 'день;дня;дней') : '';
 		$time -= $time >= 86400 ? 86400 * $days : 0;
 		
 		if ($only_days)
@@ -105,12 +105,12 @@ trait i18n
 
 		/* Часы */
 		$hours = $time >= 3600 ? intval($time / 3600) : 0;
-		$hours = $hours > 0 ? "{$hours} ч." : '';
+		$hours = $hours > 0 ? $this->plural($hours, 'час;часа;часов') : '';
 		$time -= $time >= 3600 ? 3600 * $hours : 0;
 
 		/* Минуты */
 		$minutes = $time >= 60 ? intval($time / 60) : 0;
-		$minutes = $minutes > 0 ? "{$minutes} мин." : '';
+		$minutes = $minutes > 0 ? $this->plural($minutes, 'минуту;минуты;минут') : '';
 		$time -= $time >= 60 ? 60 * $minutes : 0;
 
 		if (!$days && !$hours && !$minutes && false !== $no_seconds)
