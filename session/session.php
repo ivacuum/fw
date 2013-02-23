@@ -618,6 +618,19 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 
 		return true;
 	}
+	
+	/**
+	* Завершение сессии посетителя
+	*/
+	public function session_end($new_session = true)
+	{
+		session_destroy();
+		
+		if ($new_session)
+		{
+			session_start();
+		}
+	}
 
 	/**
 	* Обновление данных сессии
