@@ -798,7 +798,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 	
 	protected function get_user_session($session_id = false)
 	{
-		$session = $session_id ?: $this->session_id;
+		$session_id = $session_id ?: $this->session_id;
 		
 		$sql = '
 			SELECT
