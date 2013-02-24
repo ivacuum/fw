@@ -148,7 +148,7 @@ class router
 
 			if ($row['page_url'] != '*')
 			{
-				$this->breadcrumbs(ilink($this->page_link[0]), $row['page_name'], $row['page_image']);
+				$this->breadcrumbs($row['page_name'], ilink($this->page_link[0]), $row['page_image']);
 			}
 		}
 		
@@ -202,7 +202,7 @@ class router
 			
 			if ($row['page_url'] != '*')
 			{
-				$this->breadcrumbs(ilink(implode('/', $this->page_link)), $row['page_name'], $row['page_image']);
+				$this->breadcrumbs($row['page_name'], ilink(implode('/', $this->page_link)), $row['page_image']);
 				
 				unset($this->params[$i]);
 			}
@@ -234,7 +234,7 @@ class router
 
 				if ($row['page_url'] != '*')
 				{
-					$this->breadcrumbs(ilink(implode('/', $this->page_link)), $row['page_name'], $row['page_image']);
+					$this->breadcrumbs($row['page_name'], ilink(implode('/', $this->page_link)), $row['page_image']);
 				}
 			}
 		}
