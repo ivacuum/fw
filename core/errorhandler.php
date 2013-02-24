@@ -219,12 +219,13 @@ class errorhandler
 		
 		$call_stack = '';
 		$text       = is_array($text) ? print_r($text, true) : $text;
-		$title      = sprintf('[%s] ', $app['request']->hostname);
 		
 		if (!$title)
 		{
-			$title .= defined('IN_SQL_ERROR') ? 'E_USER_ERROR_SQL' : 'E_USER_ERROR';
+			$title = defined('IN_SQL_ERROR') ? 'E_USER_ERROR_SQL' : 'E_USER_ERROR';
 		}
+		
+		$title = sprintf('[%s] %s', $app['request']->hostname, $title);
 		
 		if (function_exists('xdebug_print_function_stack'))
 		{
