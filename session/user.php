@@ -236,6 +236,8 @@ class user extends session
 	public function setup()
 	{
 		$this->load_language('general');
+		
+		return $this;
 	}
 
 	/**

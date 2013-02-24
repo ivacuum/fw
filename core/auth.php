@@ -83,6 +83,8 @@ class auth
 
 		/* Запоминаем права пользователя */
 		$this->_fill_acl($userdata['user_access']);
+		
+		return $this;
 	}
 
 	/**

@@ -65,11 +65,13 @@ class application implements \ArrayAccess
 
 		/* Пользователь */
 		$this['user'] = $this->share(function() use ($app) {
-			return new user($app['cache'], $app['config'], $app['db'], $app['request'], $app['session.config']);
+			return new (user($app['cache'], $app['config'], $app['db'], $app['request'], $app['session.config']))
+				->setup();
 		});
 		
 		$this['auth'] = $this->share(function() use ($app) {
-			return new auth($app['cache'], $app['db'], $app['user']);
+			return new (auth($app['cache'], $app['db'], $app['user']))
+				->init($app['user']->data);
 		});
 
 		/* Настройки сайта и движка */
