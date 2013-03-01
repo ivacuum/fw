@@ -11,7 +11,8 @@ $app = [
 	'acm.type' => 'memcache',
 	
 	/* Настройки аутентификации */
-	'auth.url' => '/',
+	'auth.signin_url'  => '/',
+	'auth.signout_url' => '/',
 	
 	/* Настройки кода подтверждения */
 	'captcha.fonts' => ['tremble.ttf'],

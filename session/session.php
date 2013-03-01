@@ -26,17 +26,21 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 	public $is_bot = false;
 	public $is_registered = false;
 	
+	protected $signin_url;
+	
 	protected $cache;
 	protected $config;
 	protected $db;
 	protected $request;
 	
-	function __construct($cache, $config, $db, $request, array $session_config = [])
+	function __construct($cache, $config, $db, $request, array $session_config = [], $signin_url)
 	{
 		$this->cache   = $cache;
 		$this->config  = $config;
 		$this->db      = $db;
 		$this->request = $request;
+		
+		$this->signin_url = $signin_url;
 		
 		/* Данные посетителя */
 		$this->browser       = $this->request->header('User-Agent');
@@ -143,13 +147,13 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 		{
 			/* Запрет просмотра страницы */
 			http_response_code(401);
-			trigger_error(sprintf($this->lang['NEED_LOGIN'], ilink(sprintf('%s?goto=%s', $app['auth.url'], $this->get_back_url()))));
+			trigger_error(sprintf($this->lang['NEED_LOGIN'], ilink(sprintf('%s?goto=%s', $this->signin_url, $this->get_back_url()))));
 		}
 		
 		if ($mode == 'redirect')
 		{
 			/* Перенаправление на форму авторизации */
-			$this->request->redirect(ilink(sprintf('%s?goto=%s', $app['auth.url'], $this->get_back_url())), $this->config['router_local_redirect']);
+			$this->request->redirect(ilink(sprintf('%s?goto=%s', $this->signin_url, $this->get_back_url())), $this->config['router_local_redirect']);
 		}
 	}
 
