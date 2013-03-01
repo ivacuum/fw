@@ -34,7 +34,7 @@ class tree
 	/**
 	* Обработка одного элемента массива
 	*/
-	public function process_node($row = array())
+	public function process_node($row = [])
 	{
 		if (!empty($row))
 		{
@@ -108,7 +108,7 @@ class tree
 	*/
 	protected function get_data()
 	{
-		return $this->return_as_tree ? array('children' => []) : '';
+		return $this->return_as_tree ? ['children' => []] : '';
 	}
 	
 	/**

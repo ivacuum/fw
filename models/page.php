@@ -167,7 +167,7 @@ class page
 	/**
 	* Возврат ссылки на обработчик
 	*/
-	public function get_handler_url($handler, array $params = array())
+	public function get_handler_url($handler, array $params = [])
 	{
 		if (0 === strpos($handler, '\\'))
 		{
@@ -236,7 +236,7 @@ class page
 	*
 	* /проекты/$0/задачи/$1.html => /проекты/www.ru/задачи/важные.html
 	*/
-	public function get_url_with_params($url, array $params = array())
+	public function get_url_with_params($url, array $params = [])
 	{
 		if (empty($params))
 		{

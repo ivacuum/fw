@@ -304,7 +304,7 @@ class filespec
 	* Возникла ошибка - необходимо передать её шаблонизатору
 	* и удалить загруженный файл
 	*/
-	public function trigger_error($errors = array())
+	public function trigger_error($errors = [])
 	{
 		global $app;
 		

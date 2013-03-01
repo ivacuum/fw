@@ -128,7 +128,7 @@ class auth
 
 		if (false !== $user_id)
 		{
-			$user_id = !is_array($user_id) ? $user_id = array((int) $user_id) : array_map('intval', $user_id);
+			$user_id = !is_array($user_id) ? $user_id = [(int) $user_id] : array_map('intval', $user_id);
 			$where_sql = ' WHERE ' . $this->db->in_set('user_id', $user_id);
 		}
 
@@ -239,7 +239,7 @@ class auth
 			$local_id = 0;
 		}
 
-		// Другая запись: acl_gets(array('a_', 'u_'), $local_id)
+		// Другая запись: acl_gets(['a_', 'u_'], $local_id)
 		if (is_array($args[0]))
 		{
 			$args = $args[0];
