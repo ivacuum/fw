@@ -10,6 +10,9 @@ $app = [
 	/* Настройки кэша */
 	'acm.type' => 'memcache',
 	
+	/* Настройки аутентификации */
+	'auth.url' => '/',
+	
 	/* Настройки кода подтверждения */
 	'captcha.fonts' => ['tremble.ttf'],
 	'captcha.type'  => 'gd',

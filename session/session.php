@@ -118,6 +118,41 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 		return true;
 	}
 	
+	public function get_back_url()
+	{
+		return urlencode("//{$this->request->hostname}{$this->request->url}");
+	}
+	
+	/**
+	* Проверка авторизации
+	*/
+	public function is_auth($mode = '')
+	{
+		if ($this->is_registered)
+		{
+			return true;
+		}
+		
+		if (!$mode)
+		{
+			/* Возврат результата проверки. Ручная обработка в вызывающем скрипте */
+			return $this->is_registered;
+		}
+
+		if ($mode == 'deny')
+		{
+			/* Запрет просмотра страницы */
+			http_response_code(401);
+			trigger_error(sprintf($this->lang['NEED_LOGIN'], ilink(sprintf('%s?goto=%s', $app['auth.url'], $this->get_back_url()))));
+		}
+		
+		if ($mode == 'redirect')
+		{
+			/* Перенаправление на форму авторизации */
+			$this->request->redirect(ilink(sprintf('%s?goto=%s', $app['auth.url'], $this->get_back_url())), $this->config['router_local_redirect']);
+		}
+	}
+
 	public function open($save_path, $name)
 	{
 		return true;

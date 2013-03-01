@@ -15,63 +15,6 @@ class user extends session
 {
 	use i18n;
 	
-	public function get_back_url()
-	{
-		return urlencode('//' . $this->request->hostname . $this->request->url);
-	}
-	
-	/**
-	* Проверка авторизации
-	*/
-	public function is_auth($mode = '')
-	{
-		if ($this->is_registered)
-		{
-			return true;
-		}
-
-		switch ($mode)
-		{
-			/**
-			* Запрет просмотра страницы
-			*/
-			case 'deny':
-			
-				http_response_code(401);
-				// \fw\core\errorhandler::log_mail('Unauthorized access to http://' . $this->request->hostname . $this->request->url . ' page', '401 Unauthorized');
-
-				if ($this->request->hostname == 'dev.ivacuum.ru')
-				{
-					trigger_error(sprintf($this->lang['NEED_LOGIN'], ilink(sprintf('/ucp/login.html?goto=%s', $this->get_back_url()))));
-				}
-				
-				trigger_error(sprintf($this->lang['NEED_LOGIN'], ilink(sprintf('http://ivacuum.ru/ucp/login.html?goto=%s', $this->get_back_url()))));
-
-			break;
-			/**
-			* Перенаправление на форму авторизации
-			*/
-			case 'redirect':
-			
-				if ($this->request->hostname == 'dev.ivacuum.ru')
-				{
-					$this->request->redirect(ilink(sprintf('/ucp/login.html?goto=%s', $this->get_back_url())), $this->config['router_local_redirect']);
-				}
-				
-				$this->request->redirect(ilink(sprintf('http://ivacuum.ru/ucp/login.html?goto=%s', $this->get_back_url())), $this->config['router_local_redirect']);
-			
-			break;
-			/**
-			* Возврат результата проверки. Ручная обработка в вызывающем скрипте
-			*/
-			default:
-
-				return $this->is_registered;
-
-			break;
-		}
-	}
-
 	/**
 	* Авторизация
 	*/
