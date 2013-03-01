@@ -37,6 +37,9 @@ $app = [
 	'file.cron.allowed' => 'cron_allowed',
 	'file.cron.running' => 'cron_running',
 	
+	/* Почтовые ящики */
+	'mail.error' => 'fw@ivacuum.ru',
+	
 	/* Настройки сессий */
 	'session.config' => [
 		'name'            => 'sid',

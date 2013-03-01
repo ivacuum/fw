@@ -38,3 +38,4 @@ $app['db']->_set_cache($app['cache'])
 $app['cache']->_set_config($app['config']);
 
 errorhandler::register();
+errorhandler::$mail = $app['mail.error'];

@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2013
 */
 
 namespace fw\core;
@@ -11,6 +11,8 @@ namespace fw\core;
 */
 class errorhandler
 {
+	public static $mail;
+	
 	public static function handle_error($type, $text, $file, $line)
 	{
 		global $app;
@@ -217,15 +219,14 @@ class errorhandler
 	{
 		global $app;
 		
-		$call_stack = '';
-		$text       = is_array($text) ? print_r($text, true) : $text;
-		
-		if (!$title)
+		if (!static::$mail)
 		{
-			$title = defined('IN_SQL_ERROR') ? 'E_USER_ERROR_SQL' : 'E_USER_ERROR';
+			return;
 		}
 		
-		$title = sprintf('[%s] %s', $app['request']->hostname, $title);
+		$call_stack = '';
+		$text       = is_array($text) ? print_r($text, true) : $text;
+		$title      = $app['request']->hostname . ($title ? ' ' . $title : '');
 		
 		if (function_exists('xdebug_print_function_stack'))
 		{
@@ -234,7 +235,7 @@ class errorhandler
 			$call_stack = str_replace('/srv/www/vhosts/', '', ob_get_clean());
 		}
 		
-		mail('vacuum@ivacuum.ru', $title, sprintf("%s\n%s%s\n%s\n%s", $text, $call_stack, print_r($app['user']->data, true), print_r($_SERVER, true), print_r($_REQUEST, true)), sprintf("From: fw@%s\r\n", gethostname()));
+		mail(static::$mail, $title, sprintf("%s\n%s%s\n%s\n%s", $text, $call_stack, print_r($app['user']->data, true), print_r($_SERVER, true), print_r($_REQUEST, true)), sprintf("From: fw@%s\r\n", gethostname()));
 	}
 
 	/**
