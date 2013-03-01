@@ -26,9 +26,6 @@ class page
 	public $url;
 	public $urls = [];
 	
-	protected $signin_url;
-	protected $signout_url;
-	
 	function __construct()
 	{
 	}
@@ -360,10 +357,11 @@ class page
 			'S_USERNAME'        => $this->user['username'],
 
 			/* Ссылки */
-			'U_INDEX'       => ilink(),
-			'U_THIS_PAGE'   => $this->user->get_back_url(),
-			'U_SIGNIN_URL'  => ilink($this->signin_url),
-			'U_SIGNOUT_URL' => ilink($this->signout_url),
+			'U_INDEX'     => ilink(),
+			'U_REGISTER'  => ilink($this->urls['_register']),
+			'U_THIS_PAGE' => $this->user->get_back_url(),
+			'U_SIGNIN'    => ilink($this->urls['_signin']),
+			'U_SIGNOUT'   => ilink($this->urls['_signout']),
 		]);
 
 		define('HEADER_PRINTED', true);
@@ -438,10 +436,11 @@ class page
 	/**
 	* Задание адресов входа и выхода с сайта (аутентификации)
 	*/
-	public function set_auth_urls($signin_url, $signout_url)
+	public function set_auth_urls($signin_url, $signout_url, $register_url)
 	{
-		$this->signin_url  = $signin_url;
-		$this->signout_url = $signout_url;
+		$this->urls['_register'] = $register_url;
+		$this->urls['_signin']   = $signin_url;
+		$this->urls['_signout']  = $signout_url;
 		
 		return $this;
 	}

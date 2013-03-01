@@ -115,7 +115,7 @@ class errorhandler
 					
 					$handler->_set_app($app)
 						->additional_tplengine_features()
-						->set_auth_urls($app['auth.signin_url'], $app['auth.signout_url'])
+						->set_auth_urls($app['auth.signin_url'], $app['auth.signout_url'], $app['auth.register_url'])
 						->set_site_menu();
 
 					/* Предустановки */
