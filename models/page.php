@@ -442,6 +442,8 @@ class page
 	{
 		$this->signin_url  = $signin_url;
 		$this->signout_url = $signout_url;
+		
+		return $this;
 	}
 
 	/**
