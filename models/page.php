@@ -316,12 +316,7 @@ class page
 		header('Expires: -1');
 		header('Pragma: no-cache');
 
-		/* Ссылки на вход-выход */
-		$u_login = $this->user->is_registered ? ilink($this->get_handler_url('ucp::logout')) : ilink($this->get_handler_url('ucp::login'));
-		
-		/**
-		* Выпадающий список языков
-		*/
+		/* Выпадающий список языков */
 		$languages = $this->cache->obtain_languages();
 		$sites     = $this->cache->obtain_sites();
 
@@ -349,26 +344,21 @@ class page
 			
 			if ($this->request->language == $ary['language_title'])
 			{
-				$language_ary = $ary;
+				$this->template->assign('S_LANGUAGE_DIRECTION', $ary['language_direction']);
 			}
 		}
 
 		$this->template->assign([
-			'LOGIN' => $this->user->is_registered ? sprintf($this->user->lang['LOGOUT'], $this->user['username']) : $this->user->lang['LOGIN'],
-
-			'S_BOT'                => $this->user->is_bot,
-			'S_ISP'                => $this->request->isp,
-			'S_LANGUAGE'           => $this->request->language,
-			'S_LANGUAGE_DIRECTION' => $language_ary['language_direction'],
-			'S_OPENID_PROVIDER'    => $this->user['openid_provider'],
-			'S_USER_REGISTERED'    => $this->user->is_registered,
-			'S_USERNAME'           => $this->user['username'],
+			'S_BOT'             => $this->user->is_bot,
+			'S_ISP'             => $this->request->isp,
+			'S_LANGUAGE'        => $this->request->language,
+			'S_OPENID_PROVIDER' => $this->user['openid_provider'],
+			'S_USER_REGISTERED' => $this->user->is_registered,
+			'S_USERNAME'        => $this->user['username'],
 
 			/* Ссылки */
 			'U_INDEX'     => ilink(),
-			'U_LOGIN'     => $u_login,
 			'U_THIS_PAGE' => $this->user->get_back_url(),
-			'U_REGISTER'  => ilink($this->get_handler_url('ucp::register'))
 		]);
 
 		define('HEADER_PRINTED', true);

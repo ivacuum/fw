@@ -13,7 +13,7 @@ class twig
 {
 	public $file;
 
-	protected $dirs = [];
+	protected $dirs;
 	protected $env;
 	protected $vars = [];
 
@@ -43,9 +43,7 @@ class twig
 	{
 		if (false !== strpos($loop_name, '.'))
 		{
-			/**
-			* Цикл в цикле
-			*/
+			/* Вложенный цикл */
 			$loops       = explode('.', $loop_name);
 			$loops_count = sizeof($loops) - 1;
 
@@ -57,12 +55,10 @@ class twig
 				$str = &$str[sizeof($str) - 1];
 			}
 
-			/* Вставка данных */
 			$str[$loops[$loops_count]][] = $vars_array;
 		}
 		else
 		{
-			/* Вставка данных */
 			$this->vars[$loop_name][] = $vars_array;
 		}
 
@@ -88,7 +84,7 @@ class twig
 
 		$len = sizeof($args);
 
-		if ($len % 2 != 0)
+		if ($len % 2 !== 0)
 		{
 			return false;
 		}
