@@ -137,14 +137,7 @@ class router
 				$handler_method = $row['handler_method'];
 			}
 			
-			if ($this->page != $this->config['router_directory_index'])
-			{
-				$this->page_link[] = $this->format ? sprintf('%s.%s', $this->page, $this->format) : $this->page;
-			}
-			else
-			{
-				$this->page_link[] = '';
-			}
+			$this->page_link[] = $this->page != $this->config['router_directory_index'] ? ($this->format ? sprintf('%s.%s', $this->page, $this->format) : $this->page) : '';
 
 			if ($row['page_url'] != '*')
 			{
@@ -280,11 +273,11 @@ class router
 	/**
 	* Загрузка модуля
 	*/
-	protected function load_handler($handler, $method, $params = array())
+	protected function load_handler($handler, $method, $params = [])
 	{
 		$class_name = 0 !== strpos($handler, '\\') ? $this->namespace . $handler : $handler;
 		
-		$this->handler = new $class_name;
+		$this->handler = new $class_name();
 		$this->method  = $method;
 		
 		if (!$this->load_handler_with_params($params))
@@ -298,7 +291,7 @@ class router
 	/**
 	* Загрузка модуля с параметрами
 	*/
- 	protected function load_handler_with_params($params = array())
+ 	protected function load_handler_with_params($params = [])
 	{
 		$concrete_method = sprintf('%s_%s', $this->method, $this->request->method);
 
@@ -312,7 +305,7 @@ class router
 				/**
 				* API-сайт должен отправлять соответствующие коды состояния HTTP
 				*/
-				if ($this->request->method == 'get' || !method_exists($this->handler, $this->method . '_get'))
+				if ($this->request->method == 'get' || !method_exists($this->handler, "{$this->method}_get"))
 				{
 					/* Not Implemented */
 					http_response_code(501);
@@ -376,10 +369,8 @@ class router
 			$this->call_with_format($this->method, $params);
 		}
 		
-		$this->handler->page_header();
-		$this->handler->page_footer();
-		
-		return true;
+		$this->handler->page_header()
+			->page_footer();
 	}
 	
 	/**
@@ -387,14 +378,16 @@ class router
 	*/
 	protected function call_with_format($method, $params)
 	{
-		if ($this->format)
+		if (!$this->format)
 		{
-			$method = sprintf('%s_%s', $method, $this->format);
-			
-			if (method_exists($this->handler, $method))
-			{
-				call_user_func_array([$this->handler, $method], $params);
-			}
+			return;
+		}
+		
+		$method = sprintf('%s_%s', $method, $this->format);
+		
+		if (method_exists($this->handler, $method))
+		{
+			call_user_func_array([$this->handler, $method], $params);
 		}
 	}
 	

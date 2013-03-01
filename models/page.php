@@ -308,7 +308,7 @@ class page
 	{
 		if (defined('HEADER_PRINTED'))
 		{
-			return;
+			return $this;
 		}
 		
 		/* Запрет кэширования страниц */
@@ -372,6 +372,8 @@ class page
 		]);
 
 		define('HEADER_PRINTED', true);
+		
+		return $this;
 	}
 
 	/**
