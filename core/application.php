@@ -65,7 +65,7 @@ class application implements \ArrayAccess
 
 		/* Пользователь */
 		$this['user'] = $this->share(function() use ($app) {
-			return (new user($app['cache'], $app['config'], $app['db'], $app['request'], $app['session.config'], $app['auth.signin_url']))
+			return (new user($app['cache'], $app['config'], $app['db'], $app['request'], $app['session.config'], $app['urls']['signin']))
 				->setup();
 		});
 		

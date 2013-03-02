@@ -10,11 +10,6 @@ $app = [
 	/* Настройки кэша */
 	'acm.type' => 'memcache',
 	
-	/* Настройки аутентификации */
-	'auth.register_url' => '/',
-	'auth.signin_url'   => '/',
-	'auth.signout_url'  => '/',
-	
 	/* Настройки кода подтверждения */
 	'captcha.fonts' => ['tremble.ttf'],
 	'captcha.type'  => 'gd',
@@ -61,6 +56,13 @@ $app = [
 	'sphinx.host' => 'localhost',
 	'sphinx.port' => false,
 	'sphinx.sock' => '/tmp/sphinx.sock',
+	
+	/* Ссылки */
+	'urls' => [
+		'register' => '/',
+		'signin'   => '/',
+		'singout'  => '/',
+	],
 	
 	/* Версии библиотек */
 	'version.geocoder' => '1.1.6',

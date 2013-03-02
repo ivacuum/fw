@@ -434,18 +434,6 @@ class page
 	}
 	
 	/**
-	* Задание адресов входа и выхода с сайта (аутентификации)
-	*/
-	public function set_auth_urls($signin_url, $signout_url, $register_url)
-	{
-		$this->urls['_register'] = $register_url;
-		$this->urls['_signin']   = $signin_url;
-		$this->urls['_signout']  = $signout_url;
-		
-		return $this;
-	}
-
-	/**
 	* Установка шаблона по умолчанию
 	* При ajax-запросах префикс становится ajax/
 	*
@@ -487,6 +475,20 @@ class page
 	public function set_page_data()
 	{
 		$this->template->assign('page', $this->data);
+		
+		return $this;
+	}
+
+	/**
+	* Задание заготовленных адресов
+	* Главным образом: входа, выхода и регистрации
+	*/
+	public function set_preconfigured_urls($urls)
+	{
+		foreach ($urls as $key => $value)
+		{
+			$this->urls["_{$key}"] = $value;
+		}
 		
 		return $this;
 	}

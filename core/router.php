@@ -342,7 +342,7 @@ class router
 			->additional_tplengine_features()
 			->load_translations()
 			->obtain_handlers_urls()
-			->set_auth_urls($this->app['auth.signin_url'], $this->app['auth.signout_url'], $this->app['auth.register_url'])
+			->set_preconfigured_urls($this->app['urls'])
 			->set_default_template()
 			->set_site_menu()
 			->set_page_data()
