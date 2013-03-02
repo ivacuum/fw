@@ -128,7 +128,7 @@ function ilink($url = '', $prefix = false)
 	*
 	* Если язык уже присутствует в ссылке, то пропускаем этот шаг
 	*/
-	if (($link == $app['config']['site_root_path'] && $prefix === false) || (false !== strpos($prefix, 'ivacuum.ru')))
+	if ($link == $app['config']['site_root_path'] && false === $prefix)
 	{
 		if (!$app['site_info']['default'] && (false === strpos($link . $url, "/{$app['site_info']['language']}/")))
 		{
