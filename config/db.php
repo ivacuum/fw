@@ -11,7 +11,6 @@ namespace fw\config;
 */
 class db extends config
 {
-	protected $hostname;
 	protected $language;
 	protected $site_id;
 	protected $site_vars;
@@ -25,7 +24,6 @@ class db extends config
 		$this->cache = $cache;
 		$this->db    = $db;
 		
-		$this->hostname = $site_info['domain'];
 		$this->language = $site_info['language'];
 		$this->site_id  = $site_info['id'];
 		$this->table    = $table ?: CONFIG_TABLE;
