@@ -172,6 +172,29 @@ class service
 	}
 
 	/**
+	* Список доступных групп
+	*/
+	public function obtain_groups()
+	{
+		if (false === $groups = $this->driver->get_shared('groups'))
+		{
+			$sql = '
+				SELECT
+					*
+				FROM
+					' . GROUPS_TABLE . '
+				ORDER BY
+					group_sort ASC';
+			$this->db->query($sql);
+			$groups = $this->db->fetchall(false, 'group_id');
+			$this->db->freeresult();
+			$this->driver->set_shared('groups', $groups);
+		}
+
+		return $groups;
+	}
+
+	/**
 	* Список динамических страниц
 	*/
 	public function obtain_handlers_urls($site_id)
@@ -258,29 +281,6 @@ class service
 		}
 
 		return $stats;
-	}
-
-	/**
-	* Список доступных групп
-	*/
-	public function obtain_groups()
-	{
-		if (false === $groups = $this->driver->get_shared('groups'))
-		{
-			$sql = '
-				SELECT
-					*
-				FROM
-					' . GROUPS_TABLE . '
-				ORDER BY
-					group_sort ASC';
-			$this->db->query($sql);
-			$groups = $this->db->fetchall(false, 'group_id');
-			$this->db->freeresult();
-			$this->driver->set_shared('groups', $groups);
-		}
-
-		return $groups;
 	}
 
 	/**
@@ -467,6 +467,58 @@ class service
 		}
 
 		return $ranks;
+	}
+
+	/**
+	* Список алиасов сайта
+	* TODO
+	*/
+	public function obtain_site_aliases($hostname)
+	{
+		if (!$hostname)
+		{
+			return false;
+		}
+		
+		if (false === $aliases = $this->driver->get('aliases'))
+		{
+			$sql = '
+				SELECT
+					*
+				FROM
+					' . SITES_TABLE . '
+				ORDER BY
+					site_id ASC';
+			$this->db->query($sql);
+			
+			while ($row = $this->db->fetchrow())
+			{
+				if ($row['site_default'])
+				{
+					$aliases[$row['site_url']] = $row['site_id'];
+				}
+				
+				$aliases["{$row['site_url']}_{$row['site_language']}"] = $row['site_id'];
+				
+				if (!empty($row['site_aliases']))
+				{
+					foreach (explode(' ', $row['site_aliases']) as $key => $alias)
+					{
+						if ($row['site_default'])
+						{
+							$aliases[$alias] = $row['site_id'];
+						}
+						
+						$aliases["{$alias}_{$row['site_language']}"] = $row['site_id'];
+					}
+				}
+			}
+			
+			$this->db->freeresult();
+			$this->driver->set('aliases', $aliases);
+		}
+		
+		return $hostnames;
 	}
 
 	/**
