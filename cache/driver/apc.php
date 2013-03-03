@@ -1,7 +1,7 @@
 <?php
 /** 
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2013
 */
 
 namespace fw\cache\driver;
@@ -28,7 +28,7 @@ class apc extends memory
 	*/
 	public function _delete($var)
 	{
-		return apc_delete($this->prefix . $var);
+		return apc_delete($var);
 	}
 	
 	/**
@@ -36,7 +36,7 @@ class apc extends memory
 	*/
 	public function _get($var)
 	{
-		return apc_fetch($this->prefix . $var);
+		return apc_fetch($var);
 	}
 	
 	/**
@@ -44,6 +44,6 @@ class apc extends memory
 	*/
 	public function _set($var, $data, $ttl = 2592000)
 	{
-		return apc_store($this->prefix . $var, $data, $ttl);
+		return apc_store($var, $data, $ttl);
 	}
 }

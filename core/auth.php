@@ -37,7 +37,7 @@ class auth
 	{
 		$this->acl = $this->auth = $this->options = [];
 
-		if (false === $this->options = $this->cache->_get('src_auth_options'))
+		if (false === $this->options = $this->cache->get_shared('auth_options'))
 		// if (false === false)
 		{
 			$sql = '
@@ -71,7 +71,7 @@ class auth
 
 			$this->db->freeresult($result);
 			// $this->profiler->log($this->options);
-			$this->cache->_set('src_auth_options', $this->options);
+			$this->cache->set_shared('auth_options', $this->options);
 		}
 
 		if ($userdata['user_id'] > 0 && !$userdata['user_access'])
@@ -95,7 +95,7 @@ class auth
 		/**
 		* Обновление кэша ролей
 		*/
-		$this->cache->_delete('src_role_cache');
+		$this->cache->delete_shared('role_cache');
 
 		$sql = '
 			SELECT
@@ -119,7 +119,7 @@ class auth
 			$this->role_cache[$role_id] = serialize($role_options);
 		}
 
-		$this->cache->_set('src_role_cache', $this->role_cache);
+		$this->cache->set_shared('role_cache', $this->role_cache);
 
 		/**
 		* Обнуление кэша прав пользователей
@@ -737,7 +737,7 @@ class auth
 	*/
 	private function get_user_acl($user_id)
 	{
-		if (false === $role_cache = $this->cache->_get('src_role_cache'))
+		if (false === $role_cache = $this->cache->get_shared('role_cache'))
 		// if (false === false)
 		{
 			$role_cache = [];
@@ -763,7 +763,7 @@ class auth
 				$role_cache[$role_id] = serialize($role_options);
 			}
 
-			$this->cache->_set('src_role_cache', $role_cache);
+			$this->cache->set_shared('role_cache', $role_cache);
 		}
 
 		$ary = [];
@@ -850,7 +850,7 @@ class auth
 	*/
 	function get_all()
 	{
-		if (false === $this->options = $this->cache->_get('src_auth_options'))
+		if (false === $this->options = $this->cache->get_shared('auth_options'))
 		{
 			/**
 			* Все возможные привилегии
@@ -877,10 +877,10 @@ class auth
 			$this->db->freeresult();
 
 			/* Записываем в кэш */
-			$this->cache->_set('src_auth_options', $this->options);
+			$this->cache->set_shared('auth_options', $this->options);
 		}
 
-		if (false === $this->roles = $this->cache->_get('src_auth_roles'))
+		if (false === $this->roles = $this->cache->get_shared('auth_roles'))
 		{
 			/**
 			* Все возможные роли
@@ -904,7 +904,7 @@ class auth
 			$this->db->freeresult();
 
 			/* Записываем в кэш */
-			$this->cache->_set('src_auth_roles', $this->roles);
+			$this->cache->set_shared('auth_roles', $this->roles);
 		}
 	}
 

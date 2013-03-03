@@ -228,13 +228,8 @@ trait i18n
 		/* Общая локализация */
 		$lang = array_merge_recursive($lang, $this->get_i18n_data(0, $language, $lang_file, $force_update));
 		
-		if (0 !== strpos($lang_file, 'fw_'))
-		{
-			/* Локализация проекта */
-			$site_info = $this->cache->get_site_info_by_url_lang($this->request->hostname, $language);
-			
-			$lang = array_merge_recursive($lang, $this->get_i18n_data($site_info['id'], $language, $lang_file, $force_update));
-		}
+		/* Локализация проекта */
+		$lang = array_merge_recursive($lang, $this->get_i18n_data($this->cache->get_site_info_by_url_lang($this->request->hostname, $language)['id'], $language, $lang_file, $force_update));
 		
 		if ($language == $this->request->language)
 		{
@@ -354,10 +349,11 @@ trait i18n
 	*/
 	protected function get_i18n_data($site_id, $language, $lang_file, $force_update = false)
 	{
-		$prefix = 0 === $site_id ? 'src' : $this->request->hostname;
-		$cache_entry = sprintf('%s_i18n_%s_%s', $prefix, $lang_file, $language);
+		$cache_entry = "i18n_{$lang_file}_{$language}";
 		
-		if ($force_update || (false === $lang = $this->cache->_get($cache_entry)))
+		if ($force_update ||
+			(0 === $site_id && (false === $lang = $this->cache->get_shared($cache_entry))) ||
+			(0 !== $site_id && (false === $lang = $this->cache->get($cache_entry))))
 		{
 			$sql = '
 				SELECT
@@ -389,7 +385,15 @@ trait i18n
 			}
 
 			$this->db->freeresult();
-			$this->cache->_set($cache_entry, $lang);
+			
+			if (0 === $site_id)
+			{
+				$this->cache->set_shared($cache_entry, $lang);
+			}
+			else
+			{
+				$this->cache->set($cache_entry, $lang);
+			}
 		}
 		
 		return $lang;

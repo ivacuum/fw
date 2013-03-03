@@ -57,10 +57,10 @@ class application implements \ArrayAccess
 			
 			if (file_exists("{$app['dir.app']}/cache/service.php"))
 			{
-				return new \app\cache\service($app['db'], new $class($app['db'], $app['acm.prefix']));
+				return new \app\cache\service($app['db'], new $class($app['db'], $app['acm.prefix'], $app['acm.shared_prefix']));
 			}
 			
-			return new \fw\cache\service($app['db'], new $class($app['db'], $app['acm.prefix']));
+			return new \fw\cache\service($app['db'], new $class($app['db'], $app['acm.prefix'], $app['acm.shared_prefix']));
 		});
 
 		/* Пользователь */

@@ -8,7 +8,9 @@ namespace fw;
 
 $app = [
 	/* Настройки кэша */
-	'acm.type' => 'memcache',
+	'acm.prefix'        => '',
+	'acm.shared_prefix' => '',
+	'acm.type'          => 'null',
 	
 	/* Настройки кода подтверждения */
 	'captcha.fonts' => ['tremble.ttf'],

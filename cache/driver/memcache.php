@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2013
 */
 
 namespace fw\cache\driver;
@@ -16,11 +16,11 @@ class memcache extends memory
 	private $memcache;
 	private $flags = 0;
 
-	function __construct($prefix = '')
+	function __construct($prefix = '', $shared_prefix = '')
 	{
-		parent::__construct($prefix);
+		parent::__construct($prefix, $shared_prefix);
 
-		$this->memcache = new \Memcache;
+		$this->memcache = new \Memcache();
 		$this->memcache->pconnect('unix:///var/run/memcached/memcached.lock', 0);
 	}
 

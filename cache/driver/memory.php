@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2013
 */
 
 namespace fw\cache\driver;
@@ -15,16 +15,17 @@ class memory
 	public $sql_row_pointer = [];
 
 	protected $prefix;
+	protected $shared_prefix;
 	
 	private $data = [];
 	private $is_modified = false;
 	
 	private $db;
 	
-	function __construct($db, $prefix = '')
+	function __construct($db, $prefix = '', $shared_prefix = '')
 	{
 		$this->db = $db;
-		$this->set_prefix($prefix);
+		$this->set_prefixes($prefix, $shared_prefix);
 		
 		if (!isset($this->extension) || !extension_loaded($this->extension))
 		{
@@ -32,14 +33,6 @@ class memory
 		}
 	}
 	
-	/**
-	* Удаление записи из кэша
-	*/
-	public function clean($var)
-	{
-		$this->delete($this->prefix . $var);
-	}
-
 	/**
 	* Удаление записи из кэша
 	*/
@@ -90,6 +83,14 @@ class memory
 	}
 
 	/**
+	* Удаление записи из общего для нескольких проектов кэша
+	*/
+	public function delete_shared($var)
+	{
+		$this->_delete($this->shared_prefix . $var);
+	}
+
+	/**
 	* Получение данных из кэша
 	*/
 	public function get($var)
@@ -105,6 +106,14 @@ class memory
 		}
 		
 		return $this->_get($this->prefix . $var);
+	}
+
+	/**
+	* Получение данных из общего для нескольких проектов кэша
+	*/
+	public function get_shared($var)
+	{
+		return $this->_get($this->shared_prefix . $var);
 	}
 
 	/**
@@ -150,11 +159,20 @@ class memory
 	}
 
 	/**
-	* Установка префикса записей
+	* Установка префиксов записей
 	*/
-	public function set_prefix($prefix = '')
+	public function set_prefixes($prefix = '', $shared_prefix = '')
 	{
-		$this->prefix = $prefix ? "{$prefix}_" : '';
+		$this->prefix        = $prefix ? "{$prefix}_" : '';
+		$this->shared_prefix = $shared_prefix ? "{$shared_prefix}_" : '';
+	}
+
+	/**
+	* Запись данных в общий для нескольких проектов кэш
+	*/
+	public function set_shared($var, $data, $ttl = 2592000)
+	{
+		$this->_set($this->shared_prefix . $var, $data, $ttl);
 	}
 
 	/**

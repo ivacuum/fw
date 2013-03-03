@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2013
 */
 
 namespace fw\cache\driver;
@@ -12,10 +12,6 @@ class null
 	{
 	}
 	
-	public function clean($var, $table = '')
-	{
-	}
-
 	public function delete($var, $table = '')
 	{
 	}
@@ -42,7 +38,7 @@ class null
 	{
 	}
 	
-	public function set_prefix($prefix = '')
+	public function set_prefixes($prefix = '', $shared_prefix = '')
 	{
 	}
 

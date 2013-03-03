@@ -1,7 +1,7 @@
 <?php
 /** 
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2013
 */
 
 namespace fw\cache\driver;
@@ -15,6 +15,7 @@ class file
 	public $sql_row_pointer = [];
 
 	protected $prefix;
+	protected $shared_prefix;
 
 	private $cache_dir;
 	private $data = [];
@@ -23,10 +24,10 @@ class file
 	
 	private $db;
 	
-	function __construct($db, $prefix = '')
+	function __construct($db, $prefix = '', $shared_prefix = '')
 	{
 		$this->db = $db;
-		$this->set_prefix($prefix);
+		$this->set_prefixes($prefix, $shared_prefix);
 		$this->cache_dir = SITE_DIR . 'cache/';
 	}
 	
@@ -227,14 +228,6 @@ class file
 	/**
 	* Удаление записи из кэша
 	*/
-	public function clean($var)
-	{
-		$this->delete($this->prefix . $var);
-	}
-
-	/**
-	* Удаление записи из кэша
-	*/
 	public function delete($var, $table = '')
 	{
 		if ($var == 'sql' && !empty($table))
@@ -389,11 +382,12 @@ class file
 	}
 	
 	/**
-	* Установка префикса записей
+	* Установка префиксов записей
 	*/
-	public function set_prefix($prefix = '')
+	public function set_prefixes($prefix = '', $shared_prefix = '')
 	{
-		$this->prefix = $prefix ? "{$prefix}_" : '';
+		$this->prefix        = $prefix ? "{$prefix}_" : '';
+		$this->shared_prefix = $shared_prefix ? $shared_prefix : '';
 	}
 
 	/**

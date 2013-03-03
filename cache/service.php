@@ -57,14 +57,6 @@ class service
 		$this->sql_row_pointer =& $this->driver->sql_row_pointer;
 	}
 
-	/**
-	* Установка префикса записей
-	*/
-	public function set_prefix($prefix)
-	{
-		$this->driver->set_prefix($prefix);
-	}
-	
 	public function sql_save($query, &$query_result, $ttl)
 	{
 		$this->driver->sql_save($query, $query_result, $ttl);
@@ -160,7 +152,7 @@ class service
 	*/
 	public function obtain_bots()
 	{
-		if (false === $bots = $this->driver->_get('src_bots'))
+		if (false === $bots = $this->driver->get_shared('bots'))
 		{
 			$sql = '
 				SELECT
@@ -173,7 +165,7 @@ class service
 			$result = $this->db->query($sql);
 			$bots = $this->db->fetchall($result);
 			$this->db->freeresult($result);
-			$this->driver->_set('src_bots', $bots);
+			$this->driver->set_shared('bots', $bots);
 		}
 
 		return $bots;
@@ -235,9 +227,7 @@ class service
 		{
 			$stats = [];
 
-			/**
-			* Количество изображений, загруженных за последние сутки
-			*/
+			/* Количество изображений, загруженных за последние сутки */
 			$sql = '
 				SELECT
 					COUNT(*) as today_images
@@ -250,9 +240,7 @@ class service
 			$this->db->freeresult();
 			$stats += $row;
 
-			/**
-			* Общая статистика
-			*/
+			/* Общая статистика */
 			$sql = '
 				SELECT
 					COUNT(*) AS total_images,
@@ -277,7 +265,7 @@ class service
 	*/
 	public function obtain_groups()
 	{
-		if (false === $groups = $this->driver->_get('src_groups'))
+		if (false === $groups = $this->driver->get_shared('groups'))
 		{
 			$sql = '
 				SELECT
@@ -289,7 +277,7 @@ class service
 			$this->db->query($sql);
 			$groups = $this->db->fetchall(false, 'group_id');
 			$this->db->freeresult();
-			$this->driver->_set('src_groups', $groups);
+			$this->driver->set_shared('groups', $groups);
 		}
 
 		return $groups;
@@ -300,7 +288,7 @@ class service
 	*/
 	public function obtain_languages($force_reload = false)
 	{
-		if ((false === $languages = $this->driver->_get('src_languages')) || $force_reload)
+		if ($force_reload || (false === $languages = $this->driver->get_shared('languages')))
 		{
 			$sql = '
 				SELECT
@@ -312,7 +300,7 @@ class service
 			$result = $this->db->query($sql);
 			$languages = $this->db->fetchall($result, 'language_id');
 			$this->db->freeresult($result);
-			$this->driver->_set('src_languages', $languages);
+			$this->driver->set_shared('languages', $languages);
 		}
 
 		return $languages;
@@ -465,7 +453,7 @@ class service
 	*/
 	public function obtain_ranks()
 	{
-		if (false === $ranks = $this->driver->_get('src_ranks'))
+		if (false === $ranks = $this->driver->get_shared('ranks'))
 		{
 			$sql = '
 				SELECT
@@ -475,7 +463,7 @@ class service
 			$result = $this->db->query($sql);
 			$ranks = $this->db->fetchall($result, 'rank_id');
 			$this->db->freeresult($result);
-			$this->driver->_set('src_ranks', $ranks);
+			$this->driver->set_shared('ranks', $ranks);
 		}
 
 		return $ranks;
@@ -488,7 +476,7 @@ class service
 	{
 		static $sites;
 		
-		if (empty($sites) && (false === $sites = $this->driver->_get('src_sites')))
+		if (empty($sites) && (false === $sites = $this->driver->get_shared('sites')))
 		{
 			$sql = '
 				SELECT
@@ -501,7 +489,7 @@ class service
 			$this->db->query($sql);
 			$sites = $this->db->fetchall();
 			$this->db->freeresult();
-			$this->driver->_set('src_sites', $sites);
+			$this->driver->set_shared('sites', $sites);
 		}
 
 		return $sites;

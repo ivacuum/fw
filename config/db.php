@@ -60,7 +60,7 @@ class db extends config
 		{
 			/* Настройки текущего сайта */
 			unset($this->config[$key]);
-			$this->cache->_delete(sprintf('%s_config_%s', $this->hostname, $this->language));
+			$this->cache->delete("config_{$this->language}");
 		}
 		elseif ($site_id === 0)
 		{
@@ -70,7 +70,7 @@ class db extends config
 				unset($this->config[$key]);
 			}
 			
-			$this->cache->_delete('src_config');
+			$this->cache->delete_shared('config');
 		}
 		elseif ($site_id > 0 && $site_id !== $this->site_id)
 		{
@@ -119,7 +119,7 @@ class db extends config
 		{
 			/* Настройки сайта */
 			$this->config[$key] += $increment;
-			$this->cache->_delete(sprintf('%s_config_%s', $this->hostname, $this->language));
+			$this->cache->delete("config_{$this->language}");
 		}
 		elseif ($site_id === 0)
 		{
@@ -133,7 +133,7 @@ class db extends config
 				$this->config[$key] += $increment;
 			}
 			
-			$this->cache->_delete('src_config');
+			$this->cache->delete_shared('config');
 		}
 	}
 
@@ -197,7 +197,7 @@ class db extends config
 			/* Настройки текущего сайта */
 			$this->config[$key] = $new_value;
 			$this->site_vars[$key] = true;
-			$this->cache->_delete(sprintf('%s_config_%s', $this->hostname, $this->language));
+			$this->cache->delete("config_{$this->language}");
 		}
 		elseif ($site_id === 0)
 		{
@@ -211,7 +211,7 @@ class db extends config
 				$this->config[$key] = $new_value;
 			}
 			
-			$this->cache->_delete('src_config');
+			$this->cache->delete_shared('config');
 		}
 		elseif ($site_id > 0 && $site_id !== $this->site_id)
 		{
@@ -229,9 +229,10 @@ class db extends config
 	*/
 	private function load_config($site_id)
 	{
-		$cache_entry = 0 === $site_id ? 'src_config' : sprintf('%s_config_%s', $this->hostname, $this->language);
+		$cache_entry = 0 === $site_id ? 'config' : "config_{$this->language}";
 		
-		if (false === $config = $this->cache->_get($cache_entry))
+		if ((0 === $site_id && false === $config = $this->cache->get_shared($cache_entry)) ||
+			(0 !== $site_id && false === $config = $this->cache->get($cache_entry)))
 		{
 			$sql = '
 				SELECT
@@ -250,7 +251,15 @@ class db extends config
 			}
 
 			$this->db->freeresult();
-			$this->cache->_set($cache_entry, $config);
+			
+			if (0 === $site_id)
+			{
+				$this->cache->set_shared($cache_entry, $config);
+			}
+			else
+			{
+				$this->cache->set($cache_entry, $config);
+			}
 		}
 		
 		if ($site_id)
