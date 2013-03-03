@@ -211,7 +211,7 @@ trait i18n
 		$lang = array_merge_recursive($lang, $this->get_i18n_data(0, $language, $lang_file, $force_update));
 		
 		/* Локализация проекта */
-		$lang = array_merge_recursive($lang, $this->get_i18n_data($this->cache->get_site_info_by_url_lang($this->request->hostname, $language)['id'], $language, $lang_file, $force_update));
+		$lang = array_merge_recursive($lang, $this->get_i18n_data($this->cache->get_site_info_by_url_lang($this->request->server_name, $language)['id'], $language, $lang_file, $force_update));
 		
 		if ($language == $this->request->language)
 		{

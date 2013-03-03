@@ -322,7 +322,7 @@ class page
 
 		foreach ($sites as $row)
 		{
-			if ($this->request->hostname != $row['site_url'])
+			if ($this->request->server_name != $row['site_url'])
 			{
 				continue;
 			}
