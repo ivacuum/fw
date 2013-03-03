@@ -92,6 +92,8 @@ class application implements \ArrayAccess
 			}
 			
 			$app['request']->set_language($site_info['language']);
+			$app['request']->set_server_name($site_info['domain']);
+			
 			setlocale(LC_ALL, $site_info['locale']);
 			
 			return $site_info;

@@ -25,6 +25,7 @@ class request
 	public $isp;
 	public $language;
 	public $method;
+	public $server_name;
 	public $url;
 	
 	protected $local_redirect_from;
@@ -223,6 +224,15 @@ class request
 	public function set_language($language)
 	{
 		$this->language = $language;
+	}
+	
+	/**
+	* Главное доменное имя сайта
+	* Устанавливается во время определения обслуживаемого сайта
+	*/
+	public function set_server_name($server_name)
+	{
+		$this->server_name = $server_name;
 	}
 	
 	/**
