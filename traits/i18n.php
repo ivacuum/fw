@@ -195,24 +195,6 @@ trait i18n
 	}
 	
 	/**
-	* Доступен ли сайт в выбранной локализации
-	*/
-	public function language_exists($language)
-	{
-		$sites = $this->cache->obtain_sites();
-		
-		foreach ($sites as $row)
-		{
-			if ($this->request->hostname == $row['site_url'] && $language == $row['site_language'])
-			{
-				return true;
-			}
-		}
-		
-		return false;
-	}
-
-	/**
 	* Загрузка языковых файлов из базы
 	*
 	* @param	string	$lang_file		Имя файла для загрузки
