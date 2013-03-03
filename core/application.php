@@ -22,7 +22,7 @@ class application implements \ArrayAccess
 {
 	use constants;
 	
-	const VERSION = '1.0.0';
+	const VERSION = '1.0.1-dev';
 	
 	private $values;
 	
@@ -44,8 +44,8 @@ class application implements \ArrayAccess
 			return new twig([$app['dir.templates.app'], $app['dir.templates.fw']], $app['dir.templates.cache']);
 		});
 		
-		$this['request'] = $this->share(function() {
-			return new request();
+		$this['request'] = $this->share(function() use ($app) {
+			return new request($app['request.local_redirect.from'], $app['request.local_redirect.to']);
 		});
 		
 		$this['db'] = $this->share(function() use ($app) {

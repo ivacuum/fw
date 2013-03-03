@@ -27,6 +27,9 @@ class request
 	public $method;
 	public $url;
 	
+	protected $local_redirect_from;
+	protected $local_redirect_to;
+	
 	private $globals = [
 		self::GET     => '_GET',
 		self::POST    => '_POST',
@@ -35,7 +38,7 @@ class request
 		self::SERVER  => '_SERVER'
 	];
 	
-	function __construct()
+	function __construct($local_redirect_from = '', $local_redirect_to = '')
 	{
 		$this->code      = http_response_code();
 		$this->hostname  = $this->get_hostname();
@@ -44,6 +47,9 @@ class request
 		$this->isp       = $this->header('Provider', 'internet');
 		$this->method    = strtolower($this->server('REQUEST_METHOD', 'get'));
 		$this->url       = $this->get_requested_url();
+		
+		$this->local_redirect_from = $local_redirect_from;
+		$this->local_redirect_to   = $local_redirect_to;
 		
 		/* По умолчанию при использовании метода PUT данные не попадают в $_REQUEST */
 		if ($this->method == 'put')
@@ -172,9 +178,9 @@ class request
 		* Если пользователь из локальной сети,
 		* то перенаправлять его следует на локальный домен
 		*/
-		if ($try_local_redirect && $this->isp == 'local')
+		if ($try_local_redirect && $this->isp == 'local' && $this->local_redirect_from && $this->local_redirect_to)
 		{
-			$url = str_replace(['ivacuum.ru/', 't.local.ivacuum.ru/'], ['local.ivacuum.ru/', 't.ivacuum.ru/'], $url);
+			$url = str_replace($this->local_redirect_from, $this->local_redirect_to, $url);
 		}
 	
 		if ($status_code != 302)

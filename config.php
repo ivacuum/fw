@@ -40,6 +40,10 @@ $app = [
 	/* Почтовые ящики */
 	'mail.error' => 'fw@ivacuum.ru',
 	
+	/* Замена доменов на их локальные варианты */
+	'request.local_redirect.from' => '',
+	'request.local_redirect.to'   => '',
+	
 	/* Настройки сессий */
 	'session.config' => [
 		'name'            => 'sid',
