@@ -38,10 +38,6 @@ class null
 	{
 	}
 	
-	public function set_prefixes($prefix = '', $shared_prefix = '')
-	{
-	}
-
 	public function sql_exists($query_id)
 	{
 		return false;

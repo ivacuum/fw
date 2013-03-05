@@ -387,7 +387,7 @@ class file
 	public function set_prefixes($prefix = '', $shared_prefix = '')
 	{
 		$this->prefix        = $prefix ? "{$prefix}_" : '';
-		$this->shared_prefix = $shared_prefix ? $shared_prefix : '';
+		$this->shared_prefix = $shared_prefix ? "{$shared_prefix}_" : '';
 	}
 
 	/**
