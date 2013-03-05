@@ -16,9 +16,9 @@ class memcache extends memory
 	private $memcache;
 	private $flags = 0;
 
-	function __construct($prefix = '', $shared_prefix = '')
+	function __construct($db, $prefix = '', $shared_prefix = '')
 	{
-		parent::__construct($prefix, $shared_prefix);
+		parent::__construct($db, $prefix, $shared_prefix);
 
 		$this->memcache = new \Memcache();
 		$this->memcache->pconnect('unix:///var/run/memcached/memcached.lock', 0);
