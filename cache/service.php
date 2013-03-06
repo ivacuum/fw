@@ -242,6 +242,53 @@ class service
 	}
 	
 	/**
+	* Список обслуживаемых сайтов
+	* С алиасами и локализациями
+	*/
+	public function obtain_hostnames()
+	{
+		if (false === $hostnames = $this->driver->get_shared('hostnames'))
+		{
+			$sql = '
+				SELECT
+					*
+				FROM
+					' . SITES_TABLE . '
+				ORDER BY
+					site_id ASC';
+			$this->db->query($sql);
+			
+			while ($row = $this->db->fetchrow())
+			{
+				if ($row['site_default'])
+				{
+					$hostnames[$row['site_url']] = $row['site_id'];
+				}
+				
+				$hostnames["{$row['site_url']}_{$row['site_language']}"] = $row['site_id'];
+				
+				if (!empty($row['site_aliases']))
+				{
+					foreach (explode(' ', $row['site_aliases']) as $key => $hostname)
+					{
+						if ($row['site_default'])
+						{
+							$hostnames[$hostname] = $row['site_id'];
+						}
+						
+						$hostnames["{$hostname}_{$row['site_language']}"] = $row['site_id'];
+					}
+				}
+			}
+			
+			$this->db->freeresult();
+			$this->driver->set_shared('hostnames', $hostnames);
+		}
+		
+		return $hostnames;
+	}
+
+	/**
 	* Статистика по изображениям в галерее
 	*/
 	public function obtain_image_stats()
@@ -467,58 +514,6 @@ class service
 		}
 
 		return $ranks;
-	}
-
-	/**
-	* Список алиасов сайта
-	* TODO
-	*/
-	public function obtain_site_aliases($hostname)
-	{
-		if (!$hostname)
-		{
-			return false;
-		}
-		
-		if (false === $aliases = $this->driver->get('aliases'))
-		{
-			$sql = '
-				SELECT
-					*
-				FROM
-					' . SITES_TABLE . '
-				ORDER BY
-					site_id ASC';
-			$this->db->query($sql);
-			
-			while ($row = $this->db->fetchrow())
-			{
-				if ($row['site_default'])
-				{
-					$aliases[$row['site_url']] = $row['site_id'];
-				}
-				
-				$aliases["{$row['site_url']}_{$row['site_language']}"] = $row['site_id'];
-				
-				if (!empty($row['site_aliases']))
-				{
-					foreach (explode(' ', $row['site_aliases']) as $key => $alias)
-					{
-						if ($row['site_default'])
-						{
-							$aliases[$alias] = $row['site_id'];
-						}
-						
-						$aliases["{$alias}_{$row['site_language']}"] = $row['site_id'];
-					}
-				}
-			}
-			
-			$this->db->freeresult();
-			$this->driver->set('aliases', $aliases);
-		}
-		
-		return $hostnames;
 	}
 
 	/**
