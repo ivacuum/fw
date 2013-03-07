@@ -534,7 +534,7 @@ class service
 					site_url ASC,
 					site_language ASC';
 			$this->db->query($sql);
-			$sites = $this->db->fetchall();
+			$sites = $this->db->fetchall(false, 'site_id');
 			$this->db->freeresult();
 			$this->driver->set_shared('sites', $sites);
 		}
