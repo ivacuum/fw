@@ -22,7 +22,7 @@ class application implements \ArrayAccess
 {
 	use constants;
 	
-	const VERSION = '1.0.1-dev';
+	const VERSION = 'master';
 	
 	private $values;
 	

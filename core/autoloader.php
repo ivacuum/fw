@@ -11,19 +11,18 @@ namespace fw\core;
 */
 class autoloader
 {
-	private $apc_prefix;
+	private $apc_cache;
 	private $namespaces = [];
 	private $namespace_fallbacks = [];
-	private $prefixes = [];
-	private $prefix_fallbacks = [];
+	private $namespace_prefixes = [];
+	private $pears = [];
+	private $pear_fallbacks = [];
+	private $pear_prefixes = [];
 	private $use_include_path = false;
 	
-	function __construct($prefix = false)
+	function __construct()
 	{
-		if ($prefix && extension_loaded('apc'))
-		{
-			$this->apc_prefix = $prefix . '_';
-		}
+		$this->apc_cache = extension_loaded('apc');
 	}
 	
 	/**
@@ -31,19 +30,8 @@ class autoloader
 	*/
 	public function autoload($class)
 	{
-		if ($this->apc_prefix && false !== $file = apc_fetch($this->apc_prefix . $class))
-		{
-			require $file;
-			return;
-		}
-		
 		if ($file = $this->find_file($class))
 		{
-			if ($this->apc_prefix)
-			{
-				apc_store($this->apc_prefix . $class, $file);
-			}
-			
 			require $file;
 		}
 	}
@@ -63,6 +51,11 @@ class autoloader
 			/* Пространства имен */
 			$namespace  = substr($class, 0, $pos);
 			$class_name = substr($class, $pos + 1);
+			
+			if (isset($this->namespace_prefixes[$namespace]) && false !== $file = apc_fetch($this->namespace_prefixes[$namespace] . $class))
+			{
+				return $file;
+			}
 
 			if (false !== strpos($namespace, '\\'))
 			{
@@ -89,6 +82,11 @@ class autoloader
 					
 					if (is_file($file))
 					{
+						if (isset($this->namespace_prefixes[$namespace]))
+						{
+							apc_store($this->namespace_prefixes[$namespace] . $class, $file);
+						}
+						
 						return $file;
 					}
 				}
@@ -109,11 +107,16 @@ class autoloader
 			/* PEAR-именованные классы */
 			$filename = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
 			
-			foreach ($this->prefixes as $prefix => $dirs)
+			foreach ($this->pears as $prefix => $dirs)
 			{
 				if (0 !== strpos($class, $prefix))
 				{
 					continue;
+				}
+				
+				if (isset($this->pear_prefixes[$prefix]) && false !== $file = apc_fetch($this->pear_prefixes[$prefix] . $class))
+				{
+					return $file;
 				}
 				
 				foreach ($dirs as $dir)
@@ -122,12 +125,17 @@ class autoloader
 					
 					if (is_file($file))
 					{
+						if (isset($this->pear_prefixes[$prefix]))
+						{
+							apc_store($this->pear_prefixes[$prefix] . $class, $file);
+						}
+
 						return $file;
 					}
 				}
 			}
 			
-			foreach ($this->prefix_fallbacks as $dir)
+			foreach ($this->pear_fallbacks as $dir)
 			{
 				$file = $dir . DIRECTORY_SEPARATOR . $filename;
 				
@@ -200,9 +208,9 @@ class autoloader
 	/**
 	* Регистрация директорий для поиска класса с определенным префиксом
 	*/
-	public function register_prefix($prefix, $dirs)
+	public function register_pear($prefix, $dirs)
 	{
-		$this->prefixes[$prefix] = (array) $dirs;
+		$this->pears[$prefix] = (array) $dirs;
 		
 		return $this;
 	}
@@ -210,9 +218,9 @@ class autoloader
 	/**
 	* Регистрация резервной директории для поиска в ней PEAR-именованных классов
 	*/
-	public function register_prefix_fallback($dir)
+	public function register_pear_fallback($dir)
 	{
-		$this->prefix_fallbacks[] = $dir;
+		$this->pear_fallbacks[] = $dir;
 		
 		return $this;
 	}
@@ -220,9 +228,9 @@ class autoloader
 	/**
 	* Регистрация резервных директорий для поиска в них PEAR-именованных классов
 	*/
-	public function register_prefix_fallbacks(array $dirs)
+	public function register_pear_fallbacks(array $dirs)
 	{
-		$this->prefix_fallbacks = $dirs;
+		$this->pear_fallbacks = $dirs;
 		
 		return $this;
 	}
@@ -230,11 +238,77 @@ class autoloader
 	/**
 	* Регистрация директорий для поиска классов с определенным префиксом
 	*/
-	public function register_prefixes(array $ary)
+	public function register_pears(array $ary)
 	{
 		foreach ($ary as $prefix => $dirs)
 		{
-			$this->prefixes[$prefix] = (array) $dirs;
+			$this->pears[$prefix] = (array) $dirs;
+		}
+		
+		return $this;
+	}
+	
+	/**
+	* Префикс для записей в кэше классов в определенном пространстве имен
+	*/
+	public function set_namespace_prefix($ns, $value)
+	{
+		if (!$this->apc_cache)
+		{
+			return $this;
+		}
+		
+		$this->namespace_prefixes[$ns] = "{$value}_";
+		
+		return $this;
+	}
+	
+	/**
+	* Префиксы для записей в кэше классов в определенном пространстве имен
+	*/
+	public function set_namespace_prefixes(array $ary)
+	{
+		if (!$this->apc_cache)
+		{
+			return $this;
+		}
+		
+		foreach ($ary as $ns => $value)
+		{
+			$this->namespace_prefixes[$ns] = "{$value}_";
+		}
+		
+		return $this;
+	}
+	
+	/**
+	* Префикс для записей в кэше PEAR-именованных классов
+	*/
+	public function set_pear_prefix($prefix, $value)
+	{
+		if (!$this->apc_cache)
+		{
+			return $this;
+		}
+		
+		$this->pear_prefixes[$prefix] = "{$value}_";
+		
+		return $this;
+	}
+	
+	/**
+	* Префиксы для записей в кэше PEAR-именованных классов
+	*/
+	public function set_pear_prefixes(array $ary)
+	{
+		if (!$this->apc_cache)
+		{
+			return $this;
+		}
+		
+		foreach ($ary as $prefix => $value)
+		{
+			$this->pear_prefixes[$prefix] = "{$value}_";
 		}
 		
 		return $this;
