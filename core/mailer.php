@@ -56,16 +56,22 @@ class mailer
 	
 	public function set_from()
 	{
-		return call_user_func_array([$this->message, 'setFrom'], func_get_args());
+		call_user_func_array([$this->message, 'setFrom'], func_get_args());
+		
+		return $this;
 	}
 	
 	public function set_subject()
 	{
-		return call_user_func_array([$this->message, 'setSubject'], func_get_args());
+		call_user_func_array([$this->message, 'setSubject'], func_get_args());
+		
+		return $this;
 	}
 
 	public function set_to()
 	{
-		return call_user_func_array([$this->message, 'setTo'], func_get_args());
+		call_user_func_array([$this->message, 'setTo'], func_get_args());
+		
+		return $this;
 	}
 }
