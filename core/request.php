@@ -224,6 +224,8 @@ class request
 	public function set_language($language)
 	{
 		$this->language = $language;
+		
+		return $this;
 	}
 	
 	/**
@@ -233,6 +235,8 @@ class request
 	public function set_server_name($server_name)
 	{
 		$this->server_name = $server_name;
+		
+		return $this;
 	}
 	
 	/**

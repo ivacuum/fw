@@ -91,8 +91,8 @@ class application implements \ArrayAccess
 				trigger_error('Сайт не найден', E_USER_ERROR);
 			}
 			
-			$app['request']->set_language($site_info['language']);
-			$app['request']->set_server_name($site_info['domain']);
+			$app['request']->set_language($site_info['language'])
+				->set_server_name($site_info['domain']);
 			
 			setlocale(LC_ALL, $site_info['locale']);
 			
