@@ -34,7 +34,7 @@ class mailer
 		return $this->failures;
 	}
 	
-	public function send($template = '', $subject = '', $content_type = null)
+	public function send($template = '', $subject = '', $content_type = 'text/html')
 	{
 		$template = $template ? "email/{$template}" : "email/{$this->template->file}";
 		
