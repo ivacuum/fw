@@ -72,19 +72,23 @@ class service
 	*/
 	public function get_site_info_by_id($site_id)
 	{
-		foreach ($this->obtain_sites() as $row)
+		$sites = $this->obtain_sites();
+		
+		if (!isset($sites[$site_id]))
 		{
-			if ($site_id == $row['site_id'])
-			{
-				return [
-					'domain'   => $row['site_url'],
-					'language' => $row['site_language'],
-					'title'    => $row['site_title']
-				];
-			}
+			return false;
 		}
-	
-		return false;
+		
+		$row = $sites[$site_id];
+		
+		return [
+			'default'  => (int) $row['site_default'],
+			'domain'   => $row['site_url'],
+			'id'       => (int) $row['site_id'],
+			'language' => $row['site_language'],
+			'locale'   => $row['site_locale'],
+			'title'    => $row['site_title'],
+		];
 	}
 
 	/**
@@ -96,36 +100,23 @@ class service
 	*/
 	public function get_site_info_by_url($hostname, $page = '')
 	{
-		$page     = trim($page, '/');
-		$language = $page ? explode('/', $page)[0] : '';
-		$language = strlen($language) === 2 ? $language : '';
-		$sites    = [];
+		$hostnames = $this->obtain_hostnames();
+		$page      = trim($page, '/');
+		$language  = $page ? explode('/', $page)[0] : '';
+		$language  = strlen($language) === 2 ? $language : '';
+		$sites     = [];
 		
-		/* Все локализации сайта */
-		foreach ($this->obtain_sites() as $row)
+		if (!$language)
 		{
-			if ($hostname == $row['site_url'])
-			{
-				$sites[] = [
-					'default'  => (int) $row['site_default'],
-					'domain'   => $row['site_url'],
-					'id'       => (int) $row['site_id'],
-					'language' => $row['site_language'],
-					'locale'   => $row['site_locale'],
-					'title'    => $row['site_title'],
-				];
-			}
+			return isset($hostnames[$hostname]) ? $this->get_site_info_by_id($hostnames[$hostname]) : false;
 		}
 		
-		foreach ($sites as $row)
+		if (!isset($hostnames["{$hostname}_{$language}"]))
 		{
-			if ($row['default'] && !$language or $language && $language == $row['language'])
-			{
-				return $row;
-			}
+			return false;
 		}
-	
-		return false;
+		
+		return $this->get_site_info_by_id($hostnames["{$hostname}_{$language}"]);
 	}
 
 	/**
