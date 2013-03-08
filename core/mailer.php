@@ -51,7 +51,7 @@ class mailer
 		
 		$this->message->setBody($this->template->render($template), $content_type);
 		
-		$this->mailer->send($this->message, $this->failures);
+		register_shutdown_function([$this->mailer, 'send'], $this->message, $this->failures);
 	}
 	
 	/**
