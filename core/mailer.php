@@ -40,7 +40,7 @@ class mailer
 	
 	public function send($template = '', $subject = '', $content_type = null)
 	{
-		$template = $template ?: "email/{$this->template->file}";
+		$template = $template ? "email/{$template}" : "email/{$this->template->file}";
 		
 		if ($subject)
 		{
