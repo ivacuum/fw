@@ -52,11 +52,6 @@ class autoloader
 			$namespace  = substr($class, 0, $pos);
 			$class_name = substr($class, $pos + 1);
 			
-			if (isset($this->namespace_prefixes[$namespace]) && false !== $file = apc_fetch($this->namespace_prefixes[$namespace] . $class))
-			{
-				return $file;
-			}
-
 			if (false !== strpos($namespace, '\\'))
 			{
 				list(, $suffix) = explode('\\', $namespace, 2);
@@ -76,15 +71,20 @@ class autoloader
 					continue;
 				}
 				
+				if (isset($this->namespace_prefixes[$ns]) && false !== $file = apc_fetch($this->namespace_prefixes[$ns] . $class))
+				{
+					return $file;
+				}
+
 				foreach ($dirs as $dir)
 				{
 					$file = $dir . DIRECTORY_SEPARATOR . $filename;
 					
 					if (is_file($file))
 					{
-						if (isset($this->namespace_prefixes[$namespace]))
+						if (isset($this->namespace_prefixes[$ns]))
 						{
-							apc_store($this->namespace_prefixes[$namespace] . $class, $file);
+							apc_store($this->namespace_prefixes[$ns] . $class, $file);
 						}
 						
 						return $file;

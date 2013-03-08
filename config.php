@@ -28,7 +28,7 @@ $app = [
 	/* Пути к папкам */
 	'dir.app'             => SITE_DIR . '../includes',
 	'dir.fonts'           => FW_DIR . 'assets/fonts',
-	'dir.fw'              => FW_DIR,
+	'dir.fw'              => rtrim(FW_DIR, '/'),
 	'dir.lib'             => FW_DIR . '../lib',
 	'dir.logs'            => SITE_DIR . '../logs',
 	'dir.templates.app'   => SITE_DIR . '../templates',
