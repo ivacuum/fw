@@ -118,12 +118,12 @@ class twig
 	*/
 	public function render($file = '')
 	{
-		$this->file = $file ?: $this->file;
+		$file = $file ?: $this->file;
 		$found = false;
 		
 		foreach ($this->dirs as $dir)
 		{
-			if (file_exists("{$dir}/{$this->file}"))
+			if (file_exists("{$dir}/{$file}"))
 			{
 				$found = true;
 				break;
@@ -135,7 +135,7 @@ class twig
 			trigger_error('TEMPLATE_NOT_FOUND');
 		}
 		
-		return $this->env->render($this->file, $this->vars);
+		return $this->env->render($file, $this->vars);
 	}
 	
 	public function set_number_format($decimals, $dec_point, $thousands_sep)
