@@ -12,12 +12,12 @@ namespace fw\core;
 class mailer
 {
 	protected $failures;
-	protected $message;
-	protected $mailer;
-	protected $transport;
 	
 	protected $config;
+	protected $mailer;
+	protected $message;
 	protected $template;
+	protected $transport;
 	
 	function __construct($config, $template)
 	{
@@ -28,12 +28,18 @@ class mailer
 		$this->mailer    = \Swift_Mailer::newInstance($this->transport);
 		$this->message   = \Swift_Message::newInstance();
 	}
-	
+
+	/**
+	* Почтовые адреса, до которых не дошли письма
+	*/
 	public function get_failures()
 	{
 		return $this->failures;
 	}
-	
+
+	/**
+	* Отправка письма
+	*/
 	public function send($template = '', $subject = '', $content_type = 'text/html')
 	{
 		$template = $template ? "email/{$template}" : "email/{$this->template->file}";
@@ -50,10 +56,12 @@ class mailer
 			$this->message->setContentType($content_type);
 		}
 		
-		// $this->mailer->send($message, $this->failures);
-		print $this->message->toString();
+		$this->mailer->send($this->message, $this->failures);
 	}
 	
+	/**
+	* Отправители письма
+	*/
 	public function set_from()
 	{
 		call_user_func_array([$this->message, 'setFrom'], func_get_args());
@@ -61,6 +69,9 @@ class mailer
 		return $this;
 	}
 	
+	/**
+	* Тема письма
+	*/
 	public function set_subject()
 	{
 		call_user_func_array([$this->message, 'setSubject'], func_get_args());
@@ -68,6 +79,9 @@ class mailer
 		return $this;
 	}
 
+	/**
+	* Получатели письма
+	*/
 	public function set_to()
 	{
 		call_user_func_array([$this->message, 'setTo'], func_get_args());
