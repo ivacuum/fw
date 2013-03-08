@@ -23,7 +23,10 @@ class mailer
 	{
 		$this->config   = $config;
 		$this->template = $template;
-		
+
+		/**
+		* TODO Настройки нужно перенести в $config
+		*/
 		$this->transport = \Swift_SmtpTransport::newInstance('localhost', 25);
 		$this->mailer    = \Swift_Mailer::newInstance($this->transport);
 		$this->message   = \Swift_Message::newInstance();
@@ -62,11 +65,61 @@ class mailer
 	}
 	
 	/**
-	* Отправители письма
+	* Скрытые получатели копии письма
+	*/
+	public function set_bcc()
+	{
+		call_user_func_array([$this->message, 'setBcc'], func_get_args());
+		
+		return $this;
+	}
+	
+	/**
+	* Получатели копии письма
+	*/
+	public function set_cc()
+	{
+		call_user_func_array([$this->message, 'setCc'], func_get_args());
+		
+		return $this;
+	}
+	
+	/**
+	* Авторы письма (может быть несколько)
 	*/
 	public function set_from()
 	{
 		call_user_func_array([$this->message, 'setFrom'], func_get_args());
+		
+		return $this;
+	}
+	
+	/**
+	* Кому следует отвечать на письмо
+	*/
+	public function set_reply_to()
+	{
+		call_user_func_array([$this->message, 'setReplyTo'], func_get_args());
+		
+		return $this;
+	}
+	
+	/**
+	* Адрес, на который вернуть недошедшее письмо
+	*/
+	public function set_return_path()
+	{
+		call_user_func_array([$this->message, 'setReturnPath'], func_get_args());
+		
+		return $this;
+	}
+	
+	/**
+	* Отправитель письма (не более одного)
+	*/
+	public function set_sender()
+	{
+		call_user_func_array([$this->message, 'setSender'], func_get_args());
 		
 		return $this;
 	}
