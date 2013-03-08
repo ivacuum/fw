@@ -11,8 +11,6 @@ namespace fw\core;
 */
 class mailer
 {
-	public $file;
-	
 	protected $failures;
 	protected $message;
 	protected $mailer;
@@ -26,9 +24,9 @@ class mailer
 		$this->config   = $config;
 		$this->template = $template;
 		
-		$this->transport = Swift_SmtpTransport::newInstance('localhost', 25);
-		$this->mailer    = Swift_Mailer::newInstance($this->transport);
-		$this->message   = Swift_Message::newInstance();
+		$this->transport = \Swift_SmtpTransport::newInstance('localhost', 25);
+		$this->mailer    = \Swift_Mailer::newInstance($this->transport);
+		$this->message   = \Swift_Message::newInstance();
 	}
 	
 	public function get_failures()
