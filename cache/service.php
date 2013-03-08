@@ -120,25 +120,6 @@ class service
 	}
 
 	/**
-	* Поиск URL сайта по его доменному имени и локализации
-	*/
-	public function get_site_info_by_url_lang($hostname, $lang)
-	{
-		foreach ($this->obtain_sites() as $row)
-		{
-			if ($hostname == $row['site_url'] && $lang == $row['site_language'])
-			{
-				return [
-					'id'    => (int) $row['site_id'],
-					'title' => $row['site_title']
-				];
-			}
-		}
-	
-		return false;
-	}
-
-	/**
 	* Список включенных ботов
 	*/
 	public function obtain_bots()
