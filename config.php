@@ -75,5 +75,5 @@ $app = [
 	'version.imagine'  => '0.4.1',
 	'version.monolog'  => '1.0.3',
 	'version.swift'    => '4.3.0',
-	'version.twig'     => '1.12.1',
+	'version.twig'     => '1.12.2',
 ];
