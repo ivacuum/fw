@@ -38,6 +38,14 @@ class mailer
 	}
 
 	/**
+	* Отложенная отправка письма
+	*/
+	public function postpone($template = '', $subject = '', $content_type = 'text/html')
+	{
+		register_shutdown_function([$this, 'send'], $template, $subject, $content_type);
+	}
+
+	/**
 	* Отправка письма
 	*/
 	public function send($template = '', $subject = '', $content_type = 'text/html')
@@ -50,8 +58,7 @@ class mailer
 		}
 		
 		$this->message->setBody($this->template->render($template), $content_type);
-		
-		register_shutdown_function([$this->mailer, 'send'], $this->message, $this->failures);
+		$this->mailer->send($this->message, $this->failures);
 	}
 	
 	/**
