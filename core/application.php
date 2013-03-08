@@ -110,6 +110,10 @@ class application implements \ArrayAccess
 				->_set_app($app);
 		});
 		
+		$this['mailer'] $this->share(function() use ($app) {
+			return new mailer($app['config'], $app['template']);
+		});
+		
 		$this['sphinx'] = $this->share(function() use ($app) {
 			return (new db_sphinx($app['sphinx.host'], '', '', '', $app['sphinx.port'], $app['sphinx.sock']))
 				->_set_cache($app['cache'])
