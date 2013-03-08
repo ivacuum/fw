@@ -24,12 +24,12 @@ class mailer
 		$this->config   = $config;
 		$this->template = $template;
 
-		/**
-		* TODO Настройки нужно перенести в $config
-		*/
-		$this->transport = \Swift_SmtpTransport::newInstance('localhost', 25);
-		$this->mailer    = \Swift_Mailer::newInstance($this->transport);
-		$this->message   = \Swift_Message::newInstance();
+		$this->transport = \Swift_SmtpTransport::newInstance($this->config['smtp.host'], $this->config['smtp.port'])
+			->setUsername($this->config['smtp.user'])
+			->setPassword($this->config['smtp.pass']);
+		
+		$this->mailer  = \Swift_Mailer::newInstance($this->transport);
+		$this->message = \Swift_Message::newInstance();
 	}
 
 	/**
