@@ -93,6 +93,26 @@ class mailer
 		
 		return $this;
 	}
+
+	/**
+	* Ограничение длины строки
+	*/
+	public function set_max_line_length()
+	{
+		call_user_func_array([$this->message, 'setMaxLineLength'], func_get_args());
+		
+		return $this;
+	}
+	
+	/**
+	* Приоритет (от 1 до 5, где 1 - самый высокий)
+	*/
+	public function set_priority()
+	{
+		call_user_func_array([$this->message, 'setPriority'], func_get_args());
+		
+		return $this;
+	}
 	
 	/**
 	* Кому следует отвечать на письмо
