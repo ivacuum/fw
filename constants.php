@@ -6,7 +6,7 @@
 
 namespace fw;
 
-$app['acm.fw_prefix'] = 'fw-' . $app::VERSION;
+$app['acm.fw_prefix'] = $app::VERSION . '_fw';
 
 if (false === $app->load_constants($app['acm.fw_prefix']))
 {
