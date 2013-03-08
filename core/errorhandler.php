@@ -60,7 +60,7 @@ class errorhandler
 				}
 				else
 				{
-					static::log_mail($text);
+					static::log_mail("{$text} on line {$line} in file {$file}");
 				}
 
 				/* Service Unavailable */
@@ -184,7 +184,7 @@ class errorhandler
 				case E_COMPILE_ERROR:
 				case E_USER_ERROR:
 				
-					static::log_mail('Fatal error: ' . $error['message']);
+					static::log_mail("Fatal error: {$error['message']} on line {$error['line']} in file {$error['file']}");
 
 					if ($_SERVER['REMOTE_ADDR'] != '192.168.1.1')
 					{
