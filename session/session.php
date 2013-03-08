@@ -27,19 +27,21 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 	public $is_registered = false;
 	
 	protected $signin_url;
+	protected $site_id;
 	
 	protected $cache;
 	protected $config;
 	protected $db;
 	protected $request;
 	
-	function __construct($cache, $config, $db, $request, array $session_config = [], $signin_url)
+	function __construct($cache, $config, $db, $request, array $session_config = [], $site_id, $signin_url)
 	{
 		$this->cache   = $cache;
 		$this->config  = $config;
 		$this->db      = $db;
 		$this->request = $request;
 		
+		$this->site_id    = $site_id;
 		$this->signin_url = $signin_url;
 		
 		/* Данные посетителя */
