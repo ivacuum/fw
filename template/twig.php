@@ -96,9 +96,27 @@ class twig
 	}
 
 	/**
-	* Обработка и вывод шаблона
+	* Вывод шаблона
 	*/
 	public function display($file = '')
+	{
+		echo $this->render($file);
+	}
+	
+	/**
+	* Вывод xml данных
+	*/
+	public function display_xml($file = '')
+	{
+		header('Content-type: text/xml; charset=utf-8');
+		$this->display($file);
+		exit;
+	}
+	
+	/**
+	* Обработка и возврат данных для вывода
+	*/
+	public function render($file = '')
 	{
 		$this->file = $file ?: $this->file;
 		$found = false;
@@ -117,17 +135,7 @@ class twig
 			trigger_error('TEMPLATE_NOT_FOUND');
 		}
 		
-		echo $this->env->render($this->file, $this->vars);
-	}
-	
-	/**
-	* Вывод xml данных
-	*/
-	public function display_xml($file = '')
-	{
-		header('Content-type: text/xml; charset=utf-8');
-		$this->display($file);
-		exit;
+		return $this->env->render($this->file, $this->vars);
 	}
 	
 	public function set_number_format($decimals, $dec_point, $thousands_sep)
