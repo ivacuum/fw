@@ -6,8 +6,6 @@
 
 namespace fw\core;
 
-require("{$app['dir.lib']}/swiftmailer/{$app['version.swift']}/swift_init.php");
-
 /**
 * Почтовик
 */

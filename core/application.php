@@ -111,6 +111,8 @@ class application implements \ArrayAccess
 		});
 		
 		$this['mailer'] = $this->share(function() use ($app) {
+			require("{$app['dir.lib']}/swiftmailer/{$app['version.swift']}/swift_init.php");
+
 			return new mailer($app['config'], $app['template']);
 		});
 		
