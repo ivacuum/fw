@@ -110,7 +110,7 @@ class application implements \ArrayAccess
 				->_set_app($app);
 		});
 		
-		$this['mailer'] $this->share(function() use ($app) {
+		$this['mailer'] = $this->share(function() use ($app) {
 			return new mailer($app['config'], $app['template']);
 		});
 		
