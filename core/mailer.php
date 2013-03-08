@@ -49,12 +49,7 @@ class mailer
 			$this->message->setSubject($subject);
 		}
 		
-		$this->message->setBody($this->template->render($template));
-		
-		if ($content_type)
-		{
-			$this->message->setContentType($content_type);
-		}
+		$this->message->setBody($this->template->render($template), $content_type);
 		
 		$this->mailer->send($this->message, $this->failures);
 	}
