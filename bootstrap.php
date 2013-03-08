@@ -28,8 +28,8 @@ require(SITE_DIR . '../config.php');
 $app = new application($app);
 $app['autoloader']->register_namespaces(['fw' => $app['dir.fw'], 'app' => $app['dir.app']])
 	->register_pear('Twig', "{$app['dir.lib']}/twig/{$app['version.twig']}")
-	->set_namespace_prefix(['fw' => $app::VERSION])
-	->set_pear_prefix('Twig' => $app['version.twig']);
+	->set_namespace_prefix('fw', $app::VERSION)
+	->set_pear_prefix('Twig', $app['version.twig']);
 
 require(FW_DIR . 'constants.php');
 require(SITE_DIR . '../constants.php');
