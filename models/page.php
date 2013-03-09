@@ -374,19 +374,12 @@ class page
 	*/
 	public function page_footer()
 	{
-		$this->template->assign([
-			'S_ACP'      => $this->auth->acl_get('a_'),
-			'S_INTERNET' => $this->request->isp == 'internet' || $this->request->isp == 'corbina-kaluga',
-
-			'U_COPYRIGHT' => ilink(sprintf('%s/vacuum.html', $this->get_handler_url('users::index')))
-		]);
-		
 		$display_profiler = false;
 		
 		/* Вывод профайлера только для html-документов */
 		if ($this->format == 'html' && !$this->request->is_ajax && !defined('IN_SQL_ERROR'))
 		{
-			if (($this->auth->acl_get('a_') || $this->user->ip == '192.168.1.1') && $this->config['profiler_display'])
+			if ($this->config['profiler_display'] && ($this->auth->acl_get('a_') || $this->user->ip == '192.168.1.1'))
 			{
 				$display_profiler = true;
 			}
@@ -459,11 +452,11 @@ class page
 			$filename = substr($filename, 11);
 		}
 		
-		$this->template->file = sprintf('%s_%s.%s', $filename, $this->method, $this->format);
+		$this->template->file = "{$filename}_{$this->method}.{$this->format}";
 		
 		if ($this->request->is_ajax)
 		{
-			$this->template->file = sprintf('ajax/%s_%s.%s', $filename, $this->method, $this->format);
+			$this->template->file = "ajax/{$filename}_{$this->method}.{$this->format}";
 		}
 		
 		return $this;
