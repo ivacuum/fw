@@ -107,10 +107,9 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 			}
 		}
 
-		$cookie_expire = $this->ctime - 31536000;
-		$this->set_cookie('k', '', $cookie_expire);
-		$this->set_cookie('u', '', $cookie_expire);
-		$this->set_cookie('sid', '', $cookie_expire);
+		$this->set_cookie('k', false);
+		$this->set_cookie('u', false);
+		$this->set_cookie('sid', false);
 		
 		$_SESSION = $this->data = [];
 		$this->cookie = ['u' => 0, 'k' => ''];
@@ -703,13 +702,27 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 	*
 	* @param int $time Метка времени, до которой cookie будет действительна (0 - в течение сеанса)
 	*/
-	public function set_cookie($name, $data, $time = 0)
+	public function set_cookie($name, $value = false, $expire = 0, $domain = false)
 	{
-		$cookie_name   = rawurlencode($name) . '=' . rawurlencode($data);
-		$cookie_expire = gmdate('D, d-M-Y H:i:s \\G\\M\\T', $time);
-		$cookie_domain = !$this->config['cookie_domain'] || $this->config['cookie_domain'] == 'localhost' || $this->config['cookie_domain'] == '127.0.0.1' ? '' : '; domain=' . $this->config['cookie_domain'];
+		if (false === $value)
+		{
+			/* Булевы значения нельзя устанавливать в cookie, false удаляет cookie */
+			$value  = '';
+			$expire = gmdate(DATE_RFC1123, strtotime('-1 year'));
+		}
+		else
+		{
+			$expire = 0 !== $expire ? gmdate(DATE_RFC1123, $expire) : 0;
+		}
 
-		header('Set-Cookie: ' . $cookie_name . ($time ? '; expires=' . $cookie_expire : '') . '; path=' . $this->config['cookie_path'] . $cookie_domain . (!$this->config['cookie_secure'] ? '' : '; secure') . '; HttpOnly', false);
+		$name   = rawurlencode($name);
+		$value  = rawurlencode($value);
+		$expire = 0 !== $expire ? "Expires={$expire}; " : '';
+		$domain = false !== $domain ? $domain : $this->config['cookie_domain'];
+		$domain = !$domain || $domain == 'localhost' || $domain == '127.0.0.1' ? '' : "Domain={$domain}; ";
+		$secure = $this->config['cookie_secure'] ? 'Secure; ' : '';
+
+		header("Set-Cookie: {$name}={$value}; {$expire}Path={$this->config['cookie_path']}; {$domain}{$secure}HttpOnly", false);
 	}
 
 	/**
