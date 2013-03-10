@@ -7,6 +7,7 @@
 namespace fw\core;
 
 use fw\captcha\service as captcha_service;
+use fw\captcha\validator as captcha_validator;
 use fw\cron\manager as cron_manager;
 use fw\config\db as config_db;
 use fw\db\mysqli as db_mysqli;
@@ -22,7 +23,7 @@ class application implements \ArrayAccess
 {
 	use constants;
 	
-	const VERSION = '1.1.1';
+	const VERSION = 'master';
 	
 	private $values;
 	
@@ -103,6 +104,10 @@ class application implements \ArrayAccess
 			$class = "\\fw\\captcha\\driver\\{$app['captcha.type']}";
 
 			return new captcha_service($app['config'], $app['db'], $app['request'], $app['user'], new $class($app['dir.fonts'], $app['captcha.fonts']));
+		});
+		
+		$this['captcha_validator'] = $this->share(function() use ($app) {
+			return new captcha_validator($app['config'], $app['db'], $app['request'], $app['user']);
 		});
 		
 		$this['cron'] = $this->share(function() use ($app) {
