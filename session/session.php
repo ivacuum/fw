@@ -52,6 +52,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 		$this->ip            = $this->request->server('REMOTE_ADDR');
 		$this->referer       = $this->request->header('Referer');
 		
+		$session_config['cookie_domain'] = $session_config['cookie_domain'] ?: $this->config['cookie_domain'];
 		$session_config['name'] = $this->config['cookie_prefix'] . $session_config['name'];
 		
 		foreach ($session_config as $key => $value)
@@ -168,9 +169,9 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 	public function read($session_id)
 	{
 		/* Отличительные черты пользователя */
-		$this->cookie['k'] = $this->request->cookie("{$this->config['cookie_prefix']}_k", '');
-		$this->cookie['u'] = $this->request->cookie("{$this->config['cookie_prefix']}_u", 0);
-		$this->session_id  = $this->request->cookie("{$this->config['cookie_prefix']}_sid", '');
+		$this->cookie['k'] = $this->request->cookie("{$this->config['cookie_prefix']}k", '');
+		$this->cookie['u'] = $this->request->cookie("{$this->config['cookie_prefix']}u", 0);
+		$this->session_id  = $this->request->cookie("{$this->config['cookie_prefix']}sid", '');
 		
 		if (!$this->session_id)
 		{
