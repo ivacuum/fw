@@ -52,6 +52,8 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 		$this->ip            = $this->request->server('REMOTE_ADDR');
 		$this->referer       = $this->request->header('Referer');
 		
+		$session_config['name'] = $this->config['cookie_prefix'] . $session_config['name'];
+		
 		foreach ($session_config as $key => $value)
 		{
 			ini_set("session.{$key}", $value);
@@ -715,7 +717,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 			$expire = 0 !== $expire ? gmdate(DATE_RFC1123, $expire) : 0;
 		}
 
-		$name   = rawurlencode($name);
+		$name   = rawurlencode($this->config['cookie_prefix'] . $name);
 		$value  = rawurlencode($value);
 		$expire = 0 !== $expire ? "Expires={$expire}; " : '';
 		$domain = false !== $domain ? $domain : $this->config['cookie_domain'];
