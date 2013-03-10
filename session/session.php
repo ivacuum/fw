@@ -168,9 +168,9 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 	public function read($session_id)
 	{
 		/* Отличительные черты пользователя */
-		$this->cookie['k'] = $this->request->cookie('k', '');
-		$this->cookie['u'] = $this->request->cookie('u', 0);
-		$this->session_id  = $this->request->cookie('sid', '');
+		$this->cookie['k'] = $this->request->cookie("{$this->config['cookie_prefix']}_k", '');
+		$this->cookie['u'] = $this->request->cookie("{$this->config['cookie_prefix']}_u", 0);
+		$this->session_id  = $this->request->cookie("{$this->config['cookie_prefix']}_sid", '');
 		
 		if (!$this->session_id)
 		{
