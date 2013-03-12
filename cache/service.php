@@ -326,6 +326,34 @@ class service
 	}
 
 	/**
+	* Список меню
+	*/
+	public function obtain_menus()
+	{
+		if (false === $menus = $this->driver->get_shared('menus'))
+		{
+			$sql = '
+				SELECT
+					*
+				FROM
+					' . MENUS_TABLE . '
+				WHERE
+					menu_active = 1';
+			$this->db->query($sql);
+			
+			while ($row = $this->db->fetchrow())
+			{
+				$menus[$row['menu_alias']] = $row;
+			}
+			
+			$this->db->freeresult();
+			$this->driver->set_shared('menus', $menus);
+		}
+		
+		return $menus;
+	}
+
+	/**
 	* Список пользователей, которые сейчас на сайте
 	*/
 	public function obtain_online_userlist($language)

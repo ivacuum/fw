@@ -37,6 +37,7 @@ if (false === $app->load_constants($app['acm.fw_prefix']))
 		'I18N_TABLE'              => 'site_i18n',
 		'IMAGE_WATERMARKS_TABLE'  => 'site_image_watermarks',
 		'LANGUAGES_TABLE'         => 'site_languages',
+		'MENUS_TABLE'             => 'site_menus',
 		'NEWS_TABLE'              => 'site_news',
 		'OPENID_IDENTITIES_TABLE' => 'site_openid_identities',
 		'PAGES_TABLE'             => 'site_pages_tree',
