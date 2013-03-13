@@ -64,7 +64,6 @@ class application implements \ArrayAccess
 			return new \fw\cache\service($app['db'], new $class($app['db'], $app['acm.prefix'], $app['acm.shared_prefix']));
 		});
 
-		/* Пользователь */
 		$this['user'] = $this->share(function() use ($app) {
 			return (new user($app['cache'], $app['config'], $app['db'], $app['request'], $app['session.config'], $app['site_info']['id'], $app['urls']['signin']))
 				->setup();
