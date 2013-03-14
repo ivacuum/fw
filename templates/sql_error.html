@@ -104,10 +104,10 @@
 <div id="container">
 <h2>Ошибка в SQL запросе</h2>
 <ul class="list">
-	<li>Код ошибки: <b>{{ error.code }}</b></li>
-	<li>Текст ошибки: <b>{{ error.text }}</b></li>
+	<li>Код ошибки: <b>{$error.code}</b></li>
+	<li>Текст ошибки: <b>{$error.text}</b></li>
 </ul>
-<pre class="terminal bootcamp">{{ error.sql }}</pre>
+<pre class="terminal bootcamp">{$error.sql}</pre>
 </div>
 </body>
 </html>
