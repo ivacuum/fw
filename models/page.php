@@ -40,7 +40,6 @@ class page
 			->add_filter('humn_size', [$this->user, 'humn_size'])
 			->add_filter('i18n', [$this->user, 'lang'])
 			->add_filter('number_format', [$this->user, 'num_format'])
-			->add_filter('plural', [$this->user, 'plural'])
 			->add_filter('url_for', [$this, 'get_handler_url']);
 		
 		return $this;

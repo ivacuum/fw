@@ -23,30 +23,30 @@ function hideProfiler() {
 	<tr>
 		<td class="green" onclick="changeTab('console');">
 			<var>{$LOGS_COUNT}</var>
-			<h4>{lang('CONSOLE')}</h4>
+			<h4>{'CONSOLE'|i18n}</h4>
 		</td>
 		<td class="blue" onclick="changeTab('speed');">
 			<var>{$SPEED_TOTAL}</var>
-			<h4>{lang('LOAD_TIME')}</h4>
+			<h4>{'LOAD_TIME'|i18n}</h4>
 		</td>
 		<td class="purple" onclick="changeTab('queries');">
-			<var>{plural($QUERY_COUNT, 'QUERIES')}</var>
-			<h4>{lang('DATABASE')}</h4>
+			<var>{$QUERY_COUNT|declension:'QUERIES'}</var>
+			<h4>{'DATABASE'|i18n}</h4>
 		</td>
 		<td class="orange" onclick="changeTab('memory');">
-			<var>{humn_size($MEMORY_USED)}</var>
-			<h4>{lang('MEMORY_USED')}</h4>
+			<var>{$MEMORY_USED|humn_size}</var>
+			<h4>{'MEMORY_USED'|i18n}</h4>
 		</td>
 		<td class="red" onclick="changeTab('files');">
-			<var>{plural($FILE_COUNT, 'FILES')}</var>
-			<h4>{lang('INCLUDED')}</h4>
+			<var>{$FILE_COUNT|declension:'FILES'}</var>
+			<h4>{'INCLUDED'|i18n}</h4>
 		</td>
 	</tr>
 	</table>
 
 	<div id="pqp-console" class="pqp-box">
 		{if $LOGS_COUNT == 0}
-			<h3>{lang('NO_DATA')}</h3>
+			<h3>{'NO_DATA'|i18n}</h3>
 		{else}
 			<table class="side" cellspacing="0">
 				<tr>
@@ -83,7 +83,7 @@ function hideProfiler() {
 
 	<div id="pqp-speed" class="pqp-box">
 		{if $SPEED_COUNT == 0}
-			<h3>{lang('NO_DATA')}</h3>
+			<h3>{'NO_DATA'|i18n}</h3>
 		{else}
 			<table class="side" cellspacing="0">
 				<tr><td><var>{$SPEED_TOTAL}</var><h4>Load Time</h4></td></tr>
@@ -103,17 +103,17 @@ function hideProfiler() {
 
 	<div id="pqp-queries" class="pqp-box">
 		{if $QUERY_COUNT == 0}
-			<h3>{lang('NO_DATA')}</h3>
+			<h3>{'NO_DATA'|i18n}</h3>
 		{else}
 			<table class="side" cellspacing="0">
-				<tr><td><var>{$QUERY_COUNT}</var><h4>{lang('TOTAL_QUERIES')}</h4></td></tr>
-				<tr><td class="alt"><var>{$QUERY_CACHED}</var><h4>{lang('FROM_CACHE')}</h4></td></tr>
-				<tr><td><var>{$QUERY_TIME}</var> <h4>{lang('EXECUTION_TIME')}</h4></td></tr>
+				<tr><td><var>{$QUERY_COUNT}</var><h4>{'TOTAL_QUERIES'|i18n}</h4></td></tr>
+				<tr><td class="alt"><var>{$QUERY_CACHED}</var><h4>{'FROM_CACHE'|i18n}</h4></td></tr>
+				<tr><td><var>{$QUERY_TIME}</var> <h4>{'EXECUTION_TIME'|i18n}</h4></td></tr>
 			</table>
 			<div style="float: left; overflow: auto; width: 80%;">
 			<table class="main" cellspacing="0">
 				{foreach profiler_queries as $row}
-					<tr><td class="{cycle values="alt,"}">{$row.sql} <em>{$row.time}{if $row.cached} <span style="color: #ffd700;">({lang('FROM_CACHE')|lower})</span>{/if}</em></td></tr>
+					<tr><td class="{cycle values="alt,"}">{$row.sql} <em>{$row.time}{if $row.cached} <span style="color: #ffd700;">({'FROM_CACHE'|i18n|lower})</span>{/if}</em></td></tr>
 				{/foreach}
 			</table>
 			</div>
@@ -122,17 +122,17 @@ function hideProfiler() {
 
 	<div id="pqp-memory" class="pqp-box">
 		{if $MEMORY_COUNT == 0}
-			<h3>{lang('NO_DATA')}</h3>
+			<h3>{'NO_DATA'|i18n}</h3>
 		{else}
 			<table class="side" cellspacing="0">
-				<tr><td><var>{humn_size($MEMORY_USED)}</var><h4>Used Memory</h4></td></tr>
+				<tr><td><var>{$MEMORY_USED|humn_size}</var><h4>Used Memory</h4></td></tr>
 				<tr><td class="alt"><var>{$MEMORY_TOTAL}</var> <h4>Total Available</h4></td></tr>
 			</table>
 			<div style="float: left; overflow: auto; width: 80%;">
 			<table class="main" cellspacing="0">
 				{foreach $profiler_logs as $row}
 					{if $row.type == 'memory'}
-						<tr class="log-{$row.type}"><td class="{cycle values="alt,"}"><b>{humn_size($row.data, 2)}</b> <em>{$row.data_type}</em>: {$row.name}</td></tr>
+						<tr class="log-{$row.type}"><td class="{cycle values="alt,"}"><b>{$row.data|humn_size:2}</b> <em>{$row.data_type}</em>: {$row.name}</td></tr>
 					{/if}
 				{/foreach}
 			</table>
@@ -142,17 +142,17 @@ function hideProfiler() {
 
 	<div id="pqp-files" class="pqp-box">
 		{if $FILE_COUNT == 0}
-			<h3>{lang('NO_DATA')}</h3>
+			<h3>{'NO_DATA'|i18n}</h3>
 		{else}
 			<table class="side" cellspacing="0">
-				<tr><td><var>{$FILE_COUNT}</var><h4>{lang('TOTAL_FILES')}</h4></td></tr>
-				<tr><td class="alt"><var>{humn_size($FILE_SIZE)}</var><h4>{lang('TOTAL_SIZE')}</h4></td></tr>
-				<tr><td><var>{humn_size($FILE_LARGEST)}</var><h4>{lang('LARGEST')}</h4></td></tr>
+				<tr><td><var>{$FILE_COUNT}</var><h4>{'TOTAL_FILES'|i18n}</h4></td></tr>
+				<tr><td class="alt"><var>{$FILE_SIZE|humn_size}</var><h4>{'TOTAL_SIZE'|i18n}</h4></td></tr>
+				<tr><td><var>{$FILE_LARGEST|humn_size}</var><h4>{'LARGEST'|i18n}</h4></td></tr>
 			</table>
 			<div style="float: left; overflow: auto; width: 80%;">
 			<table class="main" cellspacing="0">
 				{foreach $profiler_files as $row}
-					<tr><td class="{cycle values="alt,"}"><b>{humn_size($row.size, 2)}</b> {$row.name}</td></tr>
+					<tr><td class="{cycle values="alt,"}"><b>{$row.size|humn_size:2}</b> {$row.name}</td></tr>
 				{/foreach}
 			</table>
 			</div>
@@ -163,17 +163,17 @@ function hideProfiler() {
 		<tr>
 			<td id="profiler_short_data_container">
 				<ul id="profiler_short_data">
-					<li><img src="//ivacuum.org/i/_/application_monitor.png" title="{lang('CONSOLE')}"> <span class="green">{$LOGS_COUNT}</span></li>
-					<li><img src="//ivacuum.org/i/_/dashboard.png" title="{lang('LOAD_TIME')}"> <span class="blue">{$SPEED_TOTAL}</span></li>
-					<li><img src="//ivacuum.org/i/_/database.png" title="{lang('DATABASE')}"> <span class="purple">{plural($QUERY_COUNT, 'QUERIES')}</span></li>
-					<li><img src="//ivacuum.org/i/_/memory.png" title="{lang('MEMORY_USED')}"> <span class="orange">{humn_size($MEMORY_USED)}</span></li>
-					<li><img src="//ivacuum.org/i/_/document_php.png" title="{lang('INCLUDED')}"> <span class="red">{plural($FILE_COUNT, 'FILES')}</span></li>
+					<li><img src="//ivacuum.org/i/_/application_monitor.png" title="{'CONSOLE'|i18n}"> <span class="green">{$LOGS_COUNT}</span></li>
+					<li><img src="//ivacuum.org/i/_/dashboard.png" title="{'LOAD_TIME'|i18n}"> <span class="blue">{$SPEED_TOTAL}</span></li>
+					<li><img src="//ivacuum.org/i/_/database.png" title="{'DATABASE'|i18n}"> <span class="purple">{$QUERY_COUNT|declension:'QUERIES'}</span></li>
+					<li><img src="//ivacuum.org/i/_/memory.png" title="{'MEMORY_USED'|i18n}"> <span class="orange">{$MEMORY_USED|humn_size}</span></li>
+					<li><img src="//ivacuum.org/i/_/document_php.png" title="{'INCLUDED'|i18n}"> <span class="red">{$FILE_COUNT|declension:'FILES'}</span></li>
 					<li><img src="//ivacuum.org/i/_/server_network.png"> <span class="green">{$SERVER_HOSTNAME}</span></li>
 				</ul>
 			</td>
 			<td class="actions">
 				<a onclick="hideProfiler(); return false;">&times;</a>
-				<a onclick="toggleDetails(); return false">{lang('DETAILS')}</a>
+				<a onclick="toggleDetails(); return false">{'DETAILS'|i18n}</a>
 			</td>
 		</tr>
 	</table>
