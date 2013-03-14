@@ -221,7 +221,19 @@ trait i18n
 		
 		return $lang;
 	}
-
+	
+	/**
+	* Возвращает число в заданном формате
+	*
+	* @param	int	$value	Число
+	*
+	* @return	int			Число в заданном формате
+	*/
+	public function num_format($value, $decimals = 0)
+	{
+		return number_format($value, $decimals, $this->config['number_dec_point'], $this->config['number_thousands_sep']);
+	}
+	
 	/**
 	* Формы слова во множественном числе
 	*

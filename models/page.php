@@ -35,12 +35,13 @@ class page
 	*/
 	public function additional_tplengine_features()
 	{
-		$this->template->add_function('duration', [$this->user, 'create_time'])
-			->add_function('humn_size', [$this->user, 'humn_size'])
-			->add_function('lang', [$this->user, 'lang'])
-			->add_function('plural', [$this->user, 'plural'])
-			->add_function('url_for', [$this, 'get_handler_url'])
-			->set_number_format(0, $this->config['number_dec_point'], $this->config['number_thousands_sep']);
+		$this->template->add_filter('declension', [$this->user, 'plural'])
+			->add_filter('duration', [$this->user, 'create_time'])
+			->add_filter('humn_size', [$this->user, 'humn_size'])
+			->add_filter('i18n', [$this->user, 'lang'])
+			->add_filter('number_format', [$this->user, 'num_format'])
+			->add_filter('plural', [$this->user, 'plural'])
+			->add_filter('url_for', [$this, 'get_handler_url']);
 		
 		return $this;
 	}

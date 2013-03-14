@@ -33,6 +33,20 @@ class smarty
 	{
 		return call_user_func_array([$this->driver, $method], $args);
 	}
+	
+	public function add_filter($filter_name, $callback)
+	{
+		$this->driver->registerPlugin('modifier', $filter_name, $callback);
+		
+		return $this;
+	}
+
+	public function add_function($function_name, $callback)
+	{
+		$this->driver->registerPlugin('function', $function_name, $callback);
+		
+		return $this;
+	}
 
 	/**
 	* Обработка и вывод шаблона
