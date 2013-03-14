@@ -6,9 +6,6 @@
 
 namespace fw\template;
 
-/**
-* Шаблонизатор Twig
-*/
 class twig
 {
 	public $file;
