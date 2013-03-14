@@ -74,6 +74,7 @@ $app = [
 	'version.geocoder' => '1.1.6',
 	'version.imagine'  => '0.4.1',
 	'version.monolog'  => '1.0.3',
+	'version.smarty'   => '3.1.13',
 	'version.swift'    => '4.3.0',
 	'version.twig'     => '1.12.2',
 ];

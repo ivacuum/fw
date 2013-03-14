@@ -13,7 +13,7 @@ use fw\config\db as config_db;
 use fw\db\mysqli as db_mysqli;
 use fw\db\sphinx as db_sphinx;
 use fw\session\user;
-use fw\template\twig;
+use fw\template\smarty;
 use fw\traits\constants;
 
 /**
@@ -42,7 +42,10 @@ class application implements \ArrayAccess
 		});
 		
 		$this['template'] = $this->share(function() use ($app) {
-			return new twig([$app['dir.templates.app'], $app['dir.templates.fw']], $app['dir.templates.cache']);
+			define('SMARTY_DIR', "{$app['dir.lib']}/smarty/{$app['version.smarty']}/Smarty/");
+			require(SMARTY_DIR . 'Smarty.class.php');
+
+			return new smarty([$app['dir.templates.app'], $app['dir.templates.fw']], $app['dir.templates.cache']);
 		});
 		
 		$this['request'] = $this->share(function() use ($app) {
