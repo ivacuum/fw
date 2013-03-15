@@ -112,7 +112,7 @@ function hideProfiler() {
 			</table>
 			<div style="float: left; overflow: auto; width: 80%;">
 			<table class="main" cellspacing="0">
-				{foreach profiler_queries as $row}
+				{foreach $profiler_queries as $row}
 					<tr><td class="{cycle values="alt,"}">{$row.sql} <em>{$row.time}{if $row.cached} <span style="color: #ffd700;">({'FROM_CACHE'|i18n|lower})</span>{/if}</em></td></tr>
 				{/foreach}
 			</table>
