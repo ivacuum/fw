@@ -12,14 +12,14 @@
 			</div>
 		{/if}
 
-		{if $S_ERROR}
+		{if not empty($S_ERROR)}
 			<div class="errorbox">
 				<h3>{'WARNING'|i18n}</h3>
 				<p>{$ERROR_MSG}</p>
 			</div>
 		{/if}
 
-		<form action="{$U_ACTION}" method="post">
+		<form action="" method="post">
 		<fieldset class="b-center">
 			{if not $PAGENAME}
 				<legend>Добавление новой страницы</legend>
@@ -78,7 +78,6 @@
 				<input type="hidden" name="pid" value="{$PAGE_ID}">
 				<input class="btn btn-primary btn-large" type="submit" id="submit" name="submit" value="{'SAVE'|i18n}">
 			</div>
-			{$S_FORM_TOKEN}
 		</fieldset>
 		</form>
 	</div>
