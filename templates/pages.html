@@ -4,7 +4,7 @@
 {block "content_footer"}{/block}
 {block "content"}
 <div id="pages-management" class="row">
-{if $S_EDIT_PAGE}
+{if not empty($S_EDIT_PAGE)}
 	<div class="span8 offset2">
 		{if $PAGENAME}
 			<div class="page-header">
@@ -126,17 +126,12 @@
 			<td style="width: 15%; white-space: nowrap; text-align: center; vertical-align: middle;">&nbsp;{if $row.PAGE_ENABLED}<a href="{$row.U_DISABLE}">{'DISABLE'|i18n}</a>{else}<a href="{$row.U_ENABLE}">{'ENABLE'|i18n}</a>{/if}&nbsp;</td>
 			<td style="width:90px; white-space: nowrap; text-align: right; vertical-align: middle;">
 				{if $row@first and not $row@last}
-					{$ICON_MOVE_UP_DISABLED}
 					<a href="{$row.U_MOVE_DOWN}"><img src="//ivacuum.org/i/_/arrow_270.png" alt=""></a>
 				{elseif not $row@first and not $row@last}
 					<a href="{$row.U_MOVE_UP}"><img src="//ivacuum.org/i/_/arrow_090.png" alt=""></a> 
 					<a href="{$row.U_MOVE_DOWN}"><img src="//ivacuum.org/i/_/arrow_270.png" alt=""></a> 
 				{elseif not $row@first and $row@last}
 					<a href="{$row.U_MOVE_UP}"><img src="//ivacuum.org/i/_/arrow_090.png" alt=""></a>	
-					{$ICON_MOVE_DOWN_DISABLED}
-				{else}
-					{$ICON_MOVE_UP_DISABLED}
-					{$ICON_MOVE_DOWN_DISABLED}
 				{/if}
 				<a href="{$row.U_EDIT}"><img src="//ivacuum.org/i/_/pencil.png" alt=""></a> 
 				<a href="#" onclick="if(confirm('Будет удалена вся информация, связанная с этой записью! Продолжить?')) { document.location = '{$row.U_DELETE}'; return false; }"><img src="//ivacuum.org/i/_/cross.png" alt=""></a>
