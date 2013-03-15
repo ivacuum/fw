@@ -418,6 +418,12 @@ class router
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
 		
+		/* Загрузка блока */
+		if (!$row && !$is_dir && $parent_id && function_exists('get_page_block'))
+		{
+			$row = get_page_block($page_url, $parent_id, 'pages');
+		}
+		
 		return $row;
 	}
 }
