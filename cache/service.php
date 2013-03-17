@@ -106,17 +106,12 @@ class service
 		$language  = strlen($language) === 2 ? $language : '';
 		$sites     = [];
 		
-		if (!$language)
+		if ($language && isset($hostnames["{$hostname}_{$language}"]))
 		{
-			return isset($hostnames[$hostname]) ? $this->get_site_info_by_id($hostnames[$hostname]) : false;
+			return $this->get_site_info_by_id($hostnames["{$hostname}_{$language}"]);
 		}
 		
-		if (!isset($hostnames["{$hostname}_{$language}"]))
-		{
-			return false;
-		}
-		
-		return $this->get_site_info_by_id($hostnames["{$hostname}_{$language}"]);
+		return isset($hostnames[$hostname]) ? $this->get_site_info_by_id($hostnames[$hostname]) : false;
 	}
 
 	/**
