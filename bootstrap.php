@@ -27,15 +27,9 @@ require(SITE_DIR . '../config.php');
 
 $app = new application($app);
 $app['autoloader']->register_namespaces(['fw' => $app['dir.fw'], 'app' => $app['dir.app']])
-	->register_pears([
-		'Twig'  => "{$app['dir.lib']}/twig/{$app['version.twig']}",
-		'Swift' => "{$app['dir.lib']}/swiftmailer/{$app['version.swift']}/classes",
-	])
+	->register_pear('Swift', "{$app['dir.lib']}/swiftmailer/{$app['version.swift']}/classes")
 	->set_namespace_prefix('fw', $app::VERSION)
-	->set_pear_prefixes([
-		'Twig'  => $app['version.twig'],
-		'Swift' => $app['version.swift'],
-	]);
+	->set_pear_prefix('Swift', $app['version.swift']);
 
 require(FW_DIR . 'constants.php');
 require(SITE_DIR . '../constants.php');
