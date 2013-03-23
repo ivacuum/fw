@@ -84,7 +84,7 @@ function get_preg_expression($type)
 * Внутренняя ссылка
 *
 * @param	string	$url		ЧПУ ссылка
-* @param	string	$prefix		Префикс (по умолчанию $app['config']['site_root_path'])
+* @param	string	$prefix		Префикс (по умолчанию $app['config']['site.root_path'])
 *
 * @return	string				Готовый URL
 */
@@ -106,7 +106,7 @@ function ilink($url = '', $prefix = false)
 		* /acp/
 		* /about.html
 		*/
-		$link = $app['config']['site_root_path'];
+		$link = $app['config']['site.root_path'];
 		$url  = substr($url, 1);
 	}
 	elseif (0 === strpos($url, 'http://'))
@@ -121,7 +121,7 @@ function ilink($url = '', $prefix = false)
 	}
 	else
 	{
-		$link = false === $prefix ? $app['config']['site_root_path'] : $prefix;
+		$link = false === $prefix ? $app['config']['site.root_path'] : $prefix;
 		$link .= substr($link, -1) == '/' ? '' : '/';
 	}
 
@@ -130,7 +130,7 @@ function ilink($url = '', $prefix = false)
 	*
 	* Если язык уже присутствует в ссылке, то пропускаем этот шаг
 	*/
-	if ($link == $app['config']['site_root_path'] && false === $prefix)
+	if ($link == $app['config']['site.root_path'] && false === $prefix)
 	{
 		if (!$app['site_info']['default'] && (false === strpos($link . $url, "/{$app['site_info']['language']}/")))
 		{
@@ -141,7 +141,7 @@ function ilink($url = '', $prefix = false)
 	$link .= $url;
 	$ary = pathinfo($url);
 	
-	if (isset($ary['extension']) || substr($link, -1) == '/' || !$app['config']['router_default_extension'])
+	if (isset($ary['extension']) || substr($link, -1) == '/' || !$app['config']['router.default_extension'])
 	{
 		return $link;
 	}
@@ -270,7 +270,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'LOGIN_EXPLAIN' => $l_explain,
 		'USERNAME'      => $admin ? $app['user']['username'] : '',
 
-		'U_SEND_PASSWORD' => $app['config']['email_enable'] ? 'ucp/sendpassword.html' : '',
+		'U_SEND_PASSWORD' => 'ucp/sendpassword.html',
 		'U_TERMS_USE'     => 'ucp/terms.html',
 		'U_PRIVACY'       => 'ucp/privacy.html',
 
@@ -446,7 +446,7 @@ function parse_smilies($message, $force_option = false)
 	}
 	else
 	{
-		return preg_replace('#<!\-\- <smile name="(.*?)"><url>(.*?)</url><title>(.*?)</title></smile> \-\->#', '<img src="' . $app['config']['smilies_path'] . '/\2" alt="\1" title="\3">', $message);
+		return preg_replace('#<!\-\- <smile name="(.*?)"><url>(.*?)</url><title>(.*?)</title></smile> \-\->#', '<img src="' . $app['config']['smilies.path'] . '/\2" alt="\1" title="\3">', $message);
 	}
 }
 

@@ -109,7 +109,7 @@ class imagetransform
 			return false;
 		}
 		
-		$watermark = sprintf('%swatermark_%s.png', $app['config']['watermarks_dir'], $watermark);
+		$watermark = sprintf('%swatermark_%s.png', $app['config']['watermarks.dir'], $watermark);
 		
 		if (!file_exists($watermark))
 		{

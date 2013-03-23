@@ -53,7 +53,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 		$this->referer       = $this->request->header('Referer');
 		
 		$session_config['cookie_domain'] = $session_config['cookie_domain'] ?: $this->config['cookie_domain'];
-		$session_config['name'] = $this->config['cookie_prefix'] . $session_config['name'];
+		$session_config['name'] = $this->config['cookie.prefix'] . $session_config['name'];
 		
 		foreach ($session_config as $key => $value)
 		{
@@ -157,7 +157,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 		if ($mode == 'redirect')
 		{
 			/* Перенаправление на форму авторизации */
-			$this->request->redirect(ilink(sprintf('%s?goto=%s', $this->signin_url, $this->get_back_url())), $this->config['router_local_redirect']);
+			$this->request->redirect(ilink(sprintf('%s?goto=%s', $this->signin_url, $this->get_back_url())), $this->config['router.local_redirect']);
 		}
 	}
 
@@ -169,9 +169,9 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 	public function read($session_id)
 	{
 		/* Отличительные черты пользователя */
-		$this->cookie['k'] = $this->request->cookie("{$this->config['cookie_prefix']}k", '');
-		$this->cookie['u'] = $this->request->cookie("{$this->config['cookie_prefix']}u", 0);
-		$this->session_id  = $this->request->cookie("{$this->config['cookie_prefix']}sid", '');
+		$this->cookie['k'] = $this->request->cookie("{$this->config['cookie.prefix']}k", '');
+		$this->cookie['u'] = $this->request->cookie("{$this->config['cookie.prefix']}u", 0);
+		$this->session_id  = $this->request->cookie("{$this->config['cookie.prefix']}sid", '');
 		
 		if (!$this->session_id)
 		{
@@ -431,7 +431,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 	{
 		$_SESSION = $this->data = [];
 
-		if (!$this->config['autologin_allow'])
+		if (!$this->config['autologin.allow'])
 		{
 			$this->cookie['k'] = $autologin = false;
 		}
@@ -626,7 +626,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 			return true;
 		}
 
-		$cookie_expire = $this->ctime + ($this->config['autologin_time'] ? 86400 * $this->config['autologin_time'] : 31536000);
+		$cookie_expire = $this->ctime + ($this->config['autologin.time'] ? 86400 * $this->config['autologin.time'] : 31536000);
 		$this->set_cookie('k', $this->cookie['k'], $cookie_expire);
 		$this->set_cookie('u', $this->cookie['u'], $cookie_expire);
 		
@@ -646,7 +646,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 				WHERE
 					user_id = ' . $this->db->check_value($this->data['user_id']) . '
 				AND
-					session_time >= ' . $this->db->check_value($this->ctime - (max($this->config['session_length'], $this->config['form_token_lifetime'])));
+					session_time >= ' . $this->db->check_value($this->ctime - (max(ini_get('session.gc_maxlifetime'), $this->config['form.token_lifetime'])));
 			$result = $this->db->query($sql);
 			$row = $this->db->fetchrow($result);
 			$this->db->freeresult($result);
@@ -718,14 +718,14 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 			$expire = 0 !== $expire ? gmdate(DATE_RFC1123, $expire) : 0;
 		}
 
-		$name   = rawurlencode($this->config['cookie_prefix'] . $name);
+		$name   = rawurlencode($this->config['cookie.prefix'] . $name);
 		$value  = rawurlencode($value);
 		$expire = 0 !== $expire ? "Expires={$expire}; " : '';
-		$domain = false !== $domain ? $domain : $this->config['cookie_domain'];
+		$domain = false !== $domain ? $domain : $this->config['cookie.domain'];
 		$domain = !$domain || $domain == 'localhost' || $domain == '127.0.0.1' ? '' : "Domain={$domain}; ";
-		$secure = $this->config['cookie_secure'] ? 'Secure; ' : '';
+		$secure = $this->config['cookie.secure'] ? 'Secure; ' : '';
 
-		header("Set-Cookie: {$name}={$value}; {$expire}Path={$this->config['cookie_path']}; {$domain}{$secure}HttpOnly", false);
+		header("Set-Cookie: {$name}={$value}; {$expire}Path={$this->config['cookie.path']}; {$domain}{$secure}HttpOnly", false);
 	}
 
 	/**
@@ -882,14 +882,14 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 		/* Не превышает ли время простоя время жизни сессии */
 		if (!$this->data['session_autologin'])
 		{
-			return $this->data['session_time'] < $this->ctime - ($this->config['session_length'] + 60);
+			return $this->data['session_time'] < $this->ctime - (ini_get('session.gc_maxlifetime') + 60);
 		}
 		
 		/**
 		* Если используется автовход, то проверяем включен ли он на сайте
 		* и не превышает ли максимальное время действия автовхода
 		*/
-		if (!$this->config['autologin_allow'] || ($this->config['autologin_time'] && $this->data['session_time'] < $this->ctime - (86400 * $this->config['autologin_time']) + 60))
+		if (!$this->config['autologin.allow'] || ($this->config['autologin.time'] && $this->data['session_time'] < $this->ctime - (86400 * $this->config['autologin.time']) + 60))
 		{
 			return true;
 		}

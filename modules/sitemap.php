@@ -126,7 +126,7 @@ class traverse_sitemap_pages_xml extends site_pages
 		*
 		* Исключение: главная страница сайта
 		*/
-		if (!$this->row['is_dir'] && $this->row['page_url'] == $this->config['router_directory_index'])
+		if (!$this->row['is_dir'] && $this->row['page_url'] == $this->config['router.directory_index'])
 		{
 			$this->base_url[] = '';
 			

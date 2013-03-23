@@ -35,7 +35,7 @@ class validator
 	*/
 	public function is_solved()
 	{
-		if (!$this->config['confirm_enable'])
+		if (!$this->config['confirm.enable'])
 		{
 			return true;
 		}
@@ -53,7 +53,7 @@ class validator
 	*/
 	public function reset()
 	{
-		if (!$this->config['confirm_enable'])
+		if (!$this->config['confirm.enable'])
 		{
 			return;
 		}

@@ -80,7 +80,7 @@ class page
 			$base_url = isset($ary['extension']) ? $ary['dirname'] : $this->url;
 		}
 		
-		$url = $row['is_dir'] ? $row['page_url'] : ($row['page_url'] != $this->config['router_directory_index'] ? ($this->format ? sprintf('%s.%s', $row['page_url'], $this->format) : $row['page_url']) : '');
+		$url = $row['is_dir'] ? $row['page_url'] : ($row['page_url'] != $this->config['router.directory_index'] ? ($this->format ? sprintf('%s.%s', $row['page_url'], $this->format) : $row['page_url']) : '');
 		
 		return ilink(sprintf('%s/%s', $base_url, $url));
 	}
@@ -339,7 +339,7 @@ class page
 				'IMG'   => $row['site_language'],
 				'NAME'  => $ary['language_name'],
 				'TITLE' => $ary['language_title'],
-				'URL'   => ilink('', $this->config['site_root_path'] . $row['site_language'])
+				'URL'   => ilink('', $this->config['site.root_path'] . $row['site_language'])
 			]);
 			
 			if ($this->request->language == $ary['language_title'])
@@ -379,7 +379,7 @@ class page
 		/* Вывод профайлера только для html-документов */
 		if ($this->format == 'html' && !$this->request->is_ajax && !defined('IN_SQL_ERROR'))
 		{
-			if ($this->config['profiler_display'] && ($this->auth->acl_get('a_') || $this->user->ip == '192.168.1.1'))
+			if ($this->config['profiler.display'] && ($this->auth->acl_get('a_') || $this->user->ip == '192.168.1.1'))
 			{
 				$display_profiler = true;
 			}
@@ -399,9 +399,9 @@ class page
 			}
 		}
 		
-		if ($this->config['profiler_send_stats'])
+		if ($this->config['profiler.send_stats'])
 		{
-			$this->profiler->send_stats($this->config['profiler_ip'], $this->config['profiler_port'], $this->request->hostname, $this->request->url);
+			$this->profiler->send_stats($this->config['profiler.host'], $this->config['profiler.port'], $this->request->hostname, $this->request->url);
 		}
 
 		exit;

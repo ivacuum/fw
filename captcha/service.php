@@ -59,18 +59,18 @@ class service
 		
 		$symbols_last_index = sizeof($symbols) - 1;
 		
-		for ($i = 0, $len = mt_rand($this->config['confirm_min_chars'], $this->config['confirm_max_chars']); $i < $len; $i++)
+		for ($i = 0, $len = mt_rand($this->config['confirm.min_chars'], $this->config['confirm.max_chars']); $i < $len; $i++)
 		{
 			$this->code .= $symbols[mt_rand(0, $symbols_last_index)];
 		}
 		
-		// $this->code = strtr(mb_strtoupper(make_random_string(mt_rand($this->config['confirm_min_chars'], $this->config['confirm_max_chars']))), $transform);
+		// $this->code = strtr(mb_strtoupper(make_random_string(mt_rand($this->config['confirm.min_chars'], $this->config['confirm.max_chars']))), $transform);
 		$this->solved = false;
 		
 		$sql_ary = [
 			'session_id' => (string) $this->user->session_id,
 			'code'       => (string) $this->code,
-			'expire'    => (int) $this->user->ctime + $this->config['confirm_expire']
+			'expire'     => (int) $this->user->ctime + $this->config['confirm.expire']
 		];
 		
 		$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $this->db->build_array('INSERT', $sql_ary) . ' ON DUPLICATE KEY UPDATE code = values(code), expire = values(expire)';

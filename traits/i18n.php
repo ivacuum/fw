@@ -32,7 +32,7 @@ trait i18n
 		* Определяем переменные
 		*/
 		$format = !$format ? $this->config['dateformat'] : $format;
-		$tz = 3600 * $this->config['site_tz'];
+		$tz = 3600 * $this->config['site.tz'];
 		$forcedate = !isset($this->lang['datetime']) ? true : $forcedate;
 
 		if (!$midnight)
@@ -231,7 +231,7 @@ trait i18n
 	*/
 	public function num_format($value, $decimals = 0)
 	{
-		return number_format($value, $decimals, $this->config['number_dec_point'], $this->config['number_thousands_sep']);
+		return number_format($value, $decimals, $this->config['number.dec_point'], $this->config['number.thousands_sep']);
 	}
 	
 	/**
