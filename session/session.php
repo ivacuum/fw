@@ -52,7 +52,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 		$this->ip            = $this->request->server('REMOTE_ADDR');
 		$this->referer       = $this->request->header('Referer');
 		
-		$session_config['cookie_domain'] = $session_config['cookie_domain'] ?: $this->config['cookie_domain'];
+		$session_config['cookie_domain'] = $session_config['cookie_domain'] ?: $this->config['cookie.domain'];
 		$session_config['name'] = $this->config['cookie.prefix'] . $session_config['name'];
 		
 		foreach ($session_config as $key => $value)
