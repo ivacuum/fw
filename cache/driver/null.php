@@ -14,6 +14,7 @@ class null
 	
 	public function _get($var)
 	{
+		return false;
 	}
 	
 	public function _set($var, $data, $ttl = 0)
