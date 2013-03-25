@@ -280,8 +280,12 @@ class page
 	*/
 	public function obtain_handlers_urls()
 	{
+		if (false === $this->handlers_urls = $this->cache->obtain_handlers_urls($this->data['site_id']))
+		{
+			return $this;
+		}
+
 		$handler = get_class($this);
-		$this->handlers_urls = $this->cache->obtain_handlers_urls($this->data['site_id']);
 		
 		if (0 === strpos($handler, 'app\\'))
 		{
