@@ -12,6 +12,14 @@ class null
 	{
 	}
 	
+	public function _get($var)
+	{
+	}
+	
+	public function _set($var, $data, $ttl = 0)
+	{
+	}
+	
 	public function delete($var, $table = '')
 	{
 	}
