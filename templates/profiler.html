@@ -71,7 +71,7 @@ function hideProfiler() {
 					{elseif $row.type == 'speed'}
 						<div><pre>{$row.data}</pre> <em>{$row.name}</em></div>
 					{elseif $row.type == 'error'}
-						<div><em>Line {$row.line}</em> : {$row.data} <pre>{$row.call_stack}</pre></div>
+						<div>{$row.data} {$row.file}:{$row.line} <pre>{$row.call_stack}</pre></div>
 					{/if}
 					</td>
 				</tr>
