@@ -1,6 +1,6 @@
 <?php
 /**
-* @package ivacuum.fw
+* @package fw
 * @copyright (c) 2013
 */
 
