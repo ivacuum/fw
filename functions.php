@@ -164,32 +164,15 @@ function json_output($output)
 /**
 * Generate login box or verify password
 */
-function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
+function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false)
 {
 	global $app;
 
 	$err = '';
 
-	/* Убеждаемся, что учтены настройки пользователя */
-	if (empty($app['user']->lang))
-	{
-		$app['user']->setup();
-	}
-
-	/**
-	* Пользователь пытается авторизоваться как администратор не имея на то прав
-	*/
+	/* Пользователь пытается авторизоваться как администратор не имея на то прав */
 	if ($admin && !$app['auth']->acl_get('a_'))
 	{
-		/**
-		* Анонимные/неактивные пользователи никак не смогут попасть в админку,
-		* даже если у них есть соответствующие привилегии
-		*/
-		// if ($app['user']->is_registered)
-		// {
-		// 	add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
-		// }
-		
 		trigger_error('NO_AUTH_ADMIN');
 	}
 
@@ -201,40 +184,16 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$username	= $app['request']->post('username', '');
 		$viewonline = $admin ? $app['user']['session_viewonline'] : (int) !$app['request']->is_set_post('viewonline');
 
-		// Check if the supplied username is equal to the one stored within the database if re-authenticating
 		if ($admin && $username != $app['user']['username'])
 		{
-			// add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
 			trigger_error('NO_AUTH_ADMIN_USER_DIFFER');
 		}
 
-		// If authentication is successful we redirect user to previous page
 		$result = $app['auth']->login($username, $password, $autologin, $viewonline, $admin);
-
-		/**
-		* Ведем лог всех авторизаций администраторов
-		*/
-		// if ($admin)
-		// {
-		// 	if ($result['status'] == 'OK')
-		// 	{
-		// 		add_log('admin', 'LOG_ADMIN_AUTH_SUCCESS');
-		// 	}
-		// 	else
-		// 	{
-		// 		/**
-		// 		* Анонимные/неактивные пользователя никогда не попадут в админку
-		// 		*/
-		// 		if ($app['user']->is_registered)
-		// 		{
-		// 			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
-		// 		}
-		// 	}
-		// }
 
 		if ($result['status'] == 'OK')
 		{
-			$message  = $l_success ? $l_success : $app['user']->lang['LOGIN_REDIRECT'];
+			$message  = $l_success ? $l_success : $app['user']->lang('LOGIN_REDIRECT');
 
 			/* Разрешаем создателю авторизоваться даже при бане */
 			if (defined('IN_CHECK_BAN') && $result['user_row']['user_id'] === 1)
@@ -270,13 +229,8 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'LOGIN_EXPLAIN' => $l_explain,
 		'USERNAME'      => $admin ? $app['user']['username'] : '',
 
-		'U_SEND_PASSWORD' => 'ucp/sendpassword.html',
-		'U_TERMS_USE'     => 'ucp/terms.html',
-		'U_PRIVACY'       => 'ucp/privacy.html',
-
-		'S_ADMIN_AUTH'         => $admin,
-		'S_DISPLAY_FULL_LOGIN' => $s_display ? true : false,
-		'S_HIDDEN_FIELDS'      => $s_hidden_fields
+		'S_ADMIN_AUTH'    => $admin,
+		'S_HIDDEN_FIELDS' => $s_hidden_fields,
 	]);
 }
 

@@ -25,7 +25,7 @@ class user extends session
 		if (!$username)
 		{
 			return [
-				'message'  => 'Вы не указали имя',
+				'message'  => 'Вы не указали имя или электронную почту',
 				'status'   => 'ERROR_USERNAME',
 				'user_row' => ['user_id' => 0],
 			];
@@ -57,6 +57,26 @@ class user extends session
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
 		$attempts = 0;
+		
+		if (!$row)
+		{
+			$sql = '
+				SELECT
+					user_id,
+					user_active,
+					username,
+					user_password,
+					user_salt,
+					user_email,
+					user_login_attempts
+				FROM
+					' . USERS_TABLE . '
+				WHERE
+					user_email = ' . $this->db->check_value($username);
+			$this->db->query($sql);
+			$row = $this->db->fetchrow();
+			$this->db->freeresult();
+		}
 		
 		// if ($ip)
 		// {
