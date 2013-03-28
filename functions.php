@@ -278,8 +278,6 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'S_DISPLAY_FULL_LOGIN' => $s_display ? true : false,
 		'S_HIDDEN_FIELDS'      => $s_hidden_fields
 	]);
-
-	$app['template']->file = 'ucp_login.html';
 }
 
 /**
