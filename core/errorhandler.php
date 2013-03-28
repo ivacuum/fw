@@ -242,8 +242,10 @@ class errorhandler
 	/**
 	* Регистрация обработчика
 	*/
-	public static function register()
+	public static function register($mail = '')
 	{
+		self::$mail = $mail;
+		
 		set_error_handler([new static, 'handle_error']);
 		register_shutdown_function([new static, 'handle_fatal_error']);
 	}
