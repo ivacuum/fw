@@ -11,6 +11,7 @@ namespace fw\core;
 */
 class errorhandler
 {
+	public static $debug_ips;
 	public static $mail;
 	
 	public static function handle_error($type, $text, $file, $line)
@@ -186,7 +187,7 @@ class errorhandler
 				
 					static::log_mail("Fatal error: {$error['message']} on line {$error['line']} in file {$error['file']}");
 
-					if ($_SERVER['REMOTE_ADDR'] != '192.168.1.1')
+					if (!in_array($_SERVER['REMOTE_ADDR'], self::$debug_ips))
 					{
 						return;
 					}
@@ -242,9 +243,10 @@ class errorhandler
 	/**
 	* Регистрация обработчика
 	*/
-	public static function register($mail = '')
+	public static function register($mail = '', array $debug_ips = [])
 	{
 		self::$mail = $mail;
+		self::$debug_ips = $debug_ips;
 		
 		set_error_handler([new static, 'handle_error']);
 		register_shutdown_function([new static, 'handle_fatal_error']);

@@ -16,6 +16,9 @@ $app = [
 	'captcha.fonts' => ['tremble.ttf'],
 	'captcha.type'  => 'gd',
 	
+	/* Настройки отладки */
+	'debug.ips' => [],
+	
 	/* Настройки подключения к БД */
 	'db.host' => 'localhost',
 	'db.port' => false,

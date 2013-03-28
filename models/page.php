@@ -383,7 +383,7 @@ class page
 		/* Вывод профайлера только для html-документов */
 		if ($this->format == 'html' && !$this->request->is_ajax && !defined('IN_SQL_ERROR'))
 		{
-			if ($this->config['profiler.display'] && ($this->auth->acl_get('a_') || $this->user->ip == '192.168.1.1'))
+			if ($this->config['profiler.display'] && ($this->auth->acl_get('a_') || in_array($this->user->ip, $this->app['debug.ips'])))
 			{
 				$display_profiler = true;
 			}
