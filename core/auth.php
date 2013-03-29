@@ -598,11 +598,10 @@ class auth
 
 	/**
 	* Авторизация
-	* TODO
 	*/
-	public function login($username, $password, $autologin = false, $viewonline = 1, $admin = 0)
+	public function login($username_or_email, $password, $autologin = false, $viewonline = 1, $admin = 0)
 	{
-		$login = $this->user->login($username, $password);
+		$login = $this->user->login($username_or_email, $password);
 
 		if ($login['status'] == 'OK')
 		{

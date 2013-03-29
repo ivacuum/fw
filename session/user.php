@@ -18,14 +18,14 @@ class user extends session
 	/**
 	* Авторизация
 	*/
-	public function login($username, $password)
+	public function login($username_or_email, $password)
 	{
-		$username = mb_strtolower($username);
+		$username_or_email = mb_strtolower($username_or_email);
 		
 		if (!$username)
 		{
 			return [
-				'message'  => 'Вы не указали имя или электронную почту',
+				'message'  => 'Вы не указали логин или электронную почту',
 				'status'   => 'ERROR_USERNAME',
 				'user_row' => ['user_id' => 0],
 			];
@@ -52,7 +52,7 @@ class user extends session
 			FROM
 				' . USERS_TABLE . '
 			WHERE
-				username_clean = ' . $this->db->check_value($username);
+				username_clean = ' . $this->db->check_value($username_or_email);
 		$this->db->query($sql);
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
@@ -72,7 +72,7 @@ class user extends session
 				FROM
 					' . USERS_TABLE . '
 				WHERE
-					user_email = ' . $this->db->check_value($username);
+					user_email = ' . $this->db->check_value($username_or_email);
 			$this->db->query($sql);
 			$row = $this->db->fetchrow();
 			$this->db->freeresult();
@@ -110,7 +110,7 @@ class user extends session
 		if (!$row)
 		{
 			return [
-				'message'  => 'Неверно указано имя или пароль',
+				'message'  => 'Неверно указан логин, почта или пароль',
 				'status'   => 'ERROR_LOGIN',
 				'user_row' => ['user_id' => 0],
 			];

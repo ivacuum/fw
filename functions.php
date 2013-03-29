@@ -162,7 +162,7 @@ function json_output($output)
 }
 
 /**
-* Generate login box or verify password
+* Форма входа или повторного ввода пароля в системе управления
 */
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false)
 {
@@ -178,18 +178,18 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 	if ($app['request']->is_set_post('submit'))
 	{
-		$admin 		= $admin ? 1 : 0;
-		$autologin	= $app['request']->is_set_post('autologin');
-		$password	= $app['request']->post('password', '');
-		$username	= $app['request']->post('username', '');
-		$viewonline = $admin ? $app['user']['session_viewonline'] : (int) !$app['request']->is_set_post('viewonline');
+		$admin             = $admin ? 1 : 0;
+		$autologin         = $app['request']->is_set_post('autologin');
+		$password          = $app['request']->post('password', '');
+		$username_or_email = $app['request']->post('username', '');
+		$viewonline        = $admin ? $app['user']['session_viewonline'] : (int) !$app['request']->is_set_post('viewonline');
 
-		if ($admin && $username != $app['user']['username'])
+		if ($admin && $username_or_email != $app['user']['username'] && $username_or_email != $app['user']['user_email'])
 		{
 			trigger_error('NO_AUTH_ADMIN_USER_DIFFER');
 		}
 
-		$result = $app['auth']->login($username, $password, $autologin, $viewonline, $admin);
+		$result = $app['auth']->login($username_or_email, $password, $autologin, $viewonline, $admin);
 
 		if ($result['status'] == 'OK')
 		{
