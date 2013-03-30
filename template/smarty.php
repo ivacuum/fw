@@ -19,7 +19,6 @@ class smarty
 		
 		$this->driver = new \Smarty();
 		$this->driver->setTemplateDir($dirs);
-		$this->driver->muteExpectedErrors();
 		
 		$this->driver->compile_dir     = $cache_dir;
 		$this->driver->caching         = false;
