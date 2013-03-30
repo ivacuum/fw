@@ -219,6 +219,6 @@ class user extends session
 				user_id = ' . $this->db->check_value($user_id);
 		$this->db->query($sql);
 		
-		$this->data = array_merge($this->data, $sql_ary);
+		$this->data = $user_id == $this->data['user_id'] ? array_merge($this->data, $sql_ary) : $this->data;
 	}
 }
