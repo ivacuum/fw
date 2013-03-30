@@ -43,22 +43,22 @@ class mailer
 	/**
 	* Отложенная отправка письма
 	*/
-	public function postpone($template = '', $subject = '', $content_type = 'text/html')
+	public function postpone($subject = '', $template = '', $content_type = 'text/html')
 	{
-		register_shutdown_function([$this, 'send'], $template, $subject, $content_type);
+		register_shutdown_function([$this, 'send'], $subject, $template, $content_type);
 	}
 
 	/**
 	* Отправка письма
 	*/
-	public function send($template = '', $subject = '', $content_type = 'text/html')
+	public function send($subject = '', $template = '', $content_type = 'text/html')
 	{
-		$template = $template ? "email/{$template}" : "email/{$this->template->file}";
-		
 		if ($subject)
 		{
 			$this->message->setSubject($subject);
 		}
+		
+		$template = $template ? "email/{$template}" : "email/{$this->template->file}";
 		
 		$this->message->setBody($this->template->render($template), $content_type);
 		$this->mailer->send($this->message, $this->failures);
