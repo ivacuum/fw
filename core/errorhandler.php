@@ -118,7 +118,7 @@ class errorhandler
 						->set_site_menu();
 
 					/* Предустановки */
-					if( method_exists($handler, '_setup') )
+					if (method_exists($handler, '_setup'))
 					{
 						call_user_func([$handler, '_setup']);
 					}
@@ -128,7 +128,7 @@ class errorhandler
 				$handler->data['page_noindex'] = 1;
 
 				/**
-				* Необходимо выдать HTTP/1.0 404 Not Found,
+				* Необходимо выдать HTTP/1.1 404 Not Found,
 				* если сообщение об отсутствии данных или ошибке
 				*/
 				preg_match('#NOT_FOUND$#', $text, $matches);
@@ -137,6 +137,8 @@ class errorhandler
 				{
 					http_response_code(404);
 					// static::log_mail('Page http://' . $app['request']->hostname . $app['user']->data['session_page'] . ' not found', '404 Not Found');
+					
+					$handler->data['page_title'] = '404 Not Found';
 				}
 				
 				if (!$handler->format || $handler->format == 'json')
