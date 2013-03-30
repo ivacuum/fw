@@ -358,6 +358,7 @@ class page
 			'S_ISP'             => $this->request->isp,
 			'S_LANGUAGE'        => $this->request->language,
 			'S_OPENID_PROVIDER' => $this->user['openid_provider'],
+			'S_SERVER_NAME'     => $this->request->server_name,
 			'S_USER_REGISTERED' => $this->user->is_registered,
 			'S_USERNAME'        => $this->user['username'],
 
