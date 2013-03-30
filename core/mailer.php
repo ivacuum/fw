@@ -29,7 +29,8 @@ class mailer
 			->setPassword($this->config['smtp.pass']);
 		
 		$this->mailer  = \Swift_Mailer::newInstance($this->transport);
-		$this->message = \Swift_Message::newInstance();
+		$this->message = \Swift_Message::newInstance()
+			->setFrom($config['email.noreply']);
 	}
 
 	/**
