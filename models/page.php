@@ -6,6 +6,7 @@
 
 namespace fw\models;
 
+use fw\helpers\traverse\tree\site_pages;
 use fw\traits\breadcrumbs;
 use fw\traits\injection;
 
@@ -640,6 +641,85 @@ class page
 	}
 	
 	/**
+	* Подключение дополнительного меню
+	*/
+	protected function append_menu($alias)
+	{
+		$language = $this->request->language;
+		$menu_id  = 0;
+		
+		foreach ($this->cache->obtain_menus() as $key => $ary)
+		{
+			if ($key == $alias)
+			{
+				$menu_id = $ary['menu_id'];
+				break;
+			}
+		}
+		
+		if (!$menu_id)
+		{
+			return $this;
+		}
+		
+		if (false === $menu = $this->cache->get("menu_{$menu_id}_{$language}"))
+		{
+			$sql = '
+				SELECT
+					*
+				FROM
+					' . PAGES_TABLE . '
+				WHERE
+					site_id = ' . $this->db->check_value($this->data['site_id']) . '
+				ORDER BY
+					left_id ASC';
+			$this->db->query($sql);
+			$traversal = new traverse_menu(true, $menu_id);
+			$traversal->_set_config($this->config);
+			
+			while ($row = $this->db->fetchrow())
+			{
+				$traversal->process_node($row);
+			}
+			
+			$this->db->freeresult();
+			$menu = $traversal->get_tree_data();
+			
+			$this->cache->set("menu_{$menu_id}_{$language}", $menu);
+		}
+		
+		$page_url = ilink($this->full_url);
+		$root_url = ilink();
+		
+		foreach ($menu as $row)
+		{
+			if ($row['URL'] == $root_url)
+			{
+				if ($page_url == $row['URL'])
+				{
+					$row['ACTIVE'] = true;
+				}
+			}
+			else
+			{
+				if (0 === mb_strpos($page_url, $row['URL']))
+				{
+					$row['ACTIVE'] = true;
+					
+					if (!empty($row['children']))
+					{
+						$this->recursive_set_menu_active_items($row['children'], $row['URL']);
+					}
+				}
+			}
+			
+			$this->template->append($alias, $row);
+		}
+		
+		return $this;
+	}
+
+	/**
 	* Установка SEO-параметров
 	*/
 	protected function append_seo_params($row)
@@ -689,5 +769,38 @@ class page
 				}
 			}
 		}
+	}
+}
+
+/**
+* Древовидное меню
+*/
+class traverse_menu extends site_pages
+{
+	protected $menu_id;
+	
+	function __construct($return_as_tree = false, $menu_id)
+	{
+		parent::__construct($return_as_tree);
+		
+		$this->menu_id = $menu_id;
+	}
+	
+	protected function get_data()
+	{
+		$ary = parent::get_data();
+		
+		return [
+			'ID'       => $this->row['page_id'],
+			'IMAGE'    => $this->row['page_image'],
+			'TITLE'    => $this->row['page_name'],
+			'URL'      => $ary['url'],
+			'children' => []
+		];
+	}
+	
+	protected function skip_condition()
+	{
+		return !$this->row['page_enabled'] || $this->row["display_in_menu_{$this->menu_id}"] != 1;
 	}
 }
