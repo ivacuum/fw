@@ -218,5 +218,7 @@ class user extends session
 			WHERE
 				user_id = ' . $this->db->check_value($user_id);
 		$this->db->query($sql);
+		
+		$this->data = array_merge($this->data, $sql_ary);
 	}
 }
