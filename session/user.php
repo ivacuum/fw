@@ -22,7 +22,7 @@ class user extends session
 	{
 		$username_or_email = mb_strtolower($username_or_email);
 		
-		if (!$username)
+		if (!$username_or_email)
 		{
 			return [
 				'message'  => 'Вы не указали логин или электронную почту',
