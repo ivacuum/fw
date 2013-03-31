@@ -119,74 +119,39 @@ class router
 	*/
 	public function handle_request()
 	{
-		$dynamic_handle = false;
 		$handler_name = $handler_method = '';
 		$parent_id = 0;
 
-		/**
-		* /[index.html]
-		* /[объявление.html]
-		*/
-		if (empty($this->params))
-		{
-			$row = $this->get_page_row_by_url($this->page, false, $parent_id);
-			
-			if ($row['page_handler'] && $row['handler_method'])
-			{
-				$handler_name   = $row['page_handler'];
-				$handler_method = $row['handler_method'];
-			}
-			
-			$this->page_link[] = $this->page != $this->config['router.directory_index'] ? ($this->format ? sprintf('%s.%s', $this->page, $this->format) : $this->page) : '';
-
-			if ($row['page_url'] != '*')
-			{
-				$this->breadcrumbs($row['page_name'], ilink($this->page_link[0]), $row['page_image']);
-			}
-		}
-		
 		/**
 		* /[игры/diablo2]/скриншоты.html
 		* /[users/a/admin]/posts.html
 		*/
 		for ($i = 0; $i < $this->params_count; $i++)
 		{
-			$ary = $this->get_page_row_by_url($this->params[$i], true, $parent_id);
-
-			/**
-			* /[новости/2011]/07/14/обновление.html
-			*
-			* Причем существует только "новости", остальные
-			* параметры пересылаются обработчику
-			*/
-			if ($i > 0 && !$ary && $handler_name && $handler_method && $handler_method != 'static_page')
+			if (false == $ary = $this->get_page_row_by_url($this->params[$i], true, $parent_id))
 			{
-				$dynamic_handle = true;
-				break;
-			}
-			elseif (!$ary)
-			{
-				if (isset($row) && $row['page_redirect'])
-				{
-					$this->request->redirect(ilink($row['page_redirect']), 301, $this->config['router.local_redirect']);
-				}
-				
 				trigger_error('PAGE_NOT_FOUND');
 			}
 			
 			$row = $ary;
 			
-			if ($row['is_dir'])
+			/**
+			* Если редирект установлен у родительской страницы,
+			* то автоматически становятся недоступны все вложенные
+			*/
+			if (!empty($row) && $row['page_redirect'])
 			{
-				if ($row['page_handler'] && $row['handler_method'])
-				{
-					$handler_name   = $row['page_handler'];
-					$handler_method = $row['handler_method'];
-				}
-				else
-				{
-					$handler_method = 'static_page';
-				}
+				$this->request->redirect(ilink($row['page_redirect']), 301, $this->config['router.local_redirect']);
+			}
+
+			if ($row['page_handler'] && $row['handler_method'])
+			{
+				$handler_name   = $row['page_handler'];
+				$handler_method = $row['handler_method'];
+			}
+			else
+			{
+				$handler_method = 'static_page';
 			}
 			
 			$this->page_link[] = $this->params[$i];
@@ -202,36 +167,41 @@ class router
 		}
 		
 		/**
+		* /[index.html]
+		* /[объявление.html]
+		*
+		* или
+		*
 		* /ucp/[login.html]
 		*/
-		if ($this->params_count > 0 && !$dynamic_handle && false != $ary = $this->get_page_row_by_url($this->page, false, $parent_id))
+		if (!$this->params_count || ($this->params_count > 0 && $this->page != $this->config['router.directory_index']))
 		{
-			if ($this->page != $this->config['router.directory_index'] || $ary['page_url'] != '*')
+			if (false == $row = $this->get_page_row_by_url($this->page, false, $parent_id))
 			{
-				$row = $ary;
-				
-				if ($row['page_handler'] && $row['handler_method'])
-				{
-					$handler_name   = $row['page_handler'];
-					$handler_method = $row['handler_method'];
-				}
-				else
-				{
-					$handler_method = 'static_page';
-				}
+				trigger_error('PAGE_NOT_FOUND');
+			}
+			
+			if ($row['page_handler'] && $row['handler_method'])
+			{
+				$handler_name   = $row['page_handler'];
+				$handler_method = $row['handler_method'];
+			}
+			elseif ($this->params_count > 0)
+			{
+				$handler_method = 'static_page';
+			}
+			
+			if ($this->page != $this->config['router.directory_index'])
+			{
+				$this->page_link[] = $this->format ? "{$this->page}.{$this->format}" : $this->page;
+			}
 
-				if ($this->page != $this->config['router.directory_index'])
-				{
-					$this->page_link[] = $this->format ? sprintf('%s.%s', $this->page, $this->format) : $this->page;
-				}
-
-				if ($row['page_url'] != '*')
-				{
-					$this->breadcrumbs($row['page_name'], ilink(implode('/', $this->page_link)), $row['page_image']);
-				}
+			if ($row['page_url'] != '*')
+			{
+				$this->breadcrumbs($row['page_name'], ilink($this->page_link[0]), $row['page_image']);
 			}
 		}
-		
+
 		if (!$row)
 		{
 			/* На сайте еще нет ни одной страницы */
