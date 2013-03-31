@@ -295,7 +295,7 @@ class pages extends page
 				$page_image = $row['is_dir'] ? 'folder_open' : 'blog';
 
 				$url = ilink($this->url . '?parent_id=' . $parent_id . '&amp;pid=' . $row['page_id']);
-
+				
 				$this->template->append('pages', [
 					'IS_DIR'         => $row['is_dir'],
 					'PAGE_IMAGE'     => $page_image,
@@ -766,15 +766,26 @@ class pages extends page
 		return $target['page_name'];
 	}
 
-	/**
-	* Удаление кэша страниц
-	*/
-	function remove_cache_file()
+	protected function remove_cache_file()
 	{
-		$site_info = $this->cache->get_site_info_by_id($this->data['site_id']);
+		$sql = '
+			SELECT
+				*
+			FROM
+				' . MENUS_TABLE . '
+			WHERE
+				menu_active = 1';
+		$this->db->query($sql);
 		
-		$this->cache->_delete(sprintf('%s_handlers_%s', $site_info['domain'], $site_info['language']));
-		$this->cache->_delete(sprintf('%s_menu_%s', $site_info['domain'], $site_info['language']));
+		while ($row = $this->db->fetchrow())
+		{
+			$this->cache->delete("menu_{$row['menu_id']}_{$this->request->language}");
+		}
+		
+		$this->db->freeresult();
+
+		$this->cache->delete("handlers_{$this->request->language}");
+		$this->cache->delete("menu_{$this->request->language}");
 	}
 	
 	/**
