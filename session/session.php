@@ -402,16 +402,14 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 				user_id = ' . $this->db->check_value($user_id);
 		$this->db->query($sql);
 
-		/**
-		* Также удаляем все текущие сессий, кроме используемой
-		*/
+		/* Также удаляем все текущие сессий, кроме используемой */
 		$sql = '
 			DELETE
 			FROM
 				' . SESSIONS_TABLE . '
 			WHERE
 				user_id = ' . $this->db->check_value($user_id) .
-			($user_id === $this->data ? ' AND session_id <> ' . $this->db->check_value($this->session_id) : '');
+			($user_id == $this->data['user_id'] ? ' AND session_id <> ' . $this->db->check_value($this->session_id) : '');
 		$this->db->query($sql);
 
 		if (false !== $set_new_key && $user_id === $this->data['user_id'] && $this->cookie['k'])
