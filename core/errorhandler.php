@@ -8,6 +8,7 @@ namespace fw\core;
 
 class errorhandler
 {
+	protected static $document_root;
 	protected static $options = [
 		'debug.ips'   => [],
 		'email.401'   => '',
@@ -26,7 +27,7 @@ class errorhandler
 			return;
 		}
 		
-		$file = str_replace($_SERVER['DOCUMENT_ROOT'], '', $file);
+		$file = str_replace(static::$document_root, '', $file);
 		
 		switch ($type)
 		{
@@ -226,7 +227,7 @@ class errorhandler
 						return;
 					}
 
-					$error['file'] = str_replace('/srv/www/vhosts/', '', $error['file']);
+					$error['file'] = str_replace(static::$document_root, '', $error['file']);
 
 					printf('<b style="color: red;">***</b> <b style="white-space: pre-line;">%s</b> on line <b>%d</b> in file <b>%s</b>.<br>', $error['message'], $error['line'], $error['file']);
 
@@ -234,7 +235,7 @@ class errorhandler
 					{
 						ob_start();
 						xdebug_print_function_stack();
-						$call_stack = str_replace('/srv/www/vhosts/', '', ob_get_clean());
+						$call_stack = str_replace(static::$document_root, '', ob_get_clean());
 						echo '<pre>', $call_stack, '</pre>';
 					}
 
@@ -270,10 +271,10 @@ class errorhandler
 		{
 			ob_start();
 			xdebug_print_function_stack();
-			$call_stack = str_replace('/srv/www/vhosts/', '', ob_get_clean());
+			$call_stack = str_replace(static::$document_root, '', ob_get_clean());
 		}
 		
-		mail(static::$options["email.{$email}"], $title, sprintf("%s\n%s%s\n%s\n%s", $text, $call_stack, !empty($app['user']) ? print_r($app['user']->data, true) : '', print_r($_SERVER, true), print_r($_REQUEST, true)), sprintf("From: fw@%s\r\n", gethostname()));
+		mail(static::$options["email.{$email}"], $title, sprintf("%s\n%s\$app['user']->data => %s\n\$_SERVER => %s\n\$_REQUEST => %s", $text, $call_stack, !empty($app['user']) ? print_r($app['user']->data, true) : '', print_r($_SERVER, true), print_r($_REQUEST, true)), sprintf("From: fw@%s\r\n", gethostname()));
 	}
 
 	/**
@@ -281,7 +282,8 @@ class errorhandler
 	*/
 	public static function register(array $options = [])
 	{
-		static::$options = array_merge(static::$options, $options);
+		static::$document_root = realpath(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/../../') . '/';
+		static::$options       = array_merge(static::$options, $options);
 		
 		set_error_handler([new static, 'handle_error']);
 		register_shutdown_function([new static, 'handle_fatal_error']);
