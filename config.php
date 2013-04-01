@@ -40,8 +40,8 @@ $app = [
 	
 	/* Настройки обработчика ошибок */
 	'errorhandler.options' => [
-		'mail.error' => 'fw@ivacuum.ru',
-		'standalone' => false,
+		'email.error' => 'fw@ivacuum.ru',
+		'standalone'  => false,
 	],
 	
 	/* Пути к файлам */
