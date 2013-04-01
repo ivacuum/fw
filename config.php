@@ -38,12 +38,15 @@ $app = [
 	'dir.templates.cache' => SITE_DIR . '../cache/templates',
 	'dir.templates.fw'    => FW_DIR . 'templates',
 	
+	/* Настройки обработчика ошибок */
+	'errorhandler.options' => [
+		'mail.error' => 'fw@ivacuum.ru',
+		'standalone' => false,
+	],
+	
 	/* Пути к файлам */
 	'file.cron.allowed' => 'cron_allowed',
 	'file.cron.running' => 'cron_running',
-	
-	/* Почтовые ящики */
-	'mail.error' => 'fw@ivacuum.ru',
 	
 	/* Замена доменов на их локальные варианты */
 	'request.local_redirect.from' => '',

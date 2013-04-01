@@ -6,37 +6,43 @@
 
 namespace fw\core;
 
-/**
-* Обработчик ошибок
-*/
 class errorhandler
 {
-	public static $debug_ips;
-	public static $mail;
+	protected static $options = [
+		'debug.ips'   => [],
+		'email.401'   => '',
+		'email.404'   => '',
+		'email.error' => '',
+		'standalone'  => true,
+	];
 	
 	public static function handle_error($type, $text, $file, $line)
 	{
-		global $app;
-		
 		/* Выходим, если проверка отключена через @ */
 		if (error_reporting() == 0 && $type != E_USER_ERROR && $type != E_USER_WARNING && $type != E_USER_NOTICE)
 		{
 			return;
 		}
 		
-		$file = str_replace($app['request']->server('DOCUMENT_ROOT'), '', $file);
+		$file = str_replace($_SERVER['DOCUMENT_ROOT'], '', $file);
 		
 		switch ($type)
 		{
-			/**
-			* Ошибка/предупреждение
-			*/
+			/* Ошибка/предупреждение */
 			case E_NOTICE:
 			case E_WARNING:
 			
-				$app['profiler']->log_error($text, $line, $file);
+				if (static::$options['standalone'])
+				{
+					/* Запись в журнал */
+					return false;
+				}
+				
+				global $app;
+			
+				$app['$profiler']->log_error($text, $line, $file);
 				return;
-
+			
 			break;
 			/**
 			* Критическая ошибка
@@ -50,10 +56,26 @@ class errorhandler
 					
 					static::log_mail($error_ary);
 					
-					if ($app['auth']->acl_get('a_'))
+					if (in_array($_SERVER['REMOTE_ADDR'], static::$options['debug.ips']))
 					{
-						$app['template']->assign('error', $error_ary);
-						$app['template']->display('sql_error.html');
+						/* Service Unavailable */
+						http_response_code(503);
+						echo '<!DOCTYPE html>';
+						echo '<html lang="ru">';
+						echo '<head>';
+						echo '<meta charset="utf-8">';
+						echo '<meta name="robots" content="noindex, nofollow">';
+						echo '<title>Сервис временно недоступен</title>';
+						echo '</head>';
+						echo '<body>';
+						echo '<h2>Ошибка в SQL запросе</h2>';
+						echo '<ul>';
+						echo '	<li>Код ошибки: <b>', $error_ary['code'], '</b></li>';
+						echo '	<li>Текст ошибки: <b>', $error_ary['text'], '</b></li>';
+						echo '</ul>';
+						echo '<pre>', $error_ary['sql'], '</pre>';
+						echo '</body>';
+						echo '</html>';
 						exit;
 					}
 				}
@@ -86,22 +108,31 @@ class errorhandler
 			*/
 			case E_USER_NOTICE:
 			case E_USER_WARNING:
-
-				if (!defined('IN_CHECK_BAN'))
+			
+				if (static::$options['standalone'])
 				{
-					if (empty($app['user']->data))
-					{
-						$app['user']->session_begin();
-					}
+					/**
+					* Необходимо выдать HTTP/1.1 404 Not Found,
+					* если сообщение об отсутствии данных или ошибке
+					*/
+					preg_match('#NOT_FOUND$#', $text, $matches);
 
-					$app['auth']->init($app['user']->data);
-
-					if (empty($app['user']->lang))
+					if (!empty($matches) || 0 === strpos($text, 'ERR_'))
 					{
-						$app['user']->setup();
+						http_response_code(404);
+						
+						if (static::$options['email.404'])
+						{
+							static::log_mail("Page http://{$_SERVER['SERVER_NAME']}{$_REQUEST['path']} not found", "404 Not Found", 404);
+						}
 					}
+					
+					echo $text;
+					exit;
 				}
 				
+				global $app;
+
 				if (!empty($app['router']) && is_object($app['router']->handler))
 				{
 					$handler = $app['router']->handler;
@@ -111,7 +142,6 @@ class errorhandler
 					$handler = new \app\models\page();
 					$handler->data['site_id'] = $app['site_info']['id'];
 					$handler->format = !empty($app['router']) ? $app['router']->format : $app['config']['router.default_extension'];
-					
 					$handler->_set_app($app)
 						->additional_tplengine_features()
 						->set_preconfigured_urls($app['urls'])
@@ -136,7 +166,11 @@ class errorhandler
 				if (!empty($matches) || 0 === strpos($text, 'ERR_'))
 				{
 					http_response_code(404);
-					// static::log_mail('Page http://' . $app['request']->hostname . $app['user']->data['session_page'] . ' not found', '404 Not Found');
+					
+					if (static::$options['email.404'])
+					{
+						static::log_mail("Page http://{$_SERVER['SERVER_NAME']}{$_REQUEST['path']} not found", "404 Not Found", 404);
+					}
 					
 					$handler->data['page_title'] = '404 Not Found';
 				}
@@ -187,7 +221,7 @@ class errorhandler
 				
 					static::log_mail("Fatal error: {$error['message']} on line {$error['line']} in file {$error['file']}");
 
-					if (!in_array($_SERVER['REMOTE_ADDR'], self::$debug_ips))
+					if (!in_array($_SERVER['REMOTE_ADDR'], static::$options['debug.ips']))
 					{
 						return;
 					}
@@ -217,18 +251,20 @@ class errorhandler
 	/**
 	* Уведомление администратора о произошедшей ошибке
 	*/
-	public static function log_mail($text, $title = '')
+	public static function log_mail($text, $title = '', $email = '')
 	{
 		global $app;
 		
-		if (!static::$mail)
+		$email = $email ?: 'error';
+		
+		if (!isset(static::$options["email.{$email}"]))
 		{
 			return;
 		}
 		
 		$call_stack = '';
 		$text       = is_array($text) ? print_r($text, true) : $text;
-		$title      = $app['request']->hostname . ($title ? ' ' . $title : '');
+		$title      = $_SERVER['SERVER_NAME'] . ($title ? ' ' . $title : '');
 		
 		if (function_exists('xdebug_print_function_stack'))
 		{
@@ -237,16 +273,15 @@ class errorhandler
 			$call_stack = str_replace('/srv/www/vhosts/', '', ob_get_clean());
 		}
 		
-		mail(static::$mail, $title, sprintf("%s\n%s%s\n%s\n%s", $text, $call_stack, print_r($app['user']->data, true), print_r($_SERVER, true), print_r($_REQUEST, true)), sprintf("From: fw@%s\r\n", gethostname()));
+		mail(static::$options["email.{$email}"], $title, sprintf("%s\n%s%s\n%s\n%s", $text, $call_stack, !empty($app['user']) ? print_r($app['user']->data, true) : '', print_r($_SERVER, true), print_r($_REQUEST, true)), sprintf("From: fw@%s\r\n", gethostname()));
 	}
 
 	/**
 	* Регистрация обработчика
 	*/
-	public static function register($mail = '', array $debug_ips = [])
+	public static function register(array $options = [])
 	{
-		self::$mail = $mail;
-		self::$debug_ips = $debug_ips;
+		static::$options = array_merge(static::$options, $options);
 		
 		set_error_handler([new static, 'handle_error']);
 		register_shutdown_function([new static, 'handle_fatal_error']);
