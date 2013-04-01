@@ -34,6 +34,8 @@ class errorhandler
 			case E_NOTICE:
 			case E_WARNING:
 			
+				static::log_mail("{$text} on line {$line} in file {$file}");
+
 				if (static::$options['standalone'])
 				{
 					/* Запись в журнал */
