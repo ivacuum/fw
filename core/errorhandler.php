@@ -18,6 +18,8 @@ class errorhandler
 	
 	public static function handle_error($type, $text, $file, $line)
 	{
+		global $app;
+		
 		/* Выходим, если проверка отключена через @ */
 		if (error_reporting() == 0 && $type != E_USER_ERROR && $type != E_USER_WARNING && $type != E_USER_NOTICE)
 		{
@@ -38,9 +40,7 @@ class errorhandler
 					return false;
 				}
 				
-				global $app;
-			
-				$app['$profiler']->log_error($text, $line, $file);
+				$app['profiler']->log_error($text, $line, $file);
 				return;
 			
 			break;
@@ -131,8 +131,6 @@ class errorhandler
 					exit;
 				}
 				
-				global $app;
-
 				if (!empty($app['router']) && is_object($app['router']->handler))
 				{
 					$handler = $app['router']->handler;
