@@ -121,59 +121,61 @@
 {else}
 	<div class="boxed-group flush" style="margin: 0 auto;">
 		<h3>{$NAVIGATION}{if $S_NO_PAGES} [<a href="{$U_EDIT}">{'EDIT'|i18n}</a> | <a href="{$U_DELETE}">{'DELETE'|i18n}</a> | {if $PAGE_ENABLED}<a href="{$U_DISABLE}">{'DISABLE'|i18n}</a>{else}<a href="{$U_ENABLE}">{'ENABLE'|i18n}</a>{/if}]{/if}</h3>
-		<div class="boxed-group-inner">
-			<table class="table-stats">
-				{foreach $pages as $row}
-				<tr ondblclick="document.location='{$row.U_EDIT}';">
-					<td style="width: 25px; text-align: right;"><img src="//ivacuum.org/i/_/{$row.PAGE_IMAGE}.png" alt=""></td>
-					<td style="width: 25px; text-align: center;">
-						{if $row.PAGE_ENABLED}
-							<img src="//ivacuum.org/i/_/status_online.png" alt="">
-						{else}
-							<img src="//ivacuum.org/i/_/status_offline.png" alt="">
-						{/if}
-					</td>
-					<td>
-						{if $row.PAGE_IMG}
-							<img src="//ivacuum.org/i/_/{$row.PAGE_IMG}.png" alt="">
-						{/if}
-						{if $row.IS_DIR}
-							<a href="{$row.U_PAGE}" title="/{$row.PAGE_URL}/">{$row.PAGE_NAME}</a>
-						{else}
-							<span title="{$row.PAGE_URL}.html">{$row.PAGE_NAME}</span>
-						{/if}
-						{if $row.PAGE_HANDLER and $row.HANDLER_METHOD}
-							<span class="muted">({$row.PAGE_HANDLER}::{$row.HANDLER_METHOD})</span>
-						{/if}
-						{if $row.PAGE_NOINDEX}
-							<img src="//ivacuum.org/i/_/monitor_off.png" alt="">
-						{/if}
-						{if $row.PAGE_DISPLAYED == 2}
-							<img src="//ivacuum.org/i/_/sitemap_application_blue.png" alt="">
-						{elseif $row.PAGE_DISPLAYED == 1}
-							<img src="//ivacuum.org/i/_/sitemap_application.png" alt="">
-						{/if}
-						{if $row.PAGE_REDIRECT}
-							<img src="//ivacuum.org/i/_/road_sign.png" alt="">
-						{/if}
-					</td>
-					<td style="width: 15%; white-space: nowrap; text-align: center; vertical-align: middle;">&nbsp;{if $row.PAGE_ENABLED}<a href="{$row.U_DISABLE}">{'DISABLE'|i18n}</a>{else}<a href="{$row.U_ENABLE}">{'ENABLE'|i18n}</a>{/if}&nbsp;</td>
-					<td style="width:90px; white-space: nowrap; text-align: right; vertical-align: middle;">
-						{if $row@first and not $row@last}
-							<a href="{$row.U_MOVE_DOWN}"><img src="//ivacuum.org/i/_/arrow_270.png" alt=""></a>
-						{elseif not $row@first and not $row@last}
-							<a href="{$row.U_MOVE_UP}"><img src="//ivacuum.org/i/_/arrow_090.png" alt=""></a> 
-							<a href="{$row.U_MOVE_DOWN}"><img src="//ivacuum.org/i/_/arrow_270.png" alt=""></a> 
-						{elseif not $row@first and $row@last}
-							<a href="{$row.U_MOVE_UP}"><img src="//ivacuum.org/i/_/arrow_090.png" alt=""></a>	
-						{/if}
-						<a href="{$row.U_EDIT}"><img src="//ivacuum.org/i/_/pencil.png" alt=""></a> 
-						<a href="#" onclick="if(confirm('Будет удалена вся информация, связанная с этой записью! Продолжить?')) { document.location = '{$row.U_DELETE}'; return false; }"><img src="//ivacuum.org/i/_/cross.png" alt=""></a>
-					</td>
-				</tr>
-				{/foreach}
-			</table>
-		</div>
+		{if not empty($pages)}
+			<div class="boxed-group-inner">
+				<table class="table-stats">
+					{foreach $pages as $row}
+					<tr ondblclick="document.location='{$row.U_EDIT}';">
+						<td style="width: 25px; text-align: right;"><img src="//ivacuum.org/i/_/{$row.PAGE_IMAGE}.png" alt=""></td>
+						<td style="width: 25px; text-align: center;">
+							{if $row.PAGE_ENABLED}
+								<img src="//ivacuum.org/i/_/status_online.png" alt="">
+							{else}
+								<img src="//ivacuum.org/i/_/status_offline.png" alt="">
+							{/if}
+						</td>
+						<td>
+							{if $row.PAGE_IMG}
+								<img src="//ivacuum.org/i/_/{$row.PAGE_IMG}.png" alt="">
+							{/if}
+							{if $row.IS_DIR}
+								<a href="{$row.U_PAGE}" title="/{$row.PAGE_URL}/">{$row.PAGE_NAME}</a>
+							{else}
+								<span title="{$row.PAGE_URL}.html">{$row.PAGE_NAME}</span>
+							{/if}
+							{if $row.PAGE_HANDLER and $row.HANDLER_METHOD}
+								<span class="muted">({$row.PAGE_HANDLER}::{$row.HANDLER_METHOD})</span>
+							{/if}
+							{if $row.PAGE_NOINDEX}
+								<img src="//ivacuum.org/i/_/monitor_off.png" alt="">
+							{/if}
+							{if $row.PAGE_DISPLAYED == 2}
+								<img src="//ivacuum.org/i/_/sitemap_application_blue.png" alt="">
+							{elseif $row.PAGE_DISPLAYED == 1}
+								<img src="//ivacuum.org/i/_/sitemap_application.png" alt="">
+							{/if}
+							{if $row.PAGE_REDIRECT}
+								<img src="//ivacuum.org/i/_/road_sign.png" alt="">
+							{/if}
+						</td>
+						<td style="width: 15%; white-space: nowrap; text-align: center; vertical-align: middle;">&nbsp;{if $row.PAGE_ENABLED}<a href="{$row.U_DISABLE}">{'DISABLE'|i18n}</a>{else}<a href="{$row.U_ENABLE}">{'ENABLE'|i18n}</a>{/if}&nbsp;</td>
+						<td style="width:90px; white-space: nowrap; text-align: right; vertical-align: middle;">
+							{if $row@first and not $row@last}
+								<a href="{$row.U_MOVE_DOWN}"><img src="//ivacuum.org/i/_/arrow_270.png" alt=""></a>
+							{elseif not $row@first and not $row@last}
+								<a href="{$row.U_MOVE_UP}"><img src="//ivacuum.org/i/_/arrow_090.png" alt=""></a> 
+								<a href="{$row.U_MOVE_DOWN}"><img src="//ivacuum.org/i/_/arrow_270.png" alt=""></a> 
+							{elseif not $row@first and $row@last}
+								<a href="{$row.U_MOVE_UP}"><img src="//ivacuum.org/i/_/arrow_090.png" alt=""></a>	
+							{/if}
+							<a href="{$row.U_EDIT}"><img src="//ivacuum.org/i/_/pencil.png" alt=""></a> 
+							<a href="#" onclick="if(confirm('Будет удалена вся информация, связанная с этой записью! Продолжить?')) { document.location = '{$row.U_DELETE}'; return false; }"><img src="//ivacuum.org/i/_/cross.png" alt=""></a>
+						</td>
+					</tr>
+					{/foreach}
+				</table>
+			</div>
+		{/if}
 	</div>
 	
 	<form method="post" action="" style="margin-top: 1em;">
