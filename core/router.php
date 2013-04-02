@@ -121,6 +121,7 @@ class router
 	{
 		$handler_name = $handler_method = '';
 		$parent_id = 0;
+		$redirect = '';
 
 		/**
 		* /[игры/diablo2]/скриншоты.html
@@ -128,12 +129,10 @@ class router
 		*/
 		for ($i = 0; $i < $this->params_count; $i++)
 		{
-			if (false == $ary = $this->get_page_row_by_url($this->params[$i], true, $parent_id))
+			if (false == $row = $this->get_page_row_by_url($this->params[$i], true, $parent_id))
 			{
 				trigger_error('PAGE_NOT_FOUND');
 			}
-			
-			$row = $ary;
 			
 			/**
 			* Если редирект установлен у родительской страницы,
@@ -141,7 +140,7 @@ class router
 			*/
 			if (!empty($row) && $row['page_redirect'])
 			{
-				$this->request->redirect(ilink($row['page_redirect']), 301, $this->config['router.local_redirect']);
+				$redirect = $row['page_redirect'];
 			}
 
 			if ($row['page_handler'] && $row['handler_method'])
@@ -158,7 +157,7 @@ class router
 			
 			$parent_id = (int) $row['page_id'];
 			
-			if ($row['page_url'] != '*')
+			if ($row['page_url'] != '*' && !$redirect)
 			{
 				$this->breadcrumbs($row['page_name'], ilink(implode('/', $this->page_link)), $row['page_image']);
 				
@@ -181,6 +180,11 @@ class router
 				trigger_error('PAGE_NOT_FOUND');
 			}
 			
+			if (!empty($row) && $row['page_redirect'])
+			{
+				$redirect = $row['page_redirect'];
+			}
+
 			if ($row['page_handler'] && $row['handler_method'])
 			{
 				$handler_name   = $row['page_handler'];
@@ -196,7 +200,7 @@ class router
 				$this->page_link[] = $this->format ? "{$this->page}.{$this->format}" : $this->page;
 			}
 
-			if ($row['page_url'] != '*')
+			if ($row['page_url'] != '*' && !$redirect)
 			{
 				$this->breadcrumbs($row['page_name'], ilink(implode('/', $this->page_link)), $row['page_image']);
 			}
@@ -213,6 +217,11 @@ class router
 			trigger_error('PAGE_NOT_FOUND');
 		}
 
+		if ($redirect)
+		{
+			$this->request->redirect(ilink($redirect), 301, $this->config['router.local_redirect']);
+		}
+
 		$row['site_id'] = (int) $row['site_id'];
 
 		/* Сбрасывание счетчика индексов */
@@ -224,17 +233,7 @@ class router
 		/* Статичная страница */
 		if (!$handler_name || !$handler_method)
 		{
-			/* Нужно ли переадресовать на другую страницу */
-			if ($row['page_redirect'])
-			{
-				$this->request->redirect(ilink($row['page_redirect']), 301, $this->config['router.local_redirect']);
-			}
-			
 			return $this->load_handler('models\\page', 'static_page');
-		}
-		elseif ($handler_method == 'static_page' && $row['page_redirect'])
-		{
-			$this->request->redirect(ilink($row['page_redirect']), 301, $this->config['router.local_redirect']);
 		}
 		
 		return $this->load_handler($handler_name, $handler_method, $this->params);
