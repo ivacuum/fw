@@ -19,6 +19,8 @@ class pages extends page
 		{
 			trigger_error('PAGE_NOT_FOUND');
 		}
+		
+		parent::_setup();
 	}
 	
 	public function index()
