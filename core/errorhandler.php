@@ -37,13 +37,11 @@ class errorhandler
 			
 				static::log_mail("{$text} on line {$line} in file {$file}");
 
-				if (static::$options['standalone'])
+				if (!static::$options['standalone'])
 				{
-					/* Запись в журнал */
-					return false;
+					$app['profiler']->log_error($text, $line, $file);
 				}
 				
-				$app['profiler']->log_error($text, $line, $file);
 				return;
 			
 			break;
