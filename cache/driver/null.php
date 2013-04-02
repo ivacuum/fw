@@ -25,6 +25,10 @@ class null
 	{
 	}
 	
+	public function delete_shared($var)
+	{
+	}
+	
 	public function get($var)
 	{
 		return false;
