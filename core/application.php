@@ -33,8 +33,8 @@ class application implements \ArrayAccess
 		
 		$app = $this;
 		
-		$this['profiler'] = $this->share(function() {
-			return new profiler(START_TIME);
+		$this['profiler'] = $this->share(function() use ($app) {
+			return new profiler(START_TIME, $app['profiler.options']);
 		});
 		
 		$this['autoloader'] = $this->share(function() use ($app) {

@@ -129,10 +129,12 @@ class profiler extends console
 		'send_stats' => false,
 	];
 
-	function __construct($start_time = false)
+	function __construct($start_time = false, array $options = [])
 	{
 		$this->document_root = realpath(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/../../') . '/';
 		$this->start_time    = $start_time ?: microtime(true);
+		
+		$this->options = array_merge($this->options, $options);
 	}
 
 	public function get_stats()
