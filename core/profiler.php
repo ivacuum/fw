@@ -174,7 +174,7 @@ class profiler extends console
 	
 	public function is_enabled()
 	{
-		return $this->options['enabled']);
+		return $this->options['enabled'];
 	}
 	
 	public function is_permitted()
