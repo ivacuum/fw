@@ -131,7 +131,7 @@ class profiler extends console
 
 	function __construct($start_time = false)
 	{
-		$this->document_root = realpath(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/../../') . '/'
+		$this->document_root = realpath(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/../../') . '/';
 		$this->start_time    = $start_time ?: microtime(true);
 	}
 
