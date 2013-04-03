@@ -314,9 +314,6 @@ class page
 		return $this;
 	}
 
-	/**
-	* Шапка
-	*/
 	public function page_header()
 	{
 		if (defined('HEADER_PRINTED'))
@@ -383,9 +380,6 @@ class page
 		return $this;
 	}
 
-	/**
-	* Нижняя часть страницы
-	*/
 	public function page_footer()
 	{
 		$display_profiler = false;
@@ -393,13 +387,9 @@ class page
 		/* Вывод профайлера только для html-документов */
 		if ($this->format == 'html' && !$this->request->is_ajax && !defined('IN_SQL_ERROR'))
 		{
-			if ($this->config['profiler.display'] && ($this->auth->acl_get('a_') || in_array($this->user->ip, $this->app['debug.ips'])))
-			{
-				$display_profiler = true;
-			}
+			$display_profiler = $this->profiler->is_enabled() && ($this->auth->acl_get('a_') || $this->profiler->is_permitted());
 		}
-
-
+		
 		if ($this->template->file)
 		{
 			$this->template->assign('cfg', $this->config);
@@ -413,11 +403,7 @@ class page
 			}
 		}
 		
-		if ($this->config['profiler.send_stats'])
-		{
-			$this->profiler->send_stats($this->config['profiler.host'], $this->config['profiler.port'], $this->request->hostname, $this->request->url);
-		}
-
+		$this->profiler->send_stats($this->request->hostname, $this->request->url);
 		exit;
 	}
 	

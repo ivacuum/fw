@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2013
 */
 
 namespace fw\core;
@@ -29,22 +29,21 @@ class console
 	protected $logs = [];
 	protected $queries = [];
 
-	/**
-	* Лог пользовательских данных
-	*/
-	public function log($data)
+	public function log()
 	{
-		$this->logs[] = [
-			'data' => $data,
-			'type' => 'log'
-		];
+		foreach (func_get_args() as $arg)
+		{
+			$this->logs[] = [
+				'data' => $arg,
+				'type' => 'log',
+			];
+		}
 		
 		$this->log_count++;
+		
+		return $this;
 	}
 
-	/**
-	* Лог расхода памяти
-	*/
 	public function log_memory($object = false, $name = 'php')
 	{
 		$this->logs[] = [
@@ -55,11 +54,10 @@ class console
 		];
 
 		$this->memory_count++;
+		
+		return $this;
 	}
 
-	/**
-	* Лог ошибок
-	*/
 	public function log_error($message, $line, $file)
 	{
 		$call_stack = '';
@@ -68,7 +66,7 @@ class console
 		{
 			ob_start();
 			xdebug_print_function_stack();
-			$call_stack = str_replace(['/srv/www/vhosts'], [''], ob_get_clean());
+			$call_stack = str_replace($this->document_root, '', ob_get_clean());
 		}
 		
 		$this->logs[] = [
@@ -80,25 +78,23 @@ class console
 		];
 
 		$this->error_count++;
+		
+		return $this;
 	}
 
-	/**
-	* Лог времени
-	*/
 	public function log_speed($name = 'label')
 	{
 		$this->logs[] = [
 			'data' => microtime(true),
 			'type' => 'speed',
-			'name' => $name
+			'name' => $name,
 		];
 		
 		$this->speed_count++;
+		
+		return $this;
 	}
 
-	/**
-	* Лог запросов к БД
-	*/
 	public function log_query($sql, $time, $cached = false)
 	{
 		$this->queries[] = [
@@ -114,20 +110,29 @@ class console
 		{
 			$this->query_cached++;
 		}
+		
+		return $this;
 	}
 }
 
 class profiler extends console
 {
-	private $output = [];
-	private $start_time;
+	protected $document_root;
+	protected $output = [];
+	protected $start_time;
+	
+	protected $options = [
+		'debug.ips'  => [],
+		'enabled'    => false,
+		'host'       => '',
+		'port'       => 0,
+		'send_stats' => false,
+	];
 
-	/**
-	* Время запуска профайлера
-	*/
 	function __construct($start_time = false)
 	{
-		$this->start_time = $start_time ?: microtime(true);
+		$this->document_root = realpath(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/../../') . '/'
+		$this->start_time    = $start_time ?: microtime(true);
 	}
 
 	public function get_stats()
@@ -167,17 +172,32 @@ class profiler extends console
 		];
 	}
 	
+	public function is_enabled()
+	{
+		return $this->options['enabled']);
+	}
+	
+	public function is_permitted()
+	{
+		return in_array($_SERVER['REMOTE_ADDR'], $this->options['debug.ips']);
+	}
+	
 	/**
 	* Отправка данных внешнему профайлеру
 	*/
-	public function send_stats($ip, $port, $hostname = '', $url = '')
+	public function send_stats($hostname = '', $url = '')
 	{
 		if (PHP_SAPI == 'cli')
 		{
 			return;
 		}
 		
-		if (false === $fp = fsockopen('udp://' . $ip, $port))
+		if (!$this->options['send_stats'])
+		{
+			return;
+		}
+		
+		if (false === $fp = fsockopen("udp://{$this->options['host']}", $this->options['port']))
 		{
 			return false;
 		}
@@ -217,18 +237,12 @@ class profiler extends console
 		fclose($fp);
 	}
 
-	/**
-	* Время в определенном формате
-	*/
 	protected function get_readable_time($time)
 	{
-		return sprintf('%.3f ms', $time);
+		return sprintf('%.3f &micro;s', $time);
 	}
 
-	/**
-	* Сообщения, выведенные в консоль
-	*/
-	private function get_console_data()
+	protected function get_console_data()
 	{
 		foreach ($logs = $this->logs as $key => $log)
 		{
@@ -245,10 +259,7 @@ class profiler extends console
 		return $this;
 	}
 
-	/**
-	* Список подключенных файлов
-	*/
-	private function get_file_data()
+	protected function get_file_data()
 	{
 		$file_list = [];
 		$this->file_count = 0;
@@ -263,7 +274,7 @@ class profiler extends console
 			$size = filesize($file);
 
 			$file_list[] = [
-				'name' => str_replace(['/srv/www/vhosts'], [''], $file),
+				'name' => str_replace($this->document_root, '', $file),
 				'size' => $size,
 			];
 
@@ -277,10 +288,7 @@ class profiler extends console
 		return $this;
 	}
 
-	/**
-	* Общий расход памяти
-	*/
-	private function get_memory_data()
+	protected function get_memory_data()
 	{
 		$this->memory_used  = memory_get_peak_usage();
 		$this->memory_total = ini_get('memory_limit');
@@ -288,20 +296,14 @@ class profiler extends console
 		return $this;
 	}
 
-	/**
-	* Запросы к БД
-	*/
-	private function get_query_data()
+	protected function get_query_data()
 	{
 		$this->output['queries'] = $this->queries;
 		
 		return $this;
 	}
 
-	/**
-	* Скорость выполнения страницы
-	*/
-	private function get_speed_data()
+	protected function get_speed_data()
 	{
 		$this->speed_allowed = ini_get('max_execution_time');
 		$this->speed_total   = (microtime(true) - $this->start_time) * 1000;

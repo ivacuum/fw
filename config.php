@@ -16,9 +16,6 @@ $app = [
 	'captcha.fonts' => ['tremble.ttf'],
 	'captcha.type'  => 'gd',
 	
-	/* Настройки отладки */
-	'debug.ips' => [],
-	
 	/* Настройки подключения к БД */
 	'db.host' => 'localhost',
 	'db.port' => false,
@@ -47,6 +44,15 @@ $app = [
 	/* Пути к файлам */
 	'file.cron.allowed' => 'cron_allowed',
 	'file.cron.running' => 'cron_running',
+
+	/* Настройки профайлера */
+	'profiler.options' => [
+		'debug.ips'  => [],
+		'enabled'    => true,
+		'host'       => '',
+		'port'       => 0,
+		'send_stats' => false,
+	],
 	
 	/* Замена доменов на их локальные варианты */
 	'request.local_redirect.from' => '',
