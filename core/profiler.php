@@ -241,7 +241,7 @@ class profiler extends console
 
 	protected function get_readable_time($time)
 	{
-		return sprintf('%.3f &micro;s', $time);
+		return sprintf('%.3f ms', $time);
 	}
 
 	protected function get_console_data()
