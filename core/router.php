@@ -131,6 +131,14 @@ class router
 		{
 			if (false == $row = $this->get_page_row_by_url($this->params[$i], true, $parent_id))
 			{
+				if ($redirect)
+				{
+					errorhandler::log_mail("Page http://{$this->request->server_name}{$this->url} not found and redirected to {$redirect}", "404 Not Found", 404);
+					
+					/* Выход для использования редиректа родительской страницы */
+					break;
+				}
+				
 				trigger_error('PAGE_NOT_FOUND');
 			}
 			
@@ -157,7 +165,7 @@ class router
 			
 			$parent_id = (int) $row['page_id'];
 			
-			if ($row['page_url'] != '*' && !$redirect)
+			if ($row['page_url'] != '*')
 			{
 				$this->breadcrumbs($row['page_name'], ilink(implode('/', $this->page_link)), $row['page_image']);
 				
@@ -173,37 +181,55 @@ class router
 		*
 		* /ucp/[login.html]
 		*/
-		if (!$this->params_count || ($this->params_count > 0 && $this->page != $this->config['router.directory_index']))
+		for (;;)
 		{
-			if (false == $row = $this->get_page_row_by_url($this->page, false, $parent_id))
+			if (!$this->params_count || ($this->params_count > 0 && $this->page != $this->config['router.directory_index']))
 			{
-				trigger_error('PAGE_NOT_FOUND');
+				if (false == $row = $this->get_page_row_by_url($this->page, false, $parent_id))
+				{
+					if ($redirect)
+					{
+						errorhandler::log_mail("Page http://{$this->request->server_name}{$this->url} not found and redirected to {$redirect}", "404 Not Found", 404);
+
+						/* Выход для использования редиректа родительской страницы */
+						break;
+					}
+					
+					trigger_error('PAGE_NOT_FOUND');
+				}
+			
+				if (!empty($row) && $row['page_redirect'])
+				{
+					$redirect = $row['page_redirect'];
+				}
+
+				if ($row['page_handler'] && $row['handler_method'])
+				{
+					$handler_name   = $row['page_handler'];
+					$handler_method = $row['handler_method'];
+				}
+				elseif ($this->params_count > 0)
+				{
+					$handler_method = 'static_page';
+				}
+			
+				if ($this->page != $this->config['router.directory_index'])
+				{
+					$this->page_link[] = $this->format ? "{$this->page}.{$this->format}" : $this->page;
+				}
+
+				if ($row['page_url'] != '*')
+				{
+					$this->breadcrumbs($row['page_name'], ilink(implode('/', $this->page_link)), $row['page_image']);
+				}
 			}
 			
-			if (!empty($row) && $row['page_redirect'])
-			{
-				$redirect = $row['page_redirect'];
-			}
+			break;
+		}
 
-			if ($row['page_handler'] && $row['handler_method'])
-			{
-				$handler_name   = $row['page_handler'];
-				$handler_method = $row['handler_method'];
-			}
-			elseif ($this->params_count > 0)
-			{
-				$handler_method = 'static_page';
-			}
-			
-			if ($this->page != $this->config['router.directory_index'])
-			{
-				$this->page_link[] = $this->format ? "{$this->page}.{$this->format}" : $this->page;
-			}
-
-			if ($row['page_url'] != '*' && !$redirect)
-			{
-				$this->breadcrumbs($row['page_name'], ilink(implode('/', $this->page_link)), $row['page_image']);
-			}
+		if ($redirect)
+		{
+			$this->request->redirect(ilink($redirect), 301, $this->config['router.local_redirect']);
 		}
 
 		if (!$row)
@@ -215,11 +241,6 @@ class router
 		if (!in_array($this->format, explode(';', $row['page_formats']), true))
 		{
 			trigger_error('PAGE_NOT_FOUND');
-		}
-
-		if ($redirect)
-		{
-			$this->request->redirect(ilink($redirect), 301, $this->config['router.local_redirect']);
 		}
 
 		$row['site_id'] = (int) $row['site_id'];
