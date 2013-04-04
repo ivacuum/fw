@@ -121,11 +121,7 @@ class errorhandler
 					if (!empty($matches) || 0 === strpos($text, 'ERR_'))
 					{
 						http_response_code(404);
-						
-						if (static::$options['email.404'])
-						{
-							static::log_mail("Page http://{$_SERVER['SERVER_NAME']}{$_REQUEST['path']} not found", "404 Not Found", 404);
-						}
+						static::log_mail("Page http://{$_SERVER['SERVER_NAME']}{$_REQUEST['path']} not found", "404 Not Found", 404);
 					}
 					
 					echo $text;
@@ -165,12 +161,7 @@ class errorhandler
 				if (!empty($matches) || 0 === strpos($text, 'ERR_'))
 				{
 					http_response_code(404);
-					
-					if (static::$options['email.404'])
-					{
-						static::log_mail("Page http://{$_SERVER['SERVER_NAME']}{$_REQUEST['path']} not found", "404 Not Found", 404);
-					}
-					
+					static::log_mail("Page http://{$_SERVER['SERVER_NAME']}{$_REQUEST['path']} not found", "404 Not Found", 404);
 					$handler->data['page_title'] = '404 Not Found';
 				}
 				
