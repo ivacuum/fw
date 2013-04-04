@@ -445,7 +445,7 @@ class page
 	{
 		if (!$this->format)
 		{
-			return;
+			return $this;
 		}
 		
 		$filename = str_replace('\\', '/', get_class($this));
