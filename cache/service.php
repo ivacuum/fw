@@ -164,7 +164,7 @@ class service
 	/**
 	* Список динамических страниц
 	*/
-	public function obtain_handlers_urls($site_id)
+	public function obtain_handlers_urls($site_id, array $options = [])
 	{
 		static $cache_entry, $handlers, $site_info;
 		
@@ -191,10 +191,7 @@ class service
 				ORDER BY
 					left_id ASC';
 			$this->db->query($sql);
-			$traversal = new traverse_handlers_urls([
-				'default_extension' => $this->options['default_extension'],
-				'directory_index'   => $this->options['directory_index'],
-			]);
+			$traversal = new traverse_handlers_urls($options);
 			
 			while ($row = $this->db->fetchrow())
 			{
@@ -283,7 +280,7 @@ class service
 	/**
 	* Глобальное меню сайта (page_display = 2)
 	*/
-	public function obtain_menu($site_id)
+	public function obtain_menu($site_id, array $options = [])
 	{
 		if (!$site_id)
 		{
@@ -305,11 +302,7 @@ class service
 				ORDER BY
 					left_id ASC';
 			$this->db->query($sql);
-			$traversal = new traverse_menu([
-				'default_extension' => $this->options['default_extension'],
-				'directory_index'   => $this->options['directory_index'],
-				'return_as_tree'    => true,
-			]);
+			$traversal = new traverse_menu(array_merge($options, ['return_as_tree' => true]));
 			
 			while ($row = $this->db->fetchrow())
 			{

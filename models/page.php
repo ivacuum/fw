@@ -292,7 +292,12 @@ class page
 	*/
 	public function obtain_handlers_urls()
 	{
-		if (false === $this->handlers_urls = $this->cache->obtain_handlers_urls($this->data['site_id']))
+		$options = [
+			'default_extension' => $this->options['default_extension'],
+			'directory_index'   => $this->options['directory_index'],
+		];
+		
+		if (false === $this->handlers_urls = $this->cache->obtain_handlers_urls($this->data['site_id'], $options))
 		{
 			return $this;
 		}
@@ -494,7 +499,11 @@ class page
 	*/
 	public function set_site_menu()
 	{
-		$menu     = $this->cache->obtain_menu($this->data['site_id']);
+		$menu = $this->cache->obtain_menu($this->data['site_id'], [
+			'default_extension' => $this->options['default_extension'],
+			'directory_index'   => $this->options['directory_index'],
+		]);
+		
 		$page_url = ilink($this->full_url);
 		$root_url = ilink();
 		
