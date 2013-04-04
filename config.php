@@ -37,6 +37,9 @@ $app = [
 	
 	/* Настройки обработчика ошибок */
 	'errorhandler.options' => [
+		'debug.ips'   => [],
+		'email.401'   => '',
+		'email.404'   => '',
 		'email.error' => 'fw@ivacuum.ru',
 		'standalone'  => false,
 	],
@@ -53,13 +56,23 @@ $app = [
 		'port'       => 0,
 		'send_stats' => false,
 	],
-	
-	/* Замена доменов на их локальные варианты */
-	'request.local_redirect.from' => '',
-	'request.local_redirect.to'   => '',
+
+	/* Замена доменов на их локальные варианты при редиректе */
+	'request.options' => [
+		'local_redirect.from' => '',
+		'local_redirect.to'   => '',
+	],
+
+	/* Настройки маршрутизатора */
+	'router.options' => [
+		'allowed_extensions' => 'html;xml',
+		'default_extension'  => 'html',
+		'directory_index'    => 'index',
+		'send_status_code'   => false,
+	],
 	
 	/* Настройки сессий */
-	'session.config' => [
+	'session.options' => [
 		'name'            => 'sid',
 		'cookie_path'     => '/',
 		'cookie_domain'   => '',

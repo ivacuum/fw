@@ -136,7 +136,7 @@ class errorhandler
 				{
 					$handler = new \app\models\page();
 					$handler->data['site_id'] = $app['site_info']['id'];
-					$handler->format = !empty($app['router']) ? $app['router']->format : $app['config']['router.default_extension'];
+					$handler->format = !empty($app['router']) ? $app['router']->format : $app['router.options']['default_extension'];
 					$handler->_set_app($app)
 						->additional_tplengine_features()
 						->set_preconfigured_urls($app['urls'])

@@ -28,8 +28,10 @@ class request
 	public $server_name;
 	public $url;
 	
-	protected $local_redirect_from;
-	protected $local_redirect_to;
+	protected $options = [
+		'local_redirect.from' => '',
+		'local_redirect.to'   => '',
+	];
 	
 	private $globals = [
 		self::GET     => '_GET',
@@ -39,8 +41,10 @@ class request
 		self::SERVER  => '_SERVER'
 	];
 	
-	function __construct($local_redirect_from = '', $local_redirect_to = '')
+	function __construct(array $options = [])
 	{
+		$this->options = array_merge($this->options, $options);
+
 		$this->code      = http_response_code();
 		$this->hostname  = $this->get_hostname();
 		$this->is_ajax   = $this->header('X-Requested-With') == 'XMLHttpRequest';
@@ -48,9 +52,6 @@ class request
 		$this->isp       = $this->header('Provider', 'internet');
 		$this->method    = strtolower($this->server('REQUEST_METHOD', 'get'));
 		$this->url       = $this->get_requested_url();
-		
-		$this->local_redirect_from = $local_redirect_from;
-		$this->local_redirect_to   = $local_redirect_to;
 		
 		/* По умолчанию при использовании метода PUT данные не попадают в $_REQUEST */
 		if ($this->method == 'put')
@@ -168,7 +169,7 @@ class request
 	*
 	* @param	string	$url	Адрес для мгновенного перенаправления
 	*/
-	public function redirect($url, $status_code = 302, $try_local_redirect = false)
+	public function redirect($url, $status_code = 302)
 	{
 		if (false !== strpos(urldecode($url), "\n") || false !== strpos(urldecode($url), "\r"))
 		{
@@ -179,9 +180,9 @@ class request
 		* Если пользователь из локальной сети,
 		* то перенаправлять его следует на локальный домен
 		*/
-		if ($try_local_redirect && $this->isp == 'local' && $this->local_redirect_from && $this->local_redirect_to)
+		if ($this->isp == 'local' && $this->options['local_redirect.from'] && $this->options['local_redirect.to'])
 		{
-			$url = str_replace($this->local_redirect_from, $this->local_redirect_to, $url);
+			$url = str_replace($this->options['local_redirect.from'], $this->options['local_redirect.to'], $url);
 		}
 	
 		if ($status_code != 302)

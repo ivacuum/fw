@@ -19,11 +19,13 @@ class tree
 	protected $depth = 0;
 	protected $right_id = 0;
 	
-	protected $return_as_tree = false;
+	protected $options = [
+		'return_as_tree' => false,
+	];
 	
-	function __construct($return_as_tree = false)
+	function __construct(array $options = [])
 	{
-		$this->return_as_tree = $return_as_tree;
+		$this->options = array_merge($this->options, $options);
 	}
 	
 	public function get_tree_data()
@@ -108,7 +110,7 @@ class tree
 	*/
 	protected function get_data()
 	{
-		return $this->return_as_tree ? ['children' => []] : '';
+		return $this->options['return_as_tree'] ? ['children' => []] : '';
 	}
 	
 	/**
@@ -146,7 +148,7 @@ class tree
 	protected function tree_append($data)
 	{
 		/* Формирование списка */
-		if (!$this->return_as_tree)
+		if (!$this->options['return_as_tree'])
 		{
 			$this->tree[] = $data;
 			return true;

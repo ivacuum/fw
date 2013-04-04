@@ -5,7 +5,7 @@
 	<h2>{$page.page_title}</h2>
 </div>
 <ul>
-	{foreach $pages as $row}
+	{foreach $pages|default:[] as $row}
 		<li><a href="{$row.URL}">{$row.TITLE}</a>
 			{if $row.children}
 				<ul>
@@ -14,7 +14,15 @@
 							{if $row2.children}
 								<ul>
 									{foreach $row2.children as $row3}
-										<li><a href="{$row3.URL}">{$row3.TITLE}</a></li>
+										<li><a href="{$row3.URL}">{$row3.TITLE}</a>
+											{if $row3.children}
+												<ul>
+													{foreach $row3.children as $row4}
+														<li><a href="{$row4.URL}">{$row4.TITLE}</a></li>
+													{/foreach}
+												</ul>
+											{/if}
+										</li>
 									{/foreach}
 								</ul>
 							{/if}

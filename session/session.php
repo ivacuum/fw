@@ -34,7 +34,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 	protected $db;
 	protected $request;
 	
-	function __construct($cache, $config, $db, $request, array $session_config = [], $site_id, $signin_url)
+	function __construct($cache, $config, $db, $request, array $options = [], $site_id, $signin_url)
 	{
 		$this->cache   = $cache;
 		$this->config  = $config;
@@ -52,10 +52,10 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 		$this->ip            = $this->request->server('REMOTE_ADDR');
 		$this->referer       = $this->request->header('Referer');
 		
-		$session_config['cookie_domain'] = $session_config['cookie_domain'] ?: $this->config['cookie.domain'];
-		$session_config['name'] = $this->config['cookie.prefix'] . $session_config['name'];
+		$options['cookie_domain'] = $options['cookie_domain'] ?: $this->config['cookie.domain'];
+		$options['name'] = $this->config['cookie.prefix'] . $options['name'];
 		
-		foreach ($session_config as $key => $value)
+		foreach ($options as $key => $value)
 		{
 			ini_set("session.{$key}", $value);
 		}
@@ -157,7 +157,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 		if ($mode == 'redirect')
 		{
 			/* Перенаправление на форму авторизации */
-			$this->request->redirect(ilink(sprintf('%s?goto=%s', $this->signin_url, $this->get_back_url())), $this->config['router.local_redirect']);
+			$this->request->redirect(ilink(sprintf('%s?goto=%s', $this->signin_url, $this->get_back_url())));
 		}
 	}
 

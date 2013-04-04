@@ -9,14 +9,8 @@ namespace fw\modules;
 use app\models\page;
 use fw\helpers\traverse\tree\site_pages;
 
-/**
-* Карта сайта
-*/
 class sitemap extends page
 {
-	/**
-	* Построение карты в требуемом формате
-	*/
 	public function index()
 	{
 		$sql = '
@@ -41,13 +35,13 @@ class sitemap extends page
 		$this->db->query($sql);
 	}
 
-	/**
-	* В формате HTML
-	*/
 	public function index_html()
 	{
-		$traversal = new traverse_sitemap_pages_html(true);
-		$traversal->_set_config($this->config);
+		$traversal = new traverse_sitemap_pages_html([
+			'default_extension' => $this->options['default_extension'],
+			'directory_index'   => $this->options['directory_index'],
+			'return_as_tree'    => true,
+		]);
 		
 		while ($row = $this->db->fetchrow())
 		{
@@ -55,19 +49,15 @@ class sitemap extends page
 		}
 		
 		$this->db->freeresult();
-		
-		$this->template->assign([
-			'pages' => $traversal->get_tree_data()
-		]);
+		$this->template->assign('pages', $traversal->get_tree_data());
 	}
 	
-	/**
-	* В формате XML
-	*/
 	public function index_xml()
 	{
-		$traversal = new traverse_sitemap_pages_xml();
-		$traversal->_set_config($this->config);
+		$traversal = new traverse_sitemap_pages_xml([
+			'default_extension' => $this->options['default_extension'],
+			'directory_index'   => $this->options['directory_index'],
+		]);
 		
 		while ($row = $this->db->fetchrow())
 		{
@@ -75,12 +65,7 @@ class sitemap extends page
 		}
 		
 		$this->db->freeresult();
-		
-		$this->template->assign([
-			'pages' => $traversal->get_tree_data(),
-			
-			'DOMAIN' => $this->request->server_name,
-		]);
+		$this->template->assign('pages', $traversal->get_tree_data());
 	}
 }
 
@@ -91,13 +76,11 @@ class traverse_sitemap_pages_html extends site_pages
 {
 	protected function get_data()
 	{
-		$ary = parent::get_data();
-
 		return [
-			'ID'    => $this->row['page_id'],
-			'IMAGE' => $this->row['page_image'],
-			'TITLE' => $this->row['page_name'],
-			'URL'   => $ary['url'],
+			'ID'       => $this->row['page_id'],
+			'IMAGE'    => $this->row['page_image'],
+			'TITLE'    => $this->row['page_name'],
+			'URL'      => parent::get_data()['url'],
 			'children' => [],
 		];
 	}
@@ -126,13 +109,13 @@ class traverse_sitemap_pages_xml extends site_pages
 		*
 		* Исключение: главная страница сайта
 		*/
-		if (!$this->row['is_dir'] && $this->row['page_url'] == $this->config['router.directory_index'])
+		if (!$this->row['is_dir'] && $this->row['page_url'] == $this->options['directory_index'])
 		{
 			$this->base_url[] = '';
 			
 			if (!$this->row['parent_id'])
 			{
-				return ilink('');
+				return ilink();
 			}
 			
 			return false;

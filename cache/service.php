@@ -191,8 +191,10 @@ class service
 				ORDER BY
 					left_id ASC';
 			$this->db->query($sql);
-			$traversal = new traverse_handlers_urls();
-			$traversal->_set_config($this->config);
+			$traversal = new traverse_handlers_urls([
+				'default_extension' => $this->options['default_extension'],
+				'directory_index'   => $this->options['directory_index'],
+			]);
 			
 			while ($row = $this->db->fetchrow())
 			{
@@ -303,8 +305,11 @@ class service
 				ORDER BY
 					left_id ASC';
 			$this->db->query($sql);
-			$traversal = new traverse_menu(true);
-			$traversal->_set_config($this->config);
+			$traversal = new traverse_menu([
+				'default_extension' => $this->options['default_extension'],
+				'directory_index'   => $this->options['directory_index'],
+				'return_as_tree'    => true,
+			]);
 			
 			while ($row = $this->db->fetchrow())
 			{

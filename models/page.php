@@ -27,8 +27,11 @@ class page
 	public $url;
 	public $urls = [];
 	
-	function __construct()
+	protected $options = [];
+	
+	function __construct(array $options)
 	{
+		$this->options = $options;
 	}
 	
 	/**
@@ -279,7 +282,7 @@ class page
 		}
 		
 		$this->user->load_language($filename);
-		$this->user->load_language($filename . '_' . $this->method);
+		$this->user->load_language("{$filename}_{$this->method}");
 		
 		return $this;
 	}
@@ -669,8 +672,12 @@ class page
 				ORDER BY
 					left_id ASC';
 			$this->db->query($sql);
-			$traversal = new traverse_menu(true, $menu_id);
-			$traversal->_set_config($this->config);
+			$traversal = new traverse_menu([
+				'default_extension' => $this->options['default_extension'],
+				'directory_index'   => $this->options['directory_index'],
+				'menu_id'           => $menu_id,
+				'return_as_tree'    => true,
+			]);
 			
 			while ($row = $this->db->fetchrow())
 			{
@@ -772,15 +779,6 @@ class page
 */
 class traverse_menu extends site_pages
 {
-	protected $menu_id;
-	
-	function __construct($return_as_tree = false, $menu_id)
-	{
-		parent::__construct($return_as_tree);
-		
-		$this->menu_id = $menu_id;
-	}
-	
 	protected function get_data()
 	{
 		$ary = parent::get_data();
@@ -796,6 +794,6 @@ class traverse_menu extends site_pages
 	
 	protected function skip_condition()
 	{
-		return !$this->row['page_enabled'] || $this->row["display_in_menu_{$this->menu_id}"] != 1;
+		return !$this->row['page_enabled'] || $this->row["display_in_menu_{$this->options['menu_id']}"] != 1;
 	}
 }

@@ -23,7 +23,7 @@ class application implements \ArrayAccess
 {
 	use constants;
 	
-	const VERSION = '1.3.1';
+	const VERSION = 'master';
 	
 	private $values;
 	
@@ -49,7 +49,7 @@ class application implements \ArrayAccess
 		});
 		
 		$this['request'] = $this->share(function() use ($app) {
-			return new request($app['request.local_redirect.from'], $app['request.local_redirect.to']);
+			return new request($app['request.options']);
 		});
 		
 		$this['db'] = $this->share(function() use ($app) {
@@ -68,7 +68,7 @@ class application implements \ArrayAccess
 		});
 
 		$this['user'] = $this->share(function() use ($app) {
-			return (new user($app['cache'], $app['config'], $app['db'], $app['request'], $app['session.config'], $app['site_info']['id'], $app['urls']['signin']))
+			return (new user($app['cache'], $app['config'], $app['db'], $app['request'], $app['session.options'], $app['site_info']['id'], $app['urls']['signin']))
 				->setup();
 		});
 		
@@ -83,7 +83,7 @@ class application implements \ArrayAccess
 		});
 
 		$this['router'] = $this->share(function() use ($app) {
-			return (new router())
+			return (new router($app['router.options']))
 				->_set_app($app);
 		});
 

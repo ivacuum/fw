@@ -141,7 +141,7 @@ function ilink($url = '', $prefix = false)
 	$link .= $url;
 	$ary = pathinfo($url);
 	
-	if (isset($ary['extension']) || substr($link, -1) == '/' || !$app['config']['router.default_extension'])
+	if (isset($ary['extension']) || substr($link, -1) == '/' || !$app['router.options']['default_extension'])
 	{
 		return $link;
 	}
