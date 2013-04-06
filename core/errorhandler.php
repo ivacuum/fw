@@ -134,7 +134,7 @@ class errorhandler
 				}
 				else
 				{
-					$handler = new \app\models\page();
+					$handler = new \app\models\page($app['router.options']);
 					$handler->data['site_id'] = $app['site_info']['id'];
 					$handler->format = !empty($app['router']) ? $app['router']->format : $app['router.options']['default_extension'];
 					$handler->_set_app($app)
