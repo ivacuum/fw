@@ -6,9 +6,6 @@
 
 namespace fw\core;
 
-/**
-* Автозагрузчик классов
-*/
 class autoloader
 {
 	private $apc_cache;

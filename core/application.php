@@ -23,7 +23,7 @@ class application implements ArrayAccess
 	
 	private $values;
 	
-	function __construct(array $values = array())
+	function __construct(array $values = [])
 	{
 		$this->values = $values;
 		$app = $this;
@@ -52,8 +52,8 @@ class application implements ArrayAccess
 		});
 		
 		$this['cache.driver'] = $this->share(function() use ($app) {
-			$class = "\\fw\\cache\\driver\\{$app['acm.type']}";
-			return new $class($app['acm.prefix'], $app['acm.shared_prefix']);
+			$class = "\\fw\\cache\\driver\\{$app['cache.driver.options']['type']}";
+			return new $class($app['cache.driver.options']);
 		});
 		
 		$this['cache'] = $this->share(function() use ($app) {

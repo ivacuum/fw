@@ -8,17 +8,15 @@ namespace fw\cache\driver;
 
 class memcache extends memory
 {
-	protected $extension = 'memcache';
+	protected $flags = 0;
+	protected $memcache;
 
-	private $memcache;
-	private $flags = 0;
-
-	function __construct($prefix = '', $shared_prefix = '')
+	function __construct(array $options = [])
 	{
-		parent::__construct($prefix, $shared_prefix);
+		parent::__construct($options);
 
 		$this->memcache = new \Memcache();
-		$this->memcache->pconnect('unix:///var/run/memcached/memcached.lock', 0);
+		$this->memcache->pconnect($this->options['host'], $this->options['port']);
 	}
 
 	public function _delete($var)

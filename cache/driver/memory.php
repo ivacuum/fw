@@ -6,31 +6,32 @@
 
 namespace fw\cache\driver;
 
-/**
-* Хранение кэша в памяти
-*/
 class memory
 {
-	protected $prefix;
-	protected $shared_prefix;
+	protected $data = [];
+	protected $is_modified = false;
+	protected $options = [
+		'prefix'        => '',
+		'shared_prefix' => '',
+		'type'          => '',
+	];
 	
-	private $data = [];
-	private $is_modified = false;
-	
-	function __construct($prefix = '', $shared_prefix = '')
+	function __construct(array $options = [])
 	{
-		$this->set_prefixes($prefix, $shared_prefix);
+		$this->options = array_merge($this->options, $options);
 		
-		if (!isset($this->extension) || !extension_loaded($this->extension))
+		if (!$this->options['type'] || !extension_loaded($this->options['type']))
 		{
-			trigger_error(sprintf('Не удается найти расширение [%s] для ACM.', $this->extension), E_USER_ERROR);
+			trigger_error("Не удается найти расширение «{$this->extension}».", E_USER_ERROR);
+		}
+		
+		if (!$this->options['prefix'] || !$this->options['shared_prefix'])
+		{
+			trigger_error('Для работы системы кэширования должны быть настроены prefix и shared_prefix.', E_USER_ERROR);
 		}
 	}
 	
-	/**
-	* Удаление записи из кэша
-	*/
-	public function delete($var, $table = '')
+	public function delete($var)
 	{
 		if (!$this->_exists($var))
 		{
@@ -47,7 +48,7 @@ class memory
 		}
 		elseif ($var[0] != '_')
 		{
-			$this->_delete($this->prefix . $var);
+			$this->_delete($this->options['prefix'] . $var);
 		}
 	}
 
@@ -56,12 +57,9 @@ class memory
 	*/
 	public function delete_shared($var)
 	{
-		$this->_delete($this->shared_prefix . $var);
+		$this->_delete($this->options['shared_prefix'] . $var);
 	}
 
-	/**
-	* Получение данных из кэша
-	*/
 	public function get($var)
 	{
 		if (!$this->_exists($var))
@@ -74,7 +72,7 @@ class memory
 			return $this->data[$var];
 		}
 		
-		return $this->_get($this->prefix . $var);
+		return $this->_get($this->options['prefix'] . $var);
 	}
 
 	/**
@@ -82,23 +80,20 @@ class memory
 	*/
 	public function get_shared($var)
 	{
-		return $this->_get($this->shared_prefix . $var);
+		return $this->_get($this->options['shared_prefix'] . $var);
 	}
 
 	/**
 	* Загрузка глобальных настроек
 	*/
-	private function load()
+	public function load()
 	{
-		$this->data = $this->_get("{$this->prefix}global");
+		$this->data = $this->_get("{$this->options['prefix']}global");
 
 		return false !== $this->data;
 	}
-
-	/**
-	* Сброс кэша
-	*/
-	protected function purge()
+	
+	public function purge()
 	{
 		unset($this->data);
 
@@ -107,8 +102,19 @@ class memory
 	}
 	
 	/**
-	* Запись данных в кэш
+	* Сохранение глобальных настроек
 	*/
+	public function save()
+	{
+		if (!$this->is_modified)
+		{
+			return;
+		}
+
+		$this->_set("{$this->options['prefix']}global", $this->data, 2592000);
+		$this->is_modified = false;
+	}
+	
 	public function set($var, $data, $ttl = 2592000)
 	{
 		if ($var[0] == '_')
@@ -118,17 +124,8 @@ class memory
 		}
 		else
 		{
-			$this->_set($this->prefix . $var, $data, $ttl);
+			$this->_set($this->options['prefix'] . $var, $data, $ttl);
 		}
-	}
-
-	/**
-	* Установка префиксов записей
-	*/
-	public function set_prefixes($prefix = '', $shared_prefix = '')
-	{
-		$this->prefix        = $prefix ? "{$prefix}_" : '';
-		$this->shared_prefix = $shared_prefix ? "{$shared_prefix}_" : '';
 	}
 
 	/**
@@ -136,13 +133,13 @@ class memory
 	*/
 	public function set_shared($var, $data, $ttl = 2592000)
 	{
-		$this->_set($this->shared_prefix . $var, $data, $ttl);
+		$this->_set($this->options['shared_prefix'] . $var, $data, $ttl);
 	}
 
 	/**
 	* Выгрузка данных
 	*/
-	protected function unload()
+	public function unload()
 	{
 		$this->save();
 		unset($this->data);
@@ -152,7 +149,7 @@ class memory
 	/**
 	* Проверка наличия данных в кэше
 	*/
-	private function _exists($var)
+	protected function _exists($var)
 	{
 		if ($var[0] == '_')
 		{
@@ -167,19 +164,5 @@ class memory
 		{
 			return true;
 		}
-	}
-	
-	/**
-	* Сохранение глобальных настроек
-	*/
-	private function save()
-	{
-		if (!$this->is_modified)
-		{
-			return;
-		}
-
-		$this->_set("{$this->prefix}global", $this->data, 2592000);
-		$this->is_modified = false;
 	}
 }

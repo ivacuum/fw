@@ -6,23 +6,27 @@
 
 namespace fw\cache\driver;
 
-/**
-* Хранение кэша в файлах
-*/
 class file
 {
-	protected $prefix;
-	protected $shared_prefix;
-
-	private $cache_dir;
-	private $data = [];
-	private $data_expires = [];
-	private $is_modified = false;
+	protected $cache_dir;
+	protected $data = [];
+	protected $data_expires = [];
+	protected $is_modified = false;
+	protected $options = [
+		'prefix'        => '',
+		'shared_prefix' => '',
+		'type'          => '',
+	];
 	
-	function __construct($prefix = '', $shared_prefix = '')
+	function __construct(array $options = [])
 	{
-		$this->set_prefixes($prefix, $shared_prefix);
+		$this->options = array_merge($this->options, $options);
 		$this->cache_dir = SITE_DIR . 'cache/';
+
+		if (!$this->options['prefix'] || !$this->options['shared_prefix'])
+		{
+			trigger_error('Для работы системы кэширования должны быть настроены prefix и shared_prefix.', E_USER_ERROR);
+		}
 	}
 	
 	/**
@@ -45,7 +49,7 @@ class file
 		/* Пропуск заголовка */
 		fgets($handle);
 		
-		if ($filename == "{$this->prefix}global")
+		if ($filename == "{$this->options['prefix']}global")
 		{
 			$this->data = $this->data_expires = [];
 			$time = time();
@@ -114,7 +118,7 @@ class file
 						break;
 					}
 					
-					if (0 === strpos($filename, "{$this->prefix}sql_"))
+					if (0 === strpos($filename, "{$this->options['prefix']}sql_"))
 					{
 						fgets($handle);
 					}
@@ -178,7 +182,7 @@ class file
 			flock($handle, LOCK_EX);
 			fwrite($handle, '<' . '?php exit; ?' . '>');
 			
-			if ($filename == "{$this->prefix}global")
+			if ($filename == "{$this->options['prefix']}global")
 			{
 				foreach ($this->data as $var => $data)
 				{
@@ -199,7 +203,7 @@ class file
 			{
 				fwrite($handle, "\n" . (time() + $expires) . "\n");
 				
-				if (0 === strpos($filename, "{$this->prefix}sql_"))
+				if (0 === strpos($filename, "{$this->options['prefix']}sql_"))
 				{
 					fwrite($handle, "{$query}\n");
 				}
@@ -219,59 +223,8 @@ class file
 		return false;
 	}
 	
-	/**
-	* Удаление записи из кэша
-	*/
-	public function delete($var, $table = '')
+	public function delete($var)
 	{
-		if ($var == 'sql' && !empty($table))
-		{
-			if (!is_array($table))
-			{
-				$table = [$table];
-			}
-			
-			if (false === $dir = opendir($this->cache_dir))
-			{
-				return;
-			}
-			
-			while (false !== $entry = readdir($dir))
-			{
-				if (0 !== strpos($entry, $this->prefix))
-				{
-					continue;
-				}
-				
-				if (false === $handle = fopen($this->cache_dir . $entry, 'rb'))
-				{
-					continue;
-				}
-				
-				/* Пропуск заголовка */
-				fgets($handle);
-				
-				/* Пропуск времени актуальности кэша */
-				fgets($handle);
-				
-				$query = substr(fgets($handle), 0, -1);
-				
-				fclose($handle);
-				
-				foreach ($table as $table_name)
-				{
-					if (false !== strpos($query, $table_name))
-					{
-						$this->remove_file($this->cache_dir . $entry);
-						break;
-					}
-				}
-			}
-			
-			closedir($dir);
-			return;
-		}
-
 		if (!$this->_exists($var))
 		{
 			return;
@@ -287,7 +240,7 @@ class file
 		}
 		elseif ($var[0] != '_')
 		{
-			$this->remove_file("{$this->prefix}{$var}.php", true);
+			$this->remove_file("{$this->options['prefix']}{$var}.php", true);
 		}
 	}
 
@@ -306,7 +259,7 @@ class file
 			return $this->data[$var];
 		}
 		
-		return $this->_get($this->prefix . $var);
+		return $this->_get($this->options['prefix'] . $var);
 	}
 
 	/**
@@ -314,7 +267,7 @@ class file
 	*/
 	public function load()
 	{
-		return $this->_get("{$this->prefix}global");
+		return $this->_get("{$this->options['prefix']}global");
 	}
 
 	/**
@@ -329,7 +282,7 @@ class file
 		
 		while (false !== $entry = readdir($dir))
 		{
-			if (0 !== strpos($entry, $this->prefix))
+			if (0 !== strpos($entry, $this->options['prefix']))
 			{
 				continue;
 			}
@@ -371,19 +324,10 @@ class file
 		}
 		else
 		{
-			$this->_set($this->prefix . $var, $data, $ttl);
+			$this->_set($this->options['prefix'] . $var, $data, $ttl);
 		}
 	}
 	
-	/**
-	* Установка префиксов записей
-	*/
-	public function set_prefixes($prefix = '', $shared_prefix = '')
-	{
-		$this->prefix        = $prefix ? "{$prefix}_" : '';
-		$this->shared_prefix = $shared_prefix ? "{$shared_prefix}_" : '';
-	}
-
 	/**
 	* Удаление устаревшего кэша
 	*/
@@ -398,7 +342,7 @@ class file
 		
 		while (false !== $entry = readdir($dir))
 		{
-			if (0 !== strpos($entry, "{$this->prefix}sql_") && 0 !== strpos($entry, "{$this->prefix}global"))
+			if (0 !== strpos($entry, "{$this->options['prefix']}sql_") && 0 !== strpos($entry, "{$this->options['prefix']}global"))
 			{
 				continue;
 			}
@@ -423,7 +367,7 @@ class file
 		
 		closedir($dir);
 		
-		if (file_exists("{$this->cache_dir}{$this->prefix}global.php"))
+		if (file_exists("{$this->cache_dir}{$this->options['prefix']}global.php"))
 		{
 			if (!sizeof($this->data))
 			{
@@ -473,7 +417,7 @@ class file
 		}
 		else
 		{
-			return file_exists("{$this->cache_dir}{$this->prefix}{$var}.php");
+			return file_exists("{$this->cache_dir}{$this->options['prefix']}{$var}.php");
 		}
 		
 	}
@@ -481,14 +425,14 @@ class file
 	/**
 	* Сохранение глобальных настроек
 	*/
-	private function save() 
+	protected function save() 
 	{
 		if (!$this->is_modified)
 		{
 			return;
 		}
 		
-		if (!$this->_set("{$this->prefix}global"))
+		if (!$this->_set("{$this->options['prefix']}global"))
 		{
 			if (!is_writable($this->cache_dir))
 			{

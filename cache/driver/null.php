@@ -12,6 +12,10 @@ class null
 	{
 	}
 	
+	public function _delete($var)
+	{
+	}
+	
 	public function _get($var)
 	{
 		return false;
@@ -21,7 +25,7 @@ class null
 	{
 	}
 	
-	public function delete($var, $table = '')
+	public function delete($var)
 	{
 	}
 	
@@ -64,7 +68,7 @@ class null
 	{
 	}
 
-	private function _exists($var)
+	protected function _exists($var)
 	{
 		return false;
 	}
