@@ -13,7 +13,7 @@ class sphinx extends mysqli
 {
 	protected function connect()
 	{
-		$this->connect_id = mysqli_connect($this->server, '', '', '', $this->port, $this->socket);
+		$this->connect_id = mysqli_connect($this->options['host'], '', '', '', $this->options['port'], $this->options['sock']);
 
 		return $this->connect_id ? $this->connect_id : $this->error();
 	}

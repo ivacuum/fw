@@ -17,13 +17,15 @@ $app = [
 	'captcha.type'  => 'gd',
 	
 	/* Настройки подключения к БД */
-	'db.host' => 'localhost',
-	'db.port' => false,
-	'db.name' => '',
-	'db.user' => '',
-	'db.pass' => '',
-	'db.sock' => '/tmp/mysql.sock',
-	'db.pers' => false,
+	'db.options' => [
+		'host' => 'localhost',
+		'port' => false,
+		'name' => '',
+		'user' => '',
+		'pass' => '',
+		'sock' => '/tmp/mysql.sock',
+		'pers' => false,
+	],
 	
 	/* Пути к папкам */
 	'dir.app'             => SITE_DIR . '../includes',
@@ -84,9 +86,11 @@ $app = [
 	],
 	
 	/* Настройки подключения к поисковику sphinx */
-	'sphinx.host' => 'localhost',
-	'sphinx.port' => false,
-	'sphinx.sock' => '/tmp/sphinx.sock',
+	'sphinx.options' => [
+		'host' => 'localhost',
+		'port' => false,
+		'sock' => '/tmp/sphinx.sock',
+	],
 	
 	/* Ссылки */
 	'urls' => [

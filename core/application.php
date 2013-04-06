@@ -51,7 +51,7 @@ class application implements ArrayAccess
 		});
 		
 		$this['db'] = $this->share(function() use ($app) {
-			return new db_mysqli($app['cache.driver'], $app['profiler'], $app['db.host'], $app['db.user'], $app['db.pass'], $app['db.name'], $app['db.port'], $app['db.sock'], $app['db.pers']);
+			return new db_mysqli($app['cache.driver'], $app['profiler'], $app['db.options']);
 		});
 		
 		$this['cache.driver'] = $this->share(function() use ($app) {
@@ -125,7 +125,7 @@ class application implements ArrayAccess
 		});
 		
 		$this['sphinx'] = $this->share(function() use ($app) {
-			return new db_sphinx($app['cache.driver'], $app['profiler'], $app['sphinx.host'], '', '', '', $app['sphinx.port'], $app['sphinx.sock']);
+			return new db_sphinx($app['cache.driver'], $app['profiler'], $app['sphinx.options']);
 		});
 	}
 	

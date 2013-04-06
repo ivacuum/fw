@@ -11,9 +11,16 @@ namespace fw\db;
 */
 class mysqli
 {
-	/**
-	* Глобальные переменные класса
-	*/
+	protected $options = [
+		'host' => 'localhost',
+		'port' => false,
+		'name' => '',
+		'user' => '',
+		'pass' => '',
+		'sock' => '',
+		'pers' => false,
+	];
+
 	protected $cache_rowset = [];
 	protected $cache_row_pointer = [];
 	protected $connect_id;
@@ -22,13 +29,6 @@ class mysqli
 	protected $transaction = false;
 	protected $transactions = 0;
 
-	protected $server;
-	protected $user;
-	protected $password;
-	protected $database;
-	protected $port;
-	protected $socket;
-	
 	protected $cache;
 	protected $profiler;
 	
@@ -36,21 +36,16 @@ class mysqli
 	* Сбор параметров
 	* Само подключение к серверу выполняется при первом запросе
 	*/
-	function __construct($cache, $profiler, $dbhost, $dbuser, $dbpass, $dbname, $dbport = false, $dbsock = '', $persistent = false)
+	function __construct($cache, $profiler, array $options = [])
 	{
+		$this->options = array_merge($this->options, $options);
+		
 		$this->cache    = $cache;
 		$this->profiler = $profiler;
 		
-		$this->server   = $dbhost;
-		$this->user     = $dbuser;
-		$this->password = $dbpass;
-		$this->database = $dbname;
-		$this->port     = !$dbport ? null : $dbport;
-		$this->socket   = $dbsock;
-		
-		if (false !== $persistent && $this->server == 'localhost' && version_compare(PHP_VERSION, '5.3.0', '>='))
+		if (false !== $this->options['pers'] && $this->options['host'] == 'localhost' && version_compare(PHP_VERSION, '5.3.0', '>='))
 		{
-			$this->server = "p:{$this->server}";
+			$this->options['host'] = "p:{$this->options['host']}";
 		}
 	}
 	
@@ -681,10 +676,10 @@ class mysqli
 	*/
 	protected function connect()
 	{
-		$this->connect_id = mysqli_connect($this->server, $this->user, $this->password, $this->database, $this->port, $this->socket);
-		$this->password = '';
+		$this->connect_id = mysqli_connect($this->options['host'], $this->options['user'], $this->options['pass'], $this->options['name'], $this->options['port'], $this->options['sock']);
+		$this->options['pass'] = '';
 
-		return $this->connect_id && $this->database ? $this->connect_id : $this->error();
+		return $this->connect_id && $this->options['name'] ? $this->connect_id : $this->error();
 	}
 
 	/**
