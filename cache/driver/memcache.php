@@ -6,8 +6,6 @@
 
 namespace fw\cache\driver;
 
-use Memcache;
-
 class memcache extends memory
 {
 	protected $extension = 'memcache';
@@ -19,7 +17,7 @@ class memcache extends memory
 	{
 		parent::__construct($prefix, $shared_prefix);
 
-		$this->memcache = new Memcache();
+		$this->memcache = new \Memcache();
 		$this->memcache->pconnect('unix:///var/run/memcached/memcached.lock', 0);
 	}
 
