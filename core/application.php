@@ -16,12 +16,9 @@ use fw\db\mysqli as db_mysqli;
 use fw\db\sphinx as db_sphinx;
 use fw\session\user;
 use fw\template\smarty;
-use fw\traits\constants;
 
 class application implements ArrayAccess
 {
-	use constants;
-	
 	const VERSION = 'master';
 	
 	private $values;
@@ -36,7 +33,7 @@ class application implements ArrayAccess
 		});
 		
 		$this['autoloader'] = $this->share(function() use ($app) {
-			return (new autoloader($app['acm.prefix']))->register();
+			return (new autoloader())->register();
 		});
 		
 		$this['template'] = $this->share(function() use ($app) {
@@ -197,6 +194,31 @@ class application implements ArrayAccess
 		};
 	}
 	
+	public function load_constants($prefix)
+	{
+		if (!function_exists('apc_fetch'))
+		{
+			return false;
+		}
+
+		return apc_load_constants("{$prefix}_constants");
+	}
+
+	public function set_constants($prefix, $constants)
+	{
+		if (!function_exists('apc_fetch'))
+		{
+			foreach ($constants as $key => $value)
+			{
+				define($key, $value);
+			}
+		
+			return;
+		}
+	
+		apc_define_constants("{$prefix}_constants", $constants);
+	}
+
 	public function keys()
 	{
 		return array_keys($this->values);
