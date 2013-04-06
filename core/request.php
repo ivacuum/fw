@@ -180,7 +180,7 @@ class request
 		* Если пользователь из локальной сети,
 		* то перенаправлять его следует на локальный домен
 		*/
-		if ($this->isp == 'local' && $this->options['local_redirect.from'] && $this->options['local_redirect.to'])
+		if ($this->isp == 'local' && !empty($this->options['local_redirect.from']) && !empty($this->options['local_redirect.to']))
 		{
 			$url = str_replace($this->options['local_redirect.from'], $this->options['local_redirect.to'], $url);
 		}
