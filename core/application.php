@@ -54,7 +54,7 @@ class application implements ArrayAccess
 			return new db_mysqli($app['cache.driver'], $app['profiler'], $app['db.host'], $app['db.user'], $app['db.pass'], $app['db.name'], $app['db.port'], $app['db.sock'], $app['db.pers']);
 		});
 		
-		$this['cache.driver'] = $this->share(function use ($app) {
+		$this['cache.driver'] = $this->share(function() use ($app) {
 			$class = "\\fw\\cache\\driver\\{$app['acm.type']}";
 			return new $class($app['acm_prefix'], $app['acm.shared_prefix']);
 		});
@@ -62,10 +62,10 @@ class application implements ArrayAccess
 		$this['cache'] = $this->share(function() use ($app) {
 			if (file_exists("{$app['dir.app']}/cache/service.php"))
 			{
-				return new \app\cache\service($app['db'], $this['cache.driver']);
+				return new \app\cache\service($app['db'], $app['cache.driver']);
 			}
 			
-			return new \fw\cache\service($app['db'], $this['cache.driver']);
+			return new \fw\cache\service($app['db'], $app['cache.driver']);
 		});
 
 		$this['user'] = $this->share(function() use ($app) {
@@ -125,9 +125,7 @@ class application implements ArrayAccess
 		});
 		
 		$this['sphinx'] = $this->share(function() use ($app) {
-			return (new db_sphinx($app['sphinx.host'], '', '', '', $app['sphinx.port'], $app['sphinx.sock']))
-				->_set_cache($app['cache'])
-				->_set_profiler($app['profiler']);
+			return new db_sphinx($app['cache.driver'], $app['profiler'], $app['sphinx.host'], '', '', '', $app['sphinx.port'], $app['sphinx.sock']);
 		});
 	}
 	
