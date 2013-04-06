@@ -559,7 +559,7 @@ class page
 	*/
 	public function show_who_is_online()
 	{
-		$online_userlist = $this->cache->obtain_online_userlist($this->request->language);
+		$online_userlist = $this->cache->obtain_online_userlist($this->request->language, $this->config['load_online_time']);
 
 		/* Список групп (для легенды) */
 		$groups      = $this->cache->obtain_groups();

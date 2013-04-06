@@ -6,9 +6,8 @@
 
 namespace fw\cache\driver;
 
-/**
-* Memcache
-*/
+use Memcache;
+
 class memcache extends memory
 {
 	protected $extension = 'memcache';
@@ -16,33 +15,24 @@ class memcache extends memory
 	private $memcache;
 	private $flags = 0;
 
-	function __construct($db, $prefix = '', $shared_prefix = '')
+	function __construct($prefix = '', $shared_prefix = '')
 	{
-		parent::__construct($db, $prefix, $shared_prefix);
+		parent::__construct($prefix, $shared_prefix);
 
-		$this->memcache = new \Memcache();
+		$this->memcache = new Memcache();
 		$this->memcache->pconnect('unix:///var/run/memcached/memcached.lock', 0);
 	}
 
-	/**
-	* Удаление записи
-	*/
 	public function _delete($var)
 	{
 		return $this->memcache->delete($var, 0);
 	}
 
-	/**
-	* Извлечение записи
-	*/
 	public function _get($var)
 	{
 		return $this->memcache->get($var);
 	}
 
-	/**
-	* Обновление/добавление записи
-	*/
 	public function _set($var, $data, $ttl = 2592000)
 	{
 		if (!$this->memcache->replace($var, $data, $this->flags, $ttl))
@@ -53,9 +43,6 @@ class memcache extends memory
 		return true;
 	}
 
-	/**
-	* Сброс данных
-	*/
 	public function purge()
 	{
 		$this->memcache->flush();
@@ -63,9 +50,6 @@ class memcache extends memory
 		parent::purge();
 	}
 
-	/**
-	* Завершение подключения
-	*/
 	public function unload()
 	{
 		parent::unload();

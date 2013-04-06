@@ -6,6 +6,8 @@
 
 namespace fw\core;
 
+use ArrayAccess;
+use Closure;
 use fw\captcha\service as captcha_service;
 use fw\captcha\validator as captcha_validator;
 use fw\cron\manager as cron_manager;
@@ -16,10 +18,7 @@ use fw\session\user;
 use fw\template\smarty;
 use fw\traits\constants;
 
-/**
-* Контейнер приложения
-*/
-class application implements \ArrayAccess
+class application implements ArrayAccess
 {
 	use constants;
 	
@@ -30,7 +29,6 @@ class application implements \ArrayAccess
 	function __construct(array $values = array())
 	{
 		$this->values = $values;
-		
 		$app = $this;
 		
 		$this['profiler'] = $this->share(function() use ($app) {
@@ -53,18 +51,21 @@ class application implements \ArrayAccess
 		});
 		
 		$this['db'] = $this->share(function() use ($app) {
-			return new db_mysqli($app['db.host'], $app['db.user'], $app['db.pass'], $app['db.name'], $app['db.port'], $app['db.sock'], $app['db.pers']);
+			return new db_mysqli($app['cache.driver'], $app['profiler'], $app['db.host'], $app['db.user'], $app['db.pass'], $app['db.name'], $app['db.port'], $app['db.sock'], $app['db.pers']);
+		});
+		
+		$this['cache.driver'] = $this->share(function use ($app) {
+			$class = "\\fw\\cache\\driver\\{$app['acm.type']}";
+			return new $class($app['acm_prefix'], $app['acm.shared_prefix']);
 		});
 		
 		$this['cache'] = $this->share(function() use ($app) {
-			$class = "\\fw\\cache\\driver\\{$app['acm.type']}";
-			
 			if (file_exists("{$app['dir.app']}/cache/service.php"))
 			{
-				return new \app\cache\service($app['db'], new $class($app['db'], $app['acm.prefix'], $app['acm.shared_prefix']));
+				return new \app\cache\service($app['db'], $this['cache.driver']);
 			}
 			
-			return new \fw\cache\service($app['db'], new $class($app['db'], $app['acm.prefix'], $app['acm.shared_prefix']));
+			return new \fw\cache\service($app['db'], $this['cache.driver']);
 		});
 
 		$this['user'] = $this->share(function() use ($app) {
@@ -135,7 +136,7 @@ class application implements \ArrayAccess
 	*
 	* Полезно, когда необходимо расширить объект, не инициализируя его
 	*/
-	public function extend($id, \Closure $callable)
+	public function extend($id, Closure $callable)
 	{
 		if (!array_key_exists($id, $this->values))
 		{
@@ -144,12 +145,12 @@ class application implements \ArrayAccess
 		
 		$factory = $this->values[$id];
 		
-		if (!($factory instanceof \Closure))
+		if (!($factory instanceof Closure))
 		{
 			trigger_error(sprintf('Ключ "%s" не содержит объект.', $id));
 		}
 		
-		return $this->values[$id] = function ($c) use ($callable, $factory)
+		return $this->values[$id] = function($c) use ($callable, $factory)
 		{
 			return $callable($factory($c), $c);
 		};
@@ -159,9 +160,9 @@ class application implements \ArrayAccess
 	* Данный объект не будет вызван при обращении
 	* Его необходимо вызывать вручную
 	*/
-	public function protect(\Closure $callable)
+	public function protect(Closure $callable)
 	{
-		return function ($c) use ($callable)
+		return function($c) use ($callable)
 		{
 			return $callable;
 		};
@@ -174,7 +175,7 @@ class application implements \ArrayAccess
 	{
 		if (!array_key_exists($id, $this->values))
 		{
-			trigger_error(sprintf('Ключ "%s" не найден.', $id));
+			trigger_error("Ключ «{$id}» не найден.");
 		}
 		
 		return $this->values[$id];
@@ -183,9 +184,9 @@ class application implements \ArrayAccess
 	/**
 	* Объект-одиночка
 	*/
-	public function share(\Closure $callable)
+	public function share(Closure $callable)
 	{
-		return function ($c) use ($callable)
+		return function($c) use ($callable)
 		{
 			static $object;
 			

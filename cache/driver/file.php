@@ -11,9 +11,6 @@ namespace fw\cache\driver;
 */
 class file
 {
-	public $sql_rowset = [];
-	public $sql_row_pointer = [];
-
 	protected $prefix;
 	protected $shared_prefix;
 
@@ -22,11 +19,8 @@ class file
 	private $data_expires = [];
 	private $is_modified = false;
 	
-	private $db;
-	
-	function __construct($db, $prefix = '', $shared_prefix = '')
+	function __construct($prefix = '', $shared_prefix = '')
 	{
-		$this->db = $db;
 		$this->set_prefixes($prefix, $shared_prefix);
 		$this->cache_dir = SITE_DIR . 'cache/';
 	}
@@ -345,9 +339,9 @@ class file
 		
 		closedir($dir);
 		
-		unset($this->data, $this->data_expires, $this->sql_rowset, $this->sql_row_pointer);
+		unset($this->data, $this->data_expires);
 
-		$this->data = $this->data_expires = $this->sql_rowset = $this->sql_row_pointer = [];
+		$this->data = $this->data_expires = [];
 		$this->is_modified = false;
 	}
 	
@@ -388,127 +382,6 @@ class file
 	{
 		$this->prefix        = $prefix ? "{$prefix}_" : '';
 		$this->shared_prefix = $shared_prefix ? "{$shared_prefix}_" : '';
-	}
-
-	/**
-	* Существует ли искомая запись в кэше
-	*/
-	public function sql_exists($query_id)
-	{
-		return isset($this->sql_rowset[$query_id]);
-	}
-	
-	/**
-	* Извлекаем весь результат
-	*/
-	public function sql_fetchall($query_id)
-	{
-		if ($this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
-		{
-			return $this->sql_rowset[$query_id];
-		}
-		
-		return false;
-	}
-	
-	/**
-	* Извлекаем поле из текущей строки кэшированного результата sql-запроса
-	*/
-	public function sql_fetchfield($query_id, $field)
-	{
-		if ($this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
-		{
-			return isset($this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]][$field]) ? $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]++][$field] : false;
-		}
-
-		return false;
-	}
-	
-	/**
-	* Извлекаем запись из кэша
-	*/
-	public function sql_fetchrow($query_id)
-	{
-		if ($this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
-		{
-			return $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]++];
-		}
-		
-		return false;
-	}
-	
-	/**
-	* Освобождение результата запроса, удаление закэшированных результатов
-	*/
-	public function sql_freeresult($query_id)
-	{
-		if (!isset($this->sql_rowset[$query_id]))
-		{
-			return false;
-		}
-		
-		unset($this->sql_rowset[$query_id]);
-		unset($this->sql_row_pointer[$query_id]);
-		
-		return true;
-	}
-	
-	/**
-	* Загрузка закэшированных результатов sql-запроса
-	*/
-	public function sql_load($query)
-	{
-		$query    = preg_replace('#[\n\r\s\t]+#', ' ', $query);
-		$query_id = sizeof($this->sql_rowset);
-		
-		if (false === $result = $this->_get("{$this->prefix}sql_" . md5($query)))
-		{
-			return false;
-		}
-		
-		$this->sql_rowset[$query_id] = $result;
-		$this->sql_row_pointer[$query_id] = 0;
-		
-		return $query_id;
-	}
-	
-	/**
-	* Перемещение к определенной строке результата
-	*/
-	public function sql_rowseek($rownum, $query_id)
-	{
-		if ($rownum >= sizeof($this->sql_rowset[$query_id]))
-		{
-			return false;
-		}
-		
-		$this->sql_row_pointer[$query_id] = $rownum;
-		
-		return true;
-	}
-	
-	/**
-	* Сохранение результатов sql-запроса
-	*/
-	public function sql_save($query, &$query_result, $ttl)
-	{
-		$query = preg_replace('#[\n\r\s\t]+#', ' ', $query);
-		$query_id = sizeof($this->sql_rowset);
-		
-		$this->sql_rowset[$query_id] = [];
-		$this->sql_row_pointer[$query_id] = 0;
-		
-		while ($row = $this->db->fetchrow($query_result))
-		{
-			$this->sql_rowset[$query_id][] = $row;
-		}
-		
-		$this->db->freeresult($query_result);
-		
-		if ($this->_set("{$this->prefix}sql_" . md5($query), $this->sql_rowset[$query_id], time() + $ttl, $query))
-		{
-			$query_result = $query_id;
-		}
 	}
 
 	/**
@@ -574,9 +447,9 @@ class file
 	{
 		$this->save();
 		
-		unset($this->data, $this->data_expires, $this->sql_rowset, $this->sql_row_pointer);
+		unset($this->data, $this->data_expires);
 		
-		$this->data = $this->data_expires = $this->sql_rowset = $this->sql_row_pointer = [];
+		$this->data = $this->data_expires = [];
 	}
 
 	/**

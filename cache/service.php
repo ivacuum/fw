@@ -13,53 +13,18 @@ use fw\helpers\traverse\tree\site_pages;
 */
 class service
 {
-	public $sql_rowset;
-	public $sql_row_pointer;
-
-	protected $config;
 	protected $db;
 	protected $driver;
 
 	function __construct($db, $driver)
 	{
-		$this->db = $db;
-		$this->set_driver($driver);
+		$this->db     = $db;
+		$this->driver = $driver;
 	}
 	
 	function __destruct()
 	{
 		$this->unload();
-	}
-	
-	public function _set_config($config)
-	{
-		$this->config = $config;
-		
-		return $this;
-	}
-	
-	/**
-	* Возвращает название используемого кэша
-	*/
-	public function get_driver()
-	{
-		return $this->driver;
-	}
-	
-	/**
-	* Устанавливает новый механизм работы с кэшем
-	*/
-	public function set_driver($driver)
-	{
-		$this->driver = $driver;
-
-		$this->sql_rowset      =& $this->driver->sql_rowset;
-		$this->sql_row_pointer =& $this->driver->sql_row_pointer;
-	}
-
-	public function sql_save($query, &$query_result, $ttl)
-	{
-		$this->driver->sql_save($query, $query_result, $ttl);
 	}
 	
 	public function __call($method, $args)
@@ -349,7 +314,7 @@ class service
 	/**
 	* Список пользователей, которые сейчас на сайте
 	*/
-	public function obtain_online_userlist($language)
+	public function obtain_online_userlist($language, $online_time = 1800)
 	{
 		if (false === $data = $this->driver->get("online_userlist_{$language}"))
 		{
@@ -364,7 +329,7 @@ class service
 
 			/**
 			* Получаем данные пользователей, которые посетили сайт
-			* в последние $this->config['load_online_time'] минут
+			* в последние $online_time секунд
 			*/
 			$sql = '
 				SELECT
@@ -378,7 +343,7 @@ class service
 				LEFT JOIN
 					' . USERS_TABLE . ' u ON (u.user_id = s.user_id)
 				WHERE
-					s.session_time >= ' . $this->db->check_value(time() - $this->config['load_online_time']) . '
+					s.session_time >= ' . $this->db->check_value(time() - $online_time) . '
 				ORDER BY
 					s.session_time DESC';
 			$result = $this->db->query($sql);
@@ -411,7 +376,7 @@ class service
 				WHERE
 					user_id = 0
 				AND
-					session_time >= ' . $this->db->check_value(time() - $this->config['load_online_time']);
+					session_time >= ' . $this->db->check_value(time() - $online);
 			$result = $this->db->query($sql);
 
 			while ($row = $this->db->fetchrow($result))

@@ -60,40 +60,6 @@ class null
 	{
 	}
 	
-	public function sql_exists($query_id)
-	{
-		return false;
-	}
-
-	public function sql_fetchfield($query_id, $field)
-	{
-		return false;
-	}
-
-	public function sql_fetchrow($query_id)
-	{
-		return false;
-	}
-
-	public function sql_freeresult($query_id)
-	{
-		return false;
-	}
-
-	public function sql_load($query)
-	{
-		return false;
-	}
-
-	public function sql_rowseek($rownum, $query_id)
-	{
-		return false;
-	}
-	
-	public function sql_save($query, &$query_result, $ttl)
-	{
-	}
-
 	public function unload()
 	{
 	}
