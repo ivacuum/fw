@@ -19,7 +19,7 @@ use fw\template\smarty;
 
 class application implements ArrayAccess
 {
-	const VERSION = 'master';
+	const VERSION = '1.4.0';
 	
 	private $values;
 	
