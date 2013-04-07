@@ -129,7 +129,7 @@ class manager
 			SELECT
 				site_id
 			FROM
-				' . SITES_TABLE . '
+				site_sites
 			WHERE
 				site_url = ' . $this->db->check_value($this->hostname);
 		$result = $this->db->query($sql);
@@ -146,7 +146,7 @@ class manager
 			SELECT
 				*
 			FROM
-				' . CRON_TABLE . '
+				site_cron
 			WHERE
 				' . $this->db->in_set('site_id', $site_ids) . '
 			AND
@@ -194,7 +194,7 @@ class manager
 
 		$sql = '
 			UPDATE
-				' . CRON_TABLE . '
+				site_cron
 			SET
 				last_run = UNIX_TIMESTAMP(),
 				next_run = ' . date_timestamp_get($next_run) . ',

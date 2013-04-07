@@ -73,7 +73,7 @@ class service
 			'expire'     => (int) $this->user->ctime + $this->config['confirm.expire']
 		];
 		
-		$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $this->db->build_array('INSERT', $sql_ary) . ' ON DUPLICATE KEY UPDATE code = values(code), expire = values(expire)';
+		$sql = 'INSERT INTO site_confirm ' . $this->db->build_array('INSERT', $sql_ary) . ' ON DUPLICATE KEY UPDATE code = values(code), expire = values(expire)';
 		$this->db->query($sql);
 	}
 	

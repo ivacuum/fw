@@ -96,7 +96,7 @@ class imagetransform
 			SELECT
 				*
 			FROM
-				' . IMAGE_WATERMARKS_TABLE . '
+				site_image_watermarks
 			WHERE
 				wm_file = ' . $app['db']->check_value($watermark);
 		$app['db']->query($sql);

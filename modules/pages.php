@@ -50,7 +50,7 @@ class pages extends page
 						SELECT
 							parent_id
 						FROM
-							' . PAGES_TABLE . '
+							site_pages
 						WHERE
 							page_id = ' . $page_id;
 					$this->db->query($sql);
@@ -80,7 +80,7 @@ class pages extends page
 					SELECT
 						*
 					FROM
-						' . PAGES_TABLE . '
+						site_pages
 					WHERE
 						site_id = ' . $this->db->check_value($this->data['site_id']) . '
 					AND
@@ -96,7 +96,7 @@ class pages extends page
 
 				$sql = '
 					UPDATE
-						' . PAGES_TABLE . '
+						site_pages
 					SET
 						page_enabled = ' . ($action == 'enable' ? 1 : 0) . '
 					WHERE
@@ -120,7 +120,7 @@ class pages extends page
 					SELECT
 						*
 					FROM
-						' . PAGES_TABLE . '
+						site_pages
 					WHERE
 						site_id = ' . $this->db->check_value($this->data['site_id']) . '
 					AND
@@ -280,7 +280,7 @@ class pages extends page
 			SELECT
 				*
 			FROM
-				' . PAGES_TABLE . '
+				site_pages
 			WHERE
 				site_id = ' . $this->db->check_value($this->data['site_id']) . '
 			AND
@@ -371,7 +371,7 @@ class pages extends page
 		$sql = '
 			DELETE
 			FROM
-				' . PAGES_TABLE . '
+				site_pages
 			WHERE
 				site_id = ' . $this->db->check_value($this->data['site_id']) . '
 			AND
@@ -384,7 +384,7 @@ class pages extends page
 		/* Синхронизация дерева */
 		$sql = '
 			UPDATE
-				' . PAGES_TABLE . '
+				site_pages
 			SET
 				right_id = right_id - ' . $diff . '
 			WHERE
@@ -397,7 +397,7 @@ class pages extends page
 
 		$sql = '
 			UPDATE
-				' . PAGES_TABLE . '
+				site_pages
 			SET
 				left_id = left_id - ' . $diff . ',
 				right_id = right_id - ' . $diff . '
@@ -428,9 +428,9 @@ class pages extends page
 			SELECT
 				p2.*
 			FROM
-				' . PAGES_TABLE . ' p1
+				site_pages p1
 			LEFT JOIN
-				' . PAGES_TABLE . ' p2 ON (' . $condition . ')
+				site_pages p2 ON (' . $condition . ')
 			WHERE
 				p1.site_id = ' . $this->db->check_value($this->data['site_id']) . '
 			AND
@@ -465,7 +465,7 @@ class pages extends page
 			SELECT
 				*
 			FROM
-				' . PAGES_TABLE . '
+				site_pages
 			WHERE
 				site_id = ' . $this->db->check_value($this->data['site_id']) . '
 			AND
@@ -498,7 +498,7 @@ class pages extends page
 				page_name,
 				page_handler
 			FROM
-				' . PAGES_TABLE . '
+				site_pages
 			WHERE
 				site_id = ' . $this->db->check_value($this->data['site_id']) . '
 			ORDER BY
@@ -571,7 +571,7 @@ class pages extends page
 		/* Синхронизация родителей */
 		$sql = '
 			UPDATE
-				' . PAGES_TABLE . '
+				site_pages
 			SET
 				right_id = right_id - ' . $diff . '
 			WHERE
@@ -585,7 +585,7 @@ class pages extends page
 		/* Синхронизация правой части дерева */
 		$sql = '
 			UPDATE
-				' . PAGES_TABLE . '
+				site_pages
 			SET
 				left_id = left_id - ' . $diff . ',
 				right_id = right_id - ' . $diff . '
@@ -602,7 +602,7 @@ class pages extends page
 			/* Синхронизация новых родителей */
 			$sql = '
 				UPDATE
-					' . PAGES_TABLE . '
+					site_pages
 				SET
 					right_id = right_id + ' . $diff . '
 				WHERE
@@ -616,7 +616,7 @@ class pages extends page
 			/* Синхронизация правой части дерева */
 			$sql = '
 				UPDATE
-					' . PAGES_TABLE . '
+					site_pages
 				SET
 					left_id = left_id + ' . $diff . ',
 					right_id = right_id + ' . $diff . '
@@ -646,7 +646,7 @@ class pages extends page
 				SELECT
 					MAX(right_id) AS right_id
 				FROM
-					' . PAGES_TABLE . '
+					site_pages
 				WHERE
 					site_id = ' . $this->db->check_value($this->data['site_id']) . '
 				AND
@@ -660,7 +660,7 @@ class pages extends page
 
 		$sql = '
 			UPDATE
-				' . PAGES_TABLE . '
+				site_pages
 			SET
 				left_id = left_id ' . $diff . ',
 				right_id = right_id ' . $diff . '
@@ -689,7 +689,7 @@ class pages extends page
 				right_id,
 				page_name
 			FROM
-				' . PAGES_TABLE . '
+				site_pages
 			WHERE
 				site_id = ' . $this->db->check_value($this->data['site_id']) . '
 			AND
@@ -744,7 +744,7 @@ class pages extends page
 
 		$sql = '
 			UPDATE
-				' . PAGES_TABLE . '
+				site_pages
 			SET
 				left_id = left_id + CASE
 					WHEN left_id BETWEEN ' . $move_up_left . ' AND ' . $move_up_right . '
@@ -774,7 +774,7 @@ class pages extends page
 			SELECT
 				*
 			FROM
-				' . MENUS_TABLE . '
+				site_menus
 			WHERE
 				menu_active = 1';
 		$this->db->query($sql);
@@ -807,7 +807,7 @@ class pages extends page
 						left_id,
 						right_id
 					FROM
-						' . PAGES_TABLE . '
+						site_pages
 					WHERE
 						site_id = ' . $this->db->check_value($page_data['site_id']) . '
 					AND
@@ -832,7 +832,7 @@ class pages extends page
 
 				$sql = '
 					UPDATE
-						' . PAGES_TABLE . '
+						site_pages
 					SET
 						left_id = left_id + 2,
 						right_id = right_id + 2
@@ -844,7 +844,7 @@ class pages extends page
 
 				$sql = '
 					UPDATE
-						' . PAGES_TABLE . '
+						site_pages
 					SET
 						right_id = right_id + 2
 					WHERE
@@ -862,7 +862,7 @@ class pages extends page
 					SELECT
 						MAX(right_id) AS right_id
 					FROM
-						' . PAGES_TABLE . '
+						site_pages
 					WHERE
 						site_id = ' . $this->db->check_value($page_data['site_id']);
 				$this->db->query($sql);
@@ -873,7 +873,7 @@ class pages extends page
 				$page_data['right_id'] = (int) $row['right_id'] + 2;
 			}
 
-			$sql = 'INSERT INTO ' . PAGES_TABLE . ' ' . $this->db->build_array('INSERT', $page_data);
+			$sql = 'INSERT INTO site_pages ' . $this->db->build_array('INSERT', $page_data);
 			$this->db->query($sql);
 
 			$page_data['page_id'] = $this->db->insert_id();
@@ -903,7 +903,7 @@ class pages extends page
 
 			$sql = '
 				UPDATE
-					' . PAGES_TABLE . '
+					site_pages
 				SET
 					' . $this->db->build_array('UPDATE', $update_ary) . '
 				WHERE

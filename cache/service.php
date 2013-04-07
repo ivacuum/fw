@@ -91,7 +91,7 @@ class service
 					user_id,
 					bot_agent
 				FROM
-					' . BOTS_TABLE . '
+					site_bots
 				ORDER BY
 					LENGTH(bot_agent) DESC';
 			$result = $this->db->query($sql);
@@ -114,7 +114,7 @@ class service
 				SELECT
 					*
 				FROM
-					' . GROUPS_TABLE . '
+					site_groups
 				ORDER BY
 					group_sort ASC';
 			$this->db->query($sql);
@@ -150,7 +150,7 @@ class service
 				SELECT
 					*
 				FROM
-					' . PAGES_TABLE . '
+					site_pages
 				WHERE
 					site_id = ' . $this->db->check_value($site_id) . '
 				ORDER BY
@@ -184,7 +184,7 @@ class service
 				SELECT
 					*
 				FROM
-					' . SITES_TABLE . '
+					site_sites
 				ORDER BY
 					site_id ASC';
 			$this->db->query($sql);
@@ -230,7 +230,7 @@ class service
 				SELECT
 					*
 				FROM
-					' . LANGUAGES_TABLE . '
+					site_languages
 				ORDER BY
 					language_sort ASC';
 			$result = $this->db->query($sql);
@@ -261,7 +261,7 @@ class service
 				SELECT
 					*
 				FROM
-					' . PAGES_TABLE . '
+					site_pages
 				WHERE
 					site_id = ' . $this->db->check_value($site_id) . '
 				ORDER BY
@@ -294,7 +294,7 @@ class service
 				SELECT
 					*
 				FROM
-					' . MENUS_TABLE . '
+					site_menus
 				WHERE
 					menu_active = 1';
 			$this->db->query($sql);
@@ -339,9 +339,9 @@ class service
 					u.user_url,
 					u.user_colour
 				FROM
-					' . SESSIONS_TABLE . ' s
+					site_sessions s
 				LEFT JOIN
-					' . USERS_TABLE . ' u ON (u.user_id = s.user_id)
+					site_users u ON (u.user_id = s.user_id)
 				WHERE
 					s.session_time >= ' . $this->db->check_value(time() - $online_time) . '
 				ORDER BY
@@ -372,7 +372,7 @@ class service
 				SELECT
 					session_ip
 				FROM
-					' . SESSIONS_TABLE . '
+					site_sessions
 				WHERE
 					user_id = 0
 				AND
@@ -422,7 +422,7 @@ class service
 				SELECT
 					*
 				FROM
-					' . RANKS_TABLE;
+					site_ranks';
 			$result = $this->db->query($sql);
 			$ranks = $this->db->fetchall($result, 'rank_id');
 			$this->db->freeresult($result);
@@ -445,7 +445,7 @@ class service
 				SELECT
 					*
 				FROM
-					' . SITES_TABLE . '
+					site_sites
 				ORDER BY
 					site_url ASC,
 					site_language ASC';

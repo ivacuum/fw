@@ -50,7 +50,7 @@ class user extends session
 				user_email,
 				user_login_attempts
 			FROM
-				' . USERS_TABLE . '
+				site_users
 			WHERE
 				username_clean = ' . $this->db->check_value($username_or_email);
 		$this->db->query($sql);
@@ -70,7 +70,7 @@ class user extends session
 					user_email,
 					user_login_attempts
 				FROM
-					' . USERS_TABLE . '
+					site_users
 				WHERE
 					user_email = ' . $this->db->check_value($username_or_email);
 			$this->db->query($sql);
@@ -84,7 +84,7 @@ class user extends session
 		// 		SELECT
 		// 			COUNT(attempt_id) AS attempts
 		// 		FROM
-		// 			' . LOGIN_ATTEMPT_TABLE . '
+		// 			site_login_attempts
 		// 		WHERE
 		// 			attempt_time > ' . (time() - (int) $this->config['ip_login_limit_time']) . '
 		// 		AND
@@ -103,7 +103,7 @@ class user extends session
 		// 		'username_clean'		=> $username_clean,
 		// 	];
 		// 	
-		// 	$sql = 'INSERT INTO ' . LOGIN_ATTEMPT_TABLE . $this->db->build_array('INSERT', $sql_ary);
+		// 	$sql = 'INSERT INTO site_login_attempts ' . $this->db->build_array('INSERT', $sql_ary);
 		// 	$this->db->sql_query($sql);
 		// }
 
@@ -155,7 +155,7 @@ class user extends session
 			$sql = '
 				DELETE
 				FROM
-					' . LOGIN_ATTEMPT_TABLE . '
+					site_login_attempts
 				WHERE
 					user_id = ' . $this->db->check_value($row['user_id']);
 			$this->db->query($sql);
@@ -212,7 +212,7 @@ class user extends session
 		
 		$sql = '
 			UPDATE
-				' . USERS_TABLE . '
+				site_users
 			SET
 				' . $this->db->build_array('UPDATE', $sql_ary) . '
 			WHERE

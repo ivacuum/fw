@@ -399,7 +399,7 @@ class router
 			SELECT
 				*
 			FROM
-				' . PAGES_TABLE . '
+				site_pages
 			WHERE
 				parent_id = ' . $this->db->check_value($parent_id) . '
 			AND

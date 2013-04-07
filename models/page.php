@@ -115,9 +115,9 @@ class page
 			SELECT
 				p2.*
 			FROM
-				' . PAGES_TABLE . ' p1
+				site_pages p1
 			LEFT JOIN
-				' . PAGES_TABLE . ' p2 ON (' . $condition . ')
+				site_pages p2 ON (' . $condition . ')
 			WHERE
 				p1.site_id = ' . $this->db->check_value($this->data['site_id']) . '
 			AND
@@ -160,7 +160,7 @@ class page
 			SELECT
 				*
 			FROM
-				' . PAGES_TABLE . '
+				site_pages
 			WHERE
 				parent_id = ' . $page_id . '
 			AND
@@ -675,7 +675,7 @@ class page
 				SELECT
 					*
 				FROM
-					' . PAGES_TABLE . '
+					site_pages
 				WHERE
 					site_id = ' . $this->db->check_value($this->data['site_id']) . '
 				ORDER BY

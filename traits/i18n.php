@@ -356,7 +356,7 @@ trait i18n
 					i18n_file,
 					i18n_translation
 				FROM
-					' . I18N_TABLE . '
+					site_i18n
 				WHERE
 					site_id = ' . $this->db->check_value($site_id) . '
 				AND

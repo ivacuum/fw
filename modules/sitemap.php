@@ -27,7 +27,7 @@ class sitemap extends page
 				page_noindex,
 				page_image
 			FROM
-				' . PAGES_TABLE . '
+				site_pages
 			WHERE
 				site_id = ' . $this->db->check_value($this->data['site_id']) . '
 			ORDER BY

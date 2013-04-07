@@ -210,7 +210,7 @@ class form
 			SELECT
 				*
 			FROM
-				' . FORMS_TABLE . '
+				site_forms
 			WHERE
 				form_alias = ' . $this->db->check_value($alias);
 		$this->db->query($sql);
@@ -229,7 +229,7 @@ class form
 			SELECT
 				*
 			FROM
-				' . FORM_TABS_TABLE . '
+				site_form_tabs
 			WHERE
 				form_id = ' . $this->db->check_value($this->data['form_id']) . '
 			ORDER BY
@@ -253,7 +253,7 @@ class form
 			SELECT
 				*
 			FROM
-				' . FORM_FIELDS_TABLE . '
+				site_form_fields
 			WHERE
 				form_id = ' . $this->db->check_value($this->data['form_id']) . '
 			ORDER BY

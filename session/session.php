@@ -76,7 +76,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 		$sql = '
 			DELETE
 			FROM
-				' . SESSIONS_KEYS_TABLE . '
+				site_sessions_keys
 			WHERE
 				user_id = ' . $this->db->check_value($user_id) . '
 			AND
@@ -93,7 +93,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 		$sql = '
 			DELETE
 			FROM
-				' . SESSIONS_TABLE . '
+				site_sessions
 			WHERE
 				session_id = ' . $this->db->check_value($session_id) . '
 			AND
@@ -261,7 +261,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 		
 		$sql_array = [
 			'SELECT' => 'ban_ip, user_id, ban_email, ban_exclude, ban_reason, ban_end',
-			'FROM'   => BANLIST_TABLE,
+			'FROM'   => 'site_banlist',
 			'WHERE'  => [],
 		];
 		
@@ -397,7 +397,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 		$sql = '
 			DELETE
 			FROM
-				' . SESSIONS_KEYS_TABLE . '
+				site_sessions_keys
 			WHERE
 				user_id = ' . $this->db->check_value($user_id);
 		$this->db->query($sql);
@@ -406,7 +406,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 		$sql = '
 			DELETE
 			FROM
-				' . SESSIONS_TABLE . '
+				site_sessions
 			WHERE
 				user_id = ' . $this->db->check_value($user_id) .
 			($user_id == $this->data['user_id'] ? ' AND session_id <> ' . $this->db->check_value($this->session_id) : '');
@@ -441,9 +441,9 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 					u.*,
 					sk.openid_provider
 				FROM
-					' . USERS_TABLE . ' u
+					site_users u
 				LEFT JOIN
-					' . SESSIONS_KEYS_TABLE . ' sk ON (sk.user_id = u.user_id)
+					site_sessions_keys sk ON (sk.user_id = u.user_id)
 				WHERE
 					u.user_id = ' . $this->db->check_value($this->cookie['u']) . '
 				AND
@@ -467,7 +467,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 				SELECT
 					*
 				FROM
-					' . USERS_TABLE . '
+					site_users
 				WHERE
 					user_id = ' . $this->db->check_value($this->cookie['u']);
 			$result = $this->db->query($sql);
@@ -560,7 +560,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 				$sql = '
 					DELETE
 					FROM
-						' . SESSIONS_TABLE . '
+						site_sessions
 					WHERE
 						user_id = ' . $this->db->check_value($this->data['user_id']);
 				$this->db->query($sql);
@@ -601,7 +601,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 		$sql_ary['session_id'] = $this->data['session_id'] = $this->session_id;
 
 		/* Добавляем информацию о сессии в базу */
-		$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $this->db->build_array('INSERT', $sql_ary);
+		$sql = 'INSERT INTO site_sessions ' . $this->db->build_array('INSERT', $sql_ary);
 		$this->db->query($sql);
 
 		if ($session_autologin)
@@ -640,7 +640,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 				SELECT
 					COUNT(*) AS sessions
 				FROM
-					' . SESSIONS_TABLE . '
+					site_sessions
 				WHERE
 					user_id = ' . $this->db->check_value($this->data['user_id']) . '
 				AND
@@ -682,7 +682,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 		
 		$sql = '
 			UPDATE
-				' . SESSIONS_TABLE . '
+				site_sessions
 			SET
 				' . $this->db->build_array('UPDATE', $sql_ary) . '
 			WHERE
@@ -751,7 +751,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 		{
 			$sql = '
 				UPDATE
-					' . SESSIONS_KEYS_TABLE . '
+					site_sessions_keys
 				SET
 					' . $this->db->build_array('UPDATE', $sql_ary) . '
 				WHERE
@@ -762,7 +762,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 		else
 		{
 			$sql_ary['user_id'] = (int) $user_id;
-			$sql = 'INSERT INTO ' . SESSIONS_KEYS_TABLE . ' ' . $this->db->build_array('INSERT', $sql_ary);
+			$sql = 'INSERT INTO site_sessions_keys ' . $this->db->build_array('INSERT', $sql_ary);
 		}
 
 		$this->db->query($sql);
@@ -800,9 +800,9 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 				u.*,
 				s.*
 			FROM
-				' . USERS_TABLE . ' u
+				site_users u
 			LEFT JOIN
-				' . SESSIONS_TABLE . ' s ON (s.user_id = u.user_id)
+				site_sessions s ON (s.user_id = u.user_id)
 			WHERE
 				u.user_id = ' . $this->db->check_value($bot_id);
 		$result = $this->db->query($sql);
@@ -834,7 +834,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 			SELECT
 				*
 			FROM
-				' . SESSIONS_TABLE . '
+				site_sessions
 			WHERE
 				session_id = ' . $this->db->check_value($session_id) . '
 			AND
@@ -860,9 +860,9 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 				s.*,
 				u.*
 			FROM
-				' . SESSIONS_TABLE . ' s
+				site_sessions s
 			LEFT JOIN
-				' . USERS_TABLE . ' u ON (u.user_id = s.user_id)
+				site_users u ON (u.user_id = s.user_id)
 			WHERE
 				s.session_id = ' . $this->db->check_value($session_id);
 		$result = $this->db->query($sql);

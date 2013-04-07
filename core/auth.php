@@ -47,7 +47,7 @@ class auth
 					auth_global,
 					auth_local
 				FROM
-					' . AUTH_OPTIONS_TABLE . '
+					site_auth_options
 				ORDER BY
 					auth_id ASC';
 			$result = $this->db->query($sql);
@@ -101,7 +101,7 @@ class auth
 			SELECT
 				*
 			FROM
-				' . AUTH_ROLES_DATA_TABLE . '
+				site_auth_roles_data
 			ORDER BY
 				role_id ASC';
 		$result = $this->db->query($sql);
@@ -134,7 +134,7 @@ class auth
 
 		$sql = '
 			UPDATE
-				' . USERS_TABLE . '
+				site_users
 			SET
 				user_access = ""' .
 			$where_sql;
@@ -280,8 +280,8 @@ class auth
 				a.auth_option_id,
 				ao.auth_var
 			FROM
-				' . AUTH_GROUPS_TABLE . ' a,
-				' . AUTH_OPTIONS_TABLE . ' ao
+				site_auth_groups a,
+				site_auth_options ao
 			WHERE
 				a.auth_role_id = 0
 			AND
@@ -301,9 +301,9 @@ class auth
 				r.auth_option_id,
 				ao.auth_var
 			FROM
-				' . AUTH_GROUPS_TABLE . ' a,
-				' . AUTH_ROLES_DATA_TABLE . ' r,
-				' . AUTH_OPTIONS_TABLE . ' ao
+				site_auth_groups a,
+				site_auth_roles_data r,
+				site_auth_options ao
 			WHERE
 				a.auth_role_id = r.role_id
 			AND
@@ -340,7 +340,7 @@ class auth
 		if (false !== $opts)
 		{
 			$sql_opts_select = ', ao.auth_var';
-			$sql_opts_from = ', ' . AUTH_OPTIONS_TABLE . ' ao';
+			$sql_opts_from = ', site_auth_options ao';
 			$this->build_auth_option_statement('ao.auth_var', $opts, $sql_opts);
 		}
 
@@ -355,7 +355,7 @@ class auth
 				a.auth_option_id
 				' . $sql_opts_select . '
 			FROM
-				' . AUTH_USERS_TABLE . ' a
+				site_auth_users a
 				' . $sql_opts_from . '
 			WHERE
 				a.auth_role_id = 0 ' .
@@ -372,8 +372,8 @@ class auth
 				r.auth_value
 				' . $sql_opts_select . '
 			FROM
-				' . AUTH_USERS_TABLE . ' a,
-				' . AUTH_ROLES_DATA_TABLE . ' r,
+				site_auth_users a,
+				site_auth_roles_data r,
 				' . $sql_opts_from . '
 			WHERE
 				a.auth_role_id = r.role_id ' .
@@ -405,9 +405,9 @@ class auth
 				a.auth_option_id
 				' . $sql_opts_select . '
 			FROM
-				' . AUTH_GROUPS_TABLE . ' a,
-				' . USERS_GROUP_TABLE . ' ug,
-				' . GROUPS_TABLE . ' g
+				site_auth_groups a,
+				site_user_groups ug,
+				site_groups g
 				' . $sql_opts_from . '
 			WHERE
 				a.auth_role_id = 0 ' .
@@ -432,10 +432,10 @@ class auth
 				r.auth_option_id
 				' . $sql_opts_select . '
 			FROM
-				' . AUTH_GROUPS_TABLE . ' a,
-				' . USERS_GROUP_TABLE . ' ug,
-				' . GROUPS_TABLE . ' g,
-				' . AUTH_ROLES_DATA_TABLE . ' r
+				site_auth_groups a,
+				site_user_groups ug,
+				site_groups g,
+				site_auth_roles_data r
 				' . $sql_opts_from . '
 			WHERE
 				a.auth_role_id = r.role_id ' .
@@ -499,8 +499,8 @@ class auth
 				a.' . $sql_id . ',
 				a.local_id
 			FROM
-				' . ($user_type == 'user' ? AUTH_GROUPS_TABLE : AUTH_USERS_TABLE) . ' a,
-				' . AUTH_ROLES_TABLE . ' r
+				' . ($user_type == 'user' ? 'site_auth_groups' : 'site_auth_users') . ' a,
+				site_auth_roles r
 			WHERE
 				a.auth_role_id = r.role_id
 			AND
@@ -547,8 +547,8 @@ class auth
 				a.auth_option_id,
 				ao.auth_var
 			FROM
-				' . AUTH_USERS_TABLE . ' a,
-				' . AUTH_OPTIONS_TABLE . ' ao
+				site_auth_users a,
+				site_auth_options ao
 			WHERE
 				a.auth_role_id = 0
 			AND
@@ -568,9 +568,9 @@ class auth
 				r.auth_value,
 				ao.auth_var
 			FROM
-				' . AUTH_USERS_TABLE . ' a,
-				' . AUTH_ROLES_DATA_TABLE . ' r,
-				' . AUTH_OPTIONS_TABLE . ' ao
+				site_auth_users a,
+				site_auth_roles_data r,
+				site_auth_options ao
 			WHERE
 				a.auth_role_id = r.role_id
 			AND
@@ -667,7 +667,7 @@ class auth
 
 		$sql = '
 			UPDATE
-				' . USERS_TABLE . '
+				site_users
 			SET
 				user_access = ' . $this->db->check_value(base64_encode(serialize($userdata['user_access']))) . '
 			WHERE
@@ -745,7 +745,7 @@ class auth
 				SELECT
 					*
 				FROM
-					' . AUTH_ROLES_DATA_TABLE . '
+					site_auth_roles_data
 				ORDER BY
 					role_id ASC';
 			$result = $this->db->query($sql);
@@ -777,7 +777,7 @@ class auth
 				auth_role_id,
 				auth_value
 			FROM
-				' . AUTH_USERS_TABLE . '
+				site_auth_users
 			WHERE
 				user_id = ' . $this->db->check_value($user_id);
 		$this->db->query($sql);
@@ -806,11 +806,11 @@ class auth
 				a.auth_role_id,
 				a.auth_value
 			FROM
-				' . AUTH_GROUPS_TABLE . ' a
+				site_auth_groups a
 			LEFT JOIN
-				' . USER_GROUPS_TABLE . ' ug ON (ug.group_id = a.group_id)
+				site_user_groups ug ON (ug.group_id = a.group_id)
 			LEFT JOIN
-				' . GROUPS_TABLE . ' g ON (g.group_id = ug.group_id)
+				site_groups g ON (g.group_id = ug.group_id)
 			WHERE
 				ug.user_pending = 0
 			AND NOT
@@ -858,7 +858,7 @@ class auth
 				SELECT
 					*
 				FROM
-					' . AUTH_OPTIONS_TABLE;
+					site_auth_options';
 			$this->db->query($sql);
 
 			while ($row = $this->db->fetchrow())
@@ -888,7 +888,7 @@ class auth
 				SELECT
 					*
 				FROM
-					' . AUTH_ROLES_TABLE;
+					site_auth_roles';
 			$this->db->query($sql);
 
 			while ($row = $this->db->fetchrow())
@@ -939,7 +939,7 @@ class auth
 			SELECT
 				*
 			FROM
-				' . AUTH_USERS_TABLE . '
+				site_auth_users
 			WHERE
 				user_id = ' . $this->db->check_value($user_id);
 		$result = $this->db->query($sql);
@@ -992,7 +992,7 @@ class auth
 					SELECT
 						*
 					FROM
-						' . AUTH_ROLES_DATA_TABLE . '
+						site_auth_roles_data
 					WHERE
 						role_id = ' . $this->db->check_value($row['role_id']);
 				$result2 = $this->db->query($sql);
@@ -1029,7 +1029,7 @@ class auth
 		*/
 		$sql = '
 			UPDATE
-				' . USERS_TABLE . '
+				site_users
 			SET
 				user_access = ' . $this->db->check_value(base64_encode(serialize($userdata))) . '
 			WHERE
@@ -1074,7 +1074,7 @@ class auth
 		*/
 		$sql = '
 			UPDATE
-				' . AUTH_USERS_TABLE . '
+				site_auth_users
 			SET
 				' . $this->db->build_array('UPDATE', $sql_array) . '
 			WHERE
@@ -1091,7 +1091,7 @@ class auth
 				SELECT
 					user_id
 				FROM
-					' . AUTH_USERS_TABLE . '
+					site_auth_users
 				WHERE
 					user_id = ' . $this->db->check_value($user_id) . '
 				AND
@@ -1111,7 +1111,7 @@ class auth
 				*/
 				$sql_array['user_id'] = $user_id;
 
-				$sql = 'INSERT INTO ' . AUTH_USERS_TABLE . ' ' . $this->db->build_array('INSERT', $sql_array);
+				$sql = 'INSERT INTO site_auth_users ' . $this->db->build_array('INSERT', $sql_array);
 				$this->db->query($sql);
 			}
 		}

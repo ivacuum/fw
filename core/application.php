@@ -77,7 +77,7 @@ class application implements ArrayAccess
 
 		/* Настройки сайта и движка */
 		$this['config'] = $this->share(function() use ($app) {
-			return new config_db($app['cache'], $app['db'], $app['site_info'], CONFIG_TABLE);
+			return new config_db($app['cache'], $app['db'], $app['site_info']);
 		});
 
 		$this['router'] = $this->share(function() use ($app) {

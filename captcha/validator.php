@@ -63,7 +63,7 @@ class validator
 			$sql = '
 				DELETE
 				FROM
-					' . CONFIRM_TABLE . '
+					site_confirm
 				WHERE
 					session_id = ' . $this->db->check_value($this->user->session_id) . '
 				AND
@@ -89,7 +89,7 @@ class validator
 			SELECT
 				code
 			FROM
-				' . CONFIRM_TABLE . '
+				site_confirm
 			WHERE
 				session_id = ' . $this->db->check_value($this->user->session_id);
 		$this->db->query($sql);

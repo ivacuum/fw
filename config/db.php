@@ -26,7 +26,7 @@ class db extends config
 		
 		$this->language = $site_info['language'];
 		$this->site_id  = $site_info['id'];
-		$this->table    = $table ?: CONFIG_TABLE;
+		$this->table    = $table ?: 'site_config';
 		
 		parent::__construct(array_merge($this->load_config(0), $this->load_config($this->site_id)));
 	}
