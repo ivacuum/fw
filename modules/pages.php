@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2013
 */
 
 namespace fw\modules;
@@ -52,6 +52,8 @@ class pages extends page
 						FROM
 							site_pages
 						WHERE
+							site_id = ' . $this->db->check_value($this->data['site_id']) . '
+						AND
 							page_id = ' . $page_id;
 					$this->db->query($sql);
 					$parent_id = (int) $this->db->fetchfield('parent_id');
@@ -63,8 +65,7 @@ class pages extends page
 				if (!sizeof($errors))
 				{
 					$this->remove_cache_file();
-					$this->request->redirect($this->append_link_params(sprintf('parent_id=%d', $parent_id)));
-					trigger_error('PAGE_DELETED');
+					$this->request->redirect($this->append_link_params("parent_id={$parent_id}"));
 				}
 
 			break;
@@ -104,7 +105,6 @@ class pages extends page
 					AND
 						page_id = ' . $page_id;
 				$this->db->query($sql);
-
 				$this->remove_cache_file();
 
 			break;
@@ -170,11 +170,12 @@ class pages extends page
 						'handler_method' => '',
 						'page_noindex'   => 0,
 						'page_image'     => '',
-						'page_text'      => ''
+						'page_text'      => '',
 					];
 				}
 
 				$page_data = [
+					'page_id'        => $page_id,
 					'page_name'      => $this->request->variable('page_name', (string) $page_row['page_name']),
 					'page_title'     => $this->request->variable('page_title', (string) $page_row['page_title']),
 					'page_url'       => $this->request->variable('page_url', (string) $page_row['page_url']),
@@ -189,8 +190,27 @@ class pages extends page
 					'handler_method' => $this->request->variable('handler_method', (string) $page_row['handler_method']),
 					'page_noindex'   => $this->request->variable('page_noindex', (int) $page_row['page_noindex']),
 					'page_image'     => $this->request->variable('page_image', (string) $page_row['page_image']),
-					'page_text'      => $this->request->is_set('page_text') ? $_REQUEST['page_text'] : (string) $page_row['page_text']
+					'page_text'      => $this->request->is_set('page_text') ? $_REQUEST['page_text'] : (string) $page_row['page_text'],
 				];
+
+				$sql = '
+					SELECT
+						*
+					FROM
+						site_menus
+					WHERE
+						menu_active = 1';
+				$this->db->query($sql);
+				$menus = [];
+		
+				while ($row = $this->db->fetchrow())
+				{
+					$key = "display_in_menu_{$row['menu_id']}";
+					$page_data[$key] = $this->request->variable($key, $action == 'edit' ? (int) $page_row[$key] : 0);
+					$this->template->append('menus', $row);
+				}
+				
+				$this->db->freeresult();
 
 				if ($submit)
 				{
@@ -209,34 +229,22 @@ class pages extends page
 					if (!sizeof($errors))
 					{
 						$this->remove_cache_file();
-
-						$this->request->redirect($this->append_link_params(sprintf('parent_id=%d', $parent_id)));
-						trigger_error($action == 'add' ? 'PAGE_ADDED' : 'PAGE_EDITED');
+						$this->request->redirect($this->append_link_params("parent_id={$parent_id}"));
 					}
 				}
 
-				$s_cat_option = '<option value="0"' . ($page_data['parent_id'] == 0 ? ' selected="selected"' : '') . '>' . 'NO_PARENT' . '</option>';
+				$s_cat_option = '<option value="0"' . ($page_data['parent_id'] == 0 ? ' selected' : '') . '>' . 'NO_PARENT' . '</option>';
 
-				$this->template->assign(array_merge([
+				$this->template->assign([
+					'page' => $page_data,
+					
 					'S_EDIT_PAGE'   => true,
-					'S_IS_DIR'      => $page_data['is_dir'],
-					'S_CAT_OPTIONS' => $s_cat_option . $this->make_page_select($page_data['parent_id'], ($action == 'edit') ? $page_row['page_id'] : false, false, true),
-					'U_BACK'        => $back_url,
-					'U_EDIT_ACTION' => ilink($this->url . '?parent_id=' . $parent_id),
-
-					'PAGENAME' => $page_data['page_name'],
-					'ACTION'   => $action,
-					'PAGE_ID'  => $page_id,
-				],
-					array_change_key_case($page_data, CASE_UPPER)
-				));
+					'S_CAT_OPTIONS' => $s_cat_option . $this->make_page_select($page_data['parent_id'], $action == 'edit' ? $page_row['page_id'] : false, false, true),
+				]);
 
 				if (sizeof($errors))
 				{
-					$this->template->assign([
-						'S_ERROR'   => true,
-						'ERROR_MSG' => implode('<br>', $errors)
-					]);
+					$this->template->assign('errors', $errors);
 				}
 
 				return;
@@ -247,10 +255,7 @@ class pages extends page
 		// Default management page
 		if (sizeof($errors))
 		{
-			$this->template->assign([
-				'S_ERROR'   => true,
-				'ERROR_MSG' => implode('<br>', $errors)
-			]);
+			$this->template->assign('errors', $errors);
 		}
 
 		if (!$parent_id)
@@ -261,18 +266,9 @@ class pages extends page
 		{
 			$navigation = '<a href="' . ilink($this->url) . '">root</a>';
 
-			$pages_nav = $this->get_page_branch($parent_id, 'parents', 'descending');
-
-			foreach ($pages_nav as $row)
+			foreach ($this->get_page_branch($parent_id, 'parents', 'descending') as $row)
 			{
-				if ($row['page_id'] == $parent_id)
-				{
-					$navigation .= ' &raquo; ' . $row['page_name'];
-				}
-				else
-				{
-					$navigation .= ' &raquo; <a href="' . ilink($this->url . '?parent_id=' . $row['page_id']) . '">' . $row['page_name'] . '</a>';
-				}
+				$navigation .= $row['page_id'] == $parent_id ? ' &raquo; ' . $row['page_name'] : ' &raquo; <a href="' . ilink($this->url . '?parent_id=' . $row['page_id']) . '">' . $row['page_name'] . '</a>';
 			}
 		}
 
@@ -289,44 +285,25 @@ class pages extends page
 				left_id ASC';
 		$result = $this->db->query($sql);
 
-		if ($row = $this->db->fetchrow($result))
+		while ($row = $this->db->fetchrow($result))
 		{
-			do
-			{
-				// $page_image = $row['page_image'] ? $row['page_image'] : ($row['is_dir'] ? 'folder' : 'blog');
-				$page_image = $row['is_dir'] ? 'folder_open' : 'blog';
-
-				$url = ilink($this->url . '?parent_id=' . $parent_id . '&amp;pid=' . $row['page_id']);
-				
-				$this->template->append('pages', [
-					'IS_DIR'         => $row['is_dir'],
-					'PAGE_IMAGE'     => $page_image,
-					'PAGE_IMG'       => $row['page_image'],
-					'PAGE_NAME'      => $row['page_name'],
-					'PAGE_TITLE'     => $row['page_title'],
-					'PAGE_REDIRECT'  => $row['page_redirect'],
-					'PAGE_ENABLED'   => $row['page_enabled'],
-					'PAGE_DISPLAYED' => $row['page_display'],
-					'PAGE_URL'       => $row['page_url'],
-					'PAGE_FORMATS'   => $row['page_formats'],
-					'PAGE_NOINDEX'   => $row['page_noindex'],
-					'PAGE_HANDLER'   => $row['page_handler'],
-					'HANDLER_METHOD' => $row['handler_method'],
-
-					'U_PAGE'      => ilink($this->url . '?parent_id=' . $row['page_id']),
-					'U_MOVE_UP'   => $url . '&amp;action=move_up',
-					'U_MOVE_DOWN' => $url . '&amp;action=move_down',
-					'U_EDIT'      => $url . '&amp;action=edit',
-					'U_DELETE'    => $url . '&amp;action=delete',
-					'U_ENABLE'    => $url . '&amp;action=enable',
-					'U_DISABLE'   => $url . '&amp;action=disable'
-				]);
-			}
-			while ($row = $this->db->fetchrow());
-
+			// $page_image = $row['page_image'] ? $row['page_image'] : ($row['is_dir'] ? 'folder' : 'blog');
+			$url = ilink($this->url . '?parent_id=' . $parent_id . '&amp;pid=' . $row['page_id']);
+			
+			$this->template->append('pages', array_merge($row, [
+				'U_PAGE'      => ilink($this->url . '?parent_id=' . $row['page_id']),
+				'U_MOVE_UP'   => $url . '&amp;action=move_up',
+				'U_MOVE_DOWN' => $url . '&amp;action=move_down',
+				'U_EDIT'      => $url . '&amp;action=edit',
+				'U_DELETE'    => $url . '&amp;action=delete',
+				'U_ENABLE'    => $url . '&amp;action=enable',
+				'U_DISABLE'   => $url . '&amp;action=disable',
+			]));
+			
 			$this->template->assign('S_NO_PAGES', false);
 		}
-		elseif ($parent_id)
+		
+		if (!$this->db->affected_rows($result) && $parent_id)
 		{
 			$row = $this->get_page_row($parent_id);
 			$url = ilink($this->url . '?parent_id=' . $parent_id . '&amp;pid=' . $row['page_id']);
@@ -357,7 +334,7 @@ class pages extends page
 	/**
 	* Удаление страницы
 	*/
-	function delete_page($page_id)
+	protected function delete_page($page_id)
 	{
 		$row = $this->get_page_row($page_id);
 		$branch = $this->get_page_branch($page_id, 'children', 'descending', false);
@@ -411,55 +388,9 @@ class pages extends page
 	}
 
 	/**
-	* Данные раздела (ветви дерева страниц)
-	*/
-	function get_page_branch($page_id, $type = 'all', $order = 'descending', $include_self = true)
-	{
-		switch ($type)
-		{
-			case 'parents':  $condition = 'p1.left_id BETWEEN p2.left_id AND p2.right_id'; break;
-			case 'children': $condition = 'p2.left_id BETWEEN p1.left_id AND p1.right_id'; break;
-			default:         $condition = 'p2.left_id BETWEEN p1.left_id AND p1.right_id OR p1.left_id BETWEEN p2.left_id AND p2.right_id';
-		}
-
-		$rows = [];
-
-		$sql = '
-			SELECT
-				p2.*
-			FROM
-				site_pages p1
-			LEFT JOIN
-				site_pages p2 ON (' . $condition . ')
-			WHERE
-				p1.site_id = ' . $this->db->check_value($this->data['site_id']) . '
-			AND
-				p2.site_id = ' . $this->db->check_value($this->data['site_id']) . '
-			AND
-				p1.page_id = ' . $this->db->check_value($page_id) . '
-			ORDER BY
-				p2.left_id ' . ($order == 'descending' ? 'ASC' : 'DESC');
-		$this->db->query($sql);
-
-		while ($row = $this->db->fetchrow())
-		{
-			if (!$include_self && $row['page_id'] == $page_id)
-			{
-				continue;
-			}
-
-			$rows[] = $row;
-		}
-
-		$this->db->freeresult();
-
-		return $rows;
-	}
-
-	/**
 	* Данные страницы
 	*/
-	function get_page_row($page_id)
+	protected function get_page_row($page_id)
 	{
 		$sql = '
 			SELECT
@@ -485,7 +416,7 @@ class pages extends page
 	/**
 	* Список страниц (Jumpbox)
 	*/
-	function make_page_select($select_id = false, $ignore_id = false, $ignore_emptycat = true, $ignore_noncat = false)
+	protected function make_page_select($select_id = false, $ignore_id = false, $ignore_emptycat = true, $ignore_noncat = false)
 	{
 		$sql = '
 			SELECT
@@ -541,7 +472,7 @@ class pages extends page
 				continue;
 			}
 
-			$selected = is_array($select_id) ? (in_array($row['page_id'], $select_id) ? ' selected="selected"' : '') : ($row['page_id'] == $select_id ? ' selected="selected"' : '');
+			$selected = is_array($select_id) ? (in_array($row['page_id'], $select_id) ? ' selected' : '') : ($row['page_id'] == $select_id ? ' selected' : '');
 
 			$page_list .= '<option value="' . $row['page_id'] . '"' . $selected . (!$row['page_enabled'] ? ' class="disabled"' : '') . '>' . $padding . $row['page_name'] . '</option>';
 		}
@@ -556,7 +487,7 @@ class pages extends page
 	/**
 	* Перемещение страницы в дереве
 	*/
-	function move_page($from_page_id, $to_parent_id)
+	protected function move_page($from_page_id, $to_parent_id)
 	{
 		$moved_pages = $this->get_page_branch($from_page_id, 'children', 'descending');
 		$from_data = $moved_pages[0];
@@ -674,7 +605,7 @@ class pages extends page
 	/**
 	* Перемещение страницы на $steps уровней вверх/вниз
 	*/
-	function move_page_by($page_row, $action = 'move_up', $steps = 1)
+	protected function move_page_by($page_row, $action = 'move_up', $steps = 1)
 	{
 		/**
 		* Fetch all the siblings between the page's current spot
@@ -795,11 +726,11 @@ class pages extends page
 	*
 	* @param bool $run_inline Если true, то возвращать ошибки, а не останавливать работу
 	*/
-	function update_page_data(&$page_data, $run_inline = false)
+	protected function update_page_data(&$page_data, $run_inline = false)
 	{
+		/* Если page_id не указан, то создаем новую страницу */
 		if (!isset($page_data['page_id']))
 		{
-			/* Если page_id не указан, то создаем новую страницу */
 			if ($page_data['parent_id'])
 			{
 				$sql = '

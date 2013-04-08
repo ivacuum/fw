@@ -2,15 +2,18 @@
 
 {block "content"}
 {if not empty($S_EDIT_PAGE)}
-	{if not empty($S_ERROR)}
+	{if not empty($errors)}
 		<div class="errorbox">
-			<h3>{'WARNING'|i18n}</h3>
-			<p>{$ERROR_MSG}</p>
+			<ul>
+				{foreach $errors as $row}
+					<li>{$row}</li>
+				{/foreach}
+			</ul>
 		</div>
 	{/if}
 	
 	<div class="boxed-group">
-		<h3>{$PAGENAME|default:'Добавление новой страницы'}{if $PAGE_HANDLER and $HANDLER_METHOD} <small>{$PAGE_HANDLER}::{$HANDLER_METHOD}()</small>{/if}</h3>
+		<h3>{$page.page_name|default:'Добавление новой страницы'}{if $page.page_handler and $page.handler_method} <small>{$page.page_handler}::{$page.handler_method}()</small>{/if}</h3>
 		<div class="boxed-group-inner">
 			<form action="" class="form-horizontal" method="post">
 				<div class="tabbable">
@@ -25,31 +28,31 @@
 							<div class="control-group">
 								<label class="control-label" for="page_name_field">Название</label>
 								<div class="controls">
-									<input name="page_name" type="text" id="page_name_field" value="{$PAGE_NAME|default:''}" placeholder="page_name">
+									<input name="page_name" type="text" id="page_name_field" value="{$page.page_name|default:''}" placeholder="page_name">
 								</div>
 							</div>
 							<div class="control-group">
 								<label class="control-label" for="page_url_field">URL</label>
 								<div class="controls">
-									<input type="text" name="page_url" id="page_url_field" value="{$PAGE_URL|default:''}" placeholder="page_url"> . <input class="span1" name="page_formats" type="text" id="page_formats_field" value="{$PAGE_FORMATS|default:'html'}" placeholder="html">
+									<input type="text" name="page_url" id="page_url_field" value="{$page.page_url|default:''}" placeholder="page_url"> . <input class="span1" name="page_formats" type="text" id="page_formats_field" value="{$page.page_formats|default:'html'}" placeholder="html">
 								</div>
 							</div>
 							<div class="control-group">
 								<label class="control-label" for="page_handler_field">Обработчик запроса</label>
 								<div class="controls">
-									<input name="page_handler" type="text" id="page_handler_field" value="{$PAGE_HANDLER|default:''}" placeholder="page_handler"> :: <input name="handler_method" type="text" value="{$HANDLER_METHOD|default:''}" placeholder="handler_method">
+									<input name="page_handler" type="text" id="page_handler_field" value="{$page.page_handler|default:''}" placeholder="page_handler"> :: <input name="handler_method" type="text" value="{$page.handler_method|default:''}" placeholder="handler_method">
 								</div>
 							</div>
 							<div class="control-group">
 								<label class="control-label" for="page_redirect_field">Редирект</label>
 								<div class="controls">
-									<input name="page_redirect" type="text" id="page_redirect_field" value="{$PAGE_REDIRECT|default:''}" placeholder="Редирект">
+									<input name="page_redirect" type="text" id="page_redirect_field" value="{$page.page_redirect|default:''}" placeholder="Редирект">
 								</div>
 							</div>
 							<div class="control-group">
 								<label class="control-label" for="page_text_field">Текст страницы</label>
 								<div class="controls">
-									<textarea name="page_text" id="page_text_field" class="input-block-level" style="height: 20em;">{$PAGE_TEXT|default:''}</textarea>
+									<textarea name="page_text" id="page_text_field" class="input-block-level" style="height: 20em;">{$page.page_text|default:''}</textarea>
 								</div>
 							</div>
 						</div>
@@ -61,26 +64,37 @@
 								</div>
 							</div>
 							<div class="control-group">
-								<label class="control-label">Поместить в меню</label>
+								<label class="control-label">Главное меню</label>
 								<div class="controls">
-									<label class="radio inline"><input type="radio" name="page_display" value="2"{if $PAGE_DISPLAY == 2} checked{/if}> Глобальное</label>
-									<label class="radio inline"><input type="radio" name="page_display" value="1"{if $PAGE_DISPLAY == 1} checked{/if}> В разделах</label>
-									<label class="radio inline"><input type="radio" name="page_display" value="0"{if not $PAGE_DISPLAY} checked{/if}> {'NO'|i18n}</label>
+									<label class="radio inline"><input type="radio" name="page_display" value="2"{if $page.page_display == 2} checked{/if}> Глобальное</label>
+									<label class="radio inline"><input type="radio" name="page_display" value="1"{if $page.page_display == 1} checked{/if}> В разделах</label>
+									<label class="radio inline"><input type="radio" name="page_display" value="0"{if not $page.page_display} checked{/if}> {'NO'|i18n}</label>
 								</div>
 							</div>
+							{if not empty($menus)}
+								<div class="control-group">
+									<label class="control-label">Поместить в меню</label>
+									<div class="controls">
+										{foreach $menus as $row}
+											{$key="display_in_menu_{$row.menu_id}"}
+											<label class="checkbox"><input type="checkbox" name="display_in_menu_{$row.menu_id}" value="1" {if $page.$key}checked{/if}> {$row.menu_title}</label>
+										{/foreach}
+									</div>
+								</div>
+							{/if}
 						</div>
 						<div class="tab-pane" id="tab3">
 							<div class="control-group">
 								<label class="control-label">Индексируется</label>
 								<div class="controls">
-									<label class="radio inline"><input type="radio" name="page_noindex" value="0"{if not $PAGE_NOINDEX} checked{/if}> {'YES'|i18n}</label>
-									<label class="radio inline"><input type="radio" name="page_noindex" value="1"{if $PAGE_NOINDEX} checked{/if}> {'NO'|i18n}</label>
+									<label class="radio inline"><input type="radio" name="page_noindex" value="0"{if not $page.page_noindex} checked{/if}> {'YES'|i18n}</label>
+									<label class="radio inline"><input type="radio" name="page_noindex" value="1"{if $page.page_noindex} checked{/if}> {'NO'|i18n}</label>
 								</div>
 							</div>
 							<div class="control-group">
 								<label class="control-label" for="page_title_field">Заголовок</label>
 								<div class="controls">
-									<input name="page_title" type="text" id="page_title_field" value="{$PAGE_TITLE|default:''}" placeholder="page_title">
+									<input name="page_title" type="text" id="page_title_field" value="{$page.page_title|default:''}" placeholder="page_title">
 								</div>
 							</div>
 						</div>
@@ -88,21 +102,21 @@
 							<div class="control-group">
 								<label class="control-label">Является папкой</label>
 								<div class="controls">
-									<label class="radio inline"><input type="radio" name="is_dir" value="1"{if $S_IS_DIR} checked{/if}>{'YES'|i18n}</label>
-									<label class="radio inline"><input type="radio" name="is_dir" value="0"{if not $S_IS_DIR} checked{/if}>{'NO'|i18n}</label>
+									<label class="radio inline"><input type="radio" name="is_dir" value="1"{if $page.is_dir} checked{/if}>{'YES'|i18n}</label>
+									<label class="radio inline"><input type="radio" name="is_dir" value="0"{if not $page.is_dir} checked{/if}>{'NO'|i18n}</label>
 								</div>
 							</div>
 							<div class="control-group">
 								<label class="control-label">Отображается на сайте</label>
 								<div class="controls">
-									<label class="radio inline"><input type="radio" name="page_enabled" value="1"{if $PAGE_ENABLED} checked{/if}> {'YES'|i18n}</label>
-									<label class="radio inline"><input type="radio" name="page_enabled" value="0"{if not $PAGE_ENABLED} checked{/if}> {'NO'|i18n}</label>
+									<label class="radio inline"><input type="radio" name="page_enabled" value="1"{if $page.page_enabled} checked{/if}> {'YES'|i18n}</label>
+									<label class="radio inline"><input type="radio" name="page_enabled" value="0"{if not $page.page_enabled} checked{/if}> {'NO'|i18n}</label>
 								</div>
 							</div>
 							<div class="control-group">
 								<label class="control-label" for="page_image_field">Иконка</label>
 								<div class="controls">
-									<input name="page_image" type="text" id="page_image_field" value="{$PAGE_IMAGE|default:''}" placeholder="document-text"> .png
+									<input name="page_image" type="text" id="page_image_field" value="{$page.page_image|default:''}" placeholder="document-text"> .png
 								</div>
 							</div>
 						</div>
@@ -113,53 +127,42 @@
 						<input class="btn btn-primary btn-large" type="submit" id="submit" name="submit" value="{'SAVE'|i18n}">
 					</div>
 				</div>
-				<input type="hidden" name="action" value="{$ACTION}">
-				<input type="hidden" name="pid" value="{$PAGE_ID}">
 			</form>
 		</div>
 	</div>
 {else}
 	<div class="boxed-group flush" style="margin: 0 auto;">
-		<h3>{$NAVIGATION}{if $S_NO_PAGES} [<a href="{$U_EDIT}">{'EDIT'|i18n}</a> | <a href="{$U_DELETE}">{'DELETE'|i18n}</a> | {if $PAGE_ENABLED}<a href="{$U_DISABLE}">{'DISABLE'|i18n}</a>{else}<a href="{$U_ENABLE}">{'ENABLE'|i18n}</a>{/if}]{/if}</h3>
+		<h3>{$NAVIGATION}{if $S_NO_PAGES} [<a href="{$U_EDIT}">{'EDIT'|i18n}</a> | <a href="{$U_DELETE}">{'DELETE'|i18n}</a> | {if $page.page_enabled}<a href="{$U_DISABLE}">{'DISABLE'|i18n}</a>{else}<a href="{$U_ENABLE}">{'ENABLE'|i18n}</a>{/if}]{/if}</h3>
 		{if not empty($pages)}
 			<div class="boxed-group-inner">
 				<table class="table-stats">
 					{foreach $pages as $row}
 					<tr ondblclick="document.location='{$row.U_EDIT}';">
-						<td style="width: 25px; text-align: right;"><img src="//ivacuum.org/i/_/{$row.PAGE_IMAGE}.png" alt=""></td>
-						<td style="width: 25px; text-align: center;">
-							{if $row.PAGE_ENABLED}
-								<img src="//ivacuum.org/i/_/status_online.png" alt="">
-							{else}
-								<img src="//ivacuum.org/i/_/status_offline.png" alt="">
-							{/if}
-						</td>
+						<td style="width: 25px; text-align: right;"><img src="//ivacuum.org/i/_/{($row.page_image) ? 'folder_open' : 'blog'}.png" alt=""></td>
+						<td style="width: 25px; text-align: center;"><img src="//ivacuum.org/i/_/status_{($row.page_enabled) ? 'online' : 'offline'}.png" alt=""></td>
 						<td>
-							{if $row.PAGE_IMG}
-								<img src="//ivacuum.org/i/_/{$row.PAGE_IMG}.png" alt="">
-							{/if}
-							{if $row.IS_DIR}
-								<a href="{$row.U_PAGE}" title="/{$row.PAGE_URL}/">{$row.PAGE_NAME}</a>
+							{if $row.is_dir}
+								<a href="{$row.U_PAGE}" title="/{$row.page_url}/">{$row.page_name}</a>
 							{else}
-								<span title="{$row.PAGE_URL}.html">{$row.PAGE_NAME}</span>
+								<span title="{$row.page_url}.html">{$row.page_name}</span>
 							{/if}
-							{if $row.PAGE_HANDLER and $row.HANDLER_METHOD}
-								<span class="muted">({$row.PAGE_HANDLER}::{$row.HANDLER_METHOD})</span>
+							{if $row.page_handler and $row.handler_method}
+								<span class="muted">({$row.page_handler}::{$row.handler_method})</span>
 							{/if}
-							{if $row.PAGE_NOINDEX}
+							{if $row.page_noindex}
 								<img src="//ivacuum.org/i/_/monitor_off.png" alt="">
 							{/if}
-							{if $row.PAGE_DISPLAYED == 2}
+							{if $row.page_display == 2}
 								<img src="//ivacuum.org/i/_/sitemap_application_blue.png" alt="">
-							{elseif $row.PAGE_DISPLAYED == 1}
+							{elseif $row.page_display == 1}
 								<img src="//ivacuum.org/i/_/sitemap_application.png" alt="">
 							{/if}
-							{if $row.PAGE_REDIRECT}
+							{if $row.page_redirect}
 								<img src="//ivacuum.org/i/_/road_sign.png" alt="">
 							{/if}
 						</td>
-						<td style="width: 15%; white-space: nowrap; text-align: center; vertical-align: middle;">&nbsp;{if $row.PAGE_ENABLED}<a href="{$row.U_DISABLE}">{'DISABLE'|i18n}</a>{else}<a href="{$row.U_ENABLE}">{'ENABLE'|i18n}</a>{/if}&nbsp;</td>
-						<td style="width:90px; white-space: nowrap; text-align: right; vertical-align: middle;">
+						<td style="width: 15%; white-space: nowrap; text-align: center; vertical-align: middle;">&nbsp;{if $row.page_enabled}<a href="{$row.U_DISABLE}">{'DISABLE'|i18n}</a>{else}<a href="{$row.U_ENABLE}">{'ENABLE'|i18n}</a>{/if}&nbsp;</td>
+						<td style="width: 90px; white-space: nowrap; text-align: right; vertical-align: middle;">
 							{if $row@first and not $row@last}
 								<a href="{$row.U_MOVE_DOWN}"><img src="//ivacuum.org/i/_/arrow_270.png" alt=""></a>
 							{elseif not $row@first and not $row@last}
