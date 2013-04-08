@@ -206,7 +206,7 @@ class pages extends page
 				while ($row = $this->db->fetchrow())
 				{
 					$key = "display_in_menu_{$row['menu_id']}";
-					$page_data[$key] = $this->request->variable($key, $action == 'edit' ? (int) $page_row[$key] : 0);
+					$page_data[$key] = $this->request->variable($key, $action == 'edit' && !$submit ? (int) $page_row[$key] : 0);
 					$this->template->append('menus', $row);
 				}
 				
