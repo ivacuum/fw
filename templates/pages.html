@@ -138,7 +138,7 @@
 				<table class="table-stats">
 					{foreach $pages as $row}
 					<tr ondblclick="document.location='{$row.U_EDIT}';">
-						<td style="width: 25px; text-align: right;"><img src="//ivacuum.org/i/_/{($row.page_image) ? 'folder_open' : 'blog'}.png" alt=""></td>
+						<td style="width: 25px; text-align: right;"><img src="//ivacuum.org/i/_/{($row.is_dir) ? 'folder_open' : 'blog'}.png" alt=""></td>
 						<td style="width: 25px; text-align: center;"><img src="//ivacuum.org/i/_/status_{($row.page_enabled) ? 'online' : 'offline'}.png" alt=""></td>
 						<td>
 							{if $row.is_dir}
