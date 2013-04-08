@@ -143,7 +143,7 @@ class router
 			{
 				if ($redirect)
 				{
-					errorhandler::log_mail("Page http://{$this->request->server_name}{$this->url} not found and redirected to {$redirect}", "404 Not Found", 404);
+					errorhandler::log_mail("Page http://{$this->request->server_name}{$this->request->url} not found and redirected to {$redirect}", "404 Not Found", 404);
 					
 					/* Выход для использования редиректа родительской страницы */
 					break;
@@ -199,7 +199,7 @@ class router
 				{
 					if ($redirect)
 					{
-						errorhandler::log_mail("Page http://{$this->request->server_name}{$this->url} not found and redirected to {$redirect}", "404 Not Found", 404);
+						errorhandler::log_mail("Page http://{$this->request->server_name}{$this->request->url} not found and redirected to {$redirect}", "404 Not Found", 404);
 
 						/* Выход для использования редиректа родительской страницы */
 						break;
