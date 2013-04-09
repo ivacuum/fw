@@ -175,7 +175,6 @@ class pages extends page
 				}
 
 				$page_data = [
-					'page_id'        => $page_id,
 					'page_name'      => $this->request->variable('page_name', (string) $page_row['page_name']),
 					'page_title'     => $this->request->variable('page_title', (string) $page_row['page_title']),
 					'page_url'       => $this->request->variable('page_url', (string) $page_row['page_url']),
@@ -238,6 +237,7 @@ class pages extends page
 				$this->template->assign([
 					'page' => $page_data,
 					
+					'ACTION'        => $action,
 					'S_EDIT_PAGE'   => true,
 					'S_CAT_OPTIONS' => $s_cat_option . $this->make_page_select($page_data['parent_id'], $action == 'edit' ? $page_row['page_id'] : false, false, true),
 				]);
