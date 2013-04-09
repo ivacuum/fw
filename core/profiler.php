@@ -85,7 +85,7 @@ class console
 	public function log_speed($name = 'label')
 	{
 		$this->logs[] = [
-			'data' => microtime(true),
+			'data' => (microtime(true) - $this->start_time) * 1000,
 			'type' => 'speed',
 			'name' => $name,
 		];
@@ -247,8 +247,8 @@ class profiler extends console
 			switch ($log['type'])
 			{
 				case 'log':    $logs[$key]['data'] = print_r($log['data'], true); break;
-				case 'memory': $logs[$key]['data'] = $log['data']; break;
-				case 'speed':  $logs[$key]['data'] = ($log['data'] - $this->start_time) * 1000; break;
+				case 'memory':
+				case 'speed':  $logs[$key]['data'] = $log['data']; break;
 			}
 		}
 
