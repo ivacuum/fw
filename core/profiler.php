@@ -167,7 +167,7 @@ class profiler extends console
 			'SERVER_HOSTNAME' => gethostname(),
 			'SPEED_ALLOWED'   => $this->speed_allowed,
 			'SPEED_COUNT'     => $this->speed_count,
-			'SPEED_TOTAL'     => $this->get_readable_time($this->speed_total),
+			'SPEED_TOTAL'     => $this->speed_total,
 			'QUERY_CACHED'    => $this->query_cached,
 			'QUERY_COUNT'     => $this->query_count,
 			'QUERY_TIME'      => $this->get_readable_time($this->query_time),
