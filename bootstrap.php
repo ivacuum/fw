@@ -7,7 +7,6 @@
 namespace fw;
 
 use fw\core\application;
-use fw\core\errorhandler;
 
 define('START_TIME', microtime(true));
 define('FW_DIR', __DIR__ . '/');
@@ -19,7 +18,6 @@ error_reporting(E_ALL);
 mb_internal_encoding('utf-8');
 
 require(FW_DIR . 'core/application.php');
-require(FW_DIR . 'core/autoloader.php');
 require(FW_DIR . 'functions.php');
 require(FW_DIR . 'config.php');
 require(SITE_DIR . '../config.php');

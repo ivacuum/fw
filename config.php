@@ -59,7 +59,7 @@ $app = [
 	/* Пути к файлам */
 	'file.cron.allowed' => 'cron_allowed',
 	'file.cron.running' => 'cron_running',
-
+	
 	/* Настройки профайлера */
 	'profiler.options' => [
 		'debug.ips'  => [],

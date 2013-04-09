@@ -33,6 +33,8 @@ class application implements ArrayAccess
 		});
 		
 		$this['autoloader'] = $this->share(function() use ($app) {
+			require(FW_DIR . 'core/autoloader.php');
+			
 			return (new autoloader())
 				->register_namespaces($app['autoloader.namespaces'])
 				->register_pear($app['autoloader.pear'])
