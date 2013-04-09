@@ -52,6 +52,7 @@ $app = [
 		'email.401'   => '',
 		'email.404'   => '',
 		'email.error' => 'fw@ivacuum.ru',
+		'enabled'     => true,
 		'standalone'  => false,
 	],
 	

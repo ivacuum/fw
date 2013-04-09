@@ -132,6 +132,11 @@ class application implements ArrayAccess
 		{
 			$this['autoloader'];
 		}
+		
+		if ($this['errorhandler.options']['enabled'])
+		{
+			errorhandler::register($this['errorhandler.options']);
+		}
 	}
 	
 	/**

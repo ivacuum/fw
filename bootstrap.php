@@ -28,5 +28,3 @@ $app = new application($app);
 
 require(FW_DIR . 'constants.php');
 require(SITE_DIR . '../constants.php');
-
-errorhandler::register($app['errorhandler.options']);
