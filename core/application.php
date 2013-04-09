@@ -33,7 +33,7 @@ class application implements ArrayAccess
 		});
 		
 		$this['autoloader'] = $this->share(function() use ($app) {
-			require(FW_DIR . 'core/autoloader.php');
+			require FW_DIR . 'core/autoloader.php';
 			
 			return (new autoloader())
 				->register_namespaces($app['autoloader.namespaces'])
@@ -43,7 +43,7 @@ class application implements ArrayAccess
 		
 		$this['template'] = $this->share(function() use ($app) {
 			define('SMARTY_DIR', "{$app['dir.lib']}/smarty/{$app['version.smarty']}/Smarty/");
-			require(SMARTY_DIR . 'Smarty.class.php');
+			require SMARTY_DIR . 'Smarty.class.php';
 
 			return new smarty([$app['dir.templates.app'], $app['dir.templates.fw']], $app['dir.templates.cache']);
 		});
@@ -121,7 +121,7 @@ class application implements ArrayAccess
 		});
 		
 		$this['mailer'] = $this->share(function() use ($app) {
-			require("{$app['dir.lib']}/swiftmailer/{$app['version.swift']}/swift_init.php");
+			require "{$app['dir.lib']}/swiftmailer/{$app['version.swift']}/swift_init.php";
 
 			return new mailer($app['config'], $app['template']);
 		});
@@ -129,6 +129,11 @@ class application implements ArrayAccess
 		$this['sphinx'] = $this->share(function() use ($app) {
 			return new db_sphinx($app['cache.driver'], $app['profiler'], $app['sphinx.options']);
 		});
+		
+		foreach ($this['include.files'] as $file)
+		{
+			require $file;
+		}
 		
 		if ($this['autoloader.options']['enabled'])
 		{

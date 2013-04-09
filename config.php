@@ -60,6 +60,11 @@ $app = [
 	'file.cron.allowed' => 'cron_allowed',
 	'file.cron.running' => 'cron_running',
 	
+	/* Автоподключение файлов */
+	'include.files' => [
+		FW_DIR . 'functions.php',
+	],
+
 	/* Настройки профайлера */
 	'profiler.options' => [
 		'debug.ips'  => [],
