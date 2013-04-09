@@ -32,13 +32,13 @@ $app = [
 	],
 	
 	/* Пути к папкам */
-	'dir.app'             => SITE_DIR . '../includes',
+	'dir.app'             => realpath(SITE_DIR . '../includes'),
 	'dir.fonts'           => FW_DIR . 'assets/fonts',
 	'dir.fw'              => rtrim(FW_DIR, '/'),
-	'dir.lib'             => FW_DIR . '../lib',
-	'dir.logs'            => SITE_DIR . '../logs',
-	'dir.templates.app'   => SITE_DIR . '../templates',
-	'dir.templates.cache' => SITE_DIR . '../cache/templates',
+	'dir.lib'             => realpath(FW_DIR . '../lib'),
+	'dir.logs'            => realpath(SITE_DIR . '../logs'),
+	'dir.templates.app'   => realpath(SITE_DIR . '../templates'),
+	'dir.templates.cache' => realpath(SITE_DIR . '../cache/templates'),
 	'dir.templates.fw'    => FW_DIR . 'templates',
 	
 	/* Настройки обработчика ошибок */
