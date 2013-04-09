@@ -7,6 +7,11 @@
 namespace fw;
 
 $app = [
+	/* Настройки автозагрузчика классов */
+	'autoloader.options' => [
+		'enabled' => true,
+	],
+	
 	/* Настройки кэша */
 	'cache.driver.options' => [
 		'host'          => '',
@@ -108,4 +113,15 @@ $app = [
 	'version.smarty'   => '3.1.13',
 	'version.swift'    => '4.3.0',
 	'version.symfony'  => '2.2.0',
+];
+
+$app['autoloader.namespaces'] = [
+	'fw'      => $app['dir.fw'],
+	'app'     => $app['dir.app'],
+	'Guzzle'  => "{$app['dir.lib']}/guzzle/{$app['version.guzzle']}/Guzzle",
+	'Symfony' => "{$app['dir.lib']}/symfony/{$app['version.symfony']}/Symfony",
+];
+
+$app['autoloader.pear'] = [
+	'Swift' => "{$app['dir.lib']}/swiftmailer/{$app['version.swift']}/classes",
 ];

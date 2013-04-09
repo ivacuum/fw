@@ -33,7 +33,10 @@ class application implements ArrayAccess
 		});
 		
 		$this['autoloader'] = $this->share(function() use ($app) {
-			return (new autoloader())->register();
+			return (new autoloader())
+				->register_namespaces($app['autoloader.namespaces'])
+				->register_pear($app['autoloader.pear'])
+				->register();
 		});
 		
 		$this['template'] = $this->share(function() use ($app) {
@@ -124,6 +127,11 @@ class application implements ArrayAccess
 		$this['sphinx'] = $this->share(function() use ($app) {
 			return new db_sphinx($app['cache.driver'], $app['profiler'], $app['sphinx.options']);
 		});
+		
+		if ($this['autoloader.options']['enabled'])
+		{
+			$this['autoloader'];
+		}
 	}
 	
 	/**
