@@ -47,6 +47,8 @@ class mailer
 	public function postpone($subject = '', $template = '', $content_type = 'text/html')
 	{
 		register_shutdown_function([$this, 'send'], $subject, $template, $content_type);
+		
+		return $this;
 	}
 
 	/**
@@ -63,6 +65,8 @@ class mailer
 		
 		$this->message->setBody($this->template->render($template), $content_type);
 		$this->mailer->send($this->message, $this->failures);
+		
+		return $this;
 	}
 	
 	/**
