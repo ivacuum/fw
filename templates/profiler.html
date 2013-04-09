@@ -66,7 +66,7 @@ function hideProfiler() {
 					{elseif $row.type == 'memory'}
 						<div><pre>{$row.data}</pre> <em>{$row.data_type}</em>: {$row.name}</div>
 					{elseif $row.type == 'speed'}
-						<div><pre>{$row.data}</pre> <em>{$row.name}</em></div>
+						<div><pre>{$row.data|string_format:'%.3f'} ms</pre> <em>{$row.name}</em></div>
 					{elseif $row.type == 'error'}
 						<div>{$row.data} {$row.file}:{$row.line} <pre>{$row.call_stack}</pre></div>
 					{/if}
@@ -105,12 +105,12 @@ function hideProfiler() {
 			<table class="side" cellspacing="0">
 				<tr><td><var>{$QUERY_COUNT}</var><h4>{'TOTAL_QUERIES'|i18n}</h4></td></tr>
 				<tr><td class="alt"><var>{$QUERY_CACHED}</var><h4>{'FROM_CACHE'|i18n}</h4></td></tr>
-				<tr><td><var>{$QUERY_TIME}</var> <h4>{'EXECUTION_TIME'|i18n}</h4></td></tr>
+				<tr><td><var>{$QUERY_TIME|string_format:'%.1f'} ms</var> <h4>{'EXECUTION_TIME'|i18n}</h4></td></tr>
 			</table>
 			<div style="float: left; overflow: auto; width: 80%;">
 			<table class="main" cellspacing="0">
 				{foreach $profiler_queries as $row}
-					<tr><td class="{cycle values="alt,"}">{$row.sql} <em>{$row.time}{if $row.cached} <span style="color: #ffd700;">({'FROM_CACHE'|i18n|lower})</span>{/if}</em></td></tr>
+					<tr><td class="{cycle values="alt,"}">{$row.sql} <em>{$row.time|string_format:'%.3f'} ms{if $row.cached} <span style="color: #ffd700;">({'FROM_CACHE'|i18n|lower})</span>{/if}</em></td></tr>
 				{/foreach}
 			</table>
 			</div>

@@ -104,7 +104,7 @@ class console
 		$this->queries[] = [
 			'cached' => $cached,
 			'sql'    => preg_replace('#[\n\r\s\t]+#', ' ', $sql),
-			'time'   => $this->get_readable_time($query_time),
+			'time'   => $query_time,
 		];
 
 		if ($cached)
@@ -171,7 +171,7 @@ class profiler extends console
 			'SPEED_TOTAL'     => $this->speed_total,
 			'QUERY_CACHED'    => $this->query_cached,
 			'QUERY_COUNT'     => $this->query_count,
-			'QUERY_TIME'      => $this->get_readable_time($this->query_time),
+			'QUERY_TIME'      => $this->query_time,
 		];
 	}
 	
@@ -240,11 +240,6 @@ class profiler extends console
 		fclose($fp);
 	}
 
-	protected function get_readable_time($time)
-	{
-		return sprintf('%.3f ms', $time);
-	}
-
 	protected function get_console_data()
 	{
 		foreach ($logs = $this->logs as $key => $log)
@@ -253,7 +248,7 @@ class profiler extends console
 			{
 				case 'log':    $logs[$key]['data'] = print_r($log['data'], true); break;
 				case 'memory': $logs[$key]['data'] = $log['data']; break;
-				case 'speed':  $logs[$key]['data'] = $this->get_readable_time(($log['data'] - $this->start_time) * 1000); break;
+				case 'speed':  $logs[$key]['data'] = ($log['data'] - $this->start_time) * 1000; break;
 			}
 		}
 
