@@ -97,13 +97,14 @@ class console
 
 	public function log_query($sql, $start_time, $cached = false)
 	{
+		$query_time = (microtime(true) - $start_time) * 1000;
+		$this->query_time += $query_time;
 		$this->query_count++;
-		$this->query_time += (microtime(true) - $start_time) * 1000;
 		
 		$this->queries[] = [
 			'cached' => $cached,
 			'sql'    => preg_replace('#[\n\r\s\t]+#', ' ', $sql),
-			'time'   => $this->get_readable_time($this->query_time),
+			'time'   => $this->get_readable_time($query_time),
 		];
 
 		if ($cached)
