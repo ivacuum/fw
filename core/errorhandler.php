@@ -263,7 +263,7 @@ class errorhandler
 			$call_stack = str_replace(static::$document_root, '', ob_get_clean());
 		}
 		
-		mail(static::$options["email.{$email}"], $title, sprintf("%s\n%s\$app['user']->data => %s\n\$_SERVER => %s\n\$_REQUEST => %s", $text, $call_stack, !empty($app['user']) ? print_r($app['user']->data, true) : '', print_r($_SERVER, true), print_r($_REQUEST, true)), sprintf("From: fw@%s\r\n", gethostname()));
+		mail(static::$options["email.{$email}"], $title, sprintf("[%s]\n%s\n%s\$app['user']->data => %s\n\$_SERVER => %s\n\$_REQUEST => %s", strftime('%c'), $text, $call_stack, !empty($app['user']) ? print_r($app['user']->data, true) : '', print_r($_SERVER, true), print_r($_REQUEST, true)), sprintf("From: fw@%s\r\n", gethostname()));
 	}
 
 	/**
