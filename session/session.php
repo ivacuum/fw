@@ -425,7 +425,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 	* @param	int		$user_id	ID пользователя, false или 0 - анонимный
 	* @param	bool	$autologin	Автовход, используя cookie
 	*/
-	public function session_create($session_id = false, $user_id = false, $autologin = false, $set_admin = false, $viewonline = true, $openid_provider = '')
+	public function session_create($session_id = false, $user_id = false, $autologin = false, $set_admin = false, $openid_provider = '')
 	{
 		$_SESSION = $this->data = [];
 
@@ -583,9 +583,8 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 			'session_page'            => (string) $this->request->url,
 			'session_referer'         => (string) $this->referer,
 			'session_ip'              => (string) $this->ip,
-			'session_viewonline'      => (int) $viewonline,
 			'session_autologin'       => (int) $autologin,
-			'session_admin'           => (int) $set_admin
+			'session_admin'           => (int) $set_admin,
 		];
 		
 		if (false === $session_id)

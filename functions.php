@@ -182,14 +182,13 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$autologin         = $app['request']->is_set_post('autologin');
 		$password          = $app['request']->post('password', '');
 		$username_or_email = $app['request']->post('username', '');
-		$viewonline        = $admin ? $app['user']['session_viewonline'] : (int) !$app['request']->is_set_post('viewonline');
 
 		if ($admin && $username_or_email != $app['user']['username'] && $username_or_email != $app['user']['user_email'])
 		{
 			trigger_error('NO_AUTH_ADMIN_USER_DIFFER');
 		}
 
-		$result = $app['auth']->login($username_or_email, $password, $autologin, $viewonline, $admin);
+		$result = $app['auth']->login($username_or_email, $password, $autologin, $admin);
 
 		if ($result['status'] == 'OK')
 		{

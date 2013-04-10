@@ -599,7 +599,7 @@ class auth
 	/**
 	* Авторизация
 	*/
-	public function login($username_or_email, $password, $autologin = false, $viewonline = 1, $admin = 0)
+	public function login($username_or_email, $password, $autologin = false, $admin = 0)
 	{
 		$login = $this->user->login($username_or_email, $password);
 
@@ -607,7 +607,7 @@ class auth
 		{
 			$this->user->session_end(false);
 
-			if (true === $result = $this->user->session_create(false, $login['user_row']['user_id'], $autologin, $admin, $viewonline))
+			if (true === $result = $this->user->session_create(false, $login['user_row']['user_id'], $autologin, $admin))
 			{
 				return $login;
 			}
