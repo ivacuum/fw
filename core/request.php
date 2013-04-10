@@ -33,7 +33,7 @@ class request
 		'local_redirect.to'   => '',
 	];
 	
-	private $globals = [
+	protected $globals = [
 		self::GET     => '_GET',
 		self::POST    => '_POST',
 		self::COOKIE  => '_COOKIE',
@@ -51,7 +51,7 @@ class request
 		$this->is_secure = $this->server('HTTPS') == 'on';
 		$this->isp       = $this->header('Provider', 'internet');
 		$this->method    = strtolower($this->server('REQUEST_METHOD', 'get'));
-		$this->url       = $this->get_requested_url();
+		$this->url       = urldecode($this->server('REQUEST_URI'));
 		
 		/* По умолчанию при использовании метода PUT данные не попадают в $_REQUEST */
 		if ($this->method == 'put')
@@ -78,42 +78,6 @@ class request
 		$hostname = (false !== $pos = strpos($hostname, ':')) ? substr($hostname, 0, $pos) : $hostname;
 		
 		return $hostname;
-	}
-	
-	/**
-	* Адрес страницы
-	*/
-	public function get_requested_url()
-	{
-		$url = $this->is_set('path') ? $this->get('path', '') : '';
-		
-		if (!$url)
-		{
-			$url = $this->server('PHP_SELF');
-			$url = $url ?: $this->server('REQUEST_URI');
-			$url = str_replace('index.php', '', $url);
-		}
-		
-		$query_string = '';
-
-		foreach ($_GET as $k => $v)
-		{
-			if ($k == 'path' || $k == 'sid')
-			{
-				continue;
-			}
-
-			if ($query_string)
-			{
-				$query_string .= '&';
-			}
-
-			$query_string .= @sprintf('%s=%s', $k, $v);
-		}
-		
-		$url .= $query_string ? '?' . $query_string : '';
-		
-		return $url;
 	}
 	
 	/**
@@ -295,7 +259,7 @@ class request
 	* Приведение типов
 	* Экранирование строк
 	*/
-	private function set_type(&$result, $var, $type)
+	protected function set_type(&$result, $var, $type)
 	{
 		settype($var, $type);
 		$result = $var;
@@ -309,7 +273,7 @@ class request
 	/**
 	* Рекурсивное приведение типов
 	*/
-	private function recursive_set_type(&$var, $default)
+	protected function recursive_set_type(&$var, $default)
 	{
 		if (is_array($var) !== is_array($default))
 		{
