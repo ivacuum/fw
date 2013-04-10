@@ -49,7 +49,7 @@ class router
 		$this->namespace = $namespace;
 		$this->page      = $this->options['directory_index'];
 		$this->site_id   = $this->site_info['id'];
-		$this->url       = $url ?: htmlspecialchars_decode($this->request->url);
+		$this->url       = $url ?: $this->request->url;
 		
 		if (0 === strpos($this->url, "/{$this->request->language}/"))
 		{
