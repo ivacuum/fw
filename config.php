@@ -128,6 +128,6 @@ $app['autoloader.namespaces'] = [
 	'Symfony' => "{$app['dir.lib']}/symfony/{$app['version.symfony']}/Symfony",
 ];
 
-$app['autoloader.pear'] = [
+$app['autoloader.pears'] = [
 	'Swift' => "{$app['dir.lib']}/swiftmailer/{$app['version.swift']}/classes",
 ];

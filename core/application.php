@@ -37,7 +37,7 @@ class application implements ArrayAccess
 			
 			return (new autoloader())
 				->register_namespaces($app['autoloader.namespaces'])
-				->register_pear($app['autoloader.pear'])
+				->register_pears($app['autoloader.pears'])
 				->register();
 		});
 		
