@@ -51,7 +51,13 @@ class request
 		$this->is_secure = $this->server('HTTPS') == 'on';
 		$this->isp       = $this->header('Provider', 'internet');
 		$this->method    = strtolower($this->server('REQUEST_METHOD', 'get'));
-		$this->url       = htmlspecialchars_decode(urldecode(urldecode($this->server('REQUEST_URI'))));
+		
+		/**
+		* Декодирование адреса в два шага
+		* 1) /%25d1%2580%25d0%25b5%25d1%2581%25d1%2583%25d1%2580%25d1%2581%25d1%258b/ => /%d1%80%d0%b5%d1%81%d1%83%d1%80%d1%81%d1%8b/
+		* 2) /%d1%80%d0%b5%d1%81%d1%83%d1%80%d1%81%d1%8b/ => /ресурсы/
+		*/
+		$this->url = htmlspecialchars_decode(urldecode(urldecode($this->server('REQUEST_URI'))));
 		
 		/* По умолчанию при использовании метода PUT данные не попадают в $_REQUEST */
 		if ($this->method == 'put')
