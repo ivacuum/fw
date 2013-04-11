@@ -493,9 +493,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 			$this->data = $bot ? $this->get_bot_data($bot) : $this->get_guest_defaults();
 		}
 
-		/**
-		* Время последнего визита
-		*/
+		/* Время последнего визита */
 		if ($this->data['user_id'] > 0 && !$bot)
 		{
 			$this->data['session_last_visit'] = isset($this->data['session_time']) && $this->data['session_time'] ? $this->data['session_time'] : (isset($this->data['user_last_visit']) ? $this->data['user_last_visit'] : $this->ctime);
@@ -545,7 +543,6 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 					]);
 
 					register_shutdown_function([$this, 'user_update'], [
-						'user_session_time' => (int) $this->data['session_time'],
 						'user_session_page' => (string) $this->request->url,
 						'user_last_visit'   => (int) $this->data['session_last_visit'],
 						'user_ip'           => (string) $this->ip,
@@ -614,7 +611,6 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 		{
 			/* Обновление даты последнего визита бота */
 			register_shutdown_function([$this, 'user_update'], [
-				'user_session_time' => (int) $this->ctime,
 				'user_session_page' => (string) $this->request->url,
 				'user_last_visit'   => (int) $this->ctime,
 				'user_ip'           => (string) $this->ip
