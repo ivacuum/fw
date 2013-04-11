@@ -6,10 +6,12 @@
 
 namespace fw\session;
 
-/**
-* Сеанс
-*/
-class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionHandlerInterface
+use ArrayAccess;
+use Countable;
+use IteratorAggregate;
+use SessionHandlerInterface;
+
+class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandlerInterface
 {
 	public $browser        = '';
 	public $cookie         = [];
@@ -613,7 +615,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 			register_shutdown_function([$this, 'user_update'], [
 				'user_session_page' => (string) $this->request->url,
 				'user_last_visit'   => (int) $this->ctime,
-				'user_ip'           => (string) $this->ip
+				'user_ip'           => (string) $this->ip,
 			]);
 
 			return true;
