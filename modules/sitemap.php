@@ -29,10 +29,10 @@ class sitemap extends page
 			FROM
 				site_pages
 			WHERE
-				site_id = ' . $this->db->check_value($this->data['site_id']) . '
+				site_id = ?
 			ORDER BY
 				left_id ASC';
-		$this->db->query($sql);
+		$this->db->query($sql, [$this->data['site_id']]);
 	}
 
 	public function index_html()

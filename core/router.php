@@ -401,18 +401,18 @@ class router
 			FROM
 				site_pages
 			WHERE
-				parent_id = ' . $this->db->check_value($parent_id) . '
+				parent_id = ?
 			AND
-				site_id = ' . $this->db->check_value($this->site_id) . '
+				site_id = ?
 			AND
-				' . $this->db->in_set('page_url', [$page_url, '*']) . '
+				page_url IN (?, ?)
 			AND
-				is_dir = ' . $this->db->check_value($is_dir) . '
+				is_dir = ?
 			AND
 				page_enabled = 1
 			ORDER BY
 				LENGTH(page_url) DESC';
-		$this->db->query_limit($sql, [], 1);
+		$this->db->query_limit($sql, [$parent_id, $this->site_id, $page_url, '*', $is_dir], 1);
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
 		

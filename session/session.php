@@ -80,10 +80,10 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 			FROM
 				site_sessions_keys
 			WHERE
-				user_id = ' . $this->db->check_value($user_id) . '
+				user_id = ?
 			AND
-				key_id = ' . $this->db->check_value(md5($key_id));
-		$this->db->query($sql);
+				key_id = ?';
+		$this->db->query($sql, [$user_id, md5($key_id)]);
 		
 		return $this;
 	}
@@ -97,10 +97,10 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 			FROM
 				site_sessions
 			WHERE
-				session_id = ' . $this->db->check_value($session_id) . '
+				session_id = ?
 			AND
-				user_id = ' . $this->db->check_value($this->data['user_id']);
-		$this->db->query($sql);
+				user_id = ?';
+		$this->db->query($sql, [$session_id, $this->data['user_id']]);
 
 		if ($this->data['user_id'] > 0)
 		{
@@ -401,8 +401,8 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 			FROM
 				site_sessions_keys
 			WHERE
-				user_id = ' . $this->db->check_value($user_id);
-		$this->db->query($sql);
+				user_id = ?';
+		$this->db->query($sql, [$user_id]);
 
 		/* Также удаляем все текущие сессий, кроме используемой */
 		$sql = '
@@ -410,9 +410,9 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 			FROM
 				site_sessions
 			WHERE
-				user_id = ' . $this->db->check_value($user_id) .
+				user_id = ?' . 
 			($user_id == $this->data['user_id'] ? ' AND session_id <> ' . $this->db->check_value($this->session_id) : '');
-		$this->db->query($sql);
+		$this->db->query($sql, [$user_id]);
 
 		if (false !== $set_new_key && $user_id === $this->data['user_id'] && $this->cookie['k'])
 		{
@@ -447,10 +447,10 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 				LEFT JOIN
 					site_sessions_keys sk ON (sk.user_id = u.user_id)
 				WHERE
-					u.user_id = ' . $this->db->check_value($this->cookie['u']) . '
+					u.user_id = ?
 				AND
-					sk.key_id = ' . $this->db->check_value(md5($this->cookie['k']));
-			$result = $this->db->query($sql);
+					sk.key_id = ?';
+			$result = $this->db->query($sql, [$this->cookie['u'], md5($this->cookie['k'])]);
 			$this->data = $this->db->fetchrow($result);
 			$this->db->freeresult($result);
 			$bot = false;
@@ -471,8 +471,8 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 				FROM
 					site_users
 				WHERE
-					user_id = ' . $this->db->check_value($this->cookie['u']);
-			$result = $this->db->query($sql);
+					user_id = ?';
+			$result = $this->db->query($sql, [$this->cookie['u']]);
 			$this->data = $this->db->fetchrow($result);
 			$this->db->freeresult($result);
 			$bot = false;
@@ -561,8 +561,8 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 					FROM
 						site_sessions
 					WHERE
-						user_id = ' . $this->db->check_value($this->data['user_id']);
-				$this->db->query($sql);
+						user_id = ?';
+				$this->db->query($sql, [$this->data['user_id']]);
 			}
 		}
 
@@ -639,10 +639,10 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 				FROM
 					site_sessions
 				WHERE
-					user_id = ' . $this->db->check_value($this->data['user_id']) . '
+					user_id = ?
 				AND
-					session_time >= ' . $this->db->check_value($this->ctime - (max(ini_get('session.gc_maxlifetime'), $this->config['form.token_lifetime'])));
-			$result = $this->db->query($sql);
+					session_time >= ?';
+			$result = $this->db->query($sql, [$this->data['user_id'], $this->ctime - (max(ini_get('session.gc_maxlifetime'), $this->config['form.token_lifetime']))]);
 			$row = $this->db->fetchrow($result);
 			$this->db->freeresult($result);
 
@@ -681,10 +681,10 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 			UPDATE
 				site_sessions
 			SET
-				' . $this->db->build_array('UPDATE', $sql_ary) . '
+				:update_ary
 			WHERE
-				session_id = ' . $this->db->check_value($session_id);
-		$this->db->query($sql);
+				session_id = ?';
+		$this->db->query($sql, [$session_id, ':update_ary' => $this->db->build_array('UPDATE', $sql_ary)]);
 	}
 
 	/**
@@ -750,19 +750,21 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 				UPDATE
 					site_sessions_keys
 				SET
-					' . $this->db->build_array('UPDATE', $sql_ary) . '
+					:update_ary
 				WHERE
-					user_id = ' . $this->db->check_value($user_id) . '
+					user_id = ?
 				AND
-					key_id = ' . $this->db->check_value(md5($key));
+					key_id = ?';
+			$params = [$user_id, md5($key), ':update_ary' => $this->db->build_array('UPDATE', $sql_ary)];
 		}
 		else
 		{
 			$sql_ary['user_id'] = (int) $user_id;
 			$sql = 'INSERT INTO site_sessions_keys ' . $this->db->build_array('INSERT', $sql_ary);
+			$params = [];
 		}
 
-		$this->db->query($sql);
+		$this->db->query($sql, $params);
 		$this->cookie['k'] = $key_id;
 		
 		return false;
@@ -801,8 +803,8 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 			LEFT JOIN
 				site_sessions s ON (s.user_id = u.user_id)
 			WHERE
-				u.user_id = ' . $this->db->check_value($bot_id);
-		$result = $this->db->query($sql);
+				u.user_id = ?';
+		$result = $this->db->query($sql, [$bot_id]);
 		$row = $this->db->fetchrow($result);
 		$this->db->freeresult($result);
 		$row['user_id'] = $bot_id;
@@ -833,10 +835,10 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 			FROM
 				site_sessions
 			WHERE
-				session_id = ' . $this->db->check_value($session_id) . '
+				session_id = ?
 			AND
 				user_id = 0';
-		$result = $this->db->query($sql);
+		$result = $this->db->query($sql, [$session_id]);
 		$row = $this->db->fetchrow($result);
 		$this->db->freeresult($result);
 
@@ -861,8 +863,8 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 			LEFT JOIN
 				site_users u ON (u.user_id = s.user_id)
 			WHERE
-				s.session_id = ' . $this->db->check_value($session_id);
-		$result = $this->db->query($sql);
+				s.session_id = ?';
+		$result = $this->db->query($sql, [$session_id]);
 		$row = $this->db->fetchrow($result);
 		$this->db->freeresult($result);
 		

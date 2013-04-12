@@ -65,10 +65,10 @@ class validator
 				FROM
 					site_confirm
 				WHERE
-					session_id = ' . $this->db->check_value($this->user->session_id) . '
+					session_id = ?
 				AND
-					code = ' . $this->db->check_value($this->code);
-			$this->db->query($sql);
+					code = ?';
+			$this->db->query($sql, [$this->user->session_id, $this->code]);
 		}
 	}
 	
@@ -91,8 +91,8 @@ class validator
 			FROM
 				site_confirm
 			WHERE
-				session_id = ' . $this->db->check_value($this->user->session_id);
-		$this->db->query($sql);
+				session_id = ?';
+		$this->db->query($sql, [$this->user->session_id]);
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
 		

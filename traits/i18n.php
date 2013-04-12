@@ -358,12 +358,12 @@ trait i18n
 				FROM
 					site_i18n
 				WHERE
-					site_id = ' . $this->db->check_value($site_id) . '
+					site_id = ?
 				AND
-					i18n_lang = ' . $this->db->check_value($language) . '
+					i18n_lang = ?
 				AND
-					i18n_file = ' . $this->db->check_value($lang_file);
-			$this->db->query($sql);
+					i18n_file = ?';
+			$this->db->query($sql, [$site_id, $language, $lang_file]);
 			$lang = [];
 
 			while ($row = $this->db->fetchrow())

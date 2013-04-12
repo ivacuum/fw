@@ -131,8 +131,8 @@ class manager
 			FROM
 				site_sites
 			WHERE
-				site_url = ' . $this->db->check_value($this->hostname);
-		$result = $this->db->query($sql);
+				site_url = ?';
+		$result = $this->db->query($sql, [$this->hostname]);
 		$site_ids = [];
 		
 		while ($row = $this->db->fetchrow($result))
@@ -148,15 +148,15 @@ class manager
 			FROM
 				site_cron
 			WHERE
-				' . $this->db->in_set('site_id', $site_ids) . '
+				:site_ids
 			AND
 				cron_active = 1
 			AND
-				next_run <= ' . $this->start_time . '
+				next_run <= ?
 			ORDER BY
 				site_id ASC,
 				run_order ASC';
-		$result = $this->db->query($sql);
+		$result = $this->db->query($sql, [$this->start_time, ':site_ids' => $this->db->in_set('site_id', $site_ids)]);
 		$this->tasks = $this->db->fetchall($result);
 		$this->db->freeresult($result);
 		$this->tasks_count = sizeof($this->tasks);
@@ -197,11 +197,11 @@ class manager
 				site_cron
 			SET
 				last_run = UNIX_TIMESTAMP(),
-				next_run = ' . date_timestamp_get($next_run) . ',
+				next_run = ?,
 				run_counter = run_counter + 1
 			WHERE
-				cron_id = ' . $cron_id;
-		$this->db->query($sql);
+				cron_id = ?';
+		$this->db->query($sql, [date_timestamp_get($next_run), $cron_id]);
 	}
 
 	/**

@@ -14,19 +14,17 @@ class db extends config
 	protected $language;
 	protected $site_id;
 	protected $site_vars;
-	protected $table;
 
 	protected $cache;
 	protected $db;
 	
-	function __construct($cache, $db, $site_info, $table = false)
+	function __construct($cache, $db, $site_info)
 	{
 		$this->cache = $cache;
 		$this->db    = $db;
 		
 		$this->language = $site_info['language'];
 		$this->site_id  = $site_info['id'];
-		$this->table    = $table ?: 'site_config';
 		
 		parent::__construct(array_merge($this->load_config(0), $this->load_config($this->site_id)));
 	}
@@ -41,7 +39,7 @@ class db extends config
 		$sql = '
 			DELETE
 			FROM
-				' . $this->table . '
+				site_config
 			WHERE
 				config_name = ' . $this->db->check_value($key) . '
 			AND
@@ -98,7 +96,7 @@ class db extends config
 		
 		$sql = '
 			UPDATE
-				' . $this->table . '
+				site_config
 			SET
 				config_value = config_value + ' . ((int) $increment) . '
 			WHERE
@@ -146,7 +144,7 @@ class db extends config
 		
 		$sql = '
 			UPDATE
-				' . $this->table . '
+				site_config
 			SET
 				config_value = ' . $this->db->check_value($new_value) . '
 			WHERE
@@ -176,7 +174,7 @@ class db extends config
 		{
 			$insert = $site_id > 0 && $site_id !== $this->site_id ? 'INSERT IGNORE' : 'INSERT';
 			
-			$sql = $insert . ' INTO ' . $this->table . ' ' . $this->db->build_array('INSERT', [
+			$sql = $insert . ' INTO site_config ' . $this->db->build_array('INSERT', [
 				'config_name'  => $key,
 				'config_value' => $new_value,
 				'site_id'      => $site_id
@@ -231,7 +229,7 @@ class db extends config
 					config_name,
 					config_value
 				FROM
-					' . $this->table . '
+					site_config
 				WHERE
 					site_id = ' . $this->db->check_value($site_id);
 			$this->db->query($sql);

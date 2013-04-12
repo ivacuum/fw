@@ -152,10 +152,10 @@ class service
 				FROM
 					site_pages
 				WHERE
-					site_id = ' . $this->db->check_value($site_id) . '
+					site_id = ?
 				ORDER BY
 					left_id ASC';
-			$this->db->query($sql);
+			$this->db->query($sql, [$site_id]);
 			$traversal = new traverse_handlers_urls($options);
 			
 			while ($row = $this->db->fetchrow())
@@ -263,10 +263,10 @@ class service
 				FROM
 					site_pages
 				WHERE
-					site_id = ' . $this->db->check_value($site_id) . '
+					site_id = ?
 				ORDER BY
 					left_id ASC';
-			$this->db->query($sql);
+			$this->db->query($sql, [$site_id]);
 			$traversal = new traverse_menu(array_merge($options, ['return_as_tree' => true]));
 			
 			while ($row = $this->db->fetchrow())
@@ -343,10 +343,10 @@ class service
 				LEFT JOIN
 					site_users u ON (u.user_id = s.user_id)
 				WHERE
-					s.session_time >= ' . $this->db->check_value(time() - $online_time) . '
+					s.session_time >= ?
 				ORDER BY
 					s.session_time DESC';
-			$result = $this->db->query($sql);
+			$result = $this->db->query($sql, [time() - $online_time]);
 
 			while ($row = $this->db->fetchrow($result))
 			{
@@ -376,8 +376,8 @@ class service
 				WHERE
 					user_id = 0
 				AND
-					session_time >= ' . $this->db->check_value(time() - $online);
-			$result = $this->db->query($sql);
+					session_time >= ?';
+			$result = $this->db->query($sql, [time() - $online]);
 
 			while ($row = $this->db->fetchrow($result))
 			{

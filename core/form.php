@@ -212,8 +212,8 @@ class form
 			FROM
 				site_forms
 			WHERE
-				form_alias = ' . $this->db->check_value($alias);
-		$this->db->query($sql);
+				form_alias = ?';
+		$this->db->query($sql, [$alias]);
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
 		
@@ -231,10 +231,10 @@ class form
 			FROM
 				site_form_tabs
 			WHERE
-				form_id = ' . $this->db->check_value($this->data['form_id']) . '
+				form_id = ?
 			ORDER BY
 				tab_sort ASC';
-		$this->db->query($sql);
+		$this->db->query($sql, [$this->data['form_id']]);
 		
 		while ($row = $this->db->fetchrow())
 		{
@@ -255,11 +255,11 @@ class form
 			FROM
 				site_form_fields
 			WHERE
-				form_id = ' . $this->db->check_value($this->data['form_id']) . '
+				form_id = ?
 			ORDER BY
 				tab_id ASC,
 				field_sort ASC';
-		$this->db->query($sql);
+		$this->db->query($sql, [$this->data['form_id']]);
 		
 		while ($row = $this->db->fetchrow())
 		{

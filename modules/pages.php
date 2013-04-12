@@ -52,10 +52,10 @@ class pages extends page
 						FROM
 							site_pages
 						WHERE
-							site_id = ' . $this->db->check_value($this->data['site_id']) . '
+							site_id = ?
 						AND
-							page_id = ' . $page_id;
-					$this->db->query($sql);
+							page_id = ?';
+					$this->db->query($sql, [$this->data['site_id'], $page_id]);
 					$parent_id = (int) $this->db->fetchfield('parent_id');
 					$this->db->freeresult();
 				}
@@ -83,10 +83,10 @@ class pages extends page
 					FROM
 						site_pages
 					WHERE
-						site_id = ' . $this->db->check_value($this->data['site_id']) . '
+						site_id = ?
 					AND
-						page_id = ' . $page_id;
-				$this->db->query($sql);
+						page_id = ?';
+				$this->db->query($sql, [$this->data['site_id'], $page_id]);
 				$row = $this->db->fetchrow();
 				$this->db->freeresult();
 
@@ -99,12 +99,12 @@ class pages extends page
 					UPDATE
 						site_pages
 					SET
-						page_enabled = ' . ($action == 'enable' ? 1 : 0) . '
+						page_enabled = ?
 					WHERE
-						site_id = ' . $this->db->check_value($this->data['site_id']) . '
+						site_id = ?
 					AND
-						page_id = ' . $page_id;
-				$this->db->query($sql);
+						page_id = ?';
+				$this->db->query($sql, [$action == 'enable' ? 1 : 0, $this->data['site_id'], $page_id]);
 				$this->remove_cache_file();
 
 			break;
@@ -122,10 +122,10 @@ class pages extends page
 					FROM
 						site_pages
 					WHERE
-						site_id = ' . $this->db->check_value($this->data['site_id']) . '
+						site_id = ?
 					AND
-						page_id = ' . $page_id;
-				$this->db->query($sql);
+						page_id = ?';
+				$this->db->query($sql, [$this->data['site_id'], $page_id]);
 				$row = $this->db->fetchrow();
 				$this->db->freeresult();
 
@@ -278,12 +278,12 @@ class pages extends page
 			FROM
 				site_pages
 			WHERE
-				site_id = ' . $this->db->check_value($this->data['site_id']) . '
+				site_id = ?
 			AND
-				parent_id = ' . $parent_id . '
+				parent_id = ?
 			ORDER BY
 				left_id ASC';
-		$result = $this->db->query($sql);
+		$result = $this->db->query($sql, [$this->data['site_id'], $parent_id]);
 
 		while ($row = $this->db->fetchrow($result))
 		{
@@ -350,10 +350,10 @@ class pages extends page
 			FROM
 				site_pages
 			WHERE
-				site_id = ' . $this->db->check_value($this->data['site_id']) . '
+				site_id = ?
 			AND
-				page_id = ' . $page_id;
-		$this->db->query($sql);
+				page_id = ?';
+		$this->db->query($sql, [$this->data['site_id'], $page_id]);
 
 		$row['right_id'] = (int) $row['right_id'];
 		$row['left_id'] = (int) $row['left_id'];
@@ -363,26 +363,26 @@ class pages extends page
 			UPDATE
 				site_pages
 			SET
-				right_id = right_id - ' . $diff . '
+				right_id = right_id - ?
 			WHERE
-				site_id = ' . $this->db->check_value($this->data['site_id']) . '
+				site_id = ?
 			AND
-				left_id < ' . $row['right_id'] . '
+				left_id < ?
 			AND
-				right_id > ' . $row['right_id'];
-		$this->db->query($sql);
+				right_id > ?';
+		$this->db->query($sql, [$diff, $this->data['site_id'], $row['right_id'], $row['right_id']]);
 
 		$sql = '
 			UPDATE
 				site_pages
 			SET
-				left_id = left_id - ' . $diff . ',
-				right_id = right_id - ' . $diff . '
+				left_id = left_id - ?,
+				right_id = right_id - ?
 			WHERE
-				site_id = ' . $this->db->check_value($this->data['site_id']) . '
+				site_id = ?
 			AND
-				left_id > ' . $row['right_id'];
-		$this->db->query($sql);
+				left_id > ?';
+		$this->db->query($sql, [$diff, $diff, $this->data['site_id'], $row['right_id']]);
 
 		return [];
 	}
@@ -398,10 +398,10 @@ class pages extends page
 			FROM
 				site_pages
 			WHERE
-				site_id = ' . $this->db->check_value($this->data['site_id']) . '
+				site_id = ?
 			AND
-				page_id = ' . $this->db->check_value($page_id);
-		$this->db->query($sql);
+				page_id = ?';
+		$this->db->query($sql, [$this->data['site_id'], $page_id]);
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
 
@@ -431,10 +431,10 @@ class pages extends page
 			FROM
 				site_pages
 			WHERE
-				site_id = ' . $this->db->check_value($this->data['site_id']) . '
+				site_id = ?
 			ORDER BY
 				left_id ASC';
-		$this->db->query($sql);
+		$this->db->query($sql, [$this->data['site_id']]);
 
 		$right = 0;
 		$padding_store = ['0' => ''];
@@ -504,27 +504,27 @@ class pages extends page
 			UPDATE
 				site_pages
 			SET
-				right_id = right_id - ' . $diff . '
+				right_id = right_id - ?
 			WHERE
-				site_id = ' . $this->db->check_value($this->data['site_id']) . '
+				site_id = ?
 			AND
-				left_id < ' . (int) $from_data['right_id'] . '
+				left_id < ?
 			AND
-				right_id > ' . (int) $from_data['right_id'];
-		$this->db->query($sql);
+				right_id > ?';
+		$this->db->query($sql, [$diff, $this->data['site_id'], (int) $from_data['right_id'], (int) $from_data['right_id']]);
 
 		/* Синхронизация правой части дерева */
 		$sql = '
 			UPDATE
 				site_pages
 			SET
-				left_id = left_id - ' . $diff . ',
-				right_id = right_id - ' . $diff . '
+				left_id = left_id - ?,
+				right_id = right_id - ?
 			WHERE
-				site_id = ' . $this->db->check_value($this->data['site_id']) . '
+				site_id = ?
 			AND
-				left_id > ' . (int) $from_data['right_id'];
-		$this->db->query($sql);
+				left_id > ?';
+		$this->db->query($sql, [$diff, $diff, $this->data['site_id'], (int) $from_data['right_id']]);
 
 		if ($to_parent_id > 0)
 		{
@@ -535,29 +535,29 @@ class pages extends page
 				UPDATE
 					site_pages
 				SET
-					right_id = right_id + ' . $diff . '
+					right_id = right_id + ?
 				WHERE
-					site_id = ' . $this->db->check_value($this->data['site_id']) . '
+					site_id = ?
 				AND
-					' . (int) $to_data['right_id'] . ' BETWEEN left_id AND right_id
+					? BETWEEN left_id AND right_id
 				AND
-					' . $this->db->in_set('page_id', $moved_ids, true);
-			$this->db->query($sql);
+					:moved_ids';
+			$this->db->query($sql, [$diff, $this->data['site_id'], (int) $to_data['right_id'], ':moved_ids' => $this->db->in_set('page_id', $moved_ids, true)]);
 
 			/* Синхронизация правой части дерева */
 			$sql = '
 				UPDATE
 					site_pages
 				SET
-					left_id = left_id + ' . $diff . ',
-					right_id = right_id + ' . $diff . '
+					left_id = left_id + ?,
+					right_id = right_id + ?
 				WHERE
-					site_id = ' . $this->db->check_value($this->data['site_id']) . '
+					site_id = ?
 				AND
-					left_id > ' . (int) $to_data['right_id'] . '
+					left_id > ?
 				AND
-					' . $this->db->in_set('page_id', $moved_ids, true);
-			$this->db->query($sql);
+					:moved_ids';
+			$this->db->query($sql, [$diff, $diff, $this->data['site_id'], (int) $to_data['right_id'], ':moved_ids' => $this->db->in_set('page_id', $moved_ids, true)]);
 
 			/* Синхронизация перемещенной ветви */
 			$to_data['right_id'] += $diff;
@@ -579,10 +579,10 @@ class pages extends page
 				FROM
 					site_pages
 				WHERE
-					site_id = ' . $this->db->check_value($this->data['site_id']) . '
+					site_id = ?
 				AND
-					' . $this->db->in_set('page_id', $moved_ids, true);
-			$this->db->query($sql);
+					:moved_ids';
+			$this->db->query($sql, [$this->data['site_id'], $this->db->in_set('page_id', $moved_ids, true)]);
 			$row = $this->db->fetchrow();
 			$this->db->freeresult();
 
@@ -593,13 +593,13 @@ class pages extends page
 			UPDATE
 				site_pages
 			SET
-				left_id = left_id ' . $diff . ',
-				right_id = right_id ' . $diff . '
+				left_id = left_id :diff,
+				right_id = right_id :diff
 			WHERE
-				site_id = ' . $this->db->check_value($this->data['site_id']) . '
+				site_id = ?
 			AND
-				' . $this->db->in_set('page_id', $moved_ids);
-		$this->db->query($sql);
+				:moved_ids';
+		$this->db->query($sql, [$this->data['site_id'], ':diff' => $diff, ':moved_ids' => $this->db->in_set('page_id', $moved_ids)]);
 	}
 
 	/**
@@ -622,12 +622,12 @@ class pages extends page
 			FROM
 				site_pages
 			WHERE
-				site_id = ' . $this->db->check_value($this->data['site_id']) . '
+				site_id = ?
 			AND
-				parent_id = ' . (int) $page_row['parent_id'] . '
+				parent_id = ?
 			AND
 				' . ($action == 'move_up' ? 'right_id < ' . (int) $page_row['right_id'] . ' ORDER BY right_id DESC' : 'left_id > ' . (int) $page_row['left_id'] . ' ORDER BY left_id ASC');
-		$this->db->query_limit($sql, [], $steps);
+		$this->db->query_limit($sql, [$this->data['site_id'], (int) $page_row['parent_id']], $steps);
 		$target = [];
 
 		while ($row = $this->db->fetchrow())
@@ -740,10 +740,10 @@ class pages extends page
 					FROM
 						site_pages
 					WHERE
-						site_id = ' . $this->db->check_value($page_data['site_id']) . '
+						site_id = ?
 					AND
-						page_id = ' . (int) $page_data['parent_id'];
-				$this->db->query($sql);
+						page_id = ?';
+				$this->db->query($sql, [$page_data['site_id'], (int) $page_data['parent_id']]);
 				$row = $this->db->fetchrow();
 				$this->db->freeresult();
 
@@ -768,10 +768,10 @@ class pages extends page
 						left_id = left_id + 2,
 						right_id = right_id + 2
 					WHERE
-						site_id = ' . $this->db->check_value($page_data['site_id']) . '
+						site_id = ?
 					AND
-						left_id > ' . $row['right_id'];
-				$this->db->query($sql);
+						left_id > ?';
+				$this->db->query($sql, [$page_data['site_id'], $row['right_id']]);
 
 				$sql = '
 					UPDATE
@@ -779,10 +779,10 @@ class pages extends page
 					SET
 						right_id = right_id + 2
 					WHERE
-						site_id = ' . $this->db->check_value($page_data['site_id']) . '
+						site_id = ?
 					AND
-						' . $row['left_id'] . ' BETWEEN left_id AND right_id';
-				$this->db->query($sql);
+						? BETWEEN left_id AND right_id';
+				$this->db->query($sql, [$page_data['site_id'], $row['left_id']]);
 
 				$page_data['left_id'] = (int) $row['right_id'];
 				$page_data['right_id'] = (int) $row['right_id'] + 1;
@@ -795,8 +795,8 @@ class pages extends page
 					FROM
 						site_pages
 					WHERE
-						site_id = ' . $this->db->check_value($page_data['site_id']);
-				$this->db->query($sql);
+						site_id = ?';
+				$this->db->query($sql, [$page_data['site_id']]);
 				$row = $this->db->fetchrow();
 				$this->db->freeresult();
 
@@ -836,12 +836,12 @@ class pages extends page
 				UPDATE
 					site_pages
 				SET
-					' . $this->db->build_array('UPDATE', $update_ary) . '
+					:update_ary
 				WHERE
-					site_id = ' . $this->db->check_value($page_data['site_id']) . '
+					site_id = ?
 				AND
-					page_id = ' . (int) $page_data['page_id'];
-			$this->db->query($sql);
+					page_id = ?';
+			$this->db->query($sql, [$page_data['site_id'], $page_data['page_id'], ':update_ary' => $this->db->build_array('UPDATE', $update_ary)]);
 		}
 
 		return [];

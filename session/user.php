@@ -52,8 +52,8 @@ class user extends session
 			FROM
 				site_users
 			WHERE
-				username_clean = ' . $this->db->check_value($username_or_email);
-		$this->db->query($sql);
+				username_clean = ?';
+		$this->db->query($sql, [$username_or_email]);
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
 		$attempts = 0;
@@ -72,8 +72,8 @@ class user extends session
 				FROM
 					site_users
 				WHERE
-					user_email = ' . $this->db->check_value($username_or_email);
-			$this->db->query($sql);
+					user_email = ?';
+			$this->db->query($sql, [$username_or_email]);
 			$row = $this->db->fetchrow();
 			$this->db->freeresult();
 		}
@@ -86,10 +86,10 @@ class user extends session
 		// 		FROM
 		// 			site_login_attempts
 		// 		WHERE
-		// 			attempt_time > ' . (time() - (int) $this->config['ip_login_limit_time']) . '
+		// 			attempt_time > ?
 		// 		AND
-		// 			attempt_ip = ' . $this->db->check_value($ip);
-		// 	$this->db->query($sql);
+		// 			attempt_ip = ?';
+		// 	$this->db->query($sql, [time() - (int) $this->config['ip_login_limit_time'], $ip]);
 		// 	$attempts = (int) $this->db->fetchfield('attempts');
 		// 	$this->db->freeresult();
 		// 
@@ -157,8 +157,8 @@ class user extends session
 				FROM
 					site_login_attempts
 				WHERE
-					user_id = ' . $this->db->check_value($row['user_id']);
-			$this->db->query($sql);
+					user_id = ?';
+			$this->db->query($sql, [$row['user_id']]);
 			*/
 			
 			if ($row['user_login_attempts'])
@@ -214,10 +214,10 @@ class user extends session
 			UPDATE
 				site_users
 			SET
-				' . $this->db->build_array('UPDATE', $sql_ary) . '
+				:update_ary
 			WHERE
-				user_id = ' . $this->db->check_value($user_id);
-		$this->db->query($sql);
+				user_id = ?';
+		$this->db->query($sql, [$user_id, ':update_ary' => $this->db->build_array('UPDATE', $sql_ary)]);
 		
 		$this->data = $user_id == $this->data['user_id'] ? array_merge($this->data, $sql_ary) : $this->data;
 	}

@@ -117,16 +117,16 @@ class page
 			FROM
 				site_pages p1
 			LEFT JOIN
-				site_pages p2 ON (' . $condition . ')
+				site_pages p2 ON (:condition)
 			WHERE
-				p1.site_id = ' . $this->db->check_value($this->data['site_id']) . '
+				p1.site_id = ?
 			AND
-				p2.site_id = ' . $this->db->check_value($this->data['site_id']) . '
+				p2.site_id = ?
 			AND
-				p1.page_id = ' . $this->db->check_value($page_id) . '
+				p1.page_id = ?
 			ORDER BY
-				p2.left_id ' . ($order == 'descending' ? 'ASC' : 'DESC');
-		$this->db->query($sql);
+				p2.left_id :order';
+		$this->db->query($sql, [$this->data['site_id'], $this->data['site_id'], $page_id, ':condition' => $condition, ':order' => $order == 'descending' ? 'ASC' : 'DESC']);
 
 		while ($row = $this->db->fetchrow())
 		{
@@ -162,14 +162,14 @@ class page
 			FROM
 				site_pages
 			WHERE
-				parent_id = ' . $page_id . '
+				parent_id = ?
 			AND
-				site_id = ' . $this->data['site_id'] . '
+				site_id = ?
 			AND
 				page_display > 0
 			ORDER BY
 				left_id ASC';
-		$this->db->query($sql);
+		$this->db->query($sql, [$page_id, $this->data['site_id']]);
 		$rows = $this->db->fetchall();
 		$this->db->freeresult();
 		
@@ -677,10 +677,10 @@ class page
 				FROM
 					site_pages
 				WHERE
-					site_id = ' . $this->db->check_value($this->data['site_id']) . '
+					site_id = ?
 				ORDER BY
 					left_id ASC';
-			$this->db->query($sql);
+			$this->db->query($sql, [$this->data['site_id']]);
 			$traversal = new traverse_menu([
 				'default_extension' => $this->options['default_extension'],
 				'directory_index'   => $this->options['directory_index'],
