@@ -297,7 +297,7 @@ class page
 			'directory_index'   => $this->options['directory_index'],
 		];
 		
-		if (false === $this->handlers_urls = $this->cache->obtain_handlers_urls($this->data['site_id'], $options))
+		if (false === $this->handlers_urls = $this->cache->obtain_handlers_urls($this->data['site_id'], $this->request->language, $options))
 		{
 			return $this;
 		}
@@ -499,7 +499,7 @@ class page
 	*/
 	public function set_site_menu()
 	{
-		$menu = $this->cache->obtain_menu($this->data['site_id'], [
+		$menu = $this->cache->obtain_menu($this->data['site_id'], $this->request->language, [
 			'default_extension' => $this->options['default_extension'],
 			'directory_index'   => $this->options['directory_index'],
 		]);

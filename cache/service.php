@@ -129,22 +129,11 @@ class service
 	/**
 	* Список динамических страниц
 	*/
-	public function obtain_handlers_urls($site_id, array $options = [])
+	public function obtain_handlers_urls($site_id, $language, array $options = [])
 	{
-		static $cache_entry, $handlers, $site_info;
+		$cache_entry = "handlers_{$language}";
 		
-		if (!$site_id)
-		{
-			return false;
-		}
-		
-		if (empty($handlers))
-		{
-			$site_info = $this->get_site_info_by_id($site_id);
-			$cache_entry = sprintf('%s_handlers_%s', $site_info['domain'], $site_info['language']);
-		}
-		
-		if (empty($handlers) && (false === $handlers = $this->driver->_get($cache_entry)))
+		if (false === $handlers = $this->driver->get($cache_entry))
 		{
 			$sql = '
 				SELECT
@@ -163,10 +152,9 @@ class service
 				$traversal->process_node($row);
 			}
 			
-			$this->db->freeresult();
 			$handlers = $traversal->get_tree_data();
-			
-			$this->driver->_set($cache_entry, $handlers);
+			$this->db->freeresult();
+			$this->driver->set($cache_entry, $handlers);
 		}
 		
 		return $handlers;
@@ -245,17 +233,11 @@ class service
 	/**
 	* Глобальное меню сайта (page_display = 2)
 	*/
-	public function obtain_menu($site_id, array $options = [])
+	public function obtain_menu($site_id, $language, array $options = [])
 	{
-		if (!$site_id)
-		{
-			return false;
-		}
+		$cache_entry = "menu_{$language}";
 		
-		$site_info = $this->get_site_info_by_id($site_id);
-		$cache_entry = sprintf('%s_menu_%s', $site_info['domain'], $site_info['language']);
-		
-		if (false === $menu = $this->driver->_get($cache_entry))
+		if (false === $menu = $this->driver->get($cache_entry))
 		{
 			$sql = '
 				SELECT
@@ -274,10 +256,9 @@ class service
 				$traversal->process_node($row);
 			}
 			
-			$this->db->freeresult();
 			$menu = $traversal->get_tree_data();
-			
-			$this->driver->_set($cache_entry, $menu);
+			$this->db->freeresult();
+			$this->driver->set($cache_entry, $menu);
 		}
 		
 		return $menu;
