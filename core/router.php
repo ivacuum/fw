@@ -412,7 +412,7 @@ class router
 				page_enabled = 1
 			ORDER BY
 				LENGTH(page_url) DESC';
-		$this->db->query_limit($sql, 1);
+		$this->db->query_limit($sql, [], 1);
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
 		

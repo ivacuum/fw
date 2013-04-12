@@ -627,7 +627,7 @@ class pages extends page
 				parent_id = ' . (int) $page_row['parent_id'] . '
 			AND
 				' . ($action == 'move_up' ? 'right_id < ' . (int) $page_row['right_id'] . ' ORDER BY right_id DESC' : 'left_id > ' . (int) $page_row['left_id'] . ' ORDER BY left_id ASC');
-		$this->db->query_limit($sql, $steps);
+		$this->db->query_limit($sql, [], $steps);
 		$target = [];
 
 		while ($row = $this->db->fetchrow())

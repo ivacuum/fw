@@ -195,10 +195,8 @@ class mysqli
 		{
 			return "'" . $this->escape($value) . "'";
 		}
-		else
-		{
-			return is_bool($value) ? intval($value) : $value;
-		}
+		
+		return is_bool($value) ? intval($value) : $value;
 	}
 
 	/**
@@ -475,7 +473,7 @@ class mysqli
 	/**
 	* Выполнение запроса к БД
 	*/
-	public function query($query = '', $cache_ttl = 0)
+	public function query($query = '', array $params = [], $cache_ttl = 0)
 	{
 		if (!$this->connect_id)
 		{
@@ -485,6 +483,40 @@ class mysqli
 		if (!$query)
 		{
 			return false;
+		}
+		
+		if (!empty($params))
+		{
+			$named_placeholders = $named_params = $question_placeholders = $question_params = [];
+			$named_ary = $question_ary = [];
+			$i = 0;
+
+			/**
+			* SELECT * FROM table WHERE id = ? AND title = ?
+			* превращается в
+			* SELECT * FROM table WHERE id = $0 AND title $1
+			*/
+			while (false !== $pos = strpos($query, '?'))
+			{
+				$query = substr_replace($query, '$' . $i, $pos, 1);
+				$question_ary['$' . $i] = $this->check_value($params[$i]);
+				$i++;
+			}
+		
+			foreach ($params as $key => $value)
+			{
+				if (!is_numeric($key))
+				{
+					/* Именованные параметры не экранируются */
+					$named_ary[$key] = $value;
+				}
+			}
+			
+			/* $0 => value1, $1 => $value2 */
+			$query = str_replace(array_keys($question_ary), array_values($question_ary), $query);
+			
+			/* :param1 => value1, :param2 => value2 */
+			$query = str_replace(array_keys($named_ary), array_values($named_ary), $query);
 		}
 		
 		$start_time = microtime(true);
@@ -537,7 +569,7 @@ class mysqli
 		return $this->query_result;
 	}
 	
-	public function query_limit($query, $on_page, $offset = 0, $cache_ttl = 0)
+	public function query_limit($query, array $params = [], $on_page, $offset = 0, $cache_ttl = 0)
 	{
 		if (empty($query))
 		{
@@ -554,14 +586,14 @@ class mysqli
 		{
 			/**
 			* -1 уже нельзя
-			* Приходится использовать максимальное число
+			* Приходится использовать большое число
 			*/
 			$on_page = '18446744073709551615';
 		}
 		
 		$query .= "\n LIMIT " . (!empty($offset) ? $offset . ', ' . $on_page : $on_page);
 		
-		return $this->query($query, $cache_ttl);
+		return $this->query($query, $params, $cache_ttl);
 	}
 	
 	/**
