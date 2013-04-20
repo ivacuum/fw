@@ -45,7 +45,7 @@ class pages extends page
 							site_id = ?
 						AND
 							page_id = ?';
-					$this->db->query($sql, [$this->data['site_id'], $page_id]);
+					$this->db->query($sql, [$this->site_id, $page_id]);
 					$parent_id = (int) $this->db->fetchfield('parent_id');
 					$this->db->freeresult();
 				}
@@ -76,7 +76,7 @@ class pages extends page
 						site_id = ?
 					AND
 						page_id = ?';
-				$this->db->query($sql, [$this->data['site_id'], $page_id]);
+				$this->db->query($sql, [$this->site_id, $page_id]);
 				$row = $this->db->fetchrow();
 				$this->db->freeresult();
 
@@ -94,7 +94,7 @@ class pages extends page
 						site_id = ?
 					AND
 						page_id = ?';
-				$this->db->query($sql, [$action == 'enable' ? 1 : 0, $this->data['site_id'], $page_id]);
+				$this->db->query($sql, [$action == 'enable' ? 1 : 0, $this->site_id, $page_id]);
 				$this->remove_cache_file();
 
 			break;
@@ -115,7 +115,7 @@ class pages extends page
 						site_id = ?
 					AND
 						page_id = ?';
-				$this->db->query($sql, [$this->data['site_id'], $page_id]);
+				$this->db->query($sql, [$this->site_id, $page_id]);
 				$row = $this->db->fetchrow();
 				$this->db->freeresult();
 
@@ -169,7 +169,7 @@ class pages extends page
 					'page_title'     => $this->request->variable('page_title', (string) $page_row['page_title']),
 					'page_url'       => $this->request->variable('page_url', (string) $page_row['page_url']),
 					'page_formats'   => $this->request->variable('page_formats', (string) $page_row['page_formats']),
-					'site_id'        => $this->data['site_id'],
+					'site_id'        => $this->site_id,
 					'parent_id'      => $this->request->variable('parent_id', (int) $page_row['parent_id']),
 					'is_dir'         => $this->request->variable('is_dir', (int) $page_row['is_dir']),
 					'page_redirect'  => $this->request->variable('page_redirect', (string) $page_row['page_redirect']),
@@ -273,7 +273,7 @@ class pages extends page
 				parent_id = ?
 			ORDER BY
 				left_id ASC';
-		$result = $this->db->query($sql, [$this->data['site_id'], $parent_id]);
+		$result = $this->db->query($sql, [$this->site_id, $parent_id]);
 
 		while ($row = $this->db->fetchrow($result))
 		{
@@ -343,7 +343,7 @@ class pages extends page
 				site_id = ?
 			AND
 				page_id = ?';
-		$this->db->query($sql, [$this->data['site_id'], $page_id]);
+		$this->db->query($sql, [$this->site_id, $page_id]);
 
 		$row['right_id'] = (int) $row['right_id'];
 		$row['left_id'] = (int) $row['left_id'];
@@ -360,7 +360,7 @@ class pages extends page
 				left_id < ?
 			AND
 				right_id > ?';
-		$this->db->query($sql, [$diff, $this->data['site_id'], $row['right_id'], $row['right_id']]);
+		$this->db->query($sql, [$diff, $this->site_id, $row['right_id'], $row['right_id']]);
 
 		$sql = '
 			UPDATE
@@ -372,7 +372,7 @@ class pages extends page
 				site_id = ?
 			AND
 				left_id > ?';
-		$this->db->query($sql, [$diff, $diff, $this->data['site_id'], $row['right_id']]);
+		$this->db->query($sql, [$diff, $diff, $this->site_id, $row['right_id']]);
 
 		return [];
 	}
@@ -391,7 +391,7 @@ class pages extends page
 				site_id = ?
 			AND
 				page_id = ?';
-		$this->db->query($sql, [$this->data['site_id'], $page_id]);
+		$this->db->query($sql, [$this->site_id, $page_id]);
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
 
@@ -424,7 +424,7 @@ class pages extends page
 				site_id = ?
 			ORDER BY
 				left_id ASC';
-		$this->db->query($sql, [$this->data['site_id']]);
+		$this->db->query($sql, [$this->site_id]);
 
 		$right = 0;
 		$padding_store = ['0' => ''];
@@ -501,7 +501,7 @@ class pages extends page
 				left_id < ?
 			AND
 				right_id > ?';
-		$this->db->query($sql, [$diff, $this->data['site_id'], (int) $from_data['right_id'], (int) $from_data['right_id']]);
+		$this->db->query($sql, [$diff, $this->site_id, (int) $from_data['right_id'], (int) $from_data['right_id']]);
 
 		/* Синхронизация правой части дерева */
 		$sql = '
@@ -514,7 +514,7 @@ class pages extends page
 				site_id = ?
 			AND
 				left_id > ?';
-		$this->db->query($sql, [$diff, $diff, $this->data['site_id'], (int) $from_data['right_id']]);
+		$this->db->query($sql, [$diff, $diff, $this->site_id, (int) $from_data['right_id']]);
 
 		if ($to_parent_id > 0)
 		{
@@ -532,7 +532,7 @@ class pages extends page
 					? BETWEEN left_id AND right_id
 				AND
 					:moved_ids';
-			$this->db->query($sql, [$diff, $this->data['site_id'], (int) $to_data['right_id'], ':moved_ids' => $this->db->in_set('page_id', $moved_ids, true)]);
+			$this->db->query($sql, [$diff, $this->site_id, (int) $to_data['right_id'], ':moved_ids' => $this->db->in_set('page_id', $moved_ids, true)]);
 
 			/* Синхронизация правой части дерева */
 			$sql = '
@@ -547,7 +547,7 @@ class pages extends page
 					left_id > ?
 				AND
 					:moved_ids';
-			$this->db->query($sql, [$diff, $diff, $this->data['site_id'], (int) $to_data['right_id'], ':moved_ids' => $this->db->in_set('page_id', $moved_ids, true)]);
+			$this->db->query($sql, [$diff, $diff, $this->site_id, (int) $to_data['right_id'], ':moved_ids' => $this->db->in_set('page_id', $moved_ids, true)]);
 
 			/* Синхронизация перемещенной ветви */
 			$to_data['right_id'] += $diff;
@@ -572,7 +572,7 @@ class pages extends page
 					site_id = ?
 				AND
 					:moved_ids';
-			$this->db->query($sql, [$this->data['site_id'], $this->db->in_set('page_id', $moved_ids, true)]);
+			$this->db->query($sql, [$this->site_id, $this->db->in_set('page_id', $moved_ids, true)]);
 			$row = $this->db->fetchrow();
 			$this->db->freeresult();
 
@@ -589,7 +589,7 @@ class pages extends page
 				site_id = ?
 			AND
 				:moved_ids';
-		$this->db->query($sql, [$this->data['site_id'], ':diff' => $diff, ':moved_ids' => $this->db->in_set('page_id', $moved_ids)]);
+		$this->db->query($sql, [$this->site_id, ':diff' => $diff, ':moved_ids' => $this->db->in_set('page_id', $moved_ids)]);
 	}
 
 	/**
@@ -617,7 +617,7 @@ class pages extends page
 				parent_id = ?
 			AND
 				' . ($action == 'move_up' ? 'right_id < ' . (int) $page_row['right_id'] . ' ORDER BY right_id DESC' : 'left_id > ' . (int) $page_row['left_id'] . ' ORDER BY left_id ASC');
-		$this->db->query_limit($sql, [$this->data['site_id'], (int) $page_row['parent_id']], $steps);
+		$this->db->query_limit($sql, [$this->site_id, (int) $page_row['parent_id']], $steps);
 		$target = [];
 
 		while ($row = $this->db->fetchrow())
@@ -678,7 +678,7 @@ class pages extends page
 					ELSE ' . $diff_down . '
 				END
 			WHERE
-				site_id = ' . $this->db->check_value($this->data['site_id']) . '
+				site_id = ' . $this->db->check_value($this->site_id) . '
 			AND
 				left_id BETWEEN ' . $left_id . ' AND ' . $right_id . '
 			AND
