@@ -702,13 +702,13 @@ class pages extends page
 		
 		while ($row = $this->db->fetchrow())
 		{
-			$this->cache->_delete("{$this->site_info['domain']}_menu_{$row['menu_id']}_{$this->request->language}");
+			$this->cache->_delete("{$this->site_info['domain']}_menu_{$row['menu_id']}_{$this->site_info['language']}");
 		}
 		
 		$this->db->freeresult();
 
-		$this->cache->_delete("{$this->site_info['domain']}_handlers_{$this->request->language}");
-		$this->cache->_delete("{$this->site_info['domain']}_menu_{$this->request->language}");
+		$this->cache->_delete("{$this->site_info['domain']}_handlers_{$this->site_info['language']}");
+		$this->cache->_delete("{$this->site_info['domain']}_menu_{$this->site_info['language']}");
 	}
 	
 	/**
