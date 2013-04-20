@@ -293,26 +293,22 @@ class pages extends page
 			$this->template->assign('S_NO_PAGES', false);
 		}
 		
-		if (!$this->db->affected_rows($result))
+		if (!$this->db->affected_rows($result) && $parent_id)
 		{
-			$this->template->assign('S_NO_PAGES', true);
-			
-			if ($parent_id)
-			{
-				$row = $this->get_page_row($parent_id);
-				$url = ilink($this->url . '?parent_id=' . $parent_id . '&amp;pid=' . $row['page_id']);
+			$row = $this->get_page_row($parent_id);
+			$url = ilink($this->url . '?parent_id=' . $parent_id . '&amp;pid=' . $row['page_id']);
 
-				$this->template->assign([
-					'PAGE_NAME'      => $row['page_name'],
-					'PAGE_ENABLED'   => $row['page_enabled'],
-					'PAGE_DISPLAYED' => $row['page_display'],
+			$this->template->assign([
+				'S_NO_PAGES'     => true,
+				'PAGE_NAME'      => $row['page_name'],
+				'PAGE_ENABLED'   => $row['page_enabled'],
+				'PAGE_DISPLAYED' => $row['page_display'],
 
-					'U_EDIT'    => $url . '&amp;action=edit',
-					'U_DELETE'  => $url . '&amp;action=delete',
-					'U_ENABLE'  => $url . '&amp;action=enable',
-					'U_DISABLE' => $url . '&amp;action=disable'
-				]);
-			}
+				'U_EDIT'    => $url . '&amp;action=edit',
+				'U_DELETE'  => $url . '&amp;action=delete',
+				'U_ENABLE'  => $url . '&amp;action=enable',
+				'U_DISABLE' => $url . '&amp;action=disable'
+			]);
 		}
 
 		$this->db->freeresult($result);

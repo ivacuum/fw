@@ -133,7 +133,7 @@
 	</div>
 {else}
 	<div class="boxed-group flush" style="margin: 0 auto;">
-		<h3>{$NAVIGATION}{if $S_NO_PAGES} [<a href="{$U_EDIT}">{'EDIT'|i18n}</a> | <a href="{$U_DELETE}">{'DELETE'|i18n}</a> | {if $page.page_enabled}<a href="{$U_DISABLE}">{'DISABLE'|i18n}</a>{else}<a href="{$U_ENABLE}">{'ENABLE'|i18n}</a>{/if}]{/if}</h3>
+		<h3>{$NAVIGATION}{if $S_NO_PAGES|default:false} [<a href="{$U_EDIT}">{'EDIT'|i18n}</a> | <a href="{$U_DELETE}">{'DELETE'|i18n}</a> | {if $page.page_enabled}<a href="{$U_DISABLE}">{'DISABLE'|i18n}</a>{else}<a href="{$U_ENABLE}">{'ENABLE'|i18n}</a>{/if}]{/if}</h3>
 		{if not empty($pages)}
 			<div class="boxed-group-inner">
 				<table class="table-stats">
