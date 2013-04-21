@@ -17,4 +17,16 @@ class sites extends page
 		$this->template->assign('entries', $this->db->fetchall());
 		$this->db->freeresult();
 	}
+	
+	public function add()
+	{
+	}
+	
+	public function delete()
+	{
+	}
+	
+	public function edit()
+	{
+	}
 }

@@ -1,4 +1,7 @@
 <div class="boxed-group flush">
+	{if $add_url = 'add'|url_for}
+		<a href="{$add_url}" class="boxed-group-action btn btn-success">Добавить</a>
+	{/if}
 	<h3>{$page.page_name}</h3>
 	{if not empty($entries) && not empty($columns)}
 		<div class="boxed-group-inner">
@@ -20,8 +23,12 @@
 							<td class="{$columns[$key].class|default:''}" style="{$columns[$key].style|default:''}">{$value}</td>
 						{/foreach}
 						<td>
-							<a href="{'edit'|url_for}"><img src="//ivacuum.org/i/_/pencil.png" alt=""></a>&nbsp;
-							<a href="#" onclick="if(confirm('Будет удалена вся информация, связанная с этой записью! Продолжить?')) { document.location = '{'delete'|url_for}'; return false; }"><img src="//ivacuum.org/i/_/cross.png" alt=""></a>
+							{if $edit_url = 'edit'|url_for}
+								<a href="$edit_url"><img src="//ivacuum.org/i/_/pencil.png" alt=""></a>
+							{/if}
+							{if $delete_url = 'delete'|url_for}
+								<a href="#" onclick="if(confirm('Будет удалена вся информация, связанная с этой записью! Продолжить?')) { document.location = '{$delete_url}'; return false; }"><img src="//ivacuum.org/i/_/cross.png" alt=""></a>
+							{/if}
 						</td>
 					</tr>
 				{/foreach}

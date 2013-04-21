@@ -308,6 +308,10 @@ class page
 		{
 			$handler = substr($handler, 4);
 		}
+		elseif (0 === strpos($handler, 'fw\\'))
+		{
+			$handler = "\\{$handler}";
+		}
 		
 		$pos = strlen($handler) + 2;
 
