@@ -203,13 +203,7 @@ class form
 			trigger_error('Не указан псевдоним формы.');
 		}
 		
-		$sql = '
-			SELECT
-				*
-			FROM
-				site_forms
-			WHERE
-				form_alias = ?';
+		$sql = 'SELECT * FROM site_forms WHERE form_alias = ?';
 		$this->db->query($sql, [$alias]);
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
@@ -222,15 +216,7 @@ class form
 		$this->data = $row;
 		
 		/* Загрузка вкладок */
-		$sql = '
-			SELECT
-				*
-			FROM
-				site_form_tabs
-			WHERE
-				form_id = ?
-			ORDER BY
-				tab_sort ASC';
+		$sql = 'SELECT * FROM site_form_tabs WHERE form_id = ? ORDER BY tab_sort ASC';
 		$this->db->query($sql, [$this->data['form_id']]);
 		
 		while ($row = $this->db->fetchrow())
@@ -246,16 +232,7 @@ class form
 		}
 		
 		/* Загрузка полей формы */
-		$sql = '
-			SELECT
-				*
-			FROM
-				site_form_fields
-			WHERE
-				form_id = ?
-			ORDER BY
-				tab_id ASC,
-				field_sort ASC';
+		$sql = 'SELECT * FROM site_form_fields WHERE form_id = ? ORDER BY tab_id ASC, field_sort ASC';
 		$this->db->query($sql, [$this->data['form_id']]);
 		
 		while ($row = $this->db->fetchrow())
@@ -300,7 +277,7 @@ class form
 	*/
 	public function validate_csrf_token()
 	{
-		return $this->request->post(sprintf('%s_csrf_token', $this->data['form_alias']), '') === $this->csrf_token;
+		return $this->request->post("{$this->data['form_alias']}_csrf_token", '') === $this->csrf_token;
 	}
 	
 	/**
