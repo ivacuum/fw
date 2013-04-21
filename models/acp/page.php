@@ -28,4 +28,9 @@ class page extends base_page
 			'sites'     => $this->cache->obtain_sites(),
 		]);
 	}
+	
+	protected function get_entries_count()
+	{
+		return 0;
+	}
 }
