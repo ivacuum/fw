@@ -1,0 +1,29 @@
+{extends "base.html"}
+
+{block "content"}
+{$columns['news_id'] = ['title' => '#', 'class' => 'number', 'style' => 'width: 30px;']}
+{$columns['news_subject'] = ['title' => 'Новость']}
+{$columns['news_time'] = ['title' => 'Дата публикации']}
+{$columns['news_comments'] = ['title' => 'К']}
+{$columns['news_views'] = ['title' => 'П']}
+
+{foreach $entries|default:[] as $row}
+	{*
+	{capture "input"}
+		{if $row.news_active}
+			<img src="//ivacuum.org/i/_/status.png" alt="">
+		{else}
+			<img src="//ivacuum.org/i/_/status-offline.png" alt="">
+		{/if}
+	{/capture}
+	{$entries[$row@key].news_active = $smarty.capture.input}
+	*}
+
+	{capture "input"}
+		{$row.news_time|date_format:'%e %B %Y'}
+	{/capture}
+	{$entries[$row@key].news_time = $smarty.capture.input}
+{/foreach}
+
+{include "acp/block/entries_list.html"}
+{/block}
