@@ -8,7 +8,7 @@
 
 {foreach $entries|default:[] as $row}
 	{capture "input"}
-		{$row.session_time|date_format:'%e %B %Y'}
+		{$row.session_time|date_format:'%T'}
 	{/capture}
 	{$entries[$row@key].session_time = $smarty.capture.input}
 

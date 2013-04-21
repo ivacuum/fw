@@ -16,11 +16,8 @@
 				</thead>
 				{foreach $entries as $row}
 					<tr>
-						{foreach $row as $key => $value}
-							{if !in_array($key, $columns|@array_keys)}
-								{continue}
-							{/if}
-							<td class="{$columns[$key].class|default:''}" style="{$columns[$key].style|default:''}">{$value}</td>
+						{foreach $columns as $col}
+							<td class="{$col.class|default:''}" style="{$col.style|default:''}">{$row[$col@key]}</td>
 						{/foreach}
 						<td>
 							{if $edit_url = 'edit'|url_for}
