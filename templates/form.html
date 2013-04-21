@@ -14,7 +14,7 @@
 							<li>{$field.field_invalid_message}</li>
 						{/if}
 					{/foreach}
-					{if not $form.data.is_csrf_token_valid}
+					{if not $form.data.is_csrf_valid}
 						<li>Произошла ошибка отправки формы, попробуйте снова</li>
 					{/if}
 				</ul>

@@ -6,14 +6,11 @@
 
 namespace fw\core;
 
-/**
-* Форма
-*/
 class form
 {
 	public $is_bound = false;
 	public $is_valid = true;
-	public $is_csrf_token_valid = true;
+	public $is_csrf_valid = true;
 	
 	protected $csrf_token;
 	protected $data = [];
@@ -147,10 +144,10 @@ class form
 	{
 		$this->template->assign('forms', [$this->data['form_alias'] => [
 			'data' => array_merge([
-				'csrf_token'          => $this->csrf_token,
-				'is_bound'            => $this->is_bound,
-				'is_csrf_token_valid' => $this->is_csrf_token_valid,
-				'is_valid'            => $this->is_valid
+				'csrf_token'    => $this->csrf_token,
+				'is_bound'      => $this->is_bound,
+				'is_csrf_valid' => $this->is_csrf_token_valid,
+				'is_valid'      => $this->is_valid,
 			], $this->data),
 			
 			'fields' => $this->fields,
@@ -191,7 +188,7 @@ class form
 		}
 
 		$this->is_bound = true;
-		$this->is_csrf_token_valid = $this->validate_csrf_token();
+		$this->is_csrf_valid = $this->validate_csrf_token();
 		
 		return $this;
 	}
@@ -282,7 +279,7 @@ class form
 			trigger_error('Значения полей не связаны с полями формы.');
 		}
 		
-		$this->is_valid = true && $this->is_csrf_token_valid;
+		$this->is_valid = true && $this->is_csrf_valid;
 		
 		foreach ($this->fields as $field)
 		{

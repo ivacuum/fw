@@ -120,6 +120,10 @@ class application implements ArrayAccess
 				->_set_app($app);
 		});
 		
+		$this['form'] = $this->share(function() use ($app) {
+			return new form($app['config'], $app['db'], $app['request'], $app['template']);
+		});
+		
 		$this['mailer'] = $this->share(function() use ($app) {
 			require "{$app['dir.lib']}/swiftmailer/{$app['version.swift']}/swift_init.php";
 
