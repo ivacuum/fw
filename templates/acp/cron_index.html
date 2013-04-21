@@ -1,0 +1,24 @@
+{extends "base.html"}
+
+{block "content"}
+{$columns['cron_id'] = ['title' => '#', 'class' => 'number']}
+{$columns['cron_title'] = ['title' => 'Задача']}
+{$columns['next_run'] = ['title' => 'Следующий запуск']}
+{$columns['run_counter'] = ['title' => 'Выполнено']}
+
+{foreach $entries|default:[] as $row}
+	{capture "input"}
+		{$row.cron_title}<br>
+		<span class="muted">{$row.cron_script}::run()</span>
+	{/capture}
+	{$entries[$row@key].cron_title = $smarty.capture.input}
+
+	{capture "input"}
+		{$row.next_run|date_format:'%V'}<br>
+		<span class="muted">{$row.cron_schedule}</span>
+	{/capture}
+	{$entries[$row@key].next_run = $smarty.capture.input}
+{/foreach}
+
+{include "acp/block/entries_list.html"}
+{/block}
