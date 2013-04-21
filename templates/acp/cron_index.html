@@ -1,12 +1,22 @@
 {extends "base.html"}
 
 {block "content"}
-{$columns['cron_id'] = ['title' => '#', 'class' => 'number']}
+{$columns['cron_id'] = ['title' => '#', 'class' => 'number', 'style' => 'width: 30px;']}
+{$columns['cron_active'] = ['title' => '', 'style' => 'width: 16px']}
 {$columns['cron_title'] = ['title' => 'Задача']}
 {$columns['next_run'] = ['title' => 'Следующий запуск']}
-{$columns['run_counter'] = ['title' => 'Выполнено']}
+{$columns['run_counter'] = ['title' => 'Запусков']}
 
 {foreach $entries|default:[] as $row}
+	{capture "input"}
+		{if $row.cron_active}
+			<img src="//ivacuum.org/i/_/status.png" alt="">
+		{else}
+			<img src="//ivacuum.org/i/_/status-offline.png" alt="">
+		{/if}
+	{/capture}
+	{$entries[$row@key].cron_active = $smarty.capture.input}
+
 	{capture "input"}
 		{$row.cron_title}<br>
 		<span class="muted">{$row.cron_script}::run()</span>
@@ -14,7 +24,7 @@
 	{$entries[$row@key].cron_title = $smarty.capture.input}
 
 	{capture "input"}
-		{$row.next_run|date_format:'%V'}<br>
+		{$row.next_run|date_format:'%e %B %Y %H:%M'}<br>
 		<span class="muted">{$row.cron_schedule}</span>
 	{/capture}
 	{$entries[$row@key].next_run = $smarty.capture.input}

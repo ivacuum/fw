@@ -8,7 +8,7 @@ namespace fw\modules\acp;
 
 use app\models\page;
 
-class sessions extends page
+class cron extends page
 {
 	public function index()
 	{
