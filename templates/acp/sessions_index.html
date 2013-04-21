@@ -1,0 +1,22 @@
+{extends "base.html"}
+
+{block "content"}
+{$columns['session_ip'] = ['title' => 'IP', 'style' => 'width: 100px;']}
+{$columns['session_browser'] = ['title' => 'Браузер']}
+{$columns['session_time'] = ['title' => 'Время']}
+{$columns['session_page'] = ['title' => 'Страница']}
+
+{foreach $entries|default:[] as $row}
+	{capture "input"}
+		{$row.session_time|date_format:'%e %B %Y'}
+	{/capture}
+	{$entries[$row@key].session_time = $smarty.capture.input}
+
+	{capture "input"}
+		<a href="http://{$row.session_domain}{$row.session_page}">{$row.session_domain}{$row.session_page}</a>
+	{/capture}
+	{$entries[$row@key].session_page = $smarty.capture.input}
+{/foreach}
+
+{include "acp/block/entries_list.html"}
+{/block}
