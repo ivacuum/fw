@@ -1,15 +1,26 @@
 <div class="boxed-group flush">
-	<h3>Заголовок</h3>
-	{if not empty($data)}
+	<h3>{$page.page_name}</h3>
+	{if not empty($entries) && not empty($columns)}
 		<div class="boxed-group-inner">
 			<table class="table-stats">
-				{foreach $data as $row}
+				<thead>
+					<tr>
+						{foreach $columns as $row}
+							<th class="{$row.class|default:''}" style="{$row.style|default:''}">{$row.title}</th>
+						{/foreach}
+						<th style="width: 50px;"></th>
+					</tr>
+				</thead>
+				{foreach $entries as $row}
 					<tr>
 						{foreach $row as $key => $value}
-							<td>$value</td>
+							{if !in_array($key, $columns|@array_keys)}
+								{continue}
+							{/if}
+							<td class="{$columns[$key].class|default:''}" style="{$columns[$key].style|default:''}">{$value}</td>
 						{/foreach}
-						<td style="width: 90px; white-space: nowrap; text-align: right; vertical-align: middle;">
-							<a href="{'edit'|url_for}"><img src="//ivacuum.org/i/_/pencil.png" alt=""></a> 
+						<td>
+							<a href="{'edit'|url_for}"><img src="//ivacuum.org/i/_/pencil.png" alt=""></a>&nbsp;
 							<a href="#" onclick="if(confirm('Будет удалена вся информация, связанная с этой записью! Продолжить?')) { document.location = '{'delete'|url_for}'; return false; }"><img src="//ivacuum.org/i/_/cross.png" alt=""></a>
 						</td>
 					</tr>

@@ -1,5 +1,25 @@
 {extends "base.html"}
 
 {block "content"}
-{include "acp/block/entries_list.html" data=$sites}
+{$columns['site_id'] = ['title' => '#', 'class' => 'number', 'style' => 'width: 30px;']}
+{$columns['site_language'] = ['title' => 'Язык', 'style' => 'width: 50px;']}
+{$columns['site_url'] = ['title' => 'Домен']}
+{$columns['site_aliases'] = ['title' => 'Алиасы']}
+
+{foreach $entries|default:[] as $row}
+	{capture "input"}
+		<img src="//ivacuum.org/i/flags/16/{$row.site_language}.png" alt="" class="tip" title="{$row.site_locale}">
+		{if $row.site_default}
+			<img src="//ivacuum.org/i/_/star-small.png" alt="" class="tip" title="Локализация по умолчанию">
+		{/if}
+	{/capture}
+	{$entries[$row@key].site_language = $smarty.capture.input}
+	
+	{capture "input"}
+		<span class="muted">{$row.site_aliases}</span>
+	{/capture}
+	{$entries[$row@key].site_aliases = $smarty.capture.input}
+{/foreach}
+
+{include "acp/block/entries_list.html"}
 {/block}

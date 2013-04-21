@@ -12,14 +12,9 @@ class sites extends page
 {
 	public function index()
 	{
-		$sql = 'SELECT * FROM site_sites';
+		$sql = 'SELECT * FROM site_sites ORDER BY site_url ASC, site_language ASC';
 		$this->db->query($sql);
-		
-		while ($row = $this->db->fetchrow())
-		{
-			$this->template->append('sites', $row);
-		}
-		
+		$this->template->assign('entries', $this->db->fetchall());
 		$this->db->freeresult();
 	}
 }
