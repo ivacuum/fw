@@ -19,7 +19,7 @@ class pages extends page
 		
 		$parent_id = $this->request->variable('parent_id', 0);
 		$action    = $this->request->variable('action', '');
-		$back_url  = $this->url . '?parent_id=' . $parent_id;
+		$back_url  = $this->append_link_params("parent_id={$parent_id}");
 		$errors    = [];
 		$page_id   = $this->request->variable('pid', 0);
 		$submit    = $this->request->is_set_post('submit');
@@ -258,7 +258,7 @@ class pages extends page
 
 			foreach ($this->get_page_branch($parent_id, 'parents', 'descending') as $row)
 			{
-				$navigation .= $row['page_id'] == $parent_id ? ' &raquo; ' . $row['page_name'] : ' &raquo; <a href="' . ilink($this->url . '?parent_id=' . $row['page_id']) . '">' . $row['page_name'] . '</a>';
+				$navigation .= $row['page_id'] == $parent_id ? ' &raquo; ' . $row['page_name'] : ' &raquo; <a href="' . $this->append_link_params("parent_id={$row['page_id']}") . '">' . $row['page_name'] . '</a>';
 			}
 		}
 
@@ -278,16 +278,16 @@ class pages extends page
 		while ($row = $this->db->fetchrow($result))
 		{
 			// $page_image = $row['page_image'] ? $row['page_image'] : ($row['is_dir'] ? 'folder' : 'blog');
-			$url = ilink($this->url . '?parent_id=' . $parent_id . '&amp;pid=' . $row['page_id']);
+			$url = $this->append_link_params("parent_id={$parent_id}&pid={$row['page_id']}");
 			
 			$this->template->append('pages', array_merge($row, [
-				'U_PAGE'      => ilink($this->url . '?parent_id=' . $row['page_id']),
-				'U_MOVE_UP'   => $url . '&amp;action=move_up',
-				'U_MOVE_DOWN' => $url . '&amp;action=move_down',
-				'U_EDIT'      => $url . '&amp;action=edit',
-				'U_DELETE'    => $url . '&amp;action=delete',
-				'U_ENABLE'    => $url . '&amp;action=enable',
-				'U_DISABLE'   => $url . '&amp;action=disable',
+				'U_PAGE'      => $this->append_link_params("parent_id={$row['page_id']}"),
+				'U_MOVE_UP'   => $url . '&action=move_up',
+				'U_MOVE_DOWN' => $url . '&action=move_down',
+				'U_EDIT'      => $url . '&action=edit',
+				'U_DELETE'    => $url . '&action=delete',
+				'U_ENABLE'    => $url . '&action=enable',
+				'U_DISABLE'   => $url . '&action=disable',
 			]));
 			
 			$this->template->assign('S_NO_PAGES', false);
@@ -296,7 +296,7 @@ class pages extends page
 		if (!$this->db->affected_rows($result) && $parent_id)
 		{
 			$row = $this->get_page_row($parent_id);
-			$url = ilink($this->url . '?parent_id=' . $parent_id . '&amp;pid=' . $row['page_id']);
+			$url = $this->append_link_params("parent_id={$parent_id}&pid={$row['page_id']}");
 
 			$this->template->assign([
 				'S_NO_PAGES'     => true,
@@ -304,20 +304,18 @@ class pages extends page
 				'PAGE_ENABLED'   => $row['page_enabled'],
 				'PAGE_DISPLAYED' => $row['page_display'],
 
-				'U_EDIT'    => $url . '&amp;action=edit',
-				'U_DELETE'  => $url . '&amp;action=delete',
-				'U_ENABLE'  => $url . '&amp;action=enable',
-				'U_DISABLE' => $url . '&amp;action=disable'
+				'U_EDIT'    => $url . '&action=edit',
+				'U_DELETE'  => $url . '&action=delete',
+				'U_ENABLE'  => $url . '&action=enable',
+				'U_DISABLE' => $url . '&action=disable'
 			]);
 		}
 
 		$this->db->freeresult($result);
 
 		$this->template->assign([
-			'U_SEL_ACTION' => "",
-			'U_ACTION'     => ilink($this->url . '?parent_id=' . $parent_id),
 			'NAVIGATION'   => $navigation,
-			'PARENT_ID'    => $parent_id
+			'PARENT_ID'    => $parent_id,
 		]);
 	}
 	
