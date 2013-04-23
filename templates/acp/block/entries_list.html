@@ -14,29 +14,39 @@
 						<th></th>
 					</tr>
 				</thead>
-				{foreach $entries as $row}
-					<tr>
-						{foreach $columns as $col}
-							<td class="{$col.class|default:''}" style="{$col.style|default:''}">{$row[$col@key]}</td>
+				<tbody>
+					{foreach $entries as $row}
+						{$edit_url_values = []}
+						{foreach $edit_url_params as $param}
+							{$edit_url_values[] = $row[$param]}
 						{/foreach}
-						<td>
-							{$edit_url_values = []}
-							{foreach $edit_url_params as $param}
-								{$edit_url_values[] = $row[$param]}
+						{$edit_url = 'edit'|url_for:$edit_url_values}
+						<tr data-edit-url="{$edit_url}" class="js-dblclick-edit">
+							{foreach $columns as $col}
+								<td class="{$col.class|default:''}" style="{$col.style|default:''}">{$row[$col@key]}</td>
 							{/foreach}
-							{if $edit_url = 'edit'|url_for:$edit_url_values}
-								<a href="{$edit_url}"><img src="//ivacuum.org/i/_/pencil.png" alt=""></a>
-							{/if}
-							
-							{if $delete_url = 'delete'|url_for:$edit_url_values}
-								<a href="#" onclick="if(confirm('Будет удалена вся информация, связанная с этой записью! Продолжить?')) { document.location = '{$delete_url}'; return false; }"><img src="//ivacuum.org/i/_/cross.png" alt=""></a>
-							{/if}
-						</td>
-					</tr>
-				{/foreach}
+							<td>
+								{if $edit_url}
+									<a href="{$edit_url}"><img src="//ivacuum.org/i/_/pencil.png" alt=""></a>
+								{/if}
+								{if $delete_url = 'delete'|url_for:$edit_url_values}
+									<a href="#" onclick="if(confirm('Будет удалена вся информация, связанная с этой записью! Продолжить?')) { document.location = '{$delete_url}'; return false; }"><img src="//ivacuum.org/i/_/cross.png" alt=""></a>
+								{/if}
+							</td>
+						</tr>
+					{/foreach}
+				</tbody>
 			</table>
 		</div>
 	{/if}
 </div>
+
+<script>
+$(function() {
+	$('.js-dblclick-edit').bind('dblclick', function() {
+		document.location = $(this).data('edit-url');
+	});
+});
+</script>
 
 {include "block/pagination.html"}
