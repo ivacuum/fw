@@ -25,7 +25,7 @@ class page extends base_page
 		$this->site_info = $this->cache->get_site_info_by_id($this->site_id);
 		
 		$this->template->assign([
-			'edit_url_params' => $this->edit_params,
+			'edit_url_params' => $this->edit_url_params,
 			'site_info'       => $this->site_info,
 			'sites'           => $this->cache->obtain_sites(),
 		]);
