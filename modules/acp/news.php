@@ -10,6 +10,8 @@ use app\models\page;
 
 class news extends page
 {
+	protected $edit_url_params = ['news_id'];
+
 	public function index()
 	{
 		$pagination = pagination(20, $this->get_entries_count(), ilink($this->url));

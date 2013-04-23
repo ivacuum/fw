@@ -10,6 +10,8 @@ use app\models\page;
 
 class sessions extends page
 {
+	protected $edit_url_params = ['session_id'];
+
 	public function index()
 	{
 		$sql = 'SELECT * FROM site_sessions ORDER BY session_time DESC';

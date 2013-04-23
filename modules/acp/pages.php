@@ -13,6 +13,8 @@ use app\models\page;
 */
 class pages extends page
 {
+	protected $edit_url_params = ['page_id'];
+
 	public function index()
 	{
 		$this->template->file = 'pages.html';

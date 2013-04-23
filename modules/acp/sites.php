@@ -10,6 +10,8 @@ use app\models\page;
 
 class sites extends page
 {
+	protected $edit_url_params = ['site_id'];
+	
 	public function index()
 	{
 		$sql = 'SELECT * FROM site_sites ORDER BY site_url ASC, site_language ASC';
