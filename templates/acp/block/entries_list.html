@@ -21,7 +21,7 @@
 						{/foreach}
 						<td>
 							{$edit_url_values = []}
-							{foreach $edit_params as $param}
+							{foreach $edit_url_params as $param}
 								{$edit_url_values[] = $row[$param]}
 							{/foreach}
 							{if $edit_url = 'edit'|url_for:$edit_url_values}
