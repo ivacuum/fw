@@ -146,7 +146,7 @@ class form
 			'data' => array_merge([
 				'csrf_token'    => $this->csrf_token,
 				'is_bound'      => $this->is_bound,
-				'is_csrf_valid' => $this->is_csrf_token_valid,
+				'is_csrf_valid' => $this->is_csrf_valid,
 				'is_valid'      => $this->is_valid,
 			], $this->data),
 			

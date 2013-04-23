@@ -28,7 +28,53 @@ class sites extends page
 	{
 	}
 	
-	public function edit()
+	public function edit($id)
 	{
+		$row = $this->get_site_data($id);
+		
+		$this->get_edit_form()
+			->bind_data($row)
+			->append_template();
+	}
+	
+	public function edit_post($id)
+	{
+		$row = $this->get_site_data($id);
+		
+		$this->get_edit_form()
+			->bind_data($row)
+			->bind_request()
+			->validate()
+			->append_template();
+		
+		if ($this->form->is_valid)
+		{
+		}
+	}
+	
+	protected function get_edit_form()
+	{
+		return $this->form->add_form(['title' => "Редактирование сайта", 'alias' => 'custom', 'action' => ilink($this->url), 'class' => 'form-horizontal'])
+			->add_field(['type' => 'text', 'title' => 'Название сайта', 'alias' => 'site_title'])
+			->add_field(['type' => 'text', 'title' => 'Адрес сайта', 'alias' => 'site_url', 'required' => true])
+			->add_field(['type' => 'text', 'title' => 'Алиасы', 'alias' => 'site_aliases'])
+			->add_field(['type' => 'text', 'title' => 'Язык', 'alias' => 'site_language'])
+			->add_field(['type' => 'text', 'title' => 'Локаль', 'alias' => 'site_locale'])
+			->add_field(['type' => 'checkbox', 'title' => 'Локализация по умолчанию', 'alias' => 'site_default']);
+	}
+	
+	protected function get_site_data($id)
+	{
+		$sql = 'SELECT * FROM site_sites WHERE site_id = ?';
+		$this->db->query($sql, [$id]);
+		$row = $this->db->fetchrow();
+		$this->db->freeresult();
+		
+		if (!$row)
+		{
+			trigger_error('SITE_NOT_FOUND');
+		}
+		
+		return $row;
 	}
 }

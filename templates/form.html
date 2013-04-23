@@ -46,7 +46,11 @@
 			{/foreach}
 		{/if}
 		
-		<input class="{$form.data.form_submit_class|default:$cfg['form.submit_class']}" type="submit" name="submit" value="{$form.data.form_submit_text|default:'Отправить'}">
+		<div class="control-group">
+			<div class="controls">
+				<input class="{$form.data.form_submit_class|default:$cfg['form.submit_class']}" type="submit" name="submit" value="{$form.data.form_submit_text|default:'Отправить'}">
+			</div>
+		</div>
 		
 		<input type="hidden" name="{$form.data.form_alias}_csrf_token" value="{$form.data.csrf_token}">
 
