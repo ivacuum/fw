@@ -1,5 +1,10 @@
 <div class="control-group {if $form.is_bound and $field.field_required}{if $field.is_valid}success{else}error{/if}{/if}">
-	<label class="control-label" for="{$form.form_alias}_{$field.field_alias}">{$field.field_title} {if $field.field_required and not $form.is_bound}<span style="color: {$cfg['form.required_color']};">*</span>{/if}</label>
+	<label class="control-label" for="{$form.form_alias}_{$field.field_alias}">
+		{$field.field_title}
+		{if $field.field_required and not $form.is_bound}
+			<span class="input-required"></span>
+		{/if}
+	</label>
 	<div class="controls">
 		<div class="{if $field.field_prepend}input-prepend{/if} {if $field.field_append}input-append{/if}">
 			{if $field.field_prepend}

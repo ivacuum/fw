@@ -16,7 +16,7 @@
 			{$smarty.capture.input|regex_replace:"#[\n\r\t]+#":" "}
 			{$field.field_title}
 			{if $field.field_required and not $form.is_bound}
-				<span style="color: {$cfg['form.required_color']};">*</span>
+				<span class="input-required"></span>
 			{/if}
 		</label>
 		{if $field.field_help}
