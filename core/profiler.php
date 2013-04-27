@@ -31,6 +31,11 @@ class console
 
 	public function log()
 	{
+		if (PHP_SAPI == 'cli')
+		{
+			return $this;
+		}
+		
 		foreach (func_get_args() as $arg)
 		{
 			$this->logs[] = [
@@ -46,6 +51,11 @@ class console
 
 	public function log_memory($object = false, $name = 'php')
 	{
+		if (PHP_SAPI == 'cli')
+		{
+			return $this;
+		}
+		
 		$this->logs[] = [
 			'data'      => $object ? strlen(serialize($object)) : memory_get_usage(),
 			'type'      => 'memory',
@@ -60,6 +70,11 @@ class console
 
 	public function log_error($message, $line, $file)
 	{
+		if (PHP_SAPI == 'cli')
+		{
+			return $this;
+		}
+		
 		$call_stack = '';
 		
 		if (function_exists('xdebug_print_function_stack'))
@@ -84,6 +99,11 @@ class console
 
 	public function log_speed($name = 'label')
 	{
+		if (PHP_SAPI == 'cli')
+		{
+			return $this;
+		}
+		
 		$this->logs[] = [
 			'data' => (microtime(true) - $this->start_time) * 1000,
 			'type' => 'speed',
@@ -97,6 +117,11 @@ class console
 
 	public function log_query($sql, $start_time, $cached = false)
 	{
+		if (PHP_SAPI == 'cli')
+		{
+			return $this;
+		}
+		
 		$query_time = (microtime(true) - $start_time) * 1000;
 		$this->query_time += $query_time;
 		$this->query_count++;
