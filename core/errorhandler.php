@@ -247,7 +247,7 @@ class errorhandler
 		
 		$email = $email ?: 'error';
 		
-		if (!isset(static::$options["email.{$email}"]))
+		if (!isset(static::$options["email.{$email}"]) || !static::$options["email.{$email}"])
 		{
 			return;
 		}
