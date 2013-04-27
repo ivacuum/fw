@@ -218,7 +218,10 @@ class mysqli
 			while ($this->transaction);
 		}
 
-		return mysqli_close($this->connect_id);
+		$result = mysqli_close($this->connect_id);
+		$this->connect_id = null;
+
+		return $result;
 	}
 
 	/**
@@ -709,7 +712,6 @@ class mysqli
 	protected function connect()
 	{
 		$this->connect_id = mysqli_connect($this->options['host'], $this->options['user'], $this->options['pass'], $this->options['name'], $this->options['port'], $this->options['sock']);
-		$this->options['pass'] = '';
 
 		return $this->connect_id && $this->options['name'] ? $this->connect_id : $this->error();
 	}
