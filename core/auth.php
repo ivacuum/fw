@@ -605,10 +605,20 @@ class auth
 
 		if ($login['status'] == 'OK')
 		{
+			if (!empty($_SESSION))
+			{
+				$session_data = session_encode();
+			}
+			
 			$this->user->session_end(false);
 
 			if (true === $result = $this->user->session_create(false, $login['user_row']['user_id'], $autologin, $admin))
 			{
+				if (!empty($session_data))
+				{
+					$this->user->write($this->user->session_id, $session_data);
+				}
+				
 				return $login;
 			}
 
