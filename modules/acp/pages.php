@@ -257,7 +257,7 @@ class pages extends page
 		else
 		{
 			$navigation = '<a href="' . ilink($this->url) . '">root</a>';
-
+			
 			foreach ($this->get_page_branch($parent_id, 'parents', 'descending') as $row)
 			{
 				$navigation .= $row['page_id'] == $parent_id ? ' &raquo; ' . $row['page_name'] : ' &raquo; <a href="' . $this->append_link_params("parent_id={$row['page_id']}") . '">' . $row['page_name'] . '</a>';
@@ -375,6 +375,52 @@ class pages extends page
 		$this->db->query($sql, [$diff, $diff, $this->site_id, $row['right_id']]);
 
 		return [];
+	}
+
+	/**
+	* Данные раздела (ветви дерева страниц)
+	*/
+	public function get_page_branch($page_id, $type = 'all', $order = 'descending', $include_self = true)
+	{
+		switch ($type)
+		{
+			case 'parents':  $condition = 'p1.left_id BETWEEN p2.left_id AND p2.right_id'; break;
+			case 'children': $condition = 'p2.left_id BETWEEN p1.left_id AND p1.right_id'; break;
+			default:         $condition = 'p2.left_id BETWEEN p1.left_id AND p1.right_id OR p1.left_id BETWEEN p2.left_id AND p2.right_id';
+		}
+
+		$rows = [];
+
+		$sql = '
+			SELECT
+				p2.*
+			FROM
+				site_pages p1
+			LEFT JOIN
+				site_pages p2 ON (:condition)
+			WHERE
+				p1.site_id = ?
+			AND
+				p2.site_id = ?
+			AND
+				p1.page_id = ?
+			ORDER BY
+				p2.left_id :order';
+		$this->db->query($sql, [$this->site_id, $this->site_id, $page_id, ':condition' => $condition, ':order' => $order == 'descending' ? 'ASC' : 'DESC']);
+
+		while ($row = $this->db->fetchrow())
+		{
+			if (!$include_self && $row['page_id'] == $page_id)
+			{
+				continue;
+			}
+
+			$rows[] = $row;
+		}
+
+		$this->db->freeresult();
+
+		return $rows;
 	}
 
 	/**
