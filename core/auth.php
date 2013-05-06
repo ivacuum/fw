@@ -607,7 +607,7 @@ class auth
 		{
 			if (!empty($_SESSION))
 			{
-				$session_data = session_encode();
+				$session_data = $_SESSION;
 			}
 			
 			$this->user->session_end(false);
@@ -616,7 +616,8 @@ class auth
 			{
 				if (!empty($session_data))
 				{
-					$this->user->write($this->user->session_id, $session_data);
+					$_SESSION = $session_data;
+					$this->user->write($this->user->session_id, session_encode(), true);
 				}
 				
 				return $login;

@@ -230,15 +230,20 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 	/**
 	* Сохранение массива $_SESSION
 	*/
-	public function write($session_id, $session_data)
+	public function write($session_id, $session_data, $immediate_update = false)
 	{
 		if ($this->data['session_data'] === $session_data)
 		{
 			return true;
 		}
 		
-		register_shutdown_function([$this, 'session_update'], ['session_data' => $session_data], $session_id);
-	
+		if ($immediate_update)
+		{
+			$this->session_update(compact('session_data'), $session_id);
+			return true;
+		}
+		
+		register_shutdown_function([$this, 'session_update'], compact('session_data'), $session_id);
 		return true;
 	}
 	
@@ -662,12 +667,14 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 	*/
 	public function session_end($new_session = true)
 	{
-		session_destroy();
-		
 		if ($new_session)
 		{
+			session_destroy();
 			session_start();
+			return true;
 		}
+
+		$this->destroy($this->session_id);
 	}
 
 	/**
@@ -685,6 +692,8 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 			WHERE
 				session_id = ?';
 		$this->db->query($sql, [$session_id, ':update_ary' => $this->db->build_array('UPDATE', $sql_ary)]);
+		
+		$this->data = $session_id === $this->session_id ? array_merge($this->data, $sql_ary) : $this->data;
 	}
 
 	/**
