@@ -258,7 +258,7 @@ trait i18n
 
 				$forms[2] = sizeof($forms) < 3 ? $forms[1] : $forms[2];
 
-				if (gettype($n) != 'integer')
+				if (!is_int($n) && !ctype_digit(strval($n)))
 				{
 					$plural = 1;
 				}
