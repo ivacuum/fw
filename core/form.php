@@ -184,13 +184,27 @@ class form
 				default:     $method = 'variable'; break;
 			}
 			
-			$field->set_value($this->request->$method(sprintf('%s_%s', $this->data['form_alias'], $field['field_alias']), $field->get_default_value(true)));
+			$field->set_value($this->request->$method("{$this->data['form_alias']}_{$field['field_alias']}", $field->get_default_value(true)));
 		}
 
 		$this->is_bound = true;
 		$this->is_csrf_valid = $this->validate_csrf_token();
 		
 		return $this;
+	}
+	
+	public function get_fields_data($prefixed = false)
+	{
+		$ary = [];
+		
+		foreach ($this->fields as $field)
+		{
+			$alias = $prefixed ? "{$this->data['form_alias']}_{$field['field_alias']}" : $field['field_alias'];
+			
+			$ary[$alias] = $field['value'];
+		}
+		
+		return $ary;
 	}
 	
 	/**
