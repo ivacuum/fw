@@ -601,22 +601,6 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 			$this->set_cookie('sid', $this->session_id);
 		}
 
-		if ($this->data['user_id'] > 0)
-		{
-			/* Соль для форм */
-			$sql = 'SELECT COUNT(*) AS sessions FROM site_sessions WHERE user_id = ? AND session_time >= ?';
-			$result = $this->db->query($sql, [$this->data['user_id'], $this->ctime - (max(ini_get('session.gc_maxlifetime'), $this->config['form.token_lifetime']))]);
-			$row = $this->db->fetchrow($result);
-			$this->db->freeresult($result);
-
-			if ((int) $row['sessions'] <= 1 || empty($this->data['user_form_salt']))
-			{
-				$this->data['user_form_salt'] = make_random_string();
-				
-				register_shutdown_function([$this, 'user_update'], ['user_form_salt' => (string) $this->data['user_form_salt']]);
-			}
-		}
-
 		return true;
 	}
 	
