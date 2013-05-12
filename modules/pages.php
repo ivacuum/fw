@@ -388,6 +388,52 @@ class pages extends page
 	}
 
 	/**
+	* Данные раздела (ветви дерева страниц)
+	*/
+	public function get_page_branch($page_id, $type = 'all', $order = 'descending', $include_self = true)
+	{
+		switch ($type)
+		{
+			case 'parents':  $condition = 'p1.left_id BETWEEN p2.left_id AND p2.right_id'; break;
+			case 'children': $condition = 'p2.left_id BETWEEN p1.left_id AND p1.right_id'; break;
+			default:         $condition = 'p2.left_id BETWEEN p1.left_id AND p1.right_id OR p1.left_id BETWEEN p2.left_id AND p2.right_id';
+		}
+
+		$rows = [];
+
+		$sql = '
+			SELECT
+				p2.*
+			FROM
+				site_pages p1
+			LEFT JOIN
+				site_pages p2 ON (:condition)
+			WHERE
+				p1.site_id = ?
+			AND
+				p2.site_id = ?
+			AND
+				p1.page_id = ?
+			ORDER BY
+				p2.left_id :order';
+		$this->db->query($sql, [$this->site_id, $this->site_id, $page_id, ':condition' => $condition, ':order' => $order == 'descending' ? 'ASC' : 'DESC']);
+
+		while ($row = $this->db->fetchrow())
+		{
+			if (!$include_self && $row['page_id'] == $page_id)
+			{
+				continue;
+			}
+
+			$rows[] = $row;
+		}
+
+		$this->db->freeresult();
+
+		return $rows;
+	}
+
+	/**
 	* Данные страницы
 	*/
 	protected function get_page_row($page_id)
@@ -712,13 +758,13 @@ class pages extends page
 		
 		while ($row = $this->db->fetchrow())
 		{
-			$this->cache->delete("menu_{$row['menu_id']}_{$this->request->language}");
+			$this->cache->_delete("{$this->site_info['domain']}_menu_{$row['menu_id']}_{$this->site_info['language']}");
 		}
 		
 		$this->db->freeresult();
 
-		$this->cache->delete("handlers_{$this->request->language}");
-		$this->cache->delete("menu_{$this->request->language}");
+		$this->cache->_delete("{$this->site_info['domain']}_handlers_{$this->site_info['language']}");
+		$this->cache->_delete("{$this->site_info['domain']}_menu_{$this->site_info['language']}");
 	}
 	
 	/**

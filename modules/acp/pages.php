@@ -38,15 +38,7 @@ class pages extends page
 				// Make sure we are not directly within a page
 				if ($page_id == $parent_id)
 				{
-					$sql = '
-						SELECT
-							parent_id
-						FROM
-							site_pages
-						WHERE
-							site_id = ?
-						AND
-							page_id = ?';
+					$sql = 'SELECT parent_id FROM site_pages WHERE site_id = ? AND page_id = ?';
 					$this->db->query($sql, [$this->site_id, $page_id]);
 					$parent_id = (int) $this->db->fetchfield('parent_id');
 					$this->db->freeresult();
@@ -69,15 +61,7 @@ class pages extends page
 					trigger_error('NO_PAGE_ID', E_USER_WARNING);
 				}
 
-				$sql = '
-					SELECT
-						*
-					FROM
-						site_pages
-					WHERE
-						site_id = ?
-					AND
-						page_id = ?';
+				$sql = 'SELECT * FROM site_pages WHERE site_id = ? AND page_id = ?';
 				$this->db->query($sql, [$this->site_id, $page_id]);
 				$row = $this->db->fetchrow();
 				$this->db->freeresult();
@@ -87,15 +71,7 @@ class pages extends page
 					trigger_error('NO_PAGE', E_USER_WARNING);
 				}
 
-				$sql = '
-					UPDATE
-						site_pages
-					SET
-						page_enabled = ?
-					WHERE
-						site_id = ?
-					AND
-						page_id = ?';
+				$sql = 'UPDATE site_pages SET page_enabled = ? WHERE site_id = ? AND page_id = ?';
 				$this->db->query($sql, [$action == 'enable' ? 1 : 0, $this->site_id, $page_id]);
 				$this->remove_cache_file();
 
@@ -108,15 +84,7 @@ class pages extends page
 					trigger_error('NO_PAGE_ID', E_USER_WARNING);
 				}
 
-				$sql = '
-					SELECT
-						*
-					FROM
-						site_pages
-					WHERE
-						site_id = ?
-					AND
-						page_id = ?';
+				$sql = 'SELECT * FROM site_pages WHERE site_id = ? AND page_id = ?';
 				$this->db->query($sql, [$this->site_id, $page_id]);
 				$row = $this->db->fetchrow();
 				$this->db->freeresult();
@@ -184,13 +152,7 @@ class pages extends page
 					'page_text'      => $this->request->is_set('page_text') ? $_REQUEST['page_text'] : (string) $page_row['page_text'],
 				];
 
-				$sql = '
-					SELECT
-						*
-					FROM
-						site_menus
-					WHERE
-						menu_active = 1';
+				$sql = 'SELECT * FROM site_menus WHERE menu_active = 1';
 				$this->db->query($sql);
 				$menus = [];
 		
@@ -264,17 +226,7 @@ class pages extends page
 			}
 		}
 
-		$sql = '
-			SELECT
-				*
-			FROM
-				site_pages
-			WHERE
-				site_id = ?
-			AND
-				parent_id = ?
-			ORDER BY
-				left_id ASC';
+		$sql = 'SELECT * FROM site_pages WHERE site_id = ? AND parent_id = ? ORDER BY left_id ASC';
 		$result = $this->db->query($sql, [$this->site_id, $parent_id]);
 
 		while ($row = $this->db->fetchrow($result))
@@ -335,43 +287,17 @@ class pages extends page
 		}
 
 		$diff = 2;
-		$sql = '
-			DELETE
-			FROM
-				site_pages
-			WHERE
-				site_id = ?
-			AND
-				page_id = ?';
+		$sql = 'DELETE FROM site_pages WHERE site_id = ? AND page_id = ?';
 		$this->db->query($sql, [$this->site_id, $page_id]);
 
 		$row['right_id'] = (int) $row['right_id'];
 		$row['left_id'] = (int) $row['left_id'];
 
 		/* Синхронизация дерева */
-		$sql = '
-			UPDATE
-				site_pages
-			SET
-				right_id = right_id - ?
-			WHERE
-				site_id = ?
-			AND
-				left_id < ?
-			AND
-				right_id > ?';
+		$sql = 'UPDATE site_pages SET right_id = right_id - ? WHERE site_id = ? AND left_id < ? AND right_id > ?';
 		$this->db->query($sql, [$diff, $this->site_id, $row['right_id'], $row['right_id']]);
 
-		$sql = '
-			UPDATE
-				site_pages
-			SET
-				left_id = left_id - ?,
-				right_id = right_id - ?
-			WHERE
-				site_id = ?
-			AND
-				left_id > ?';
+		$sql = 'UPDATE site_pages SET left_id = left_id - ?, right_id = right_id - ? WHERE site_id = ? AND left_id > ?';
 		$this->db->query($sql, [$diff, $diff, $this->site_id, $row['right_id']]);
 
 		return [];
@@ -428,15 +354,7 @@ class pages extends page
 	*/
 	protected function get_page_row($page_id)
 	{
-		$sql = '
-			SELECT
-				*
-			FROM
-				site_pages
-			WHERE
-				site_id = ?
-			AND
-				page_id = ?';
+		$sql = 'SELECT * FROM site_pages WHERE site_id = ? AND page_id = ?';
 		$this->db->query($sql, [$this->site_id, $page_id]);
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
@@ -536,30 +454,11 @@ class pages extends page
 		}
 
 		/* Синхронизация родителей */
-		$sql = '
-			UPDATE
-				site_pages
-			SET
-				right_id = right_id - ?
-			WHERE
-				site_id = ?
-			AND
-				left_id < ?
-			AND
-				right_id > ?';
+		$sql = 'UPDATE site_pages SET right_id = right_id - ? WHERE site_id = ? AND left_id < ? AND right_id > ?';
 		$this->db->query($sql, [$diff, $this->site_id, (int) $from_data['right_id'], (int) $from_data['right_id']]);
 
 		/* Синхронизация правой части дерева */
-		$sql = '
-			UPDATE
-				site_pages
-			SET
-				left_id = left_id - ?,
-				right_id = right_id - ?
-			WHERE
-				site_id = ?
-			AND
-				left_id > ?';
+		$sql = 'UPDATE site_pages SET left_id = left_id - ?, right_id = right_id - ? WHERE site_id = ? AND left_id > ?';
 		$this->db->query($sql, [$diff, $diff, $this->site_id, (int) $from_data['right_id']]);
 
 		if ($to_parent_id > 0)
@@ -609,15 +508,7 @@ class pages extends page
 		}
 		else
 		{
-			$sql = '
-				SELECT
-					MAX(right_id) AS right_id
-				FROM
-					site_pages
-				WHERE
-					site_id = ?
-				AND
-					:moved_ids';
+			$sql = 'SELECT MAX(right_id) AS right_id FROM site_pages WHERE site_id = ? AND :moved_ids';
 			$this->db->query($sql, [$this->site_id, $this->db->in_set('page_id', $moved_ids, true)]);
 			$row = $this->db->fetchrow();
 			$this->db->freeresult();
@@ -737,13 +628,7 @@ class pages extends page
 
 	protected function remove_cache_file()
 	{
-		$sql = '
-			SELECT
-				*
-			FROM
-				site_menus
-			WHERE
-				menu_active = 1';
+		$sql = 'SELECT * FROM site_menus WHERE menu_active = 1';
 		$this->db->query($sql);
 		
 		while ($row = $this->db->fetchrow())
@@ -769,16 +654,7 @@ class pages extends page
 		{
 			if ($page_data['parent_id'])
 			{
-				$sql = '
-					SELECT
-						left_id,
-						right_id
-					FROM
-						site_pages
-					WHERE
-						site_id = ?
-					AND
-						page_id = ?';
+				$sql = 'SELECT left_id, right_id FROM site_pages WHERE site_id = ? AND page_id = ?';
 				$this->db->query($sql, [$page_data['site_id'], (int) $page_data['parent_id']]);
 				$row = $this->db->fetchrow();
 				$this->db->freeresult();
@@ -797,27 +673,10 @@ class pages extends page
 				$row['left_id'] = (int) $row['left_id'];
 				$row['right_id'] = (int) $row['right_id'];
 
-				$sql = '
-					UPDATE
-						site_pages
-					SET
-						left_id = left_id + 2,
-						right_id = right_id + 2
-					WHERE
-						site_id = ?
-					AND
-						left_id > ?';
+				$sql = 'UPDATE site_pages SET left_id = left_id + 2, right_id = right_id + 2 WHERE site_id = ? AND left_id > ?';
 				$this->db->query($sql, [$page_data['site_id'], $row['right_id']]);
 
-				$sql = '
-					UPDATE
-						site_pages
-					SET
-						right_id = right_id + 2
-					WHERE
-						site_id = ?
-					AND
-						? BETWEEN left_id AND right_id';
+				$sql = 'UPDATE site_pages SET right_id = right_id + 2 WHERE site_id = ? AND ? BETWEEN left_id AND right_id';
 				$this->db->query($sql, [$page_data['site_id'], $row['left_id']]);
 
 				$page_data['left_id'] = (int) $row['right_id'];
@@ -825,13 +684,7 @@ class pages extends page
 			}
 			else
 			{
-				$sql = '
-					SELECT
-						MAX(right_id) AS right_id
-					FROM
-						site_pages
-					WHERE
-						site_id = ?';
+				$sql = 'SELECT MAX(right_id) AS right_id FROM site_pages WHERE site_id = ?';
 				$this->db->query($sql, [$page_data['site_id']]);
 				$row = $this->db->fetchrow();
 				$this->db->freeresult();
@@ -868,15 +721,7 @@ class pages extends page
 			$update_ary = $page_data;
 			unset($update_ary['page_id']);
 
-			$sql = '
-				UPDATE
-					site_pages
-				SET
-					:update_ary
-				WHERE
-					site_id = ?
-				AND
-					page_id = ?';
+			$sql = 'UPDATE site_pages SET :update_ary WHERE site_id = ? AND page_id = ?';
 			$this->db->query($sql, [$page_data['site_id'], $page_data['page_id'], ':update_ary' => $this->db->build_array('UPDATE', $update_ary)]);
 		}
 
