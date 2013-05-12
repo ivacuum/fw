@@ -38,7 +38,7 @@ trait i18n
 		if (!$midnight)
 		{
 			/* Определение полуночи */
-			list($d, $m, $y) = explode(' ', gmdate('j n Y', $this->ctime + $tz));
+			list($d, $m, $y) = explode(' ', gmdate('j n Y', $this->request->time + $tz));
 			$midnight = gmmktime(0, 0, 0, $m, $d, $y) - $tz;
 		}
 

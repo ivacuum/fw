@@ -15,7 +15,6 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 {
 	public $browser        = '';
 	public $cookie         = [];
-	public $ctime          = 0;
 	public $data           = [];
 	public $forwarded_for  = '';
 	public $ip             = '';
@@ -49,7 +48,6 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 		/* Данные посетителя */
 		$this->browser       = $this->request->header('User-Agent');
 		$this->cookie        = ['u' => 0, 'k' => ''];
-		$this->ctime         = time();
 		$this->forwarded_for = $this->request->header('X-Forwarded-For');
 		$this->ip            = $this->request->server('REMOTE_ADDR');
 		$this->referer       = $this->request->header('Referer');
@@ -90,7 +88,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 
 		if ($this->data['user_id'] > 0)
 		{
-			register_shutdown_function([$this, 'user_update'], ['user_last_visit' => $this->ctime]);
+			register_shutdown_function([$this, 'user_update'], ['user_last_visit' => $this->request->time]);
 
 			if ($this->cookie['k'])
 			{
@@ -184,10 +182,10 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 		if (!$this->is_session_expired())
 		{
 			/* Обновляем информацию о местонахождении не чаще раза в минуту */
-			if ($this->ctime - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->request->url)
+			if ($this->request->time - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->request->url)
 			{
 				$sql_ary = [];
-				$sql_ary['session_time'] = $this->data['session_time'] = $this->ctime;
+				$sql_ary['session_time'] = $this->data['session_time'] = $this->request->time;
 
 				if ($this->data['session_domain'] != $this->request->hostname)
 				{
@@ -296,7 +294,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 
 		while ($row = $this->db->fetchrow($result))
 		{
-			if ($row['ban_end'] && $row['ban_end'] < $this->ctime)
+			if ($row['ban_end'] && $row['ban_end'] < $this->request->time)
 			{
 				continue;
 			}
@@ -474,11 +472,11 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 		/* Время последнего визита */
 		if ($this->data['user_id'] > 0 && !$bot)
 		{
-			$this->data['session_last_visit'] = isset($this->data['session_time']) && $this->data['session_time'] ? $this->data['session_time'] : (isset($this->data['user_last_visit']) ? $this->data['user_last_visit'] : $this->ctime);
+			$this->data['session_last_visit'] = isset($this->data['session_time']) && $this->data['session_time'] ? $this->data['session_time'] : (isset($this->data['user_last_visit']) ? $this->data['user_last_visit'] : $this->request->time);
 		}
 		else
 		{
-			$this->data['session_last_visit'] = $this->ctime;
+			$this->data['session_last_visit'] = $this->request->time;
 		}
 
 		/**
@@ -507,14 +505,14 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 				$this->session_id = $this->data['session_id'];
 
 				/* Обновляем информацию о местонахождении не чаще раза в минуту */
-				if ($this->ctime - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->request->url)
+				if ($this->request->time - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->request->url)
 				{
-					$this->data['session_time'] = $this->data['session_last_visit'] = $this->ctime;
+					$this->data['session_time'] = $this->data['session_last_visit'] = $this->request->time;
 					$this->data['session_page'] = $this->request->url;
 					
 					register_shutdown_function([$this, 'session_update'], [
-						'session_last_visit' => $this->ctime,
-						'session_time'       => $this->ctime,
+						'session_last_visit' => $this->request->time,
+						'session_time'       => $this->request->time,
 						'session_domain'     => $this->request->hostname,
 						'session_page'       => $this->request->url,
 						'session_referer'    => $this->referer,
@@ -544,8 +542,8 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 			'user_id'                 => (int) $this->data['user_id'],
 			'openid_provider'         => (string) $openid_provider,
 			'session_last_visit'      => (int) $this->data['session_last_visit'],
-			'session_start'           => (int) $this->ctime,
-			'session_time'            => (int) $this->ctime,
+			'session_start'           => (int) $this->request->time,
+			'session_time'            => (int) $this->request->time,
 			'session_data'            => '',
 			'session_browser'         => (string) trim(substr($this->browser, 0, 149)),
 			'session_forwarded_for'   => (string) $this->forwarded_for,
@@ -585,14 +583,14 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 			/* Обновление даты последнего визита бота */
 			register_shutdown_function([$this, 'user_update'], [
 				'user_session_page' => (string) $this->request->url,
-				'user_last_visit'   => (int) $this->ctime,
+				'user_last_visit'   => (int) $this->request->time,
 				'user_ip'           => (string) $this->ip,
 			]);
 
 			return true;
 		}
 
-		$cookie_expire = $this->ctime + ($this->config['autologin.time'] ? 86400 * $this->config['autologin.time'] : 31536000);
+		$cookie_expire = $this->request->time + ($this->config['autologin.time'] ? 86400 * $this->config['autologin.time'] : 31536000);
 		$this->set_cookie('k', $this->cookie['k'], $cookie_expire);
 		$this->set_cookie('u', $this->cookie['u'], $cookie_expire);
 		
@@ -686,7 +684,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 			'key_id'          => (string) md5($key_id),
 			'openid_provider' => (string) $openid_provider,
 			'last_ip'         => (string) $this->ip,
-			'last_login'      => (int) $this->ctime,
+			'last_login'      => (int) $this->request->time,
 		];
 
 		if ($key)
@@ -808,14 +806,14 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 		/* Не превышает ли время простоя время жизни сессии */
 		if (!$this->data['session_autologin'])
 		{
-			return $this->data['session_time'] < $this->ctime - (ini_get('session.gc_maxlifetime') + 60);
+			return $this->data['session_time'] < $this->request->time - (ini_get('session.gc_maxlifetime') + 60);
 		}
 		
 		/**
 		* Если используется автовход, то проверяем включен ли он на сайте
 		* и не превышает ли максимальное время действия автовхода
 		*/
-		if (!$this->config['autologin.allow'] || ($this->config['autologin.time'] && $this->data['session_time'] < $this->ctime - (86400 * $this->config['autologin.time']) + 60))
+		if (!$this->config['autologin.allow'] || ($this->config['autologin.time'] && $this->data['session_time'] < $this->request->time - (86400 * $this->config['autologin.time']) + 60))
 		{
 			return true;
 		}

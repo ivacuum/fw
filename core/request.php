@@ -26,6 +26,7 @@ class request
 	public $language;
 	public $method;
 	public $server_name;
+	public $time;
 	public $url;
 	
 	protected $options = [
@@ -51,6 +52,7 @@ class request
 		$this->is_secure = $this->server('HTTPS') == 'on';
 		$this->isp       = $this->header('Provider', 'internet');
 		$this->method    = strtolower($this->server('REQUEST_METHOD', 'get'));
+		$this->time      = $this->server('REQUEST_TIME', time());
 		$this->url       = urldecode(htmlspecialchars_decode(str_replace(['\\x', '%25'], '%', $this->server('REQUEST_URI'))));
 		
 		/* По умолчанию при использовании метода PUT данные не попадают в $_REQUEST */

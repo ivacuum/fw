@@ -70,7 +70,7 @@ class service
 		$sql_ary = [
 			'session_id' => (string) $this->user->session_id,
 			'code'       => (string) $this->code,
-			'expire'     => (int) $this->user->ctime + $this->config['confirm.expire']
+			'expire'     => (int) $this->request->time + $this->config['confirm.expire'],
 		];
 		
 		$sql = 'INSERT INTO site_confirm ' . $this->db->build_array('INSERT', $sql_ary) . ' ON DUPLICATE KEY UPDATE code = values(code), expire = values(expire)';
