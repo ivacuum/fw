@@ -86,14 +86,7 @@ class service
 	{
 		if (false === $bots = $this->driver->get_shared('bots'))
 		{
-			$sql = '
-				SELECT
-					user_id,
-					bot_agent
-				FROM
-					site_bots
-				ORDER BY
-					LENGTH(bot_agent) DESC';
+			$sql = 'SELECT user_id, bot_agent FROM site_bots ORDER BY LENGTH(bot_agent) DESC';
 			$result = $this->db->query($sql);
 			$bots = $this->db->fetchall($result);
 			$this->db->freeresult($result);
@@ -110,13 +103,7 @@ class service
 	{
 		if (false === $groups = $this->driver->get_shared('groups'))
 		{
-			$sql = '
-				SELECT
-					*
-				FROM
-					site_groups
-				ORDER BY
-					group_sort ASC';
+			$sql = 'SELECT * FROM site_groups ORDER BY group_sort ASC';
 			$this->db->query($sql);
 			$groups = $this->db->fetchall(false, 'group_id');
 			$this->db->freeresult();
@@ -135,15 +122,7 @@ class service
 		
 		if (false === $handlers = $this->driver->get($cache_entry))
 		{
-			$sql = '
-				SELECT
-					*
-				FROM
-					site_pages
-				WHERE
-					site_id = ?
-				ORDER BY
-					left_id ASC';
+			$sql = 'SELECT * FROM site_pages WHERE site_id = ? ORDER BY left_id ASC';
 			$this->db->query($sql, [$site_id]);
 			$traversal = new traverse_handlers_urls($options);
 			
@@ -168,13 +147,7 @@ class service
 	{
 		if (false === $hostnames = $this->driver->get_shared('hostnames'))
 		{
-			$sql = '
-				SELECT
-					*
-				FROM
-					site_sites
-				ORDER BY
-					site_id ASC';
+			$sql = 'SELECT * FROM site_sites ORDER BY site_id ASC';
 			$this->db->query($sql);
 			
 			while ($row = $this->db->fetchrow())
@@ -214,13 +187,7 @@ class service
 	{
 		if ($force_reload || (false === $languages = $this->driver->get_shared('languages')))
 		{
-			$sql = '
-				SELECT
-					*
-				FROM
-					site_languages
-				ORDER BY
-					language_sort ASC';
+			$sql = 'SELECT * FROM site_languages ORDER BY language_sort ASC';
 			$result = $this->db->query($sql);
 			$languages = $this->db->fetchall($result, 'language_id');
 			$this->db->freeresult($result);
@@ -239,15 +206,7 @@ class service
 		
 		if (false === $menu = $this->driver->get($cache_entry))
 		{
-			$sql = '
-				SELECT
-					*
-				FROM
-					site_pages
-				WHERE
-					site_id = ?
-				ORDER BY
-					left_id ASC';
+			$sql = 'SELECT * FROM site_pages WHERE site_id = ? ORDER BY left_id ASC';
 			$this->db->query($sql, [$site_id]);
 			$traversal = new traverse_menu(array_merge($options, ['return_as_tree' => true]));
 			
@@ -271,13 +230,7 @@ class service
 	{
 		if (false === $menus = $this->driver->get_shared('menus'))
 		{
-			$sql = '
-				SELECT
-					*
-				FROM
-					site_menus
-				WHERE
-					menu_active = 1';
+			$sql = 'SELECT * FROM site_menus WHERE menu_active = 1';
 			$this->db->query($sql);
 			
 			while ($row = $this->db->fetchrow())
@@ -349,15 +302,7 @@ class service
 			/**
 			* Получаем количество гостей
 			*/
-			$sql = '
-				SELECT
-					session_ip
-				FROM
-					site_sessions
-				WHERE
-					user_id = 0
-				AND
-					session_time >= ?';
+			$sql = 'SELECT session_ip FROM site_sessions WHERE user_id = 0 AND session_time >= ?';
 			$result = $this->db->query($sql, [time() - $online]);
 
 			while ($row = $this->db->fetchrow($result))
@@ -399,11 +344,7 @@ class service
 	{
 		if (false === $ranks = $this->driver->get_shared('ranks'))
 		{
-			$sql = '
-				SELECT
-					*
-				FROM
-					site_ranks';
+			$sql = 'SELECT * FROM site_ranks';
 			$result = $this->db->query($sql);
 			$ranks = $this->db->fetchall($result, 'rank_id');
 			$this->db->freeresult($result);
@@ -422,14 +363,7 @@ class service
 		
 		if (empty($sites) && (false === $sites = $this->driver->get_shared('sites')))
 		{
-			$sql = '
-				SELECT
-					*
-				FROM
-					site_sites
-				ORDER BY
-					site_url ASC,
-					site_language ASC';
+			$sql = 'SELECT * FROM site_sites ORDER BY site_url ASC, site_language ASC';
 			$this->db->query($sql);
 			$sites = $this->db->fetchall(false, 'site_id');
 			$this->db->freeresult();

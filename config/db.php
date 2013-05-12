@@ -36,15 +36,8 @@ class db extends config
 	{
 		$site_id = false !== $site_id ? intval($site_id) : $this->site_id;
 		
-		$sql = '
-			DELETE
-			FROM
-				site_config
-			WHERE
-				config_name = ' . $this->db->check_value($key) . '
-			AND
-				site_id = ' . $this->db->check_value($site_id);
-		$this->db->query($sql);
+		$sql = 'DELETE FROM site_config WHERE config_name = ? AND site_id = ?';
+		$this->db->query($sql, [$key, $site_id]);
 		
 		if ($site_id === $this->site_id)
 		{
@@ -94,16 +87,8 @@ class db extends config
 			$this->set($key, 0, 0);
 		}
 		
-		$sql = '
-			UPDATE
-				site_config
-			SET
-				config_value = config_value + ' . ((int) $increment) . '
-			WHERE
-				config_name = ' . $this->db->check_value($key) . '
-			AND
-				site_id = ' . $this->db->check_value($site_id);
-		$this->db->query($sql);
+		$sql = 'UPDATE site_config SET config_value = config_value + :increment WHERE config_name = ? AND site_id = ?';
+		$this->db->query($sql, [$key, $site_id, ':increment' => (int) $increment]);
 		
 		if ($site_id > 0)
 		{
@@ -224,15 +209,8 @@ class db extends config
 		if ((0 === $site_id && false === $config = $this->cache->get_shared($cache_entry)) ||
 			(0 !== $site_id && false === $config = $this->cache->get($cache_entry)))
 		{
-			$sql = '
-				SELECT
-					config_name,
-					config_value
-				FROM
-					site_config
-				WHERE
-					site_id = ' . $this->db->check_value($site_id);
-			$this->db->query($sql);
+			$sql = 'SELECT config_name, config_value FROM site_config WHERE site_id = ?';
+			$this->db->query($sql, [$site_id]);
 			$config = [];
 
 			while ($row = $this->db->fetchrow())

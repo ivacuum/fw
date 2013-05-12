@@ -97,13 +97,7 @@ class auth
 		*/
 		$this->cache->delete_shared('role_cache');
 
-		$sql = '
-			SELECT
-				*
-			FROM
-				site_auth_roles_data
-			ORDER BY
-				role_id ASC';
+		$sql = 'SELECT * FROM site_auth_roles_data ORDER BY role_id ASC';
 		$result = $this->db->query($sql);
 		$this->role_cache = [];
 
@@ -129,16 +123,11 @@ class auth
 		if (false !== $user_id)
 		{
 			$user_id = !is_array($user_id) ? $user_id = [(int) $user_id] : array_map('intval', $user_id);
-			$where_sql = ' WHERE ' . $this->db->in_set('user_id', $user_id);
+			$where_sql = 'WHERE ' . $this->db->in_set('user_id', $user_id);
 		}
 
-		$sql = '
-			UPDATE
-				site_users
-			SET
-				user_access = ""' .
-			$where_sql;
-		$this->db->query($sql);
+		$sql = 'UPDATE site_users SET user_access = "" :where_sql';
+		$this->db->query($sql, [':where_sql' => $where_sql]);
 	}
 
 	/**
@@ -676,14 +665,8 @@ class auth
 
 		$userdata['user_access'] = $ary;
 
-		$sql = '
-			UPDATE
-				site_users
-			SET
-				user_access = ' . $this->db->check_value(base64_encode(serialize($userdata['user_access']))) . '
-			WHERE
-				user_id = ' . $this->db->check_value($userdata['user_id']);
-		$this->db->query($sql);
+		$sql = 'UPDATE site_users SET user_access = ? WHERE user_id = ?';
+		$this->db->query($sql, [base64_encode(serialize($userdata['user_access'])), $userdata['user_id']]);
 	}
 
 	/**
@@ -752,13 +735,7 @@ class auth
 		{
 			$role_cache = [];
 
-			$sql = '
-				SELECT
-					*
-				FROM
-					site_auth_roles_data
-				ORDER BY
-					role_id ASC';
+			$sql = 'SELECT * FROM site_auth_roles_data ORDER BY role_id ASC';
 			$result = $this->db->query($sql);
 
 			while ($row = $this->db->fetchrow($result))
@@ -790,8 +767,8 @@ class auth
 			FROM
 				site_auth_users
 			WHERE
-				user_id = ' . $this->db->check_value($user_id);
-		$this->db->query($sql);
+				user_id = ?';
+		$this->db->query($sql, [$user_id]);
 
 		while ($row = $this->db->fetchrow())
 		{
@@ -862,14 +839,8 @@ class auth
 	{
 		if (false === $this->options = $this->cache->get_shared('auth_options'))
 		{
-			/**
-			* Все возможные привилегии
-			*/
-			$sql = '
-				SELECT
-					*
-				FROM
-					site_auth_options';
+			/* Все возможные привилегии */
+			$sql = 'SELECT * FROM site_auth_options';
 			$this->db->query($sql);
 
 			while ($row = $this->db->fetchrow())
@@ -892,14 +863,8 @@ class auth
 
 		if (false === $this->roles = $this->cache->get_shared('auth_roles'))
 		{
-			/**
-			* Все возможные роли
-			*/
-			$sql = '
-				SELECT
-					*
-				FROM
-					site_auth_roles';
+			/* Все возможные роли */
+			$sql = 'SELECT * FROM site_auth_roles';
 			$this->db->query($sql);
 
 			while ($row = $this->db->fetchrow())
@@ -946,14 +911,8 @@ class auth
 		/**
 		* Получаем список установленных привилегий из базы
 		*/
-		$sql = '
-			SELECT
-				*
-			FROM
-				site_auth_users
-			WHERE
-				user_id = ' . $this->db->check_value($user_id);
-		$result = $this->db->query($sql);
+		$sql = 'SELECT * FROM site_auth_users WHERE user_id = ?';
+		$result = $this->db->query($sql, [$user_id]);
 
 		while ($row = $this->db->fetchrow($result))
 		{
@@ -999,14 +958,8 @@ class auth
 				/**
 				* Получаем привилегии выбранной роли
 				*/
-				$sql = '
-					SELECT
-						*
-					FROM
-						site_auth_roles_data
-					WHERE
-						role_id = ' . $this->db->check_value($row['role_id']);
-				$result2 = $this->db->query($sql);
+				$sql = 'SELECT * FROM site_auth_roles_data WHERE role_id = ?';
+				$result2 = $this->db->query($sql, [$row['role_id']]);
 
 				while ($row2 = $this->db->fetchrow($result2))
 				{
@@ -1035,17 +988,8 @@ class auth
 			$this->data = $userdata;
 		}
 
-		/**
-		* Записываем привилегии в БД
-		*/
-		$sql = '
-			UPDATE
-				site_users
-			SET
-				user_access = ' . $this->db->check_value(base64_encode(serialize($userdata))) . '
-			WHERE
-				user_id = ' . $this->db->check_value($user_id);
-		$this->db->query($sql);
+		$sql = 'UPDATE site_users SET user_access = ? WHERE user_id = ?';
+		$this->db->query($sql, [base64_encode(serialize($userdata)), $user_id]);
 	}
 
 	/**
@@ -1080,17 +1024,8 @@ class auth
 			'auth_value'     => $auth_value
 		];
 
-		/**
-		* Обновляем данные
-		*/
-		$sql = '
-			UPDATE
-				site_auth_users
-			SET
-				' . $this->db->build_array('UPDATE', $sql_array) . '
-			WHERE
-				user_id = ' . $this->db->check_value($user_id);
-		$this->db->query($sql);
+		$sql = 'UPDATE site_auth_users SET :update_ary WHERE user_id = ?';
+		$this->db->query($sql, [$user_id, ':update_ary' => $this->db->build_array('UPDATE', $sql_array)]);
 
 		if (!$this->db->affected_rows())
 		{
@@ -1104,14 +1039,14 @@ class auth
 				FROM
 					site_auth_users
 				WHERE
-					user_id = ' . $this->db->check_value($user_id) . '
+					user_id = ?
 				AND
-					auth_option_id = ' . $this->db->check_value($auth_option_id) . '
+					auth_option_id = ?
 				AND
-					auth_role_id = ' . $this->db->check_value($auth_role_id) . '
+					auth_role_id = ?
 				AND
-					auth_value = ' . $this->db->check_value($auth_value);
-			$result = $this->db->query($sql);
+					auth_value = ?';
+			$result = $this->db->query($sql, [$user_id, $auth_option_id, $auth_role_id, $auth_value]);
 			$this->db->freeresult($result);
 
 			if (!$this->db->affected_rows())

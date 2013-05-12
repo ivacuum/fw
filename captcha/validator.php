@@ -60,14 +60,7 @@ class validator
 		
 		if ($this->solved)
 		{
-			$sql = '
-				DELETE
-				FROM
-					site_confirm
-				WHERE
-					session_id = ?
-				AND
-					code = ?';
+			$sql = 'DELETE FROM site_confirm WHERE session_id = ? AND code = ?';
 			$this->db->query($sql, [$this->user->session_id, $this->code]);
 		}
 	}
@@ -85,13 +78,7 @@ class validator
 	*/
 	private function load_code()
 	{
-		$sql = '
-			SELECT
-				code
-			FROM
-				site_confirm
-			WHERE
-				session_id = ?';
+		$sql = 'SELECT code FROM site_confirm WHERE session_id = ?';
 		$this->db->query($sql, [$this->user->session_id]);
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();

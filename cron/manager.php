@@ -125,13 +125,7 @@ class manager
 	*/
 	protected function load_tasks()
 	{
-		$sql = '
-			SELECT
-				site_id
-			FROM
-				site_sites
-			WHERE
-				site_url = ?';
+		$sql = 'SELECT site_id FROM site_sites WHERE site_url = ?';
 		$result = $this->db->query($sql, [$this->hostname]);
 		$site_ids = [];
 		

@@ -92,14 +92,8 @@ class imagetransform
 			return false;
 		}
 		
-		$sql = '
-			SELECT
-				*
-			FROM
-				site_image_watermarks
-			WHERE
-				wm_file = ' . $app['db']->check_value($watermark);
-		$app['db']->query($sql);
+		$sql = 'SELECT * FROM site_image_watermarks WHERE wm_file = ?';
+		$app['db']->query($sql, [$watermark]);
 		$row = $app['db']->fetchrow();
 		$app['db']->freeresult();
 		

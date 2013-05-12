@@ -675,16 +675,9 @@ class page
 		
 		if (false === $menu = $this->cache->get("menu_{$menu_id}_{$language}"))
 		{
-			$sql = '
-				SELECT
-					*
-				FROM
-					site_pages
-				WHERE
-					site_id = ?
-				ORDER BY
-					left_id ASC';
+			$sql = 'SELECT * FROM site_pages WHERE site_id = ? ORDER BY left_id ASC';
 			$this->db->query($sql, [$this->data['site_id']]);
+			
 			$traversal = new traverse_menu([
 				'default_extension' => $this->options['default_extension'],
 				'directory_index'   => $this->options['directory_index'],

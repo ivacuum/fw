@@ -75,14 +75,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 	{
 		$user_id = $user_id ?: $this->data['user_id'];
 
-		$sql = '
-			DELETE
-			FROM
-				site_sessions_keys
-			WHERE
-				user_id = ?
-			AND
-				key_id = ?';
+		$sql = 'DELETE FROM site_sessions_keys WHERE user_id = ? AND key_id = ?';
 		$this->db->query($sql, [$user_id, md5($key_id)]);
 		
 		return $this;
@@ -92,14 +85,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 	{
 		$session_id = $session_id ?: $this->session_id;
 		
-		$sql = '
-			DELETE
-			FROM
-				site_sessions
-			WHERE
-				session_id = ?
-			AND
-				user_id = ?';
+		$sql = 'DELETE FROM site_sessions WHERE session_id = ? AND user_id = ?';
 		$this->db->query($sql, [$session_id, $this->data['user_id']]);
 
 		if ($this->data['user_id'] > 0)
@@ -401,23 +387,14 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 	{
 		$user_id = $user_id ?: $this->data['user_id'];
 
-		$sql = '
-			DELETE
-			FROM
-				site_sessions_keys
-			WHERE
-				user_id = ?';
+		$sql = 'DELETE FROM site_sessions_keys WHERE user_id = ?';
 		$this->db->query($sql, [$user_id]);
 
-		/* Также удаляем все текущие сессий, кроме используемой */
-		$sql = '
-			DELETE
-			FROM
-				site_sessions
-			WHERE
-				user_id = ?' . 
-			($user_id == $this->data['user_id'] ? ' AND session_id <> ' . $this->db->check_value($this->session_id) : '');
-		$this->db->query($sql, [$user_id]);
+		/* Также удаляем все текущие сессии, кроме используемой */
+		$sql_session_id = $user_id == $this->data['user_id'] ? ' AND session_id <> ' . $this->db->check_value($this->session_id) : '';
+		
+		$sql = 'DELETE FROM site_sessions WHERE user_id = ? :session_id';
+		$this->db->query($sql, [$user_id, ':session_id' => $sql_session_id]);
 
 		if (false !== $set_new_key && $user_id === $this->data['user_id'] && $this->cookie['k'])
 		{
@@ -470,13 +447,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 			* Если был передан ID пользователя, то
 			* получаем его данные из базы
 			*/
-			$sql = '
-				SELECT
-					*
-				FROM
-					site_users
-				WHERE
-					user_id = ?';
+			$sql = 'SELECT * FROM site_users WHERE user_id = ?';
 			$result = $this->db->query($sql, [$this->cookie['u']]);
 			$this->data = $this->db->fetchrow($result);
 			$this->db->freeresult($result);
@@ -561,12 +532,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 			else
 			{
 				/* Для каждого бота должна остаться только одна сессия */
-				$sql = '
-					DELETE
-					FROM
-						site_sessions
-					WHERE
-						user_id = ?';
+				$sql = 'DELETE FROM site_sessions WHERE user_id = ?';
 				$this->db->query($sql, [$this->data['user_id']]);
 			}
 		}
@@ -638,15 +604,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 		if ($this->data['user_id'] > 0)
 		{
 			/* Соль для форм */
-			$sql = '
-				SELECT
-					COUNT(*) AS sessions
-				FROM
-					site_sessions
-				WHERE
-					user_id = ?
-				AND
-					session_time >= ?';
+			$sql = 'SELECT COUNT(*) AS sessions FROM site_sessions WHERE user_id = ? AND session_time >= ?';
 			$result = $this->db->query($sql, [$this->data['user_id'], $this->ctime - (max(ini_get('session.gc_maxlifetime'), $this->config['form.token_lifetime']))]);
 			$row = $this->db->fetchrow($result);
 			$this->db->freeresult($result);
@@ -684,13 +642,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 	{
 		$session_id = $session_id ?: $this->session_id;
 		
-		$sql = '
-			UPDATE
-				site_sessions
-			SET
-				:update_ary
-			WHERE
-				session_id = ?';
+		$sql = 'UPDATE site_sessions SET :update_ary WHERE session_id = ?';
 		$this->db->query($sql, [$session_id, ':update_ary' => $this->db->build_array('UPDATE', $sql_ary)]);
 		
 		$this->data = $session_id === $this->session_id ? array_merge($this->data, $sql_ary) : $this->data;
@@ -755,15 +707,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 
 		if ($key)
 		{
-			$sql = '
-				UPDATE
-					site_sessions_keys
-				SET
-					:update_ary
-				WHERE
-					user_id = ?
-				AND
-					key_id = ?';
+			$sql = 'UPDATE site_sessions_keys SET :update_ary WHERE user_id = ? AND key_id = ?';
 			$params = [$user_id, md5($key), ':update_ary' => $this->db->build_array('UPDATE', $sql_ary)];
 		}
 		else
@@ -838,15 +782,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 	{
 		$session_id = $session_id ?: $this->session_id;
 		
-		$sql = '
-			SELECT
-				*
-			FROM
-				site_sessions
-			WHERE
-				session_id = ?
-			AND
-				user_id = 0';
+		$sql = 'SELECT * FROM site_sessions WHERE session_id = ? AND user_id = 0';
 		$result = $this->db->query($sql, [$session_id]);
 		$row = $this->db->fetchrow($result);
 		$this->db->freeresult($result);

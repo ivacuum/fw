@@ -152,12 +152,7 @@ class user extends session
 			}
 			
 			/*
-			$sql = '
-				DELETE
-				FROM
-					site_login_attempts
-				WHERE
-					user_id = ?';
+			$sql = 'DELETE FROM site_login_attempts WHERE user_id = ?';
 			$this->db->query($sql, [$row['user_id']]);
 			*/
 			
@@ -210,13 +205,7 @@ class user extends session
 	{
 		$user_id = $user_id ?: $this->data['user_id'];
 		
-		$sql = '
-			UPDATE
-				site_users
-			SET
-				:update_ary
-			WHERE
-				user_id = ?';
+		$sql = 'UPDATE site_users SET :update_ary WHERE user_id = ?';
 		$this->db->query($sql, [$user_id, ':update_ary' => $this->db->build_array('UPDATE', $sql_ary)]);
 		
 		$this->data = $user_id == $this->data['user_id'] ? array_merge($this->data, $sql_ary) : $this->data;
