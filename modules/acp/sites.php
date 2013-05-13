@@ -50,7 +50,7 @@ class sites extends page
 		if ($this->form->is_valid)
 		{
 			$sql = 'UPDATE site_sites SET :update_ary WHERE site_id = ?';
-			$this->db->query($sql, [$id, ':update_ary' => $this->db->build_array('UPDATE', $this->form->get_fields_data())]);
+			$this->db->query($sql, [$id, ':update_ary' => $this->db->build_array('UPDATE', $this->form->get_fields_values())]);
 			$this->purge_cache();
 			$this->request->redirect(ilink($this->get_handler_url('index')));
 		}

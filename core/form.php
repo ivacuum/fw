@@ -193,7 +193,10 @@ class form
 		return $this;
 	}
 	
-	public function get_fields_data($prefixed = false)
+	/**
+	* Извлечение значений полей формы
+	*/
+	public function get_fields_values($prefixed = false)
 	{
 		$ary = [];
 		
