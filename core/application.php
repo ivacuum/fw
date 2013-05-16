@@ -130,20 +130,23 @@ class application implements ArrayAccess
 		});
 		
 		$this['logger'] = $this->share(function() use ($app) {
-			$logger = new Logger('main');
+			$logger = new Logger($app['site_info']['domain']);
 			$email  = $app['errorhandler.options']['email.error'];
 			
 			if (PHP_SAPI == 'cli')
 			{
+				/* debug и выше */
 				$logger->pushHandler(new StreamHandler('php://stdout'));
 				
 				return $logger;
 			}
 
+			/* info и выше */
 			$logger->pushHandler(new DBHandler($app['db'], $app['request']));
 			
 			// if ($email)
 			// {
+			// 	/* warn и выше */
 			// 	$logger->pushHandler(new NativeMailerHandler($email, $app['request']->server_name, 'fw@' . gethostname()));
 			// }
 
