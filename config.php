@@ -116,6 +116,8 @@ $app = [
 	
 	/* Версии библиотек */
 	'version.guzzle'   => '3.3.1',
+	'version.monolog'  => '1.5.0',
+	'version.psrlog'   => '1.0.0',
 	'version.smarty'   => '3.1.13',
 	'version.swift'    => '4.3.0',
 	'version.symfony'  => '2.2.0',
@@ -125,6 +127,8 @@ $app['autoloader.namespaces'] = [
 	'fw'      => $app['dir.fw'],
 	'app'     => $app['dir.app'],
 	'Guzzle'  => "{$app['dir.lib']}/guzzle/{$app['version.guzzle']}/Guzzle",
+	'Monolog' => "{$app['dir.lib']}/monolog/{$app['version.monolog']}/Monolog",
+	'Psr'     => "{$app['dir.lib']}/psrlog/{$app['version.psrlog']}/Psr",
 	'Symfony' => "{$app['dir.lib']}/symfony/{$app['version.symfony']}/Symfony",
 ];
 

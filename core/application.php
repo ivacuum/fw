@@ -8,12 +8,15 @@ namespace fw\core;
 
 use ArrayAccess;
 use Closure;
+use Monolog\Logger;
+use Monolog\Processor\WebProcessor;
 use fw\captcha\service as captcha_service;
 use fw\captcha\validator as captcha_validator;
 use fw\cron\manager as cron_manager;
 use fw\config\db as config_db;
 use fw\db\mysqli as db_mysqli;
 use fw\db\sphinx as db_sphinx;
+use fw\logger\handlers\db as DBHandler;
 use fw\session\user;
 use fw\template\smarty;
 
@@ -122,6 +125,20 @@ class application implements ArrayAccess
 		
 		$this['form'] = $this->share(function() use ($app) {
 			return new form($app['config'], $app['db'], $app['request'], $app['template']);
+		});
+		
+		$this['logger'] = $this->share(function() use ($app) {
+			$logger = new Logger('main');
+			$logger->pushHandler(new DBHandler($app['db'], $app['request'], Logger::DEBUG));
+			$logger->pushProcessor(function($record) use ($app) {
+				$record['extra']['site_id'] = $app['site_info']['id'];
+				$record['extra']['user_id'] = $app['user']['user_id'];
+				$record['extra']['ip'] = $app['user']->ip;
+				
+				return $record;
+			});
+			
+			return $logger;
 		});
 		
 		$this['mailer'] = $this->share(function() use ($app) {
