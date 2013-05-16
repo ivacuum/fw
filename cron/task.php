@@ -30,6 +30,6 @@ class task
 	*/
 	protected function log($text)
 	{
-		printf("%s: [%s] %s\n", date('Y-m-d H:i:s'), $this->data['cron_script'], $text);
+		$this->logger->info("[{$this->data['cron_script']}] {$text}");
 	}
 }

@@ -9,6 +9,7 @@ namespace fw\core;
 use ArrayAccess;
 use Closure;
 use Monolog\Logger;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\NativeMailerHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Processor\WebProcessor;
@@ -135,8 +136,11 @@ class application implements ArrayAccess
 			
 			if (PHP_SAPI == 'cli')
 			{
+				$handler = new StreamHandler('php://stdout');
+				$handler->setFormatter(new LineFormatter($app['logger.options']['cron.format']));
+				
 				/* debug и выше */
-				$logger->pushHandler(new StreamHandler('php://stdout'));
+				$logger->pushHandler($handler);
 				
 				return $logger;
 			}

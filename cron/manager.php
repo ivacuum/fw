@@ -55,6 +55,7 @@ class manager
 			* До сих пор выполняются задачи в другом процессе
 			* Выходим и ждем своей очереди
 			*/
+			$this->logger->info("Планировщик заданий уже запущен (cron_running)");
 			return;
 		}
 
@@ -67,13 +68,13 @@ class manager
 
 		$this->track_running('start');
 		$this->load_tasks();
-		$this->log(sprintf('Найдено готовых к запуску задач: %d', $this->tasks_count));
+		$this->logger->info("Найдено готовых к запуску задач: {$this->tasks_count}");
 
 		if ($this->tasks)
 		{
 			foreach ($this->tasks as $task)
 			{
-				$this->log(sprintf('Выполнение задачи "%s" [%s] на сайте: #%d', $task['cron_title'], $task['cron_script'], $task['site_id']));
+				$this->logger->info("Выполнение задачи «{$task['cron_title']}» [{$task['cron_script']}]");
 				set_time_limit($this->task_time_limit);
 
 				/* Выполнение задачи */
@@ -84,11 +85,11 @@ class manager
 				{
 					/* Установка времени следующего запуска */
 					$this->set_next_run_time($task['cron_id'], $task['cron_schedule']);
-					$this->log('Задача выполнена');
+					$this->logger->info('Задача выполнена');
 				}
 				else
 				{
-					$this->log('Не удалось выполнить задачу');
+					$this->logger->info('Не удалось выполнить задачу');
 				}
 				
 				/* Перерыв между задачами */
@@ -100,7 +101,7 @@ class manager
 		}
 
 		$this->track_running('end');
-		$this->log('Завершение работы менеджера задач');
+		$this->logger->info('Завершение работы менеджера задач');
 	}
 
 	/**

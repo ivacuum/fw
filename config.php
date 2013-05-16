@@ -64,6 +64,11 @@ $app = [
 	'include.files' => [
 		FW_DIR . 'functions.php',
 	],
+	
+	/* Настройки логирования */
+	'logger.options' => [
+		'cron.format' => "%datetime%: %message%\n",
+	],
 
 	/* Настройки профайлера */
 	'profiler.options' => [
