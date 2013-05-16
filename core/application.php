@@ -9,6 +9,8 @@ namespace fw\core;
 use ArrayAccess;
 use Closure;
 use Monolog\Logger;
+use Monolog\Handler\NativeMailerHandler;
+use Monolog\Handler\StreamHandler;
 use Monolog\Processor\WebProcessor;
 use fw\captcha\service as captcha_service;
 use fw\captcha\validator as captcha_validator;
@@ -129,7 +131,22 @@ class application implements ArrayAccess
 		
 		$this['logger'] = $this->share(function() use ($app) {
 			$logger = new Logger('main');
-			$logger->pushHandler(new DBHandler($app['db'], $app['request'], Logger::DEBUG));
+			$email  = $app['errorhandler.options']['email.error'];
+			
+			if (PHP_SAPI == 'cli')
+			{
+				$logger->pushHandler(new StreamHandler('php://stdout'));
+				
+				return $logger;
+			}
+
+			$logger->pushHandler(new DBHandler($app['db'], $app['request']));
+			
+			// if ($email)
+			// {
+			// 	$logger->pushHandler(new NativeMailerHandler($email, $app['request']->server_name, 'fw@' . gethostname()));
+			// }
+
 			$logger->pushProcessor(function($record) use ($app) {
 				$record['extra']['site_id'] = $app['site_info']['id'];
 				$record['extra']['user_id'] = $app['user']['user_id'];
