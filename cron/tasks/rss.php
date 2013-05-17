@@ -7,6 +7,9 @@
 namespace fw\cron\tasks;
 
 use Guzzle\Http\Client;
+use Guzzle\Log\MonologLogAdapter;
+use Guzzle\Log\MessageFormatter;
+use Guzzle\Plugin\Log\LogPlugin;
 use fw\cron\task;
 
 /**
@@ -19,6 +22,8 @@ class rss extends task
 		$timeout = $timeout !== false ? intval($timeout) : $this->config['cron.rss_timeout'];
 		
 		$client = new Client();
+		$client->addSubscriber(new LogPlugin(new MonologLogAdapter($this->logger)));
+		
 		$request = $client->get($url);
 		$request->getCurlOptions()->set(CURLOPT_CONNECTTIMEOUT, $timeout);
 		
