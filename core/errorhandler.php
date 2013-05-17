@@ -211,7 +211,7 @@ class errorhandler
 				
 					static::log_mail("Fatal error: {$error['message']} on line {$error['line']} in file {$error['file']}");
 
-					if (!in_array($_SERVER['REMOTE_ADDR'], static::$options['debug.ips']))
+					if (PHP_SAPI != 'cli' && !in_array($_SERVER['REMOTE_ADDR'], static::$options['debug.ips']))
 					{
 						return;
 					}
