@@ -67,7 +67,8 @@ $app = [
 	
 	/* Настройки логирования */
 	'logger.options' => [
-		'cron.format' => "%datetime%: %message%\n",
+		'cron.format'   => "%datetime%: %message%\n",
+		'guzzle.format' => '{req_header_User-Agent} "{method} {host}{resource} {protocol}/{version}" {code} {res_header_Content-Length} connect={connect_time}s total={total_time}s',
 	],
 
 	/* Настройки профайлера */
