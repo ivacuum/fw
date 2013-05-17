@@ -6,6 +6,7 @@
 
 namespace fw\cron\tasks;
 
+use Guzzle\Http\Client;
 use fw\cron\task;
 
 /**
@@ -17,12 +18,12 @@ class rss extends task
 	{
 		$timeout = $timeout !== false ? intval($timeout) : $this->config['cron.rss_timeout'];
 		
-		$c = curl_init($url);
-		curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($c, CURLOPT_CONNECTTIMEOUT, $timeout);
-		$result = curl_exec($c);
-		curl_close($c);
+		$client = new Client();
+		$request = $client->get($url);
+		$request->getCurlOptions()->set(CURLOPT_CONNECTTIMEOUT, $timeout);
 		
-		return simplexml_load_string($result, 'SimpleXMLElement', LIBXML_NOCDATA);
+		$this->log("Запрос RSS: {$url}");
+		
+		return simplexml_load_string($client->send($request)->getBody(), 'SimpleXMLElement', LIBXML_NOCDATA);
 	}
 }
