@@ -6,10 +6,6 @@
 
 namespace fw\cron\tasks;
 
-use Guzzle\Http\Client;
-use Guzzle\Log\MonologLogAdapter;
-use Guzzle\Log\MessageFormatter;
-use Guzzle\Plugin\Log\LogPlugin;
 use fw\cron\task;
 
 /**
@@ -21,12 +17,9 @@ class rss extends task
 	{
 		$timeout = $timeout !== false ? intval($timeout) : $this->config['cron.rss_timeout'];
 		
-		$client = new Client();
-		$client->addSubscriber(new LogPlugin(new MonologLogAdapter($this->logger), $this->app['logger.options']['guzzle.format']));
-		
-		$request = $client->get($url);
+		$request = $this->http_client->get($url);
 		$request->getCurlOptions()->set(CURLOPT_CONNECTTIMEOUT, $timeout);
 		
-		return simplexml_load_string($client->send($request)->getBody(), 'SimpleXMLElement', LIBXML_NOCDATA);
+		return simplexml_load_string($this->http_client->send($request)->getBody(), 'SimpleXMLElement', LIBXML_NOCDATA);
 	}
 }

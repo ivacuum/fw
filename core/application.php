@@ -8,6 +8,10 @@ namespace fw\core;
 
 use ArrayAccess;
 use Closure;
+use Guzzle\Http\Client;
+use Guzzle\Log\MonologLogAdapter;
+use Guzzle\Log\MessageFormatter;
+use Guzzle\Plugin\Log\LogPlugin;
 use Monolog\Logger;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\NativeMailerHandler;
@@ -128,6 +132,13 @@ class application implements ArrayAccess
 		
 		$this['form'] = $this->share(function() use ($app) {
 			return new form($app['config'], $app['db'], $app['request'], $app['template']);
+		});
+		
+		$this['http_client'] = $this->share(function() use ($app) {
+			$client = new Client();
+			$client->addSubscriber(new LogPlugin(new MonologLogAdapter($app['logger']), $app['logger.options']['guzzle.format']));
+			
+			return $client;
 		});
 		
 		$this['logger'] = $this->share(function() use ($app) {
