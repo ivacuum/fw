@@ -158,14 +158,6 @@ class manager
 	}
 	
 	/**
-	* Лог операций
-	*/
-	protected function log($text)
-	{
-		printf("%s: %s\n", date('Y-m-d H:i:s'), $text);
-	}
-
-	/**
 	* Выход из тупика
 	*/
 	protected function release_deadlock()
