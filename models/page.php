@@ -195,7 +195,7 @@ class page
 				return $this->get_url_with_params($this->handlers_urls[$handler], $params);
 			}
 			
-			return '/';
+			return;
 		}
 		
 		/**
