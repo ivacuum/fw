@@ -16,6 +16,20 @@ class user extends session
 	use i18n;
 	
 	/**
+	* Пользователь добавляет социальный профиль через другой сервис
+	*/
+	public function attach_oauth_saved_data($user_id)
+	{
+		if (empty($_SESSION['oauth.saved']))
+		{
+			return false;
+		}
+		
+		$sql = 'UPDATE site_openid_identities SET user_id = ? WHERE openid_uid = ? AND openid_provider = ? AND user_id = 0';
+		$this->db->query($sql, [$user_id, $_SESSION['oauth.saved']['uid'], $_SESSION['oauth.saved']['provider']]);
+	}
+
+	/**
 	* Авторизация
 	*/
 	public function login($username_or_email, $password)
