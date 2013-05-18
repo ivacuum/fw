@@ -36,6 +36,11 @@ class base extends page
 	
 	protected function auth_if_guest($user_id)
 	{
+		if ($this->user->is_registered && $this->user['user_id'] != $user_id)
+		{
+			trigger_error('Социальный профиль уже закреплен за другой учетной записью.<br><br><a href="' . ilink($this->get_handler_url('ucp::social')) . '">Вернуться к управлению социальными профилями</a>.');
+		}
+
 		if (!$this->user->is_registered && $user_id > 0)
 		{
 			$redirect = !empty($_SESSION['request.redirect']) ? $_SESSION['request.redirect'] : '';
