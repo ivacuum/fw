@@ -19,6 +19,11 @@ class twitter extends base
 	
 	public function index()
 	{
+		if (!$this->get_handler_url('callback'))
+		{
+			trigger_error('CALLBACK_URL_NOT_CONFIGURED');
+		}
+
 		$this->http_client->addSubscriber(new OauthPlugin([
 			'consumer_key'    => $this->config["oauth.{$this->api_provider}.app_id"],
 			'consumer_secret' => $this->config["oauth.{$this->api_provider}.app_secret"],

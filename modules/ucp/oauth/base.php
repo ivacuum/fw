@@ -20,6 +20,11 @@ class base extends page
 	
 	public function index()
 	{
+		if (!$this->get_handler_url('callback'))
+		{
+			trigger_error('CALLBACK_URL_NOT_CONFIGURED');
+		}
+		
 		$url = $this->authorize_endpoint . '?' . $this->get_authorize_params();
 		$this->request->redirect($url);
 	}
