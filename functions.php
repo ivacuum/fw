@@ -200,6 +200,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				return;
 			}
 			
+			$app['user']->attach_oauth_saved_data($result['user_row']['user_id']);
 			$app['request']->redirect(ilink($redirect));
 		}
 
