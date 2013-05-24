@@ -20,6 +20,29 @@ class rss extends task
 		$request = $this->http_client->get($url);
 		$request->getCurlOptions()->set(CURLOPT_CONNECTTIMEOUT, $timeout);
 		
-		return simplexml_load_string($this->http_client->send($request)->getBody(), 'SimpleXMLElement', LIBXML_NOCDATA);
+		try
+		{
+			$response = $request->send()->getBody();
+		}
+		catch (\Exception $e)
+		{
+			$this->log($e->getMessage());
+			return false;
+		}
+		
+		libxml_use_internal_errors(true);
+		
+		if (false === $response = simplexml_load_string($response, 'SimpleXMLElement', LIBXML_NOCDATA))
+		{
+			foreach (libxml_get_errors() as $error)
+			{
+				$this->log($error->message);
+			}
+			
+			libxml_clear_errors();
+			return false;
+		}
+		
+		return $response;
 	}
 }
