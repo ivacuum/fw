@@ -105,7 +105,7 @@ class yandex extends base
 			'openid_identity'   => "http://{$json['display_name']}.ya.ru/",
 			'openid_first_name' => $first_name,
 			'openid_last_name'  => $last_name,
-			'openid_dob'        => $json['birthday'],
+			'openid_dob'        => isset($json['birthday']) ? $json['birthday'] : '',
 			'openid_gender'     => $gender,
 			'openid_email'      => $this->openid_email,
 			'openid_photo'      => '',
