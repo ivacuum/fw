@@ -105,7 +105,7 @@ class base extends page
 	
 	protected function get_redirect_uri()
 	{
-		return 'http://' . $this->request->server_name . ilink($this->get_handler_url('callback'));
+		return 'http://' . $this->request->hostname . ilink($this->get_handler_url('callback'));
 	}
 	
 	/**
