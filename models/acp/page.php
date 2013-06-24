@@ -16,6 +16,8 @@ class page extends base_page
 	
 	public function _setup()
 	{
+		$this->user->is_auth('redirect');
+		
 		if (!$this->auth->acl_get('a_'))
 		{
 			trigger_error('ERR_NO_AUTH');
