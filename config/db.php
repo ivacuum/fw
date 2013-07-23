@@ -18,6 +18,56 @@ class db extends config
 	protected $cache;
 	protected $db;
 	
+	protected $defaults = [
+		'allow_smilies'              => 1,
+		'autologin.allow'            => 1,
+		'autologin.time'             => 30,
+		'confirm.enable'             => 1,
+		'confirm.expire'             => 300,
+		'confirm.max_chars'          => 6,
+		'confirm.min_chars'          => 4,
+		'cookie.domain'              => '',
+		'cookie.path'                => '/',
+		'cookie.prefix'              => 'the_',
+		'cookie.secure'              => 0,
+		'cron.rss_timeout'           => 5,
+		'css.version'                => 1,
+		'dateformat'                 => '|D, j F Y|, H:i',
+		'email.noreply'              => 'noreply@example.com',
+		'email.support'              => 'support@example.com',
+		'form.submit_class'          => 'btn btn-large',
+		'form.token_lifetime'        => 7200,
+		'form.url.default_protocol'  => 'http://',
+		'form.url.max_chars'         => 200,
+		'form.url.min_chars'         => 5,
+		'forwarded_for_check'        => 0,
+		'ip_login_limit_max'         => 3,
+		'ip_login_limit_time'        => 900,
+		'js.version'                 => 1,
+		'oauth.facebook.app_id'      => '',
+		'oauth.facebook.app_secret'  => '',
+		'oauth.github.app_id'        => '',
+		'oauth.github.app_secret'    => '',
+		'oauth.google.app_id'        => '',
+		'oauth.google.app_secret'    => '',
+		'oauth.instagram.app_id'     => '',
+		'oauth.instagram.app_secret' => '',
+		'oauth.twitter.app_id'       => '',
+		'oauth.twitter.app_secret'   => '',
+		'oauth.vk.app_id'            => '',
+		'oauth.vk.app_secret'        => '',
+		'oauth.yandex.app_id'        => '',
+		'oauth.yandex.app_secret'    => '',
+		'session.length'             => 1440,
+		'site.root_path'             => '/',
+		'site.tz'                    => 4,
+		'sitename'                   => 'Название сайта',
+		'smtp.host'                  => '',
+		'smtp.pass'                  => '',
+		'smtp.port'                  => '',
+		'smtp.user'                  => '',
+	];
+	
 	function __construct($cache, $db, $site_info)
 	{
 		$this->cache = $cache;
@@ -27,6 +77,8 @@ class db extends config
 		$this->site_id  = $site_info['id'];
 		
 		parent::__construct(array_merge($this->load_config(0), $this->load_config($this->site_id)));
+		
+		$this->setup_defaults();
 	}
 	
 	/**
@@ -202,7 +254,7 @@ class db extends config
 	/**
 	* Загрузка настроек сайта из БД
 	*/
-	private function load_config($site_id)
+	protected function load_config($site_id)
 	{
 		$cache_entry = 0 === $site_id ? 'config' : "config_{$this->language}";
 		
@@ -239,5 +291,16 @@ class db extends config
 		}
 		
 		return $config;
+	}
+	
+	protected function setup_defaults()
+	{
+		foreach ($this->defaults as $key => $value)
+		{
+			if (empty($this->config[$key]))
+			{
+				$this->set($key, $value, 0);
+			}
+		}
 	}
 }
