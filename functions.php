@@ -210,7 +210,16 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			trigger_error($result['message']);
 		}
 		
-		/* Различные ошибки авторизации */
+		switch ($result['status'])
+		{
+			case 'ERROR_ATTEMPTS':
+			
+				$app['template']->assign('ERROR_ATTEMPTS', true);
+			
+			break;
+		}
+		
+		/* Различные ошибки аутентификации */
 		// $err = $app['user']->lang[$result['status']];
 		$err = $result['message'];
 	}
