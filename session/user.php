@@ -103,12 +103,11 @@ class user extends session
 				'attempt_browser' => trim(substr($this->browser, 0, 149)),
 				'attempt_time'    => time(),
 				'user_id'         => $row ? (int) $row['user_id'] : 0,
-				'username'        => $username,
-				'username_clean'  => $username_clean,
+				'credential'      => $username_or_email,
 			];
 			
 			$sql = 'INSERT INTO site_login_attempts ' . $this->db->build_array('INSERT', $sql_ary);
-			$this->db->sql_query($sql);
+			$this->db->query($sql);
 		}
 		else
 		{
