@@ -297,7 +297,7 @@ class db extends config
 	{
 		foreach ($this->defaults as $key => $value)
 		{
-			if (empty($this->config[$key]))
+			if (!isset($this->config[$key]))
 			{
 				$this->set($key, $value, 0);
 			}
