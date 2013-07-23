@@ -161,7 +161,6 @@ class errorhandler
 				if (!empty($matches) || 0 === strpos($text, 'ERR_'))
 				{
 					http_response_code(404);
-					print_r($_SERVER);
 					static::log_mail("Page http://{$app['request']->hostname}{$app['request']->url} not found", "404 Not Found", 404);
 					$handler->data['page_title'] = '404 Not Found';
 				}
