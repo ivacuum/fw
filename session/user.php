@@ -70,7 +70,6 @@ class user extends session
 		$this->db->query($sql, [$username_or_email]);
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
-		$attempts = 0;
 		
 		if (!$row)
 		{
@@ -92,37 +91,41 @@ class user extends session
 			$this->db->freeresult();
 		}
 		
-		// if ($ip)
-		// {
-		// 	$sql = '
-		// 		SELECT
-		// 			COUNT(attempt_id) AS attempts
-		// 		FROM
-		// 			site_login_attempts
-		// 		WHERE
-		// 			attempt_time > ?
-		// 		AND
-		// 			attempt_ip = ?';
-		// 	$this->db->query($sql, [time() - (int) $this->config['ip_login_limit_time'], $ip]);
-		// 	$attempts = (int) $this->db->fetchfield('attempts');
-		// 	$this->db->freeresult();
-		// 
-		// 	$sql_ary = [
-		// 		'attempt_ip'			=> $ip,
-		// 		'attempt_browser'		=> trim(substr($browser, 0, 149)),
-		// 		'attempt_forwarded_for'	=> $forwarded_for,
-		// 		'attempt_time'			=> time(),
-		// 		'user_id'				=> $row ? (int) $row['user_id'] : 0,
-		// 		'username'				=> $username,
-		// 		'username_clean'		=> $username_clean,
-		// 	];
-		// 	
-		// 	$sql = 'INSERT INTO site_login_attempts ' . $this->db->build_array('INSERT', $sql_ary);
-		// 	$this->db->sql_query($sql);
-		// }
+		if ($this->ip)
+		{
+			$sql = 'SELECT COUNT(*) AS attempts FROM site_login_attempts WHERE attempt_time > ? AND attempt_ip = ?';
+			$this->db->query($sql, [time() - (int) $this->config['ip_login_limit_time'], $this->ip]);
+			$attempts = (int) $this->db->fetchfield('attempts');
+			$this->db->freeresult();
+		
+			$sql_ary = [
+				'attempt_ip'      => $this->ip,
+				'attempt_browser' => trim(substr($this->browser, 0, 149)),
+				'attempt_time'    => time(),
+				'user_id'         => $row ? (int) $row['user_id'] : 0,
+				'username'        => $username,
+				'username_clean'  => $username_clean,
+			];
+			
+			$sql = 'INSERT INTO site_login_attempts ' . $this->db->build_array('INSERT', $sql_ary);
+			$this->db->sql_query($sql);
+		}
+		else
+		{
+			$attempts = 0;
+		}
 
 		if (!$row)
 		{
+			if ($this->config['ip_login_limit_max'] && $attempts >= $this->config['ip_login_limit_max'])
+			{
+				return [
+					'message'  => 'Слишком много ошибок при авторизации, введите код подтверждения',
+					'status'   => 'ERROR_ATTEMPTS',
+					'user_row' => ['user_id' => 0],
+				];
+			}
+			
 			return [
 				'message'  => 'Неверно указан логин, почта или пароль',
 				'status'   => 'ERROR_LOGIN',
@@ -131,26 +134,23 @@ class user extends session
 		}
 		
 		/* Не пора ли показывать капчу */
-		// $show_captcha = ($this->config['max_login_attempts'] && $row['user_login_attempts'] >= $this->config['max_login_attempts']) || ($this->config['ip_login_limit_max'] && $attempts >= $this->config['ip_login_limit_max']);
-		$show_captcha = false;
+		$show_captcha = ($this->config['max_login_attempts'] && $row['user_login_attempts'] >= $this->config['max_login_attempts']) || ($this->config['ip_login_limit_max'] && $attempts >= $this->config['ip_login_limit_max']);
 		
-		// if ($show_captcha)
-		// {
-		// 	$captcha =& captcha\factory::get_instance($this->config['captcha_plugin']);
-		// 	$captcha->init(CONFIRM_LOGIN);
-		// 	$vc_response = $captcha->validate($row);
-		// 	
-		// 	if ($vc_response)
-		// 	{
-		// 		return [
-		// 			'status'    => 'error_attempts',
-		// 			'error_msg' => 'LOGIN_ERROR_ATTEMPTS',
-		// 			'user_row'  => $row,
-		// 		];
-		// 	}
-		// 	
-		// 	$captcha->reset();
-		// }
+		if ($show_captcha)
+		{
+			global $app;
+			
+			if (!$app['captcha_validator']->is_solved())
+			{
+				return [
+					'message'  => 'Неверно введен код подтверждения',
+					'status'   => 'ERROR_ATTEMPTS',
+					'user_row' => $row,
+				];
+			}
+			
+			$app['captcha_validator']->reset();
+		}
 
 		/* Проверка пароля */
 		if (($row['user_salt'] && md5($password . $row['user_salt']) == $row['user_password']) || (!$row['user_salt'] && md5($password) == $row['user_password']))
@@ -165,10 +165,8 @@ class user extends session
 				], $row['user_id']);
 			}
 			
-			/*
 			$sql = 'DELETE FROM site_login_attempts WHERE user_id = ?';
 			$this->db->query($sql, [$row['user_id']]);
-			*/
 			
 			if ($row['user_login_attempts'])
 			{
@@ -196,8 +194,8 @@ class user extends session
 		$this->user_update(['user_login_attempts' => $row['user_login_attempts'] + 1], $row['user_id']);
 		
 		return [
-			'message'  => $show_captcha ? 'Слишком много ошибок при авторизации. Введите код подтверждения' : 'Неверно указано имя или пароль',
-			'status'   => 'ERROR_LOGIN',
+			'message'  => 'Неверно указано имя или пароль',
+			'status'   => $show_captcha ? 'ERROR_ATTEMPTS' : 'ERROR_LOGIN',
 			'user_row' => $row,
 		];
 	}
