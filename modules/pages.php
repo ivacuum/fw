@@ -628,7 +628,7 @@ class pages extends page
 					site_id = ?
 				AND
 					:moved_ids';
-			$this->db->query($sql, [$this->data['site_id'], $this->db->in_set('page_id', $moved_ids, true)]);
+			$this->db->query($sql, [$this->data['site_id'], ':moved_ids' => $this->db->in_set('page_id', $moved_ids, true)]);
 			$row = $this->db->fetchrow();
 			$this->db->freeresult();
 

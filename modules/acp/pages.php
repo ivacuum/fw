@@ -509,7 +509,7 @@ class pages extends page
 		else
 		{
 			$sql = 'SELECT MAX(right_id) AS right_id FROM site_pages WHERE site_id = ? AND :moved_ids';
-			$this->db->query($sql, [$this->site_id, $this->db->in_set('page_id', $moved_ids, true)]);
+			$this->db->query($sql, [$this->site_id, ':moved_ids' => $this->db->in_set('page_id', $moved_ids, true)]);
 			$row = $this->db->fetchrow();
 			$this->db->freeresult();
 
