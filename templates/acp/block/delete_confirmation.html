@@ -1,0 +1,20 @@
+{extends "base.html"}
+
+{block "content"}
+{if not empty($forms.custom)}
+<div class="boxed-group">
+	<h3>{$page.page_name}</h3>
+	<div class="boxed-group-inner">
+		{$page.page_text}
+		{if not empty($data_to_delete)}
+			<ul>
+				{foreach $data_to_delete as $row}
+					<li><strong>{$row@key}</strong>: {$row}</li>
+				{/foreach}
+			</ul>
+		{/if}
+		{include "form.html" form=$forms.custom}
+	</div>
+</div>
+{/if}
+{/block}
