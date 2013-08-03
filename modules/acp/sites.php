@@ -45,6 +45,8 @@ class sites extends page
 	
 	public function delete($id)
 	{
+		$row = $this->get_site_data($id);
+		
 		$this->form->add_form([
 			'title'         => '',
 			'alias'         => 'custom',
@@ -69,11 +71,17 @@ class sites extends page
 			return !empty($value);
 		});
 		
-		$this->template->assign('data_to_delete', $data_to_delete);
+		$this->template->assign([
+			'data_to_delete' => $data_to_delete,
+			'entry_title'    => $row['site_title'],
+		]);
 	}
 	
 	public function delete_post($id)
 	{
+		/* Проверка существования сайта */
+		$row = $this->get_site_data($id);
+		
 		$this->db->transaction('begin');
 		$this->delete_tables[] = 'site_sites';
 		

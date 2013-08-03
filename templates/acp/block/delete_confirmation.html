@@ -3,7 +3,7 @@
 {block "content"}
 {if not empty($forms.custom)}
 <div class="boxed-group">
-	<h3>{$page.page_name}</h3>
+	<h3>{$page.page_name} <small>{$entry_title}</small></h3>
 	<div class="boxed-group-inner">
 		{$page.page_text}
 		{if not empty($data_to_delete)}
