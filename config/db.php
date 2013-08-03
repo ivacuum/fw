@@ -35,6 +35,7 @@ class db extends config
 		'dateformat'                 => '|D, j F Y|, H:i',
 		'email.noreply'              => 'noreply@example.com',
 		'email.support'              => 'support@example.com',
+		'form.cancel_class'          => 'btn',
 		'form.submit_class'          => 'btn btn-large',
 		'form.token_lifetime'        => 7200,
 		'form.url.default_protocol'  => 'http://',

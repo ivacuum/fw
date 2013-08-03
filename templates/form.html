@@ -49,6 +49,9 @@
 		<div class="control-group">
 			<div class="controls">
 				<input class="{$form.data.form_submit_class|default:$cfg['form.submit_class']}" type="submit" name="submit" value="{$form.data.form_submit_text|default:'Отправить'}">
+				{if not empty($form.data.form_action_cancel)}
+					&nbsp;<a href="{$form.data.form_action_cancel}" class="{$form.data.form_cancel_class|default:$cfg['form.cancel_class']}">{$form.data.form_cancel_text|default:'Вернуться'}</a>
+				{/if}
 			</div>
 		</div>
 		

@@ -101,18 +101,21 @@ class form
 		}
 		
 		$this->data = [
-			'form_title'        => @$row['form_title'] ?: @$row['title'] ?: '',
-			'form_alias'        => $alias,
-			'form_email'        => @$row['form_email'] ?: @$row['email'] ?: '',
-			'form_class'        => @$row['form_class'] ?: @$row['class'] ?: '',
-			'form_action'       => @$row['form_action'] ?: @$row['action'] ?: '',
-			'form_enctype'      => @$row['form_enctype'] ?: @$row['enctype'] ?: '',
-			'form_method'       => @$row['form_method'] ?: @$row['method'] ?: 'post',
-			'form_message'      => @$row['form_message'] ?: @$row['message'] ?: '',
-			'form_fields_width' => @$row['form_fields_width'] ?: @$row['fields_width'] ?: '',
-			'form_submit_text'  => @$row['form_submit_text'] ?: @$row['submit_text'] ?: '',
-			'form_submit_class' => @$row['form_submit_class'] ?: @$row['submit_class'] ?: '',
-			'form_captcha'      => @$row['form_captcha'] ?: @$row['captcha'] ?: 0,
+			'form_title'         => @$row['form_title'] ?: @$row['title'] ?: '',
+			'form_alias'         => $alias,
+			'form_email'         => @$row['form_email'] ?: @$row['email'] ?: '',
+			'form_class'         => @$row['form_class'] ?: @$row['class'] ?: '',
+			'form_action'        => @$row['form_action'] ?: @$row['action'] ?: '',
+			'form_action_cancel' => @$row['form_action_cancel'] ?: @$row['action_cancel'] ?: '',
+			'form_enctype'       => @$row['form_enctype'] ?: @$row['enctype'] ?: '',
+			'form_method'        => @$row['form_method'] ?: @$row['method'] ?: 'post',
+			'form_message'       => @$row['form_message'] ?: @$row['message'] ?: '',
+			'form_fields_width'  => @$row['form_fields_width'] ?: @$row['fields_width'] ?: '',
+			'form_submit_text'   => @$row['form_submit_text'] ?: @$row['submit_text'] ?: '',
+			'form_submit_class'  => @$row['form_submit_class'] ?: @$row['submit_class'] ?: '',
+			'form_cancel_text'   => @$row['form_cancel_text'] ?: @$row['cancel_text'] ?: '',
+			'form_cancel_class'  => @$row['form_cancel_class'] ?: @$row['cancel_class'] ?: '',
+			'form_captcha'       => @$row['form_captcha'] ?: @$row['captcha'] ?: 0,
 		];
 
 		$this->csrf_token = $this->get_csrf_token();
