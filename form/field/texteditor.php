@@ -9,7 +9,7 @@ namespace fw\form\field;
 /**
 * Текстовое поле
 */
-class textarea extends generic
+class texteditor extends generic
 {
 	public function set_value($value)
 	{
