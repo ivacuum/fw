@@ -7,7 +7,7 @@
 	</label>
 	<div class="controls">
 		{capture "input"}
-		<textarea id="{$form.form_alias}_{$field.field_alias}"
+		<textarea class="input-block-level" id="{$form.form_alias}_{$field.field_alias}"
 			name="{$form.form_alias}_{$field.field_alias}"
 			placeholder="{$field.field_placeholder}"
 			style="{if $form.form_fields_width or $field.field_width}width: {$field.field_width|default:$form.form_fields_width};{/if} {if $field.field_height}height: {$field.field_height};{/if}"
