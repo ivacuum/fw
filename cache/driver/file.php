@@ -21,7 +21,7 @@ class file
 	function __construct(array $options = [])
 	{
 		$this->options = array_merge($this->options, $options);
-		$this->cache_dir = SITE_DIR . 'cache/';
+		$this->cache_dir = SITE_DIR . '../cache/';
 
 		if (!$this->options['prefix'] || !$this->options['shared_prefix'])
 		{
