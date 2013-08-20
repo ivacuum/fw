@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS `site_cron` (
 INSERT INTO `site_cron` (`cron_id`, `site_id`, `cron_active`, `cron_title`, `cron_script`, `cron_schedule`, `run_order`, `last_run`, `next_run`, `run_counter`) VALUES
 (1, 1, 1, 'Чистка устаревших сессий', 'sessions\\purge', '+59 minutes', 10, 0, 0, 0),
 (2, 1, 1, 'Пересчет значений динамических переменных', 'config\\sync', 'tomorrow 5am', 20, 0, 0, 0),
-(3, 1, 1, 'Чистка ключей для восстановления пароля', 'newpasswd\\purge', 'tomorrow 5am', 30, 0, 0, 0),
+(3, 1, 1, 'Чистка ключей для восстановления пароля', 'newpasswd\\purge', 'tomorrow 5am', 30, 0, 0, 0);
 
 CREATE TABLE IF NOT EXISTS `site_groups` (
   `group_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
@@ -692,7 +692,10 @@ CREATE TABLE IF NOT EXISTS `site_users` (
   PRIMARY KEY (`user_id`),
   KEY `user_url` (`user_url`),
   KEY `username_clean` (`username_clean`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin PACK_KEYS=0 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin PACK_KEYS=0 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=2 ;
+
+INSERT INTO `site_users` (`user_id`, `user_access`, `user_active`, `username`, `username_clean`, `user_url`, `user_password`, `user_salt`, `user_session_page`, `user_last_visit`, `user_regdate`, `user_ip`, `user_money`, `user_points`, `user_posts`, `user_rank`, `user_colour`, `user_first_name`, `user_last_name`, `user_birth_year`, `user_birth_month`, `user_birth_day`, `user_language`, `user_email`, `user_icq`, `user_jid`, `user_website`, `user_from`, `user_occ`, `user_interests`, `user_login_attempts`, `user_form_salt`, `user_newpasswd`, `user_actkey`) VALUES
+(1, '', 1, 'root', 'root', '', '', '', '', 0, 0, '127.0.0.1', '0.00', '0.00', 0, 0, '', '', '', 0, 0, 0, 'ru', 'root@example.com', '', '', '', '', '', '', 0, '', '', '');
 
 CREATE TABLE IF NOT EXISTS `site_user_groups` (
   `group_id` mediumint(8) unsigned NOT NULL DEFAULT '0',
