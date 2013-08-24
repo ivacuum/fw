@@ -363,6 +363,15 @@ INSERT INTO `site_menus` (`menu_id`, `menu_alias`, `menu_title`, `menu_active`, 
 (1, '2nd_level_menu', 'Меню второго уровня', 1, 1),
 (2, '3rd_level_menu', 'Меню третьего уровня', 1, 2);
 
+INSERT INTO `site_pages` (`page_id`, `site_id`, `parent_id`, `left_id`, `right_id`, `is_dir`, `page_enabled`, `page_display`, `page_name`, `page_title`, `page_url`, `page_formats`, `page_redirect`, `page_text`, `page_handler`, `handler_method`, `page_description`, `page_keywords`, `page_noindex`, `page_comments`, `page_image`, `display_in_menu_1`, `display_in_menu_2`) VALUES
+(1, 1, 0, 1, 2, 0, 1, 0, 'Главная страница', '', 'index', 'html', '', '', '', '', '', '', 0, 0, '', 0, 0),
+(2, 2, 0, 1, 4, 1, 1, 0, 'Ajax', '', 'ajax', 'html', '', '', '', '', '', '', 0, 0, '', 0, 0),
+(3, 2, 2, 2, 3, 1, 1, 0, 'set site id', '', 'set_site_id', 'html', '', '', 'ajax\\main', 'set_site_id', '', '', 0, 0, '', 0, 0),
+(4, 2, 0, 5, 10, 1, 1, 2, 'Контент', '', 'content', 'html', '', '', '', '', '', '', 0, 0, 'table', 0, 0),
+(5, 2, 4, 6, 9, 1, 1, 2, 'Структура сайта', '', 'structure', 'html', '', '', '', '', '', '', 0, 0, '', 0, 0),
+(6, 2, 5, 7, 8, 1, 1, 2, 'Страницы', '', 'pages', 'html', '', '', '\\fw\\modules\\acp\\pages', 'index', '', '', 0, 0, 'document_tree', 0, 0),
+(7, 2, 0, 11, 12, 0, 1, 0, 'Приветствие', '', 'index', 'html', '/content/', '<p>Добро пожаловать в систему управления сайтом!</p>\r\n\r\n<p>Для начала работы выберите раздел.</p>', '', '', '', '', 0, 0, 'home', 0, 0);
+
 INSERT INTO `site_sites` (`site_id`, `site_language`, `site_locale`, `site_title`, `site_url`, `site_aliases`, `site_default`) VALUES
 (1, 'ru', 'ru_RU.UTF-8', 'localhost (ru)', 'localhost', '', 1),
 (2, 'ru', 'ru_RU.UTF-8', 'acp.localhost (ru)', 'acp.localhost', '', 1);
