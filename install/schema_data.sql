@@ -1,3 +1,6 @@
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
 INSERT INTO `site_auth_options` (`auth_id`, `auth_name`, `auth_sub`, `auth_var`, `auth_global`, `auth_local`, `auth_default`) VALUES
 (1, 'AUTH_ADMIN', '', 'a_', 1, 0, 0);
 
