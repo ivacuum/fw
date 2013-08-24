@@ -363,6 +363,10 @@ INSERT INTO `site_menus` (`menu_id`, `menu_alias`, `menu_title`, `menu_active`, 
 (1, '2nd_level_menu', 'Меню второго уровня', 1, 1),
 (2, '3rd_level_menu', 'Меню третьего уровня', 1, 2);
 
+INSERT INTO `site_sites` (`site_id`, `site_language`, `site_locale`, `site_title`, `site_url`, `site_aliases`, `site_default`) VALUES
+(1, 'ru', 'ru_RU.UTF-8', 'localhost (ru)', 'localhost', '', 1),
+(2, 'ru', 'ru_RU.UTF-8', 'acp.localhost (ru)', 'acp.localhost', '', 1);
+
 INSERT INTO `site_users` (`user_id`, `user_access`, `user_active`, `username`, `username_clean`, `user_url`, `user_password`, `user_salt`, `user_session_page`, `user_last_visit`, `user_regdate`, `user_ip`, `user_money`, `user_points`, `user_posts`, `user_rank`, `user_colour`, `user_first_name`, `user_last_name`, `user_birth_year`, `user_birth_month`, `user_birth_day`, `user_language`, `user_email`, `user_icq`, `user_jid`, `user_website`, `user_from`, `user_occ`, `user_interests`, `user_login_attempts`, `user_form_salt`, `user_newpasswd`, `user_actkey`) VALUES
 (1, '', 1, 'root', 'root', '', '', '', '', 0, 0, '127.0.0.1', '0.00', '0.00', 0, 0, '', '', '', 0, 0, 0, 'ru', 'root@example.com', '', '', '', '', '', '', 0, '', '', '');
 
