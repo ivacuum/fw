@@ -114,7 +114,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 	
 	public function get_back_url()
 	{
-		return urlencode("//{$this->request->hostname}{$this->request->url}");
+		return urlencode("//{$this->request->hostname}{$this->request->port}{$this->request->url}");
 	}
 	
 	/**

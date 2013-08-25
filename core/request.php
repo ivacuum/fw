@@ -25,6 +25,7 @@ class request
 	public $isp;
 	public $language;
 	public $method;
+	public $port;
 	public $server_name;
 	public $time;
 	public $url;
@@ -52,6 +53,7 @@ class request
 		$this->is_secure = $this->server('HTTPS') == 'on';
 		$this->isp       = $this->header('Provider', 'internet');
 		$this->method    = strtolower($this->server('REQUEST_METHOD', 'get'));
+		$this->port      = $this->server('SERVER_PORT') == 80 ? '' : ':' . $this->server('SERVER_PORT');
 		$this->time      = $this->server('REQUEST_TIME', time());
 		$this->url       = urldecode(htmlspecialchars_decode(str_replace(['\\x', '%25'], '%', $this->server('REQUEST_URI'))));
 		

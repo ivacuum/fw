@@ -79,6 +79,7 @@ class db extends config
 		
 		parent::__construct(array_merge($this->load_config(0), $this->load_config($this->site_id)));
 		
+		$this->defaults['cookie.domain'] = ".{$site_info['domain']}";
 		$this->setup_defaults();
 	}
 	
