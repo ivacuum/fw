@@ -22,7 +22,7 @@ class memory
 		
 		if (!$this->options['type'] || !extension_loaded($this->options['type']))
 		{
-			trigger_error("Не удается найти расширение «{$this->extension}».", E_USER_ERROR);
+			trigger_error("Не удается найти расширение «{$this->options['type']}».", E_USER_ERROR);
 		}
 		
 		if (!$this->options['prefix'] || !$this->options['shared_prefix'])
