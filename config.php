@@ -121,12 +121,12 @@ $app = [
 	],
 	
 	/* Версии библиотек */
-	'version.guzzle'   => '3.7.1',
-	'version.monolog'  => '1.5.0',
+	'version.guzzle'   => '3.8.1',
+	'version.monolog'  => '1.7.0',
 	'version.psrlog'   => '1.0.0',
-	'version.smarty'   => '3.1.14',
-	'version.swift'    => '5.0.1',
-	'version.symfony'  => '2.2.3',
+	'version.smarty'   => '3.1.16',
+	'version.swift'    => '5.0.3',
+	'version.symfony'  => '2.2.11',
 ];
 
 $app['autoloader.namespaces'] = [
