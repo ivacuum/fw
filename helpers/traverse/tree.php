@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2014
 */
 
 namespace fw\helpers\traverse;
@@ -38,16 +38,13 @@ class tree
 	*/
 	public function process_node($row = [])
 	{
-		if (!empty($row))
-		{
+		if (!empty($row)) {
 			$this->row = $row;
 		}
 		
 		/* Пропуск ветви */
-		if ($this->right_id)
-		{
-			if ($this->row['left_id'] < $this->right_id)
-			{
+		if ($this->right_id) {
+			if ($this->row['left_id'] < $this->right_id) {
 				return;
 			}
 			
@@ -55,19 +52,15 @@ class tree
 		}
 		
 		/* Следует ли пропустить ветвь дерева */
-		if ($this->skip_condition())
-		{
+		if ($this->skip_condition()) {
 			$this->right_id = $this->row['right_id'];
 			return;
 		}
 		
 		/* Уменьшение глубины */
-		if ($this->depth && $this->row['left_id'] > $this->edge[$this->depth])
-		{
-			for ($i = $this->depth; $i > 0; $i--)
-			{
-				if ($this->row['left_id'] > $this->edge[$i])
-				{
+		if ($this->depth && $this->row['left_id'] > $this->edge[$this->depth]) {
+			for ($i = $this->depth; $i > 0; $i--) {
+				if ($this->row['left_id'] > $this->edge[$i]) {
 					array_pop($this->edge);
 					$this->depth--;
 					$this->on_depth_decrease();
@@ -80,8 +73,7 @@ class tree
 		$this->edge[$this->depth] = $this->row['right_id'];
 		$this->on_depth_increase();
 		
-		if (false === $data = $this->get_data())
-		{
+		if (false === $data = $this->get_data()) {
 			return;
 		}
 		
@@ -94,13 +86,11 @@ class tree
 	*/
 	public function process_nodes($rows)
 	{
-		if (!is_array($rows) || !isset($rows[0]))
-		{
+		if (!is_array($rows) || !isset($rows[0])) {
 			return false;
 		}
 		
-		foreach ($rows as $this->row)
-		{
+		foreach ($rows as $this->row) {
 			$this->process_node();
 		}
 	}
@@ -148,24 +138,20 @@ class tree
 	protected function tree_append($data)
 	{
 		/* Формирование списка */
-		if (!$this->options['return_as_tree'])
-		{
+		if (!$this->options['return_as_tree']) {
 			$this->tree[] = $data;
 			return true;
 		}
 		
 		/* Формирование дерева */
-		if ($this->depth === 1)
-		{
+		if ($this->depth === 1) {
 			unset($this->branch);
 			$this->branch = [];
 
 			$i = sizeof($this->tree);
 			$this->tree[$i] = $data;
 			$this->branch[$this->depth] =& $this->tree[$i];
-		}
-		else
-		{
+		} else {
 			$i = sizeof($this->branch[$this->depth - 1]['children']);
 			$this->branch[$this->depth - 1]['children'][$i] = $data;
 			$this->branch[$this->depth] =& $this->branch[$this->depth - 1]['children'][$i];

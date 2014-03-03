@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\cron\tasks;
@@ -20,22 +20,17 @@ class rss extends task
 		$request = $this->http_client->get($url);
 		$request->getCurlOptions()->set(CURLOPT_CONNECTTIMEOUT, $timeout);
 		
-		try
-		{
+		try {
 			$response = $request->send()->getBody();
-		}
-		catch (\Exception $e)
-		{
+		} catch (\Exception $e) {
 			$this->log($e->getMessage());
 			return false;
 		}
 		
 		libxml_use_internal_errors(true);
 		
-		if (false === $response = simplexml_load_string($response, 'SimpleXMLElement', LIBXML_NOCDATA))
-		{
-			foreach (libxml_get_errors() as $error)
-			{
+		if (false === $response = simplexml_load_string($response, 'SimpleXMLElement', LIBXML_NOCDATA)) {
+			foreach (libxml_get_errors() as $error) {
 				$this->log($error->message);
 			}
 			

@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\form\field;
@@ -13,8 +13,7 @@ class url extends generic
 {
 	public function validate()
 	{
-		if ($this->data['field_required'] && !$this->data['value'])
-		{
+		if ($this->data['field_required'] && !$this->data['value']) {
 			return false;
 		}
 		
@@ -22,33 +21,27 @@ class url extends generic
 		* Проверка длины
 		* Видоизмененные данные перестанут быть корректными, поэтому сбрасываем ввод
 		*/
-		if ($this->data['value'])
-		{
+		if ($this->data['value']) {
 			$len = mb_strlen($this->data['value']);
 			
-			if ($len < $this->config['form.url.min_chars'] || $len > $this->config['form.url.max_chars'])
-			{
+			if ($len < $this->config['form.url.min_chars'] || $len > $this->config['form.url.max_chars']) {
 				$this->data['value'] = '';
 
 				return !$this->data['field_required'];
 			}
 		}
 		
-		if ($this->data['field_default_protocol'])
-		{
-			if (!preg_match('#^(https?|ftp)://#', $this->data['value']))
-			{
+		if ($this->data['field_default_protocol']) {
+			if (!preg_match('#^(https?|ftp)://#', $this->data['value'])) {
 				$this->data['value'] = $this->data['field_default_protocol'] . $this->data['value'];
 			}
 		}
 		
-		if ($this->data['field_pattern'] && !preg_match(sprintf('#%s#', $this->data['field_pattern']), $this->data['value']))
-		{
+		if ($this->data['field_pattern'] && !preg_match(sprintf('#%s#', $this->data['field_pattern']), $this->data['value'])) {
 			return false;
 		}
 
-		if (false === $ary = parse_url($this->data['value']))
-		{
+		if (false === $ary = parse_url($this->data['value'])) {
 			$this->data['value'] = '';
 			
 			return !$this->data['field_required'];

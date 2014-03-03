@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2014
 */
 
 namespace fw\config;
@@ -93,24 +93,18 @@ class db extends config
 		$sql = 'DELETE FROM site_config WHERE config_name = ? AND site_id = ?';
 		$this->db->query($sql, [$key, $site_id]);
 		
-		if ($site_id === $this->site_id)
-		{
+		if ($site_id === $this->site_id) {
 			/* Настройки текущего сайта */
 			unset($this->config[$key]);
 			$this->cache->delete("config_{$this->language}");
-		}
-		elseif ($site_id === 0)
-		{
+		} elseif ($site_id === 0) {
 			/* Настройки движка */
-			if (!isset($this->site_vars[$key]))
-			{
+			if (!isset($this->site_vars[$key])) {
 				unset($this->config[$key]);
 			}
 			
 			$this->cache->delete_shared('config');
-		}
-		elseif ($site_id > 0 && $site_id !== $this->site_id)
-		{
+		} elseif ($site_id > 0 && $site_id !== $this->site_id) {
 			/* Настройки другого сайта */
 			$site_info = $this->cache->get_site_info_by_id($site_id);
 			
@@ -125,18 +119,14 @@ class db extends config
 	{
 		$site_id = false !== $site_id ? intval($site_id) : $this->site_id;
 		
-		if ($site_id !== 0 && $site_id !== $this->site_id)
-		{
+		if ($site_id !== 0 && $site_id !== $this->site_id) {
 			trigger_error('Метод increment можно вызывать только для текущего сайта и движка');
 		}
 		
-		if ($site_id === $this->site_id && !isset($this->site_vars[$key]))
-		{
+		if ($site_id === $this->site_id && !isset($this->site_vars[$key])) {
 			/* Настройка текущего сайта */
 			$this->set($key, 0);
-		}
-		elseif ($site_id === 0 && !isset($this->config[$key]))
-		{
+		} elseif ($site_id === 0 && !isset($this->config[$key])) {
 			/* Настройка движка */
 			$this->set($key, 0, 0);
 		}
@@ -144,17 +134,13 @@ class db extends config
 		$sql = 'UPDATE site_config SET config_value = config_value + :increment WHERE config_name = ? AND site_id = ?';
 		$this->db->query($sql, [$key, $site_id, ':increment' => (int) $increment]);
 		
-		if ($site_id > 0)
-		{
+		if ($site_id > 0) {
 			/* Настройки сайта */
 			$this->config[$key] += $increment;
 			$this->cache->delete("config_{$this->language}");
-		}
-		elseif ($site_id === 0)
-		{
+		} elseif ($site_id === 0) {
 			/* Настройки движка */
-			if (!isset($this->site_vars[$key]))
-			{
+			if (!isset($this->site_vars[$key])) {
 				/**
 				* Текущее значение обновляется только если
 				* сайт не переопределил настройку
@@ -191,26 +177,24 @@ class db extends config
 			AND
 				site_id = ' . $this->db->check_value($site_id);
 		
-		if (false !== $old_value)
-		{
+		if (false !== $old_value) {
 			$sql .= ' AND config_value = ' . $this->db->check_value($old_value);
 		}
 		
 		$this->db->query($sql);
 		
-		if (!$this->db->affected_rows())
-		{
+		if (!$this->db->affected_rows()) {
 			if (($site_id === $this->site_id && isset($this->site_vars[$key])) ||
-				($site_id === 0 && isset($this->config[$key])))
-			{
+				($site_id === 0 && isset($this->config[$key]))
+			) {
 				return false;
 			}
 		}
 		
 		if (($site_id === $this->site_id && !isset($this->site_vars[$key])) ||
 			($site_id === 0 && !isset($this->config[$key]) && !isset($this->site_vars[$key])) ||
-			($site_id > 0 && $site_id !== $this->site_id))
-		{
+			($site_id > 0 && $site_id !== $this->site_id)
+		) {
 			$insert = $site_id > 0 && $site_id !== $this->site_id ? 'INSERT IGNORE' : 'INSERT';
 			
 			$sql = $insert . ' INTO site_config ' . $this->db->build_array('INSERT', [
@@ -221,18 +205,14 @@ class db extends config
 			$this->db->query($sql);
 		}
 		
-		if ($site_id === $this->site_id)
-		{
+		if ($site_id === $this->site_id) {
 			/* Настройки текущего сайта */
 			$this->config[$key] = $new_value;
 			$this->site_vars[$key] = true;
 			$this->cache->delete("config_{$this->language}");
-		}
-		elseif ($site_id === 0)
-		{
+		} elseif ($site_id === 0) {
 			/* Настройки движка */
-			if (!isset($this->site_vars[$key]))
-			{
+			if (!isset($this->site_vars[$key])) {
 				/**
 				* Текущее значение обновляется только если
 				* сайт не переопределил настройку
@@ -241,9 +221,7 @@ class db extends config
 			}
 			
 			$this->cache->delete_shared('config');
-		}
-		elseif ($site_id > 0 && $site_id !== $this->site_id)
-		{
+		} elseif ($site_id > 0 && $site_id !== $this->site_id) {
 			/* Настройки другого сайта */
 			$site_info = $this->cache->get_site_info_by_id($site_id);
 			
@@ -261,33 +239,27 @@ class db extends config
 		$cache_entry = 0 === $site_id ? 'config' : "config_{$this->language}";
 		
 		if ((0 === $site_id && false === $config = $this->cache->get_shared($cache_entry)) ||
-			(0 !== $site_id && false === $config = $this->cache->get($cache_entry)))
-		{
+			(0 !== $site_id && false === $config = $this->cache->get($cache_entry))
+		) {
 			$sql = 'SELECT config_name, config_value FROM site_config WHERE site_id = ?';
 			$this->db->query($sql, [$site_id]);
 			$config = [];
 
-			while ($row = $this->db->fetchrow())
-			{
+			while ($row = $this->db->fetchrow()) {
 				$config[$row['config_name']] = $row['config_value'];
 			}
 
 			$this->db->freeresult();
 			
-			if (0 === $site_id)
-			{
+			if (0 === $site_id) {
 				$this->cache->set_shared($cache_entry, $config);
-			}
-			else
-			{
+			} else {
 				$this->cache->set($cache_entry, $config);
 			}
 		}
 		
-		if ($site_id)
-		{
-			foreach ($config as $key => $value)
-			{
+		if ($site_id) {
+			foreach ($config as $key => $value) {
 				$this->site_vars[$key] = true;
 			}
 		}
@@ -297,10 +269,8 @@ class db extends config
 	
 	protected function setup_defaults()
 	{
-		foreach ($this->defaults as $key => $value)
-		{
-			if (!isset($this->config[$key]))
-			{
+		foreach ($this->defaults as $key => $value) {
+			if (!isset($this->config[$key])) {
 				$this->set($key, $value, 0);
 			}
 		}

@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\core;
@@ -51,10 +51,8 @@ class router
 		$this->site_id   = $this->site_info['id'];
 		$this->url       = $url ?: $this->request->url;
 		
-		if (0 === strpos($this->url, "/{$this->request->language}/"))
-		{
-			if ($this->site_info['default'])
-			{
+		if (0 === strpos($this->url, "/{$this->request->language}/")) {
+			if ($this->site_info['default']) {
 				/* Если выбрана локализация по умолчанию, то убираем язык из URL */
 				$this->request->redirect(ilink(mb_substr($this->request->url, 3)));
 			}
@@ -62,18 +60,15 @@ class router
 			$this->url = mb_substr($this->url, 3);
 		}
 		
-		if (false !== $query_string_pos = strpos($this->url, '?'))
-		{
+		if (false !== $query_string_pos = strpos($this->url, '?')) {
 			$this->url = substr($this->url, 0, $query_string_pos);
 		}
 		
 		$ary = pathinfo(trim($this->url, '/'));
 		
-		if (isset($ary['extension']))
-		{
+		if (isset($ary['extension'])) {
 			/* Обращение к странице */
-			if (!in_array($ary['extension'], explode(';', $this->options['allowed_extensions']), true))
-			{
+			if (!in_array($ary['extension'], explode(';', $this->options['allowed_extensions']), true)) {
 				trigger_error('PAGE_NOT_FOUND');
 			}
 			
@@ -81,24 +76,19 @@ class router
 			$this->params = $ary['dirname'] != '.' ? explode('/', $ary['dirname']) : [];
 			$this->page   = $ary['filename'];
 			$this->url    = $ary['dirname'] != '.' ? $ary['dirname'] : '';
-		}
-		elseif (substr($this->url, -1) != '/')
-		{
+		} elseif (substr($this->url, -1) != '/') {
 			/**
 			* Обращение к странице без расширения
 			* Проверяем, можно ли обращаться к страницам без расширения
 			*/
-			if (!in_array('', explode(';', $this->options['allowed_extensions']), true))
-			{
+			if (!in_array('', explode(';', $this->options['allowed_extensions']), true)) {
 				/* Перенаправление на одноименный каталог */
 				$this->request->redirect(ilink($this->url), 301);
 			}
 
 			$this->params = $ary['dirname'] != '.' ? explode('/', $ary['dirname']) : [];
 			$this->page   = $ary['filename'];
-		}
-		elseif ($this->url && $this->url != '/')
-		{
+		} elseif ($this->url && $this->url != '/') {
 			/* Обращение к каталогу */
 			$this->params = explode('/', trim($this->url, '/'));
 		}
@@ -137,12 +127,9 @@ class router
 		* /[игры/diablo2]/скриншоты.html
 		* /[users/a/admin]/posts.html
 		*/
-		for ($i = 0; $i < $this->params_count; $i++)
-		{
-			if (false == $row = $this->get_page_row_by_url($this->params[$i], true, $parent_id))
-			{
-				if ($redirect)
-				{
+		for ($i = 0; $i < $this->params_count; $i++) {
+			if (false == $row = $this->get_page_row_by_url($this->params[$i], true, $parent_id)) {
+				if ($redirect) {
 					errorhandler::log_mail("Page http://{$this->request->server_name}{$this->request->url} not found and redirected to {$redirect}", "404 Not Found", 404);
 					
 					/* Выход для использования редиректа родительской страницы */
@@ -156,18 +143,14 @@ class router
 			* Если редирект установлен у родительской страницы,
 			* то автоматически становятся недоступны все вложенные
 			*/
-			if (!empty($row) && $row['page_redirect'])
-			{
+			if (!empty($row) && $row['page_redirect']) {
 				$redirect = $row['page_redirect'];
 			}
 
-			if ($row['page_handler'] && $row['handler_method'])
-			{
+			if ($row['page_handler'] && $row['handler_method']) {
 				$handler_name   = $row['page_handler'];
 				$handler_method = $row['handler_method'];
-			}
-			else
-			{
+			} else {
 				$handler_method = 'static_page';
 			}
 			
@@ -175,8 +158,7 @@ class router
 			
 			$parent_id = (int) $row['page_id'];
 			
-			if ($row['page_url'] != '*')
-			{
+			if ($row['page_url'] != '*') {
 				$this->breadcrumbs($row['page_name'], ilink(implode('/', $this->page_link)), $row['page_image']);
 				
 				unset($this->params[$i]);
@@ -191,14 +173,10 @@ class router
 		*
 		* /ucp/[login.html]
 		*/
-		for (;;)
-		{
-			if (!$this->params_count || ($this->params_count > 0 && $this->page != $this->options['directory_index']))
-			{
-				if (false == $row = $this->get_page_row_by_url($this->page, false, $parent_id))
-				{
-					if ($redirect)
-					{
+		for (;;) {
+			if (!$this->params_count || ($this->params_count > 0 && $this->page != $this->options['directory_index'])) {
+				if (false == $row = $this->get_page_row_by_url($this->page, false, $parent_id)) {
+					if ($redirect) {
 						errorhandler::log_mail("Page http://{$this->request->server_name}{$this->request->url} not found and redirected to {$redirect}", "404 Not Found", 404);
 
 						/* Выход для использования редиректа родительской страницы */
@@ -208,28 +186,22 @@ class router
 					trigger_error('PAGE_NOT_FOUND');
 				}
 			
-				if (!empty($row) && $row['page_redirect'])
-				{
+				if (!empty($row) && $row['page_redirect']) {
 					$redirect = $row['page_redirect'];
 				}
 
-				if ($row['page_handler'] && $row['handler_method'])
-				{
+				if ($row['page_handler'] && $row['handler_method']) {
 					$handler_name   = $row['page_handler'];
 					$handler_method = $row['handler_method'];
-				}
-				elseif ($this->params_count > 0)
-				{
+				} elseif ($this->params_count > 0) {
 					$handler_method = 'static_page';
 				}
 			
-				if ($this->page != $this->options['directory_index'])
-				{
+				if ($this->page != $this->options['directory_index']) {
 					$this->page_link[] = $this->format ? "{$this->page}.{$this->format}" : $this->page;
 				}
 
-				if ($row['page_url'] != '*')
-				{
+				if ($row['page_url'] != '*') {
 					$this->breadcrumbs($row['page_name'], ilink(implode('/', $this->page_link)), $row['page_image']);
 				}
 			}
@@ -237,19 +209,16 @@ class router
 			break;
 		}
 
-		if ($redirect)
-		{
+		if ($redirect) {
 			$this->request->redirect(ilink($redirect), 301);
 		}
 
-		if (!$row)
-		{
+		if (!$row) {
 			/* На сайте еще нет ни одной страницы */
 			trigger_error('PAGE_NOT_FOUND');
 		}
 		
-		if (!in_array($this->format, explode(';', $row['page_formats']), true))
-		{
+		if (!in_array($this->format, explode(';', $row['page_formats']), true)) {
 			trigger_error('PAGE_NOT_FOUND');
 		}
 
@@ -262,8 +231,7 @@ class router
 		$this->page_row = $row;
 		
 		/* Статичная страница */
-		if (!$handler_name || !$handler_method)
-		{
+		if (!$handler_name || !$handler_method) {
 			return $this->load_handler('models\\page', 'static_page');
 		}
 		
@@ -280,8 +248,7 @@ class router
 		$this->handler = new $class_name($this->options);
 		$this->method  = $method;
 		
-		if (!$this->load_handler_with_params($params))
-		{
+		if (!$this->load_handler_with_params($params)) {
 			return false;
 		}
 		
@@ -296,28 +263,21 @@ class router
 		$concrete_method = "{$this->method}_{$this->request->method}";
 
 		/* Проверка существования необходимого метода у обработчика */
-		if (!method_exists($this->handler, $concrete_method) && !method_exists($this->handler, $this->method))
-		{
-			if ($this->options['send_status_code'])
-			{
+		if (!method_exists($this->handler, $concrete_method) && !method_exists($this->handler, $this->method)) {
+			if ($this->options['send_status_code']) {
 				/**
 				* API-сайт должен отправлять соответствующие коды состояния HTTP
 				*/
-				if ($this->request->method == 'get' || !method_exists($this->handler, "{$this->method}_get"))
-				{
+				if ($this->request->method == 'get' || !method_exists($this->handler, "{$this->method}_get")) {
 					/* Not Implemented */
 					http_response_code(501);
-				}
-				else
-				{
+				} else {
 					/* Method Not Allowed */
 					http_response_code(405);
 				}
 				
 				return false;
-			}
-			else
-			{
+			} else {
 				/* Обычный сайт может сразу возвращать 404 Not Found */
 				http_response_code(404);
 				return false;
@@ -347,13 +307,11 @@ class router
 			->set_appropriate_content_type();
 		
 		/* Предустановки */
-		if (method_exists($this->handler, '_setup'))
-		{
+		if (method_exists($this->handler, '_setup')) {
 			call_user_func([$this->handler, '_setup']);
 		}
 		
-		if (method_exists($this->handler, $concrete_method))
-		{
+		if (method_exists($this->handler, $concrete_method)) {
 			/**
 			* Попытка вызвать метод с суффиксом в виде HTTP метода
 			* GET index -> index_get
@@ -361,9 +319,7 @@ class router
 			*/
 			call_user_func_array([$this->handler, $concrete_method], $params);
 			$this->call_with_format($concrete_method, $params);
-		}
-		else
-		{
+		} else {
 			call_user_func_array([$this->handler, $this->method], $params);
 			$this->call_with_format($this->method, $params);
 		}
@@ -377,15 +333,13 @@ class router
 	*/
 	protected function call_with_format($method, $params)
 	{
-		if (!$this->format)
-		{
+		if (!$this->format) {
 			return;
 		}
 		
 		$method = "{$method}_{$this->format}";
 		
-		if (method_exists($this->handler, $method))
-		{
+		if (method_exists($this->handler, $method)) {
 			call_user_func_array([$this->handler, $method], $params);
 		}
 	}
@@ -417,8 +371,7 @@ class router
 		$this->db->freeresult();
 		
 		/* Загрузка блока */
-		if (!$row && !$is_dir && $parent_id && function_exists('get_page_block'))
-		{
+		if (!$row && !$is_dir && $parent_id && function_exists('get_page_block')) {
 			return get_page_block($page_url, $parent_id, 'pages');
 		}
 		

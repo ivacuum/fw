@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2014
 */
 
 namespace fw\captcha;
@@ -59,8 +59,7 @@ class service
 		
 		$symbols_last_index = sizeof($symbols) - 1;
 		
-		for ($i = 0, $len = mt_rand($this->config['confirm.min_chars'], $this->config['confirm.max_chars']); $i < $len; $i++)
-		{
+		for ($i = 0, $len = mt_rand($this->config['confirm.min_chars'], $this->config['confirm.max_chars']); $i < $len; $i++) {
 			$this->code .= $symbols[mt_rand(0, $symbols_last_index)];
 		}
 		
@@ -82,8 +81,7 @@ class service
 	*/
 	public function send()
 	{
-		if (empty($this->code))
-		{
+		if (empty($this->code)) {
 			$this->generate_code();
 		}
 		

@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\modules\ucp\oauth;
@@ -20,8 +20,7 @@ class base extends page
 	
 	public function index()
 	{
-		if (!$this->get_handler_url('callback'))
-		{
+		if (!$this->get_handler_url('callback')) {
 			trigger_error('CALLBACK_URL_NOT_CONFIGURED');
 		}
 		
@@ -36,13 +35,11 @@ class base extends page
 	
 	protected function auth_if_guest($user_id)
 	{
-		if ($this->user->is_registered && $this->user['user_id'] != $user_id)
-		{
+		if ($this->user->is_registered && $this->user['user_id'] != $user_id) {
 			trigger_error('Социальный профиль уже закреплен за другой учетной записью.<br><br><a href="' . ilink($this->get_handler_url('ucp::social')) . '">Вернуться к управлению социальными профилями</a>.');
 		}
 
-		if (!$this->user->is_registered && $user_id > 0)
-		{
+		if (!$this->user->is_registered && $user_id > 0) {
 			$redirect = !empty($_SESSION['request.redirect']) ? $_SESSION['request.redirect'] : '';
 			
 			/* Данные закреплены за пользователем, можно аутентифицировать */
@@ -60,8 +57,7 @@ class base extends page
 	{
 		$state = $this->request->variable('state', '');
 		
-		if (empty($_SESSION["oauth.{$this->api_provider}.state"]) || $_SESSION["oauth.{$this->api_provider}.state"] != $state)
-		{
+		if (empty($_SESSION["oauth.{$this->api_provider}.state"]) || $_SESSION["oauth.{$this->api_provider}.state"] != $state) {
 			trigger_error('Произошла ошибка (CSRF). Пожалуйста, попробуйте войти еще раз.');
 		}
 		
@@ -70,8 +66,7 @@ class base extends page
 	
 	protected function exit_if_error()
 	{
-		if (!isset($json['error']))
-		{
+		if (!isset($json['error'])) {
 			return false;
 		}
 		
@@ -125,8 +120,7 @@ class base extends page
 	*/
 	protected function redirect_if_user_logged_in()
 	{
-		if (!$this->user->is_registered)
-		{
+		if (!$this->user->is_registered) {
 			return false;
 		}
 		
@@ -138,8 +132,7 @@ class base extends page
 	*/
 	protected function redirect_if_user_denied()
 	{
-		if (!$this->request->is_set('error'))
-		{
+		if (!$this->request->is_set('error')) {
 			return false;
 		}
 		

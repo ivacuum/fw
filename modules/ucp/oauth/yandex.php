@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\modules\ucp\oauth;
@@ -89,8 +89,7 @@ class yandex extends base
 		$display_name = $json['display_name'];
 		list($last_name, $first_name) = explode(' ', $json['real_name']);
 		
-		switch ($json['sex'])
-		{
+		switch ($json['sex']) {
 			case 'female': $gender = 1; break;
 			case 'male': $gender = 2; break;
 			default: $gender = 0;

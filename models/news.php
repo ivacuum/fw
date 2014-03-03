@@ -1,12 +1,10 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\models;
-
-use Exception;
 
 class news extends base
 {
@@ -40,9 +38,8 @@ class news extends base
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
 		
-		if (!$row)
-		{
-			throw new Exception('NEWS_NOT_FOUND');
+		if (!$row) {
+			throw new \Exception('NEWS_NOT_FOUND');
 		}
 		
 		return $row;
@@ -72,8 +69,7 @@ class news extends base
 	{
 		$pagination = ['offset' => 0, 'on_page' => $count];
 		
-		if (false !== $pagination_url)
-		{
+		if (false !== $pagination_url) {
 			$pagination = pagination($count, $this->get_count(), $pagination_url);
 		}
 		
@@ -95,13 +91,11 @@ class news extends base
 	
 	protected function process_input_array($ary)
 	{
-		if (empty($ary['news_subject']))
-		{
-			throw new Exception('TITLE_IS_EMPTY');
+		if (empty($ary['news_subject'])) {
+			throw new \Exception('TITLE_IS_EMPTY');
 		}
 		
-		if (empty($ary['site_id']))
-		{
+		if (empty($ary['site_id'])) {
 			$ary['site_id'] = $this->site_id;
 		}
 		
@@ -111,9 +105,8 @@ class news extends base
 		$ary['news_url'] = empty($ary['news_url']) ? $ary['news_subject'] : $ary['news_url'];
 		$ary['news_url'] = seo_url($ary['news_url'], $language);
 		
-		if (empty($ary['news_url']))
-		{
-			throw new Exception('URL_GENERATION_FAILED');
+		if (empty($ary['news_url'])) {
+			throw new \Exception('URL_GENERATION_FAILED');
 		}
 		
 		return $ary;

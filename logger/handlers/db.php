@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\logger\handlers;
@@ -24,8 +24,7 @@ class db extends AbstractProcessingHandler
 	
 	protected function write(array $record)
 	{
-		if (empty($record['context']['action']))
-		{
+		if (empty($record['context']['action'])) {
 			return false;
 		}
 		

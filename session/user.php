@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\session;
@@ -20,8 +20,7 @@ class user extends session
 	*/
 	public function attach_oauth_saved_data($user_id)
 	{
-		if (empty($_SESSION['oauth.saved']))
-		{
+		if (empty($_SESSION['oauth.saved'])) {
 			return false;
 		}
 		
@@ -36,8 +35,7 @@ class user extends session
 	{
 		$username_or_email = mb_strtolower($username_or_email);
 		
-		if (!$username_or_email)
-		{
+		if (!$username_or_email) {
 			return [
 				'message'  => 'Вы не указали логин или электронную почту',
 				'status'   => 'ERROR_USERNAME',
@@ -45,8 +43,7 @@ class user extends session
 			];
 		}
 
-		if (!$password)
-		{
+		if (!$password) {
 			return [
 				'message'  => 'Вы не указали пароль',
 				'status'   => 'ERROR_PASSWORD',
@@ -71,8 +68,7 @@ class user extends session
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
 		
-		if (!$row)
-		{
+		if (!$row) {
 			$sql = '
 				SELECT
 					user_id,
@@ -91,8 +87,7 @@ class user extends session
 			$this->db->freeresult();
 		}
 		
-		if ($this->ip)
-		{
+		if ($this->ip) {
 			$sql = 'SELECT COUNT(*) AS attempts FROM site_login_attempts WHERE attempt_time > ? AND attempt_ip = ?';
 			$this->db->query($sql, [time() - (int) $this->config['ip_login_limit_time'], $this->ip]);
 			$attempts = (int) $this->db->fetchfield('attempts');
@@ -108,16 +103,12 @@ class user extends session
 			
 			$sql = 'INSERT INTO site_login_attempts ' . $this->db->build_array('INSERT', $sql_ary);
 			$this->db->query($sql);
-		}
-		else
-		{
+		} else {
 			$attempts = 0;
 		}
 
-		if (!$row)
-		{
-			if ($this->config['ip_login_limit_max'] && $attempts >= $this->config['ip_login_limit_max'])
-			{
+		if (!$row) {
+			if ($this->config['ip_login_limit_max'] && $attempts >= $this->config['ip_login_limit_max']) {
 				return [
 					'message'  => 'Слишком много ошибок при авторизации, введите код подтверждения',
 					'status'   => 'ERROR_ATTEMPTS',
@@ -135,12 +126,10 @@ class user extends session
 		/* Не пора ли показывать капчу */
 		$show_captcha = ($this->config['max_login_attempts'] && $row['user_login_attempts'] >= $this->config['max_login_attempts']) || ($this->config['ip_login_limit_max'] && $attempts >= $this->config['ip_login_limit_max']);
 		
-		if ($show_captcha)
-		{
+		if ($show_captcha) {
 			global $app;
 			
-			if (!$app['captcha_validator']->is_solved())
-			{
+			if (!$app['captcha_validator']->is_solved()) {
 				return [
 					'message'  => 'Неверно введен код подтверждения',
 					'status'   => 'ERROR_ATTEMPTS',
@@ -152,10 +141,8 @@ class user extends session
 		}
 
 		/* Проверка пароля */
-		if (($row['user_salt'] && md5($password . $row['user_salt']) == $row['user_password']) || (!$row['user_salt'] && md5($password) == $row['user_password']))
-		{
-			if (!$row['user_salt'])
-			{
+		if (($row['user_salt'] && md5($password . $row['user_salt']) == $row['user_password']) || (!$row['user_salt'] && md5($password) == $row['user_password'])) {
+			if (!$row['user_salt']) {
 				$salt = make_random_string(5);
 				
 				$this->user_update([
@@ -167,13 +154,11 @@ class user extends session
 			$sql = 'DELETE FROM site_login_attempts WHERE user_id = ?';
 			$this->db->query($sql, [$row['user_id']]);
 			
-			if ($row['user_login_attempts'])
-			{
+			if ($row['user_login_attempts']) {
 				$this->user_update(['user_login_attempts' => 0], $row['user_id']);
 			}
 			
-			if (!$row['user_active'])
-			{
+			if (!$row['user_active']) {
 				return [
 					'message'  => 'Эта учетная запись отключена',
 					'status'   => 'ERROR_NOT_ACTIVE',

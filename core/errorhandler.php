@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\core;
@@ -22,23 +22,20 @@ class errorhandler
 		global $app;
 		
 		/* Выходим, если проверка отключена через @ */
-		if (error_reporting() == 0 && $type != E_USER_ERROR && $type != E_USER_WARNING && $type != E_USER_NOTICE)
-		{
+		if (error_reporting() == 0 && $type != E_USER_ERROR && $type != E_USER_WARNING && $type != E_USER_NOTICE) {
 			return;
 		}
 		
 		$file = str_replace(static::$document_root, '', $file);
 		
-		switch ($type)
-		{
+		switch ($type) {
 			/* Ошибка/предупреждение */
 			case E_NOTICE:
 			case E_WARNING:
 			
 				static::log_mail("{$text} on line {$line} in file {$file}");
 
-				if (!static::$options['standalone'])
-				{
+				if (!static::$options['standalone']) {
 					$app['profiler']->log_error($text, $line, $file);
 				}
 				
@@ -51,14 +48,12 @@ class errorhandler
 			*/
 			case E_USER_ERROR:
 			
-				if (defined('IN_SQL_ERROR'))
-				{
+				if (defined('IN_SQL_ERROR')) {
 					global $error_ary;
 					
 					static::log_mail($error_ary);
 					
-					if (in_array($_SERVER['REMOTE_ADDR'], static::$options['debug.ips']))
-					{
+					if (in_array($_SERVER['REMOTE_ADDR'], static::$options['debug.ips'])) {
 						/* Service Unavailable */
 						http_response_code(503);
 						echo '<!DOCTYPE html>';
@@ -79,9 +74,7 @@ class errorhandler
 						echo '</html>';
 						exit;
 					}
-				}
-				else
-				{
+				} else {
 					static::log_mail("{$text} on line {$line} in file {$file}");
 				}
 
@@ -110,16 +103,14 @@ class errorhandler
 			case E_USER_NOTICE:
 			case E_USER_WARNING:
 			
-				if (static::$options['standalone'])
-				{
+				if (static::$options['standalone']) {
 					/**
 					* Необходимо выдать HTTP/1.1 404 Not Found,
 					* если сообщение об отсутствии данных или ошибке
 					*/
 					preg_match('#NOT_FOUND$#', $text, $matches);
 
-					if (!empty($matches) || 0 === strpos($text, 'ERR_'))
-					{
+					if (!empty($matches) || 0 === strpos($text, 'ERR_')) {
 						http_response_code(404);
 						static::log_mail("Page http://{$_SERVER['SERVER_NAME']}{$_SERVER['REQUEST_URI']} not found", "404 Not Found", 404);
 					}
@@ -128,12 +119,9 @@ class errorhandler
 					exit;
 				}
 				
-				if (!empty($app['router']) && is_object($app['router']->handler))
-				{
+				if (!empty($app['router']) && is_object($app['router']->handler)) {
 					$handler = $app['router']->handler;
-				}
-				else
-				{
+				} else {
 					$handler = new \app\models\page($app['router.options']);
 					$handler->data['site_id'] = $app['site_info']['id'];
 					$handler->format = !empty($app['router']) ? $app['router']->format : $app['router.options']['default_extension'];
@@ -143,8 +131,7 @@ class errorhandler
 						->set_site_menu();
 
 					/* Предустановки */
-					if (method_exists($handler, '_setup'))
-					{
+					if (method_exists($handler, '_setup')) {
 						call_user_func([$handler, '_setup']);
 					}
 				}
@@ -158,15 +145,13 @@ class errorhandler
 				*/
 				preg_match('#NOT_FOUND$#', $text, $matches);
 
-				if (!empty($matches) || 0 === strpos($text, 'ERR_'))
-				{
+				if (!empty($matches) || 0 === strpos($text, 'ERR_')) {
 					http_response_code(404);
 					static::log_mail("Page http://{$app['request']->hostname}{$app['request']->url} not found", "404 Not Found", 404);
 					$handler->data['page_title'] = '404 Not Found';
 				}
 				
-				if (!$handler->format || $handler->format == 'json')
-				{
+				if (!$handler->format || $handler->format == 'json') {
 					$error = ['code' => $text];
 
 					echo json_encode(['errors' => [$error]]);
@@ -200,10 +185,8 @@ class errorhandler
 	*/
 	public static function handle_fatal_error()
 	{
-		if ($error = error_get_last())
-		{
-			switch ($error['type'])
-			{
+		if ($error = error_get_last()) {
+			switch ($error['type']) {
 				case E_ERROR:
 				case E_CORE_ERROR:
 				case E_COMPILE_ERROR:
@@ -211,8 +194,7 @@ class errorhandler
 				
 					static::log_mail("Fatal error: {$error['message']} on line {$error['line']} in file {$error['file']}");
 
-					if (PHP_SAPI != 'cli' && !in_array($_SERVER['REMOTE_ADDR'], static::$options['debug.ips']))
-					{
+					if (PHP_SAPI != 'cli' && !in_array($_SERVER['REMOTE_ADDR'], static::$options['debug.ips'])) {
 						return;
 					}
 
@@ -220,8 +202,7 @@ class errorhandler
 
 					printf('<b style="color: red;">***</b> <b style="white-space: pre-line;">%s</b> on line <b>%d</b> in file <b>%s</b>.<br>', $error['message'], $error['line'], $error['file']);
 
-					if (function_exists('xdebug_print_function_stack'))
-					{
+					if (function_exists('xdebug_print_function_stack')) {
 						ob_start();
 						xdebug_print_function_stack();
 						$call_stack = str_replace(static::$document_root, '', ob_get_clean());
@@ -232,8 +213,7 @@ class errorhandler
 			}
 		}
 
-		if (function_exists('fastcgi_finish_request'))
-		{
+		if (function_exists('fastcgi_finish_request')) {
 			fastcgi_finish_request();
 		}
 	}
@@ -247,8 +227,7 @@ class errorhandler
 		
 		$email = $email ?: 'error';
 		
-		if (!isset(static::$options["email.{$email}"]) || !static::$options["email.{$email}"])
-		{
+		if (!isset(static::$options["email.{$email}"]) || !static::$options["email.{$email}"]) {
 			return;
 		}
 		
@@ -256,15 +235,13 @@ class errorhandler
 		$text       = is_array($text) ? print_r($text, true) : $text;
 		$title      = $_SERVER['SERVER_NAME'] . ($title ? ' ' . $title : '');
 		
-		if (function_exists('xdebug_print_function_stack'))
-		{
+		if (function_exists('xdebug_print_function_stack')) {
 			ob_start();
 			xdebug_print_function_stack();
 			$call_stack = str_replace(static::$document_root, '', ob_get_clean());
 		}
 		
-		if (PHP_SAPI == 'cli')
-		{
+		if (PHP_SAPI == 'cli') {
 			mail(static::$options["email.{$email}"], $title, sprintf("[%s]\n%s\n%s\$_SERVER => %s", strftime('%c'), $text, $call_stack, print_r($_SERVER, true)), sprintf("From: fw@%s\r\n", gethostname()));
 			return;
 		}

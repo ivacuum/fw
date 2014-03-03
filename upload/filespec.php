@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2014
 */
 
 namespace fw\upload;
@@ -37,8 +37,7 @@ class filespec
 	*/
 	function __construct($upload_ary, $upload_namespace)
 	{
-		if (!isset($upload_ary))
-		{
+		if (!isset($upload_ary)) {
 			$this->init_error = true;
 			return;
 		}
@@ -52,8 +51,7 @@ class filespec
 		/* Опера добавляет имя к mime типу */
 		$this->mimetype = false !== strpos($this->mimetype, '; name') ? str_replace(strstr($this->mimetype, '; name'), '', $this->mimetype) : $this->mimetype;
 
-		if (!$this->mimetype)
-		{
+		if (!$this->mimetype) {
 			$this->mimetype = 'application/octetstream';
 		}
 
@@ -75,20 +73,16 @@ class filespec
 	*/
 	public function check_content($disallowed_content)
 	{
-		if (empty($disallowed_content))
-		{
+		if (empty($disallowed_content)) {
 			return true;
 		}
 
-		if (false !== $fp = @fopen($this->filename, 'rb'))
-		{
+		if (false !== $fp = @fopen($this->filename, 'rb')) {
 			$ie_mime_relevant = fread($fp, 256);
 			fclose($fp);
 
-			foreach ($disallowed_content as $forbidden)
-			{
-				if (false !== stripos($ie_mime_relevant, '<' . $forbidden ))
-				{
+			foreach ($disallowed_content as $forbidden) {
+				if (false !== stripos($ie_mime_relevant, '<' . $forbidden )) {
 					return false;
 				}
 			}
@@ -102,13 +96,11 @@ class filespec
 	*/
 	public function clean_filename($mode = 'unique', $prefix = '', $user_id = '')
 	{
-		if ($this->init_error)
-		{
+		if ($this->init_error) {
 			return;
 		}
 
-		switch ($mode)
-		{
+		switch ($mode) {
 			case 'avatar':
 
 				$this->realname = sprintf('%s%s.%s', $prefix, $user_id, $this->extension);
@@ -122,8 +114,7 @@ class filespec
 			case 'real':
 
 				/* Отбрасываем расширение */
-				if (false !== $pos = strpos($this->realname, '.'))
-				{
+				if (false !== $pos = strpos($this->realname, '.')) {
 					$this->realname = substr($this->realname, 0, $pos);
 				}
 
@@ -153,8 +144,7 @@ class filespec
 	*/
 	public function get($property)
 	{
-		if ($this->init_error || !isset($this->$property))
-		{
+		if ($this->init_error || !isset($this->$property)) {
 			return false;
 		}
 
@@ -166,13 +156,11 @@ class filespec
 	*/
 	public function is_uploaded()
 	{
-		if (!$this->local && !is_uploaded_file($this->filename))
-		{
+		if (!$this->local && !is_uploaded_file($this->filename)) {
 			return false;
 		}
 
-		if ($this->local && !file_exists($this->filename))
-		{
+		if ($this->local && !file_exists($this->filename)) {
 			return false;
 		}
 
@@ -184,15 +172,13 @@ class filespec
 	*/
 	public function move_file($destination, $overwrite = false, $skip_image_check = false, $chmod = false)
 	{
-		if (sizeof($this->error))
-		{
+		if (sizeof($this->error)) {
 			return false;
 		}
 		
 		$this->destination_path = $destination;
 
-		if (!file_exists($this->destination_path))
-		{
+		if (!file_exists($this->destination_path)) {
 			@unlink($this->filename);
 			return false;
 		}
@@ -200,20 +186,16 @@ class filespec
 		$upload_mode = $this->local ? 'local' : 'move';
 		$this->destination_file = $this->destination_path . '/' . basename($this->realname);
 
-		if (file_exists($this->destination_file) && !$overwrite)
-		{
+		if (file_exists($this->destination_file) && !$overwrite) {
 			@unlink($this->filename);
 			return false;
 		}
 		
-		switch ($upload_mode)
-		{
+		switch ($upload_mode) {
 			case 'move':
 
-				if (!@move_uploaded_file($this->filename, $this->destination_file))
-				{
-					if (!@copy($this->filename, $this->destination_file))
-					{
+				if (!@move_uploaded_file($this->filename, $this->destination_file)) {
+					if (!@copy($this->filename, $this->destination_file)) {
 						$this->error[] = 'Не удалось переместить файл';
 					}
 				}
@@ -221,8 +203,7 @@ class filespec
 			break;
 			case 'local':
 
-				if (!@copy($this->filename, $this->destination_file))
-				{
+				if (!@copy($this->filename, $this->destination_file)) {
 					$this->error[] = 'Не удалось локально переместить файл';
 				}
 
@@ -231,53 +212,41 @@ class filespec
 		
 		// @unlink($this->filename);
 		
-		if (sizeof($this->error))
-		{
+		if (sizeof($this->error)) {
 			return false;
 		}
 		
-		if (false !== $chmod)
-		{
+		if (false !== $chmod) {
 			chmod($this->destination_file, $chmod);
 		}
 
 		$this->filesize = @filesize($this->destination_file) ? @filesize($this->destination_file) : $this->filesize;
 
-		if ($this->is_image() && !$skip_image_check)
-		{
+		if ($this->is_image() && !$skip_image_check) {
 			$this->height = $this->width = 0;
 
-			if (false !== $this->image_info = @getimagesize($this->destination_file))
-			{
+			if (false !== $this->image_info = @getimagesize($this->destination_file)) {
 				$this->width = $this->image_info[0];
 				$this->height = $this->image_info[1];
 
-				if (!empty($this->image_info['mime']))
-				{
+				if (!empty($this->image_info['mime'])) {
 					$this->mimetype = $this->image_info['mime'];
 				}
 
 				$types = $this->upload->image_types();
 
-				if (!isset($types[$this->image_info[2]]) || !in_array($this->extension, $types[$this->image_info[2]]))
-				{
-					if (!isset($types[$this->image_info[2]]))
-					{
+				if (!isset($types[$this->image_info[2]]) || !in_array($this->extension, $types[$this->image_info[2]])) {
+					if (!isset($types[$this->image_info[2]])) {
 						$this->error[] = 'Неверный тип файла';
-					}
-					else
-					{
+					} else {
 						$this->error[] = 'Тип файла не совпадает с расширением';
 					}
 				}
 
-				if (empty($this->width) || empty($this->height))
-				{
+				if (empty($this->width) || empty($this->height)) {
 					$this->error[] = 'Загружаемый файл - не картинка';
 				}
-			}
-			else
-			{
+			} else {
 				$this->error[] = 'Не удалось определить размеры изображения. Возможно, загруженный файл - не картинка';
 			}
 		}
@@ -294,8 +263,7 @@ class filespec
 	*/
 	public function remove()
 	{
-		if ($this->file_moved)
-		{
+		if ($this->file_moved) {
 			@unlink($this->destination_file);
 		}
 	}
@@ -324,21 +292,18 @@ class filespec
 	*/
 	private function additional_checks()
 	{
-		if (!$this->file_moved)
-		{
+		if (!$this->file_moved) {
 			return false;
 		}
 
 		/* Не превышен ли максимально допустимый размер файла */
-		if ($this->upload->max_filesize && ($this->get('filesize') > $this->upload->max_filesize || 0 == $this->filesize))
-		{
+		if ($this->upload->max_filesize && ($this->get('filesize') > $this->upload->max_filesize || 0 == $this->filesize)) {
 			$this->error[] = 'Превышен максимальный размер файла';
 			return false;
 		}
 
 		/* Проверка ширины и высоты */
-		if (!$this->upload->valid_dimensions($this))
-		{
+		if (!$this->upload->valid_dimensions($this)) {
 			$this->error[] = 'Файл не подходит по ширине или высоте';
 			return false;
 		}
@@ -351,8 +316,7 @@ class filespec
 	*/
 	private function get_extension($filename)
 	{
-		if (false === strpos($filename, '.'))
-		{
+		if (false === strpos($filename, '.')) {
 			return '';
 		}
 		
@@ -368,13 +332,11 @@ class filespec
 	{
 		$mimetype = '';
 
-		if (function_exists('mime_content_type'))
-		{
+		if (function_exists('mime_content_type')) {
 			$mimetype = mime_content_type($filename);
 		}
 
-		if (!$mimetype || $mimetype == 'application/octet-stream')
-		{
+		if (!$mimetype || $mimetype == 'application/octet-stream') {
 			$mimetype = 'application/octetstream';
 		}
 

@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\modules\acp;
@@ -38,12 +38,9 @@ class news extends page
 	
 	public function edit($id)
 	{
-		try
-		{
+		try {
 			$row = $this->news->get_by_id($id);
-		}
-		catch (Exception $e)
-		{
+		} catch (Exception $e) {
 			trigger_error($e->getMessage());
 		}
 		

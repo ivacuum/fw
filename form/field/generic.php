@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\form\field;
@@ -98,7 +98,7 @@ class generic implements \ArrayAccess, \IteratorAggregate, \Countable
 	*/
 	public function getIterator()
 	{
-		return new ArrayIterator($this->data);
+		return new \ArrayIterator($this->data);
 	}
 	
 	/**

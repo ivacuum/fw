@@ -1,17 +1,12 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\session;
 
-use ArrayAccess;
-use Countable;
-use IteratorAggregate;
-use SessionHandlerInterface;
-
-class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandlerInterface
+class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionHandlerInterface
 {
 	public $browser        = '';
 	public $cookie         = [];
@@ -55,8 +50,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 		$options['cookie_domain'] = $options['cookie_domain'] ?: $this->config['cookie.domain'];
 		$options['name'] = $this->config['cookie.prefix'] . $options['name'];
 		
-		foreach ($options as $key => $value)
-		{
+		foreach ($options as $key => $value) {
 			ini_set("session.{$key}", $value);
 		}
 		
@@ -86,12 +80,10 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 		$sql = 'DELETE FROM site_sessions WHERE session_id = ? AND user_id = ?';
 		$this->db->query($sql, [$session_id, $this->data['user_id']]);
 
-		if ($this->data['user_id'] > 0)
-		{
+		if ($this->data['user_id'] > 0) {
 			register_shutdown_function([$this, 'user_update'], ['user_last_visit' => $this->request->time]);
 
-			if ($this->cookie['k'])
-			{
+			if ($this->cookie['k']) {
 				$this->delete_login_key($this->cookie['k']);
 			}
 		}
@@ -122,26 +114,22 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 	*/
 	public function is_auth($mode = '')
 	{
-		if ($this->is_registered)
-		{
+		if ($this->is_registered) {
 			return true;
 		}
 		
-		if (!$mode)
-		{
+		if (!$mode) {
 			/* Возврат результата проверки. Ручная обработка в вызывающем скрипте */
 			return $this->is_registered;
 		}
 
-		if ($mode == 'deny')
-		{
+		if ($mode == 'deny') {
 			/* Запрет просмотра страницы */
 			http_response_code(401);
 			trigger_error(sprintf($this->lang['NEED_LOGIN'], ilink(sprintf('%s?goto=%s', $this->signin_url, $this->get_back_url()))));
 		}
 		
-		if ($mode == 'redirect')
-		{
+		if ($mode == 'redirect') {
 			/* Перенаправление на форму авторизации */
 			$this->request->redirect(ilink(sprintf('%s?goto=%s', $this->signin_url, $this->get_back_url())));
 		}
@@ -159,8 +147,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 		$this->cookie['u'] = $this->request->cookie("{$this->config['cookie.prefix']}u", 0);
 		$this->session_id  = $this->request->cookie("{$this->config['cookie.prefix']}sid", '');
 		
-		if (!$this->session_id)
-		{
+		if (!$this->session_id) {
 			/* Пользователь зашел впервые, надо создать сессию */
 			$this->session_create($session_id);
 			
@@ -170,8 +157,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 		$this->data = $this->cookie['u'] ? $this->get_user_session() : $this->get_guest_session();		
 		
 		/* Сессия не найдена или IP, браузер или прокси отличаются */
-		if (empty($this->data) || !$this->is_session_params_valid())
-		{
+		if (empty($this->data) || !$this->is_session_params_valid()) {
 			$this->session_create();
 			
 			return $this->data['session_data'];
@@ -179,21 +165,17 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 		
 		$this->page_prev = $this->data['session_page'];
 
-		if (!$this->is_session_expired())
-		{
+		if (!$this->is_session_expired()) {
 			/* Обновляем информацию о местонахождении не чаще раза в минуту */
-			if ($this->request->time - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->request->url)
-			{
+			if ($this->request->time - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->request->url) {
 				$sql_ary = [];
 				$sql_ary['session_time'] = $this->data['session_time'] = $this->request->time;
 
-				if ($this->data['session_domain'] != $this->request->hostname)
-				{
+				if ($this->data['session_domain'] != $this->request->hostname) {
 					$sql_ary['session_domain'] = $this->data['session_domain'] = (string) $this->request->hostname;
 				}
 				
-				if ($this->data['session_page'] != $this->request->url)
-				{
+				if ($this->data['session_page'] != $this->request->url) {
 					$sql_ary['session_page'] = $this->data['session_page'] = (string) $this->request->url;
 				}
 				
@@ -216,13 +198,11 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 	*/
 	public function write($session_id, $session_data, $immediate_update = false)
 	{
-		if ($this->data['session_data'] === $session_data)
-		{
+		if ($this->data['session_data'] === $session_data) {
 			return true;
 		}
 		
-		if ($immediate_update)
-		{
+		if ($immediate_update) {
 			$this->session_update(compact('session_data'), $session_id);
 			return true;
 		}
@@ -242,8 +222,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 	*/
 	private function check_ban($user_id = false, $user_ips = false, $user_email = false, $return = false)
 	{
-		if (defined('IN_CHECK_BAN'))
-		{
+		if (defined('IN_CHECK_BAN')) {
 			return;
 		}
 
@@ -256,31 +235,24 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 			'WHERE'  => [],
 		];
 		
-		if (false === $user_email)
-		{
+		if (false === $user_email) {
 			$sql_array['WHERE'][] = 'ban_email = ""';
 		}
 		
-		if (false === $user_ips)
-		{
+		if (false === $user_ips) {
 			$sql_array['WHERE'][] = '(ban_ip = "" OR ban_exclude = 1)';
 		}
 		
-		if (false === $user_id)
-		{
+		if (false === $user_id) {
 			$sql_array['WHERE'][] = '(user_id = 0 OR ban_exclude = 1)';
-		}
-		else
-		{
+		} else {
 			$_sql = '(user_id = ' . $user_id;
 
-			if (false !== $user_email)
-			{
+			if (false !== $user_email) {
 				$_sql .= " OR ban_email <> ''";
 			}
 
-			if (false !== $user_ips)
-			{
+			if (false !== $user_ips) {
 				$_sql .= " OR ban_ip <> ''";
 			}
 
@@ -292,27 +264,19 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 		$result = $this->db->query($this->db->build_query('SELECT', $sql_array));
 		$ban_triggered_by = 'user';
 
-		while ($row = $this->db->fetchrow($result))
-		{
-			if ($row['ban_end'] && $row['ban_end'] < $this->request->time)
-			{
+		while ($row = $this->db->fetchrow($result)) {
+			if ($row['ban_end'] && $row['ban_end'] < $this->request->time) {
 				continue;
 			}
 
 			$ip_banned = false;
 
-			if (!empty($row['ban_ip']))
-			{
-				if (!is_array($user_ips))
-				{
+			if (!empty($row['ban_ip'])) {
+				if (!is_array($user_ips)) {
 					$ip_banned = preg_match('#^' . str_replace('\*', '.*?', preg_quote($row['ban_ip'], '#')) . '$#i', $user_ips);
-				}
-				else
-				{
-					foreach ($user_ips as $user_ip)
-					{
-						if (preg_match('#^' . str_replace('\*', '.*?', preg_quote($row['ban_ip'], '#')) . '$#i', $user_ip))
-						{
+				} else {
+					foreach ($user_ips as $user_ip) {
+						if (preg_match('#^' . str_replace('\*', '.*?', preg_quote($row['ban_ip'], '#')) . '$#i', $user_ip)) {
 							$ip_banned = true;
 							break;
 						}
@@ -321,28 +285,20 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 			}
 
 			if ((!empty($row['user_id']) && $row['user_id'] == $user_id) || $ip_banned ||
-				(!empty($row['ban_email']) && preg_match('#^' . str_replace('\*', '.*?', preg_quote($row['ban_email'], '#')) . '$#i', $user_email)))
-			{
-				if (!empty($row['ban_exclude']))
-				{
+				(!empty($row['ban_email']) && preg_match('#^' . str_replace('\*', '.*?', preg_quote($row['ban_email'], '#')) . '$#i', $user_email))
+			) {
+				if (!empty($row['ban_exclude'])) {
 					$banned = false;
 					break;
-				}
-				else
-				{
+				} else {
 					$banned = true;
 					$ban_row = $row;
 
-					if (!empty($row['user_id']) && $row['user_id'] == $user_id)
-					{
+					if (!empty($row['user_id']) && $row['user_id'] == $user_id) {
 						$ban_triggered_by = 'user';
-					}
-					elseif ($ip_banned)
-					{
+					} elseif ($ip_banned) {
 						$ban_triggered_by = 'ip';
-					}
-					else
-					{
+					} else {
 						$ban_triggered_by = 'email';
 					}
 				}
@@ -351,14 +307,12 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 
 		$this->db->freeresult($result);
 
-		if ($banned && !$return)
-		{
+		if ($banned && !$return) {
 			global $message_title;
 
 			$this->preferences();
 
-			if ($this->data['user_id'])
-			{
+			if ($this->data['user_id']) {
 				/* Если пользователь получил бан, то он должен покинуть сайт */
 				$this->session_end();
 			}
@@ -394,8 +348,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 		$sql = 'DELETE FROM site_sessions WHERE user_id = ? :session_id';
 		$this->db->query($sql, [$user_id, ':session_id' => $sql_session_id]);
 
-		if (false !== $set_new_key && $user_id === $this->data['user_id'] && $this->cookie['k'])
-		{
+		if (false !== $set_new_key && $user_id === $this->data['user_id'] && $this->cookie['k']) {
 			/* Создаем новый ключ, если был выполнен автовход */
 			$this->set_login_key($user_id);
 		}
@@ -411,13 +364,11 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 	{
 		$_SESSION = $this->data = [];
 
-		if (!$this->config['autologin.allow'])
-		{
+		if (!$this->config['autologin.allow']) {
 			$this->cookie['k'] = $autologin = false;
 		}
 
-		if ($this->cookie['k'] && $this->cookie['u'])
-		{
+		if ($this->cookie['k'] && $this->cookie['u']) {
 			$sql = '
 				SELECT
 					u.*,
@@ -435,9 +386,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 			$this->db->freeresult($result);
 			$bot = false;
 			$openid_provider = $this->data['openid_provider'] ?: $openid_provider;
-		}
-		elseif (false !== $user_id)
-		{
+		} elseif (false !== $user_id) {
 			$this->cookie['k'] = '';
 			$this->cookie['u'] = $user_id;
 
@@ -450,15 +399,12 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 			$this->data = $this->db->fetchrow($result);
 			$this->db->freeresult($result);
 			$bot = false;
-		}
-		else
-		{
+		} else {
 			/* А не бот ли к нам заглянул? */
 			$bot = $this->check_for_bot();
 		}
 
-		if (empty($this->data))
-		{
+		if (empty($this->data)) {
 			/**
 			* Если массив данных пользователя до сих пор не сформирован, то это анонимный
 			* пользатель или бот. Настало время получить его данные из базы.
@@ -470,12 +416,9 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 		}
 
 		/* Время последнего визита */
-		if ($this->data['user_id'] > 0 && !$bot)
-		{
+		if ($this->data['user_id'] > 0 && !$bot) {
 			$this->data['session_last_visit'] = isset($this->data['session_time']) && $this->data['session_time'] ? $this->data['session_time'] : (isset($this->data['user_last_visit']) ? $this->data['user_last_visit'] : $this->request->time);
-		}
-		else
-		{
+		} else {
 			$this->data['session_last_visit'] = $this->request->time;
 		}
 
@@ -483,12 +426,9 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 		* Проверка бана
 		*/
 /*
-		if (!$this->config['forwarded_for_check'])
-		{
+		if (!$this->config['forwarded_for_check']) {
 			$this->check_ban($this->data['user_id'], $this->ip);
-		}
-		else
-		{
+		} else {
 			$ips = explode(' ', $this->forwarded_for);
 			$ips[] = $this->ip;
 			$this->check_ban($this->data['user_id'], $ips);
@@ -498,15 +438,12 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 		$this->is_bot = $bot ? true : false;
 		$this->is_registered = !$bot && $this->data['user_id'] > 0 ? true : false;
 
-		if ($this->is_bot && $bot == $this->data['user_id'] && $this->data['session_id'])
-		{
-			if ($this->is_session_params_valid())
-			{
+		if ($this->is_bot && $bot == $this->data['user_id'] && $this->data['session_id']) {
+			if ($this->is_session_params_valid()) {
 				$this->session_id = $this->data['session_id'];
 
 				/* Обновляем информацию о местонахождении не чаще раза в минуту */
-				if ($this->request->time - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->request->url)
-				{
+				if ($this->request->time - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->request->url) {
 					$this->data['session_time'] = $this->data['session_last_visit'] = $this->request->time;
 					$this->data['session_page'] = $this->request->url;
 					
@@ -526,9 +463,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 				}
 
 				return true;
-			}
-			else
-			{
+			} else {
 				/* Для каждого бота должна остаться только одна сессия */
 				$sql = 'DELETE FROM site_sessions WHERE user_id = ?';
 				$this->db->query($sql, [$this->data['user_id']]);
@@ -555,13 +490,10 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 			'session_admin'           => (int) $set_admin,
 		];
 		
-		if (false === $session_id)
-		{
+		if (false === $session_id) {
 			session_id(strtolower(make_random_string(32)));
 			$this->session_id = session_id();
-		}
-		else
-		{
+		} else {
 			$this->session_id = $session_id;
 		}
 		
@@ -571,15 +503,13 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 		$sql = 'INSERT INTO site_sessions ' . $this->db->build_array('INSERT', $sql_ary);
 		$this->db->query($sql);
 
-		if ($session_autologin)
-		{
+		if ($session_autologin) {
 			$this->set_login_key(false, false, false, $openid_provider);
 		}
 
 		$this->data = array_merge($this->data, $sql_ary);
 		
-		if ($bot)
-		{
+		if ($bot) {
 			/* Обновление даты последнего визита бота */
 			register_shutdown_function([$this, 'user_update'], [
 				'user_session_page' => (string) $this->request->url,
@@ -594,8 +524,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 		$this->set_cookie('k', $this->cookie['k'], $cookie_expire);
 		$this->set_cookie('u', $this->cookie['u'], $cookie_expire);
 		
-		if (false === $session_id)
-		{
+		if (false === $session_id) {
 			$this->set_cookie('sid', $this->session_id);
 		}
 
@@ -607,8 +536,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 	*/
 	public function session_end($new_session = true)
 	{
-		if ($new_session)
-		{
+		if ($new_session) {
 			session_destroy();
 			session_start();
 			return true;
@@ -645,14 +573,11 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 	*/
 	public function set_cookie($name, $value = false, $expire = 0, $domain = false)
 	{
-		if (false === $value)
-		{
+		if (false === $value) {
 			/* Булевы значения нельзя устанавливать в cookie, false удаляет cookie */
 			$value  = '';
 			$expire = gmdate(DATE_RFC1123, strtotime('-1 year'));
-		}
-		else
-		{
+		} else {
 			$expire = 0 !== $expire ? gmdate(DATE_RFC1123, $expire) : 0;
 		}
 
@@ -687,13 +612,10 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 			'last_login'      => (int) $this->request->time,
 		];
 
-		if ($key)
-		{
+		if ($key) {
 			$sql = 'UPDATE site_sessions_keys SET :update_ary WHERE user_id = ? AND key_id = ?';
 			$params = [$user_id, md5($key), ':update_ary' => $this->db->build_array('UPDATE', $sql_ary)];
-		}
-		else
-		{
+		} else {
 			$sql_ary['user_id'] = (int) $user_id;
 			$sql = 'INSERT INTO site_sessions_keys ' . $this->db->build_array('INSERT', $sql_ary);
 			$params = [];
@@ -713,10 +635,8 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 		* Сравнение браузера бота с данными в базе
 		* Если что-то совпало, значит бот известен
 		*/
-		foreach ($bots as $row)
-		{
-			if ($row['bot_agent'] && preg_match('#' . str_replace('\*', '.*?', preg_quote($row['bot_agent'], '#')) . '#i', $this->browser))
-			{
+		foreach ($bots as $row) {
+			if ($row['bot_agent'] && preg_match('#' . str_replace('\*', '.*?', preg_quote($row['bot_agent'], '#')) . '#i', $this->browser)) {
 				return (int) $row['user_id'];
 			}
 		}
@@ -769,8 +689,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 		$row = $this->db->fetchrow($result);
 		$this->db->freeresult($result);
 
-		if (!empty($row))
-		{
+		if (!empty($row)) {
 			return array_merge($row, $this->get_guest_defaults());
 		}
 		
@@ -804,8 +723,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 	protected function is_session_expired()
 	{
 		/* Не превышает ли время простоя время жизни сессии */
-		if (!$this->data['session_autologin'])
-		{
+		if (!$this->data['session_autologin']) {
 			return $this->data['session_time'] < $this->request->time - (ini_get('session.gc_maxlifetime') + 60);
 		}
 		
@@ -813,8 +731,7 @@ class session implements ArrayAccess, Countable, IteratorAggregate, SessionHandl
 		* Если используется автовход, то проверяем включен ли он на сайте
 		* и не превышает ли максимальное время действия автовхода
 		*/
-		if (!$this->config['autologin.allow'] || ($this->config['autologin.time'] && $this->data['session_time'] < $this->request->time - (86400 * $this->config['autologin.time']) + 60))
-		{
+		if (!$this->config['autologin.allow'] || ($this->config['autologin.time'] && $this->data['session_time'] < $this->request->time - (86400 * $this->config['autologin.time']) + 60)) {
 			return true;
 		}
 		

@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\template;
@@ -54,8 +54,7 @@ class smarty
 	{
 		$file = $file ?: $this->file;
 		
-		if (!$this->is_template_exist($file))
-		{
+		if (!$this->is_template_exist($file)) {
 			trigger_error('TEMPLATE_NOT_FOUND');
 		}
 		
@@ -69,8 +68,7 @@ class smarty
 	{
 		$file = $file ?: $this->file;
 		
-		if (!$this->is_template_exist($file))
-		{
+		if (!$this->is_template_exist($file)) {
 			trigger_error('TEMPLATE_NOT_FOUND');
 		}
 		
@@ -90,10 +88,8 @@ class smarty
 	*/
 	protected function is_template_exist($file)
 	{
-		foreach ($this->dirs as $dir)
-		{
-			if (file_exists("{$dir}/{$file}"))
-			{
+		foreach ($this->dirs as $dir) {
+			if (file_exists("{$dir}/{$file}")) {
 				return true;
 			}
 		}

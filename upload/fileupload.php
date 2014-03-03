@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2014
 */
 
 namespace fw\upload;
@@ -47,37 +47,31 @@ class fileupload
 		unset($_FILES[$form_name]['local_mode']);
 		$file = new filespec($_FILES[$form_name], $this);
 
-		if ($file->init_error)
-		{
+		if ($file->init_error) {
 			$file->error[] = 'Ошибка инициализации загрузки';
 			return $file;
 		}
 
-		if (isset($_FILES[$form_name]['error']))
-		{
-			if (false !== $error = $this->assign_internal_error($_FILES[$form_name]['error']))
-			{
+		if (isset($_FILES[$form_name]['error'])) {
+			if (false !== $error = $this->assign_internal_error($_FILES[$form_name]['error'])) {
 				$file->error[] = $error;
 				return $file;
 			}
 		}
 
 		/* Проверяем не загружен ли пустой файл */
-		if (isset($_FILES[$form_name]['size']) && 0 == $_FILES[$form_name]['size'])
-		{
+		if (isset($_FILES[$form_name]['size']) && 0 == $_FILES[$form_name]['size']) {
 			$file->error[] = 'Файл пуст';
 			return $file;
 		}
 
 		/* Превышен максимальный размер файла */
-		if ($file->get('filename') == 'none')
-		{
+		if ($file->get('filename') == 'none') {
 			$file->error[] = 'Превышен максимальный размер файла';
 			return $file;
 		}
 
-		if (!$file->is_uploaded())
-		{
+		if (!$file->is_uploaded()) {
 			$file->error[] = 'Файл не загружен';
 			return $file;
 		}
@@ -124,8 +118,7 @@ class fileupload
 	*/
 	public function set_allowed_extensions($allowed_extensions)
 	{
-		if (false !== $allowed_extensions && is_array($allowed_extensions))
-		{
+		if (false !== $allowed_extensions && is_array($allowed_extensions)) {
 			$this->allowed_extensions = $allowed_extensions;
 		}
 	}
@@ -135,8 +128,7 @@ class fileupload
 	*/
 	public function set_disallowed_content($disallowed_content)
 	{
-		if (false !== $disallowed_content && is_array($disallowed_content))
-		{
+		if (false !== $disallowed_content && is_array($disallowed_content)) {
 			$this->disallowed_content = array_diff($disallowed_content, ['']);
 		}
 	}
@@ -146,8 +138,7 @@ class fileupload
 	*/
 	public function set_max_filesize($max_filesize)
 	{
-		if (false !== $max_filesize && (int) $max_filesize)
-		{
+		if (false !== $max_filesize && (int) $max_filesize) {
 			$this->max_filesize = (int) $max_filesize;
 		}
 	}
@@ -157,8 +148,7 @@ class fileupload
 	*/
 	public function valid_dimensions(&$file)
 	{
-		if (!$this->max_width && !$this->max_height && !$this->min_width && !$this->min_height)
-		{
+		if (!$this->max_width && !$this->max_height && !$this->min_width && !$this->min_height) {
 			return true;
 		}
 
@@ -181,8 +171,7 @@ class fileupload
 	*/
 	private function assign_internal_error($error_code)
 	{
-		switch ($error_code)
-		{
+		switch ($error_code) {
 			case 1: return 'Превышен допустимый размер файла';
 			case 2: return 'Превышен допустимый размер файла';
 			case 3: return 'Файл был загружен частично';
@@ -199,23 +188,19 @@ class fileupload
 	*/
 	private function common_checks(&$file)
 	{
-		if ($this->max_filesize && ($file->get('filesize') > $this->max_filesize || 0 == $file->get('filesize')))
-		{
+		if ($this->max_filesize && ($file->get('filesize') > $this->max_filesize || 0 == $file->get('filesize'))) {
 			$file->error[] = 'Превышен максимальный размер файла';
 		}
 
-		if (preg_match('#[\\/:*?\"<>|]#i', $file->get('realname')))
-		{
+		if (preg_match('#[\\/:*?\"<>|]#i', $file->get('realname'))) {
 			$file->error[] = 'Имя файла содержит недопустимые символы';
 		}
 
-		if (!$this->valid_extension($file))
-		{
+		if (!$this->valid_extension($file)) {
 			$file->error[] = 'Файлы данного формата запрещены к загрузке';
 		}
 
-		if (!$this->valid_content($file))
-		{
+		if (!$this->valid_content($file)) {
 			$file->error[] = 'Файл содержит запрещенные тэги в заголовочной информации';
 		}
 	}

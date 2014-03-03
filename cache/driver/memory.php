@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\cache\driver;
@@ -20,34 +20,28 @@ class memory
 	{
 		$this->options = array_merge($this->options, $options);
 		
-		if (!$this->options['type'] || !extension_loaded($this->options['type']))
-		{
-			trigger_error("Не удается найти расширение «{$this->options['type']}».", E_USER_ERROR);
+		if (!$this->options['type'] || !extension_loaded($this->options['type'])) {
+			throw new \RuntimeException(sprintf('Расширение «%s» не найдено.', $this->options['type']));
 		}
 		
-		if (!$this->options['prefix'] || !$this->options['shared_prefix'])
-		{
-			trigger_error('Для работы системы кэширования должны быть настроены prefix и shared_prefix.', E_USER_ERROR);
+		if (!$this->options['prefix'] || !$this->options['shared_prefix']) {
+			throw new \RuntimeException('Для работы системы кэширования должны быть настроены prefix и shared_prefix.');
 		}
 	}
 	
 	public function delete($var)
 	{
-		if (!$this->_exists($var))
-		{
+		if (!$this->_exists($var)) {
 			return;
 		}
 
-		if (isset($this->data[$var]))
-		{
+		if (isset($this->data[$var])) {
 			$this->is_modified = true;
 			unset($this->data[$var]);
 
 			/* cache hit */
 			$this->save();
-		}
-		elseif ($var[0] != '_')
-		{
+		} elseif ($var[0] != '_') {
 			$this->_delete($this->options['prefix'] . $var);
 		}
 	}
@@ -62,13 +56,11 @@ class memory
 
 	public function get($var)
 	{
-		if (!$this->_exists($var))
-		{
+		if (!$this->_exists($var)) {
 			return false;
 		}
 
-		if ($var[0] == '_')
-		{
+		if ($var[0] == '_') {
 			return $this->data[$var];
 		}
 		
@@ -106,8 +98,7 @@ class memory
 	*/
 	public function save()
 	{
-		if (!$this->is_modified)
-		{
+		if (!$this->is_modified) {
 			return;
 		}
 
@@ -117,13 +108,10 @@ class memory
 	
 	public function set($var, $data, $ttl = 2592000)
 	{
-		if ($var[0] == '_')
-		{
+		if ($var[0] == '_') {
 			$this->data[$var] = $data;
 			$this->is_modified = true;
-		}
-		else
-		{
+		} else {
 			$this->_set($this->options['prefix'] . $var, $data, $ttl);
 		}
 	}
@@ -151,17 +139,13 @@ class memory
 	*/
 	protected function _exists($var)
 	{
-		if ($var[0] == '_')
-		{
-			if (!sizeof($this->data))
-			{
+		if ($var[0] == '_') {
+			if (!sizeof($this->data)) {
 				$this->load();
 			}
 
 			return isset($this->data[$var]);
-		}
-		else
-		{
+		} else {
 			return true;
 		}
 	}

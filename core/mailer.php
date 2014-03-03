@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\core;
@@ -56,8 +56,7 @@ class mailer
 	*/
 	public function send($subject = '', $template = '', $content_type = 'text/html')
 	{
-		if ($subject)
-		{
+		if ($subject) {
 			$this->message->setSubject($subject);
 		}
 		

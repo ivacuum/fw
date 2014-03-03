@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2014
 */
 
 /**
@@ -31,8 +31,7 @@ function build_hidden_fields($row)
 {
 	$string = '';
 
-	foreach ($row as $key => $value)
-	{
+	foreach ($row as $key => $value) {
 		$string .= sprintf('<input type="hidden" name="%s" value="%s">', $key, $value);
 	}
 
@@ -46,13 +45,11 @@ function build_hidden_fields($row)
 */
 function generate_page_link($page, $base_url, $query_string)
 {
-	if (!$page)
-	{
+	if (!$page) {
 		return false;
 	}
 
-	if ($page == 1)
-	{
+	if ($page == 1) {
 		return $base_url . $query_string;
 	}
 
@@ -70,8 +67,7 @@ function generate_page_link($page, $base_url, $query_string)
 */
 function get_preg_expression($type)
 {
-	switch($type)
-	{
+	switch($type) {
 		case 'email': return '([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*(?:[\w\!\#$\%\'\*\+\-\/\=\?\^\`{\|\}\~]|&amp;)+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,63})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)';
 		case 'ipv4': return '#^(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$#';
 		case 'url_symbols': return '[a-z\d\_\-\.\x{7f}-\x{ff}\(\)]+';
@@ -98,8 +94,7 @@ function ilink($url = '', $prefix = false)
 	* 1а) /csstats		1б) http://wc3.ivacuum.ru/	1в) /
 	* 2а) /csstats/		2б) http://wc3.ivacuum.ru/	2в) /en/
 	*/
-	if (0 === strpos($url, '/'))
-	{
+	if (0 === strpos($url, '/')) {
 		/**
 		* Ссылка от корня сайта
 		*
@@ -108,19 +103,13 @@ function ilink($url = '', $prefix = false)
 		*/
 		$link = $app['config']['site.root_path'];
 		$url  = substr($url, 1);
-	}
-	elseif (0 === strpos($url, 'http://'))
-	{
+	} elseif (0 === strpos($url, 'http://')) {
 		$link = 'http://';
 		$url  = substr($url, 7);
-	}
-	elseif (0 === strpos($url, '//'))
-	{
+	} elseif (0 === strpos($url, '//')) {
 		$link = '//';
 		$url  = substr($url, 2);
-	}
-	else
-	{
+	} else {
 		$link = false === $prefix ? $app['config']['site.root_path'] : $prefix;
 		$link .= substr($link, -1) == '/' ? '' : '/';
 	}
@@ -130,10 +119,8 @@ function ilink($url = '', $prefix = false)
 	*
 	* Если язык уже присутствует в ссылке, то пропускаем этот шаг
 	*/
-	if ($link == $app['config']['site.root_path'] && false === $prefix)
-	{
-		if (!$app['site_info']['default'] && (false === strpos($link . $url, "/{$app['site_info']['language']}/")))
-		{
+	if ($link == $app['config']['site.root_path'] && false === $prefix) {
+		if (!$app['site_info']['default'] && (false === strpos($link . $url, "/{$app['site_info']['language']}/"))) {
 			$link = sprintf('%s%s/', $link, $app['site_info']['language']);
 		}
 	}
@@ -141,8 +128,7 @@ function ilink($url = '', $prefix = false)
 	$link .= $url;
 	$ary = pathinfo($url);
 	
-	if (isset($ary['extension']) || substr($link, -1) == '/' || !$app['router.options']['default_extension'])
-	{
+	if (isset($ary['extension']) || substr($link, -1) == '/' || !$app['router.options']['default_extension']) {
 		return $link;
 	}
 	
@@ -171,32 +157,27 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	$err = '';
 
 	/* Пользователь пытается авторизоваться как администратор не имея на то прав */
-	if ($admin && !$app['auth']->acl_get('a_'))
-	{
+	if ($admin && !$app['auth']->acl_get('a_')) {
 		trigger_error('NO_AUTH_ADMIN');
 	}
 
-	if ($app['request']->is_set_post('submit'))
-	{
+	if ($app['request']->is_set_post('submit')) {
 		$admin             = $admin ? 1 : 0;
 		$autologin         = $app['request']->is_set_post('autologin');
 		$password          = $app['request']->post('password', '');
 		$username_or_email = $app['request']->post('username', '');
 
-		if ($admin && $username_or_email != $app['user']['username'] && $username_or_email != $app['user']['user_email'])
-		{
+		if ($admin && $username_or_email != $app['user']['username'] && $username_or_email != $app['user']['user_email']) {
 			trigger_error('NO_AUTH_ADMIN_USER_DIFFER');
 		}
 
 		$result = $app['auth']->login($username_or_email, $password, $autologin, $admin);
 
-		if ($result['status'] == 'OK')
-		{
+		if ($result['status'] == 'OK') {
 			$message  = $l_success ? $l_success : $app['user']->lang('LOGIN_REDIRECT');
 
 			/* Разрешаем создателю авторизоваться даже при бане */
-			if (defined('IN_CHECK_BAN') && $result['user_row']['user_id'] === 1)
-			{
+			if (defined('IN_CHECK_BAN') && $result['user_row']['user_id'] === 1) {
 				return;
 			}
 			
@@ -205,13 +186,11 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		}
 
 		/* Неудалось создать сессию */
-		if ($result['status'] == 'LOGIN_BREAK')
-		{
+		if ($result['status'] == 'LOGIN_BREAK') {
 			trigger_error($result['message']);
 		}
 		
-		switch ($result['status'])
-		{
+		switch ($result['status']) {
 			case 'ERROR_ATTEMPTS':
 			
 				$app['template']->assign('ERROR_ATTEMPTS', true);
@@ -226,8 +205,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	
 	$s_hidden_fields = [];
 
-	if ($redirect)
-	{
+	if ($redirect) {
 		$s_hidden_fields['goto'] = $redirect;
 	}
 
@@ -321,20 +299,16 @@ function pagination($on_page, $overall, $link, $page_var = 'p')
 	/**
 	* Нужно ли ссылки на страницы указывать с параметрами
 	*/
-	if ($sort_count != $on_page || $sort_dir != 'd' || $sort_key != 'a')
-	{
-		if ($sort_count != $on_page)
-		{
+	if ($sort_count != $on_page || $sort_dir != 'd' || $sort_key != 'a') {
+		if ($sort_count != $on_page) {
 			$link .= (false !== strpos($link, '?') ? '&' : '?') . 'sc=' . $sort_count;
 		}
 
-		if ($sort_dir != 'd')
-		{
+		if ($sort_dir != 'd') {
 			$link .= (false !== strpos($link, '?') ? '&' : '?') . 'sd=' . $sort_dir;
 		}
 
-		if ($sort_key != 'a')
-		{
+		if ($sort_key != 'a') {
 			$link .= (false !== strpos($link, '?') ? '&' : '?') . 'sk=' . $sort_key;
 		}
 	}
@@ -343,13 +317,11 @@ function pagination($on_page, $overall, $link, $page_var = 'p')
 	$pages = max(1, intval(($overall - 1) / $sort_count) + 1);
 
 	/* Проверка номера страницы */
-	if (!$p || $p > $pages || $p <= 0)
-	{
+	if (!$p || $p > $pages || $p <= 0) {
 		trigger_error('PAGE_NOT_FOUND');
 	}
 
-	if (($q_pos = strpos($base_url, '?')) !== false)
-	{
+	if (($q_pos = strpos($base_url, '?')) !== false) {
 		/**
 		* Если в адресе присутствует query_string:
 		* /news/5/?sid=1
@@ -365,17 +337,13 @@ function pagination($on_page, $overall, $link, $page_var = 'p')
 	$url_delim = !$query_string ? '?' : '&amp;';
 	$url_next = $url_prev = 0;
 
-	if ($pages > $p)
-	{
-		if ($p > 1)
-		{
+	if ($pages > $p) {
+		if ($p > 1) {
 			$url_prev = $p - 1;
 		}
 
 		$url_next = $p + 1;
-	}
-	elseif ($pages == $p && $pages > 1)
-	{
+	} elseif ($pages == $p && $pages > 1) {
 		$url_prev = $p - 1;
 	}
 	
@@ -410,12 +378,9 @@ function parse_smilies($message, $force_option = false)
 {
 	global $app;
 
-	if ($force_option || !$app['config']['allow_smilies'])
-	{
+	if ($force_option || !$app['config']['allow_smilies']) {
 		return preg_replace('#<!\-\- <smile name="(.*?)"><url>.*?</url><title>.*?</title></smile> \-\->#', '\1', $message);
-	}
-	else
-	{
+	} else {
 		return preg_replace('#<!\-\- <smile name="(.*?)"><url>(.*?)</url><title>(.*?)</title></smile> \-\->#', '<img src="' . $app['config']['smilies.path'] . '/\2" alt="\1" title="\3">', $message);
 	}
 }
@@ -451,8 +416,7 @@ function prepare_text_for_print($text)
 */
 function seo_url($url, $lang = 'ru')
 {
-	switch ($lang)
-	{
+	switch ($lang) {
 		case 'ru': $pattern = '/[^а-яa-z\d\.]/u'; break;
 		default:   $pattern = '/[^a-z\d\.]/u';
 	}

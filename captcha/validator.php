@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2014
 */
 
 namespace fw\captcha;
@@ -35,13 +35,11 @@ class validator
 	*/
 	public function is_solved()
 	{
-		if (!$this->config['confirm.enable'])
-		{
+		if (!$this->config['confirm.enable']) {
 			return true;
 		}
 		
-		if ($this->request->is_set('confirm_code') && false === $this->solved)
-		{
+		if ($this->request->is_set('confirm_code') && false === $this->solved) {
 			$this->validate();
 		}
 		
@@ -53,13 +51,11 @@ class validator
 	*/
 	public function reset()
 	{
-		if (!$this->config['confirm.enable'])
-		{
+		if (!$this->config['confirm.enable']) {
 			return;
 		}
 		
-		if ($this->solved)
-		{
+		if ($this->solved) {
 			$sql = 'DELETE FROM site_confirm WHERE session_id = ? AND code = ?';
 			$this->db->query($sql, [$this->user->session_id, $this->code]);
 		}
@@ -83,8 +79,7 @@ class validator
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
 		
-		if (!$row)
-		{
+		if (!$row) {
 			return false;
 		}
 		
@@ -96,8 +91,7 @@ class validator
 	*/
 	private function validate()
 	{
-		if (empty($this->code))
-		{
+		if (empty($this->code)) {
 			$this->load_code();
 		}
 		

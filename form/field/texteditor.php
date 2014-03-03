@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\form\field;
@@ -19,8 +19,7 @@ class texteditor extends generic
 	
 	public function validate()
 	{
-		if ($this->data['field_required'] && !$this->data['value'])
-		{
+		if ($this->data['field_required'] && !$this->data['value']) {
 			return false;
 		}
 		

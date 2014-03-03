@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\models\acp;
@@ -18,8 +18,7 @@ class page extends base_page
 	{
 		$this->user->is_auth('redirect');
 		
-		if (!$this->auth->acl_get('a_'))
-		{
+		if (!$this->auth->acl_get('a_')) {
 			trigger_error('ERR_NO_AUTH');
 		}
 		

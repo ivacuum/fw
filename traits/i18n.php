@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\traits;
@@ -23,8 +23,7 @@ trait i18n
 	{
 		static $midnight;
 
-		if ($gmepoch == 0)
-		{
+		if ($gmepoch == 0) {
 			return $this->lang['NEVER'];
 		}
 
@@ -35,8 +34,7 @@ trait i18n
 		$tz = 3600 * $this->config['site.tz'];
 		$forcedate = !isset($this->lang['datetime']) ? true : $forcedate;
 
-		if (!$midnight)
-		{
+		if (!$midnight) {
 			/* Определение полуночи */
 			list($d, $m, $y) = explode(' ', gmdate('j n Y', $this->request->time + $tz));
 			$midnight = gmmktime(0, 0, 0, $m, $d, $y) - $tz;
@@ -50,31 +48,23 @@ trait i18n
 		* Вчера, 14:55
 		* 10 Августа 2009
 		*/
-		if (false !== $short_form)
-		{
-			if (strpos($format, '|') !== false && $gmepoch < $midnight - 86400 && !$forcedate)
-			{
+		if (false !== $short_form) {
+			if (strpos($format, '|') !== false && $gmepoch < $midnight - 86400 && !$forcedate) {
 				return strtr(@gmdate(str_replace('|', '', substr($format, 0, strrpos($format, '|'))), $gmepoch + $tz), $this->lang['datetime']);
 			}
 		}
 
-		if (strpos($format, '|') === false || ($gmepoch < $midnight - 86400 && !$forcedate) || ($gmepoch > $midnight + 172800 && !$forcedate))
-		{
+		if (strpos($format, '|') === false || ($gmepoch < $midnight - 86400 && !$forcedate) || ($gmepoch > $midnight + 172800 && !$forcedate)) {
 			return strtr(@gmdate(str_replace('|', '', $format), $gmepoch + $tz), $this->lang['datetime']);
 		}
 
-		if ($gmepoch > $midnight + 86400 && !$forcedate)
-		{
+		if ($gmepoch > $midnight + 86400 && !$forcedate) {
 			/* Завтра ... */
 			return $this->lang['datetime']['TOMORROW'] . strtr(@gmdate(substr($format, strpos($format, '|', 1) + 1), $gmepoch + $tz), $this->lang['datetime']);
-		}
-		elseif ($gmepoch > $midnight && !$forcedate)
-		{
+		} elseif ($gmepoch > $midnight && !$forcedate) {
 			/* Сегодня ... */
 			return $this->lang['datetime']['TODAY'] . strtr(@gmdate(substr($format, strpos($format, '|', 1) + 1), $gmepoch + $tz), $this->lang['datetime']);
-		}
-		elseif ($gmepoch > $midnight - 86400 && !$forcedate)
-		{
+		} elseif ($gmepoch > $midnight - 86400 && !$forcedate) {
 			/* Вчера ... */
 			return $this->lang['datetime']['YESTERDAY'] . strtr(@gmdate(substr($format, strpos($format, '|', 1) + 1), $gmepoch + $tz), $this->lang['datetime']);
 		}
@@ -98,8 +88,7 @@ trait i18n
 		$days = $days > 0 ? $this->plural($days, 'день;дня;дней') : '';
 		$time -= $time >= 86400 ? 86400 * $days : 0;
 		
-		if ($only_days)
-		{
+		if ($only_days) {
 			return $days;
 		}
 
@@ -113,8 +102,7 @@ trait i18n
 		$minutes = $minutes > 0 ? $this->plural($minutes, 'минуту;минуты;минут') : '';
 		$time -= $time >= 60 ? 60 * $minutes : 0;
 
-		if (!$days && !$hours && !$minutes && false !== $no_seconds)
-		{
+		if (!$days && !$hours && !$minutes && false !== $no_seconds) {
 			return '1 мин.';
 		}
 		
@@ -140,24 +128,19 @@ trait i18n
 		$ext  = $sizes[0];
 		$rnd  = $rounders[0];
 
-		if ($min == $this->lang['SIZE_KB'] && $size < 1024)
-		{
+		if ($min == $this->lang['SIZE_KB'] && $size < 1024) {
 			$size    = $size / 1024;
 			$ext     = $this->lang['SIZE_KB'];
 			$rounder = 1;
-		}
-		else
-		{
-			for ($i = 1, $cnt = sizeof($sizes); $i < $cnt && $size >= 1024; $i++)
-			{
+		} else {
+			for ($i = 1, $cnt = sizeof($sizes); $i < $cnt && $size >= 1024; $i++) {
 				$size = $size / 1024;
 				$ext  = $sizes[$i];
 				$rnd  = $rounders[$i];
 			}
 		}
 
-		if (!$rounder)
-		{
+		if (!$rounder) {
 			$rounder = $rnd;
 		}
 
@@ -174,14 +157,12 @@ trait i18n
 		$key  = $args[0];
 
 		/* Если языковой элемент не найден, то возвращаем индекс элемента */
-		if (!isset($this->lang[$key]))
-		{
+		if (!isset($this->lang[$key])) {
 			return $key;
 		}
 
 		/* Был просто запрошен индекс */
-		if (sizeof($args) == 1)
-		{
+		if (sizeof($args) == 1) {
 			return $this->lang[$key];
 		}
 
@@ -213,8 +194,7 @@ trait i18n
 		/* Локализация проекта */
 		$lang = array_merge_recursive($lang, $this->get_i18n_data($this->site_id, $language, $lang_file, $force_update));
 		
-		if ($language == $this->request->language)
-		{
+		if ($language == $this->request->language) {
 			$this->lang = array_merge_recursive($this->lang, $lang);
 			return;
 		}
@@ -244,26 +224,21 @@ trait i18n
 	*/
 	public function plural($n = 0, $forms, $format = '%1$s %2$s')
 	{
-		if (!$forms)
-		{
+		if (!$forms) {
 			return;
 		}
 		
 		$forms = explode(';', isset($this->lang['plural'][$forms]) ? $this->lang['plural'][$forms] : $forms);
 
-		switch ($this->request->language)
-		{
+		switch ($this->request->language) {
 			/* Русский язык */
 			case 'ru':
 
 				$forms[2] = sizeof($forms) < 3 ? $forms[1] : $forms[2];
 
-				if (!is_int($n) && !ctype_digit(strval($n)))
-				{
+				if (!is_int($n) && !ctype_digit(strval($n))) {
 					$plural = 1;
-				}
-				else
-				{
+				} else {
 					$plural = ($n % 10 == 1 && $n % 100 != 11) ? 0 : ($n % 10 >= 2 && $n % 10 <= 4 && ($n % 100 < 10 || $n % 100 >= 20) ? 1 : 2);
 				}
 
@@ -286,29 +261,23 @@ trait i18n
 		$ts   = !ctype_digit($ts) ? strtotime($ts) : $ts;
 		$diff = $ts2 - $ts;
 		
-		if ($diff >= 0)
-		{
-			if ($diff < 60)
-			{
+		if ($diff >= 0) {
+			if ($diff < 60) {
 				return 'just now';
 			}
-			if ($diff < 3600)
-			{
+			if ($diff < 3600) {
 				return floor($diff / 60) . ' minutes ago';
 			}
-			if ($diff < 86400)
-			{
+			if ($diff < 86400) {
 				return floor($diff / 3600) . ' hours ago';
 			}
 			
 			$day_diff = floor($diff / 86400);
 			
-			if ($day_diff === 1)
-			{
+			if ($day_diff === 1) {
 				return 'yesterday';
 			}
-			if ($day_diff < 28)
-			{
+			if ($day_diff < 28) {
 				return $day_diff . ' days ago';
 			}
 			
@@ -317,27 +286,22 @@ trait i18n
 		
 		$diff = abs($diff);
 		
-		if ($diff < 120)
-		{
+		if ($diff < 120) {
 			return 'in a minute';
 		}
-		if ($diff < 3600)
-		{
+		if ($diff < 3600) {
 			return 'in ' . floor($diff / 60) . ' minutes';
 		}
-		if ($diff < 86400)
-		{
+		if ($diff < 86400) {
 			return 'in ' . floor($diff / 3600) . ' hours';
 		}
 		
 		$day_diff = floor($diff / 86400);
 		
-		if ($day_diff === 1)
-		{
+		if ($day_diff === 1) {
 			return 'tomorrow';
 		}
-		if ($day_diff < 28)
-		{
+		if ($day_diff < 28) {
 			return "in {$day_diff} days";
 		}
 		
@@ -354,8 +318,8 @@ trait i18n
 		
 		if ($force_update ||
 			(0 === $site_id && (false === $lang = $this->cache->get_shared($cache_entry))) ||
-			(0 !== $site_id && (false === $lang = $this->cache->get($cache_entry))))
-		{
+			(0 !== $site_id && (false === $lang = $this->cache->get($cache_entry)))
+		) {
 			$sql = '
 				SELECT
 					i18n_subindex,
@@ -373,26 +337,19 @@ trait i18n
 			$this->db->query($sql, [$site_id, $language, $lang_file]);
 			$lang = [];
 
-			while ($row = $this->db->fetchrow())
-			{
-				if ($row['i18n_subindex'])
-				{
+			while ($row = $this->db->fetchrow()) {
+				if ($row['i18n_subindex']) {
 					$lang[$row['i18n_subindex']][$row['i18n_index']] = $row['i18n_translation'];
-				}
-				else
-				{
+				} else {
 					$lang[$row['i18n_index']] = $row['i18n_translation'];
 				}
 			}
 
 			$this->db->freeresult();
 			
-			if (0 === $site_id)
-			{
+			if (0 === $site_id) {
 				$this->cache->set_shared($cache_entry, $lang);
-			}
-			else
-			{
+			} else {
 				$this->cache->set($cache_entry, $lang);
 			}
 		}

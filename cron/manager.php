@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\cron;
@@ -49,8 +49,7 @@ class manager
 	*/
 	public function run()
 	{
-		if (file_exists($this->cron_running))
-		{
+		if (file_exists($this->cron_running)) {
 			/**
 			* До сих пор выполняются задачи в другом процессе
 			* Выходим и ждем своей очереди
@@ -59,8 +58,7 @@ class manager
 			return;
 		}
 
-		if (!$this->get_file_lock())
-		{
+		if (!$this->get_file_lock()) {
 			return;
 		}
 
@@ -70,10 +68,8 @@ class manager
 		$this->load_tasks();
 		$this->logger->info("Найдено готовых к запуску задач: {$this->tasks_count}");
 
-		if ($this->tasks)
-		{
-			foreach ($this->tasks as $task)
-			{
+		if ($this->tasks) {
+			foreach ($this->tasks as $task) {
 				$this->logger->info("Выполнение задачи «{$task['cron_title']}» [{$task['cron_script']}]");
 				set_time_limit($this->task_time_limit);
 
@@ -81,20 +77,16 @@ class manager
 				$cron_class = "\\app\\cron\\{$task['cron_script']}";
 				$cron = (new $cron_class($task))->_set_app($this->app);
 				
-				if ($cron->run())
-				{
+				if ($cron->run()) {
 					/* Установка времени следующего запуска */
 					$this->set_next_run_time($task['cron_id'], $task['cron_schedule']);
 					$this->logger->info('Задача выполнена');
-				}
-				else
-				{
+				} else {
 					$this->logger->info('Не удалось выполнить задачу');
 				}
 				
 				/* Перерыв между задачами */
-				if ($this->tasks_count > 1)
-				{
+				if ($this->tasks_count > 1) {
 					sleep($this->tasks_timeout);
 				}
 			}
@@ -109,12 +101,9 @@ class manager
 	*/
 	protected function get_file_lock()
 	{
-		if (file_exists($this->cron_allowed))
-		{
+		if (file_exists($this->cron_allowed)) {
 			return rename($this->cron_allowed, $this->cron_running);
-		}
-		elseif (file_exists($this->cron_running))
-		{
+		} elseif (file_exists($this->cron_running)) {
 			$this->release_deadlock();
 		}
 
@@ -130,8 +119,7 @@ class manager
 		$result = $this->db->query($sql, [$this->hostname]);
 		$site_ids = [];
 		
-		while ($row = $this->db->fetchrow($result))
-		{
+		while ($row = $this->db->fetchrow($result)) {
 			$site_ids[] = (int) $row['site_id'];
 		}
 		
@@ -162,8 +150,7 @@ class manager
 	*/
 	protected function release_deadlock()
 	{
-		if (!file_exists($this->cron_running) || time() - filemtime($this->cron_running) < $this->deadlock_timeout)
-		{
+		if (!file_exists($this->cron_running) || time() - filemtime($this->cron_running) < $this->deadlock_timeout) {
 			return;
 		}
 
@@ -200,13 +187,10 @@ class manager
 	{
 		$startmark = sprintf('%s/cron_started_at_%s', $this->logs_dir, date('Y-m-d_H-i-s', $this->start_time));
 
-		if ($mode == 'start')
-		{
+		if ($mode == 'start') {
 			touch($this->cron_running);
 			touch($startmark);
-		}
-		elseif ($mode == 'end')
-		{
+		} elseif ($mode == 'end') {
 			unlink($startmark);
 		}
 	}

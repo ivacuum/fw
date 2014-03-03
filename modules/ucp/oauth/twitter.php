@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\modules\ucp\oauth;
@@ -19,8 +19,7 @@ class twitter extends base
 	
 	public function index()
 	{
-		if (!$this->get_handler_url('callback'))
-		{
+		if (!$this->get_handler_url('callback')) {
 			trigger_error('CALLBACK_URL_NOT_CONFIGURED');
 		}
 
@@ -42,8 +41,7 @@ class twitter extends base
 		*/
 		$_SESSION["oauth.{$this->api_provider}.token"] = $oauth_token = $json['oauth_token'];
 
-		if ($json['oauth_callback_confirmed'] !== 'true')
-		{
+		if ($json['oauth_callback_confirmed'] !== 'true') {
 			$this->request->redirect(ilink($this->urls['_signin']));
 		}
 		
@@ -60,16 +58,14 @@ class twitter extends base
 	*/
 	public function callback()
 	{
-		if ($this->request->variable('denied', ''))
-		{
+		if ($this->request->variable('denied', '')) {
 			$this->request->redirect(ilink($this->urls['_signin']));
 		}
 
 		$oauth_token    = $this->request->variable('oauth_token', '');
 		$oauth_verifier = $this->request->variable('oauth_verifier', '');
 		
-		if (empty($_SESSION["oauth.{$this->api_provider}.token"]) || $_SESSION["oauth.{$this->api_provider}.token"] != $oauth_token)
-		{
+		if (empty($_SESSION["oauth.{$this->api_provider}.token"]) || $_SESSION["oauth.{$this->api_provider}.token"] != $oauth_token) {
 			$this->request->redirect(ilink($this->urls['_signin']));
 		}
 

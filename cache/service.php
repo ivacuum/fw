@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\cache;
@@ -39,8 +39,7 @@ class service
 	{
 		$sites = $this->obtain_sites();
 		
-		if (!isset($sites[$site_id]))
-		{
+		if (!isset($sites[$site_id])) {
 			return false;
 		}
 		
@@ -71,8 +70,7 @@ class service
 		$language  = strlen($language) === 2 ? $language : '';
 		$sites     = [];
 		
-		if ($language && isset($hostnames["{$hostname}_{$language}"]))
-		{
+		if ($language && isset($hostnames["{$hostname}_{$language}"])) {
 			return $this->get_site_info_by_id($hostnames["{$hostname}_{$language}"]);
 		}
 		
@@ -84,8 +82,7 @@ class service
 	*/
 	public function obtain_bots()
 	{
-		if (false === $bots = $this->driver->get_shared('bots'))
-		{
+		if (false === $bots = $this->driver->get_shared('bots')) {
 			$sql = 'SELECT user_id, bot_agent FROM site_bots ORDER BY LENGTH(bot_agent) DESC';
 			$result = $this->db->query($sql);
 			$bots = $this->db->fetchall($result);
@@ -101,8 +98,7 @@ class service
 	*/
 	public function obtain_groups()
 	{
-		if (false === $groups = $this->driver->get_shared('groups'))
-		{
+		if (false === $groups = $this->driver->get_shared('groups')) {
 			$sql = 'SELECT * FROM site_groups ORDER BY group_sort ASC';
 			$this->db->query($sql);
 			$groups = $this->db->fetchall(false, 'group_id');
@@ -120,14 +116,12 @@ class service
 	{
 		$cache_entry = "handlers_{$language}";
 		
-		if (false === $handlers = $this->driver->get($cache_entry))
-		{
+		if (false === $handlers = $this->driver->get($cache_entry)) {
 			$sql = 'SELECT * FROM site_pages WHERE site_id = ? ORDER BY left_id ASC';
 			$this->db->query($sql, [$site_id]);
 			$traversal = new traverse_handlers_urls($options);
 			
-			while ($row = $this->db->fetchrow())
-			{
+			while ($row = $this->db->fetchrow()) {
 				$traversal->process_node($row);
 			}
 			
@@ -145,26 +139,20 @@ class service
 	*/
 	public function obtain_hostnames()
 	{
-		if (false === $hostnames = $this->driver->get_shared('hostnames'))
-		{
+		if (false === $hostnames = $this->driver->get_shared('hostnames')) {
 			$sql = 'SELECT * FROM site_sites ORDER BY site_id ASC';
 			$this->db->query($sql);
 			
-			while ($row = $this->db->fetchrow())
-			{
-				if ($row['site_default'])
-				{
+			while ($row = $this->db->fetchrow()) {
+				if ($row['site_default']) {
 					$hostnames[$row['site_url']] = $row['site_id'];
 				}
 				
 				$hostnames["{$row['site_url']}_{$row['site_language']}"] = $row['site_id'];
 				
-				if (!empty($row['site_aliases']))
-				{
-					foreach (explode(' ', $row['site_aliases']) as $key => $hostname)
-					{
-						if ($row['site_default'])
-						{
+				if (!empty($row['site_aliases'])) {
+					foreach (explode(' ', $row['site_aliases']) as $key => $hostname) {
+						if ($row['site_default']) {
 							$hostnames[$hostname] = $row['site_id'];
 						}
 						
@@ -185,8 +173,7 @@ class service
 	*/
 	public function obtain_languages($force_reload = false)
 	{
-		if ($force_reload || (false === $languages = $this->driver->get_shared('languages')))
-		{
+		if ($force_reload || (false === $languages = $this->driver->get_shared('languages'))) {
 			$sql = 'SELECT * FROM site_languages ORDER BY language_sort ASC';
 			$result = $this->db->query($sql);
 			$languages = $this->db->fetchall($result, 'language_id');
@@ -204,14 +191,12 @@ class service
 	{
 		$cache_entry = "menu_{$language}";
 		
-		if (false === $menu = $this->driver->get($cache_entry))
-		{
+		if (false === $menu = $this->driver->get($cache_entry)) {
 			$sql = 'SELECT * FROM site_pages WHERE site_id = ? ORDER BY left_id ASC';
 			$this->db->query($sql, [$site_id]);
 			$traversal = new traverse_menu(array_merge($options, ['return_as_tree' => true]));
 			
-			while ($row = $this->db->fetchrow())
-			{
+			while ($row = $this->db->fetchrow()) {
 				$traversal->process_node($row);
 			}
 			
@@ -228,13 +213,11 @@ class service
 	*/
 	public function obtain_menus()
 	{
-		if (false === $menus = $this->driver->get_shared('menus'))
-		{
+		if (false === $menus = $this->driver->get_shared('menus')) {
 			$sql = 'SELECT * FROM site_menus WHERE menu_active = 1';
 			$this->db->query($sql);
 			
-			while ($row = $this->db->fetchrow())
-			{
+			while ($row = $this->db->fetchrow()) {
 				$menus[$row['menu_alias']] = $row;
 			}
 			
@@ -250,8 +233,7 @@ class service
 	*/
 	public function obtain_online_userlist($language, $online_time = 1800)
 	{
-		if (false === $data = $this->driver->get("online_userlist_{$language}"))
-		{
+		if (false === $data = $this->driver->get("online_userlist_{$language}")) {
 			global $app;
 
 			$data['guests_online'] = 0;
@@ -282,13 +264,11 @@ class service
 					s.session_time DESC';
 			$result = $this->db->query($sql, [time() - $online_time]);
 
-			while ($row = $this->db->fetchrow($result))
-			{
+			while ($row = $this->db->fetchrow($result)) {
 				/**
 				* Для зарегистрированных пользователей формируем ссылки на просмотр профиля
 				*/
-				if (!isset($prev_id[$row['user_id']]))
-				{
+				if (!isset($prev_id[$row['user_id']])) {
 					$user_link = $this->user_profile_link('', $row['username'], $row['user_colour'], $row['user_url'], $row['user_id'], $row['session_time']);
 
 					$data['online_userlist'] .= $data['online_userlist'] ? ", {$user_link}" : $user_link;
@@ -305,10 +285,8 @@ class service
 			$sql = 'SELECT session_ip FROM site_sessions WHERE user_id = 0 AND session_time >= ?';
 			$result = $this->db->query($sql, [time() - $online]);
 
-			while ($row = $this->db->fetchrow($result))
-			{
-				if (!isset($prev_ip[$row['session_ip']]))
-				{
+			while ($row = $this->db->fetchrow($result)) {
+				if (!isset($prev_ip[$row['session_ip']])) {
 					$prev_ip[$row['session_ip']] = 1;
 					$data['guests_online']++;
 				}
@@ -316,8 +294,7 @@ class service
 
 			$this->db->freeresult($result);
 
-			if (empty($data['online_userlist']))
-			{
+			if (empty($data['online_userlist'])) {
 				/**
 				* Если на сайте нет зарегистрированных пользователей, то сообщаем об этом
 				*/
@@ -342,8 +319,7 @@ class service
 	*/
 	public function obtain_ranks()
 	{
-		if (false === $ranks = $this->driver->get_shared('ranks'))
-		{
+		if (false === $ranks = $this->driver->get_shared('ranks')) {
 			$sql = 'SELECT * FROM site_ranks';
 			$result = $this->db->query($sql);
 			$ranks = $this->db->fetchall($result, 'rank_id');
@@ -361,8 +337,7 @@ class service
 	{
 		static $sites;
 		
-		if (empty($sites) && (false === $sites = $this->driver->get_shared('sites')))
-		{
+		if (empty($sites) && (false === $sites = $this->driver->get_shared('sites'))) {
 			$sql = 'SELECT * FROM site_sites ORDER BY site_url ASC, site_language ASC';
 			$this->db->query($sql);
 			$sites = $this->db->fetchall(false, 'site_id');
@@ -381,8 +356,7 @@ class traverse_handlers_urls extends site_pages
 {
 	protected function tree_append($data)
 	{
-		if (!$this->row['page_handler'] || !$this->row['handler_method'])
-		{
+		if (!$this->row['page_handler'] || !$this->row['handler_method']) {
 			return false;
 		}
 		
@@ -393,8 +367,7 @@ class traverse_handlers_urls extends site_pages
 		*/
 		$i = 0;
 
-		while (false !== $pos = strpos($data, '*'))
-		{
+		while (false !== $pos = strpos($data, '*')) {
 			$data = substr_replace($data, '$' . $i++, $pos, 1);
 		}
 		

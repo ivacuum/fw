@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2014
 */
 
 namespace fw\core;
@@ -58,8 +58,7 @@ class request
 		$this->url       = urldecode(htmlspecialchars_decode(str_replace(['\\x', '%25'], '%', $this->server('REQUEST_URI'))));
 		
 		/* По умолчанию при использовании метода PUT данные не попадают в $_REQUEST */
-		if ($this->method == 'put')
-		{
+		if ($this->method == 'put') {
 			$_REQUEST = array_merge(json_decode(file_get_contents('php://input'), true), $_REQUEST);
 		}
 	}
@@ -139,8 +138,7 @@ class request
 	*/
 	public function redirect($url, $status_code = 302)
 	{
-		if (false !== strpos(urldecode($url), "\n") || false !== strpos(urldecode($url), "\r"))
-		{
+		if (false !== strpos(urldecode($url), "\n") || false !== strpos(urldecode($url), "\r")) {
 			trigger_error('Bad URL.', E_USER_ERROR);
 		}
 	
@@ -148,13 +146,11 @@ class request
 		* Если пользователь из локальной сети,
 		* то перенаправлять его следует на локальный домен
 		*/
-		if ($this->isp == 'local' && !empty($this->options['local_redirect.from']) && !empty($this->options['local_redirect.to']))
-		{
+		if ($this->isp == 'local' && !empty($this->options['local_redirect.from']) && !empty($this->options['local_redirect.to'])) {
 			$url = str_replace($this->options['local_redirect.from'], $this->options['local_redirect.to'], $url);
 		}
 	
-		if ($status_code != 302)
-		{
+		if ($status_code != 302) {
 			http_response_code($status_code);
 		}
 
@@ -175,8 +171,7 @@ class request
 	*/
 	public function server($var, $default = '')
 	{
-		if ($this->is_set($var, self::SERVER))
-		{
+		if ($this->is_set($var, self::SERVER)) {
 			return $this->variable($var, $default, self::SERVER);
 		}
 		
@@ -216,20 +211,17 @@ class request
 		$input = $this->globals[$global];
 		$path  = false;
 		
-		if (is_array($var))
-		{
+		if (is_array($var)) {
 			$path = $var;
 			
-			if (empty($path))
-			{
+			if (empty($path)) {
 				return is_array($default) ? [] : $default;
 			}
 			
 			$var = array_shift($path);
 		}
 		
-		if (!isset($GLOBALS[$input][$var]))
-		{
+		if (!isset($GLOBALS[$input][$var])) {
 			/**
 			* Переменная не установлена
 			* Возвращаем значение по умолчанию
@@ -239,16 +231,11 @@ class request
 		
 		$var = $GLOBALS[$input][$var];
 		
-		if ($path)
-		{
-			foreach ($path as $key)
-			{
-				if (is_array($key) && isset($var[$key]))
-				{
+		if ($path) {
+			foreach ($path as $key) {
+				if (is_array($key) && isset($var[$key])) {
 					$var = $var[$key];
-				}
-				else
-				{
+				} else {
 					return is_array($default) ? [] : $default;
 				}
 			}
@@ -268,8 +255,7 @@ class request
 		settype($var, $type);
 		$result = $var;
 		
-		if ($type == 'string')
-		{
+		if ($type == 'string') {
 			$result = trim(htmlspecialchars(str_replace(["\r\n", "\r", "\0"], ["\n", "\n", ''], $result), ENT_COMPAT, 'UTF-8'));
 		}
 	}
@@ -279,21 +265,18 @@ class request
 	*/
 	protected function recursive_set_type(&$var, $default)
 	{
-		if (is_array($var) !== is_array($default))
-		{
+		if (is_array($var) !== is_array($default)) {
 			$var = is_array($default) ? [] : $default;
 			return;
 		}
 		
-		if (!is_array($default))
-		{
+		if (!is_array($default)) {
 			$type = gettype($default);
 			$this->set_type($var, $var, $type);
 			return;
 		}
 		
-		if (empty($default))
-		{
+		if (empty($default)) {
 			$var = [];
 			return;
 		}
@@ -305,8 +288,7 @@ class request
 		$_var = $var;
 		$var = [];
 		
-		foreach ($_var as $k => $v)
-		{
+		foreach ($_var as $k => $v) {
 			$this->set_type($k, $k, $key_type);
 			$this->recursive_set_type($v, $default_value);
 			$var[$k] = $v;

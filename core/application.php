@@ -6,8 +6,6 @@
 
 namespace fw\core;
 
-use ArrayAccess;
-use Closure;
 use Guzzle\Http\Client;
 use Guzzle\Log\MonologLogAdapter;
 use Guzzle\Log\MessageFormatter;
@@ -17,7 +15,6 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\NativeMailerHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Processor\WebProcessor;
-use SplObjectStorage;
 use fw\captcha\service as captcha_service;
 use fw\captcha\validator as captcha_validator;
 use fw\cron\manager as cron_manager;
@@ -28,7 +25,7 @@ use fw\logger\handlers\db as DBHandler;
 use fw\session\user;
 use fw\template\smarty;
 
-class application implements ArrayAccess
+class application implements \ArrayAccess
 {
 	const VERSION = '1.6.3';
 	
@@ -41,8 +38,8 @@ class application implements ArrayAccess
 	
 	function __construct(array $values = [])
 	{
-		$this->factories = new SplObjectStorage();
-		$this->protected = new SplObjectStorage();
+		$this->factories = new \SplObjectStorage();
+		$this->protected = new \SplObjectStorage();
 		
 		foreach ($values as $key => $value) {
 			$this->offsetSet($key, $value);
@@ -216,15 +213,15 @@ class application implements ArrayAccess
 	public function extend($id, $callable)
 	{
         if (!isset($this->keys[$id])) {
-            throw new InvalidArgumentException(sprintf('Ключ «%s» не найден.', $id));
+            throw new \InvalidArgumentException(sprintf('Ключ «%s» не найден.', $id));
         }
 
         if (!is_object($this->values[$id]) || !method_exists($this->values[$id], '__invoke')) {
-            throw new InvalidArgumentException(sprintf('По ключу «%s» расположен не объект.', $id));
+            throw new \InvalidArgumentException(sprintf('По ключу «%s» расположен не объект.', $id));
         }
 
         if (!is_object($callable) || !method_exists($callable, '__invoke')) {
-            throw new InvalidArgumentException('Расширение должно быть замыканием или объектом с определенным методом __invoke().');
+            throw new \InvalidArgumentException('Расширение должно быть замыканием или объектом с определенным методом __invoke().');
         }
 
         $factory = $this->values[$id];
@@ -248,7 +245,7 @@ class application implements ArrayAccess
 	public function factory($callable)
 	{
 		if (!is_object($callable) || !method_exists($callable, '__invoke')) {
-			throw new InvalidArgumentException('Необходимо передать замыкание или объект с определенным методом __invoke().');
+			throw new \InvalidArgumentException('Необходимо передать замыкание или объект с определенным методом __invoke().');
 		}
 		
 		$this->factories->attach($callable);
@@ -263,7 +260,7 @@ class application implements ArrayAccess
 	public function protect($callable)
 	{
 		if (!is_object($callable) || !method_exists($callable, '__invoke')) {
-			throw new InvalidArgumentException('Необходимо передать замыкание или объект с определенным методом __invoke().');
+			throw new \InvalidArgumentException('Необходимо передать замыкание или объект с определенным методом __invoke().');
 		}
 		
 		$this->protected->attach($callable);
@@ -277,7 +274,7 @@ class application implements ArrayAccess
 	public function raw($id)
 	{
 		if (!isset($this->keys[$id])) {
-			throw new InvalidArgumentException(sprintf('Ключ «%s» не найден.', $id));
+			throw new \InvalidArgumentException(sprintf('Ключ «%s» не найден.', $id));
 		}
 		
 		if (isset($this->raw[$id])) {
@@ -322,7 +319,7 @@ class application implements ArrayAccess
 	public function offsetGet($id)
 	{
 		if (!isset($this->keys[$id])) {
-			throw new InvalidArgumentException(sprintf('Ключ «%s» не найден.', $id));
+			throw new \InvalidArgumentException(sprintf('Ключ «%s» не найден.', $id));
 		}
 		
 		if (isset($this->raw[$id])
@@ -346,7 +343,7 @@ class application implements ArrayAccess
 	public function offsetSet($id, $value)
 	{
 		if (isset($this->frozen[$id])) {
-			throw new RuntimeException(sprintf('Нельзя изменять замороженный объект «%s»', $id));
+			throw new \RuntimeException(sprintf('Нельзя изменять замороженный объект «%s»', $id));
 		}
 		
 		$this->values[$id] = $value;

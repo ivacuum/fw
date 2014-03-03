@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\core;
@@ -33,18 +33,15 @@ class form
 	
 	public function add_field($row, $tab_id = false)
 	{
-		if (false == $type = @$row['field_type'] ?: @$row['type'] ?: '')
-		{
+		if (false == $type = @$row['field_type'] ?: @$row['type'] ?: '') {
 			trigger_error('При создании поля не было указано обязательное поле type.');
 		}
 		
-		if (empty($this->data))
-		{
+		if (empty($this->data)) {
 			trigger_error('Перед добавлением полей следует создать форму.');
 		}
 		
-		if (false === $tab_id && !$this->last_tab)
-		{
+		if (false === $tab_id && !$this->last_tab) {
 			/**
 			* При ручном создании формы вкладка будет создана
 			* автоматически при добавлении первого поля
@@ -95,8 +92,7 @@ class form
 	
 	public function add_form($row)
 	{
-		if (false == $alias = @$row['form_alias'] ?: @$row['alias'] ?: '')
-		{
+		if (false == $alias = @$row['form_alias'] ?: @$row['alias'] ?: '') {
 			trigger_error('При создании формы не было указано обязательное поле alias.');
 		}
 		
@@ -125,8 +121,7 @@ class form
 	
 	public function add_tab($row = [], $tab_id = false)
 	{
-		if (false === $tab_id)
-		{
+		if (false === $tab_id) {
 			$this->last_tab++;
 			$tab_id = $this->last_tab;
 		}
@@ -165,8 +160,7 @@ class form
 	*/
 	public function bind_data($row)
 	{
-		foreach ($this->fields as $field)
-		{
+		foreach ($this->fields as $field) {
 			$field['value'] = isset($row[$field['field_alias']]) ? $row[$field['field_alias']] : $field['value'];
 		}
 		
@@ -178,13 +172,11 @@ class form
 	*/
 	public function bind_request()
 	{
-		foreach ($this->fields as $field)
-		{
-			switch ($this->data['form_method'])
-			{
+		foreach ($this->fields as $field) {
+			switch ($this->data['form_method']) {
 				case 'get':  $method = 'get'; break;
 				case 'post': $method = 'post'; break;
-				default:     $method = 'variable'; break;
+				default:     $method = 'variable';
 			}
 			
 			$field->set_value($this->request->$method("{$this->data['form_alias']}_{$field['field_alias']}", $field->get_default_value(true)));
@@ -203,8 +195,7 @@ class form
 	{
 		$ary = [];
 		
-		foreach ($this->fields as $field)
-		{
+		foreach ($this->fields as $field) {
 			$alias = $prefixed ? "{$this->data['form_alias']}_{$field['field_alias']}" : $field['field_alias'];
 			
 			$ary[$alias] = $field['value'];
@@ -218,8 +209,7 @@ class form
 	*/
 	public function get_form($alias)
 	{
-		if (!$alias)
-		{
+		if (!$alias) {
 			trigger_error('Не указан псевдоним формы.');
 		}
 		
@@ -228,8 +218,7 @@ class form
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
 		
-		if (!$row)
-		{
+		if (!$row) {
 			trigger_error('Форма не найдена.');
 		}
 		
@@ -239,15 +228,13 @@ class form
 		$sql = 'SELECT * FROM site_form_tabs WHERE form_id = ? ORDER BY tab_sort ASC';
 		$this->db->query($sql, [$this->data['form_id']]);
 		
-		while ($row = $this->db->fetchrow())
-		{
+		while ($row = $this->db->fetchrow()) {
 			$this->add_tab($row, $row['tab_id']);
 		}
 		
 		$this->db->freeresult();
 		
-		if (empty($this->tabs))
-		{
+		if (empty($this->tabs)) {
 			trigger_error('У формы нет вкладок.');
 		}
 		
@@ -255,8 +242,7 @@ class form
 		$sql = 'SELECT * FROM site_form_fields WHERE form_id = ? ORDER BY tab_id ASC, field_sort ASC';
 		$this->db->query($sql, [$this->data['form_id']]);
 		
-		while ($row = $this->db->fetchrow())
-		{
+		while ($row = $this->db->fetchrow()) {
 			$this->add_field($row, $row['tab_id']);
 		}
 		
@@ -271,20 +257,17 @@ class form
 	*/
 	public function validate()
 	{
-		if (!$this->is_bound)
-		{
+		if (!$this->is_bound) {
 			trigger_error('Значения полей не связаны с полями формы.');
 		}
 		
 		$this->is_valid = true && $this->is_csrf_valid;
 		
-		foreach ($this->fields as $field)
-		{
+		foreach ($this->fields as $field) {
 			$this->is_valid = $field->is_valid() && $this->is_valid;
 		}
 		
-		if ($this->is_valid)
-		{
+		if ($this->is_valid) {
 			/* Защита от повторной отправки формы */
 			$this->delete_csrf_token();
 		}

@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\modules\ucp\oauth;
@@ -91,8 +91,7 @@ class facebook extends base
 	*/
 	protected function get_openid_insert_data($json)
 	{
-		switch ($json['gender'])
-		{
+		switch ($json['gender']) {
 			case 'female': $gender = 1; break;
 			case 'male': $gender = 2; break;
 			default: $gender = 0;

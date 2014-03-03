@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\models;
@@ -69,8 +69,7 @@ class page
 	{
 		$url = $url ? ilink($url) : ilink($this->url);
 		
-		if (false !== strpos($url, '?'))
-		{
+		if (false !== strpos($url, '?')) {
 			return sprintf('%s&%s', $url, $query_string);
 		}
 		
@@ -86,8 +85,7 @@ class page
 	{
 		static $base_url;
 		
-		if (!$base_url)
-		{
+		if (!$base_url) {
 			$ary = pathinfo($this->url);
 			$base_url = isset($ary['extension']) ? $ary['dirname'] : $this->url;
 		}
@@ -102,8 +100,7 @@ class page
 	*/
 	public function get_page_branch($page_id, $type = 'all', $order = 'descending', $include_self = true)
 	{
-		switch ($type)
-		{
+		switch ($type) {
 			case 'parents':  $condition = 'p1.left_id BETWEEN p2.left_id AND p2.right_id'; break;
 			case 'children': $condition = 'p2.left_id BETWEEN p1.left_id AND p1.right_id'; break;
 			default:         $condition = 'p2.left_id BETWEEN p1.left_id AND p1.right_id OR p1.left_id BETWEEN p2.left_id AND p2.right_id';
@@ -128,10 +125,8 @@ class page
 				p2.left_id :order';
 		$this->db->query($sql, [$this->data['site_id'], $this->data['site_id'], $page_id, ':condition' => $condition, ':order' => $order == 'descending' ? 'ASC' : 'DESC']);
 
-		while ($row = $this->db->fetchrow())
-		{
-			if (!$include_self && $row['page_id'] == $page_id)
-			{
+		while ($row = $this->db->fetchrow()) {
+			if (!$include_self && $row['page_id'] == $page_id) {
 				continue;
 			}
 
@@ -148,8 +143,7 @@ class page
 	*/
 	public function get_page_descendants($page_id = false)
 	{
-		if (false === $page_id)
-		{
+		if (false === $page_id) {
 			$page_id = $this->data['is_dir'] ? $this->data['page_id'] : $this->data['parent_id'];
 		}
 		
@@ -181,8 +175,7 @@ class page
 	*/
 	public function get_handler_url($handler, array $params = [])
 	{
-		if (0 === strpos($handler, '\\'))
-		{
+		if (0 === strpos($handler, '\\')) {
 			/**
 			* Обращение по абсолютному адресу
 			* Чаще всего к модулям движка
@@ -190,8 +183,7 @@ class page
 			* \fw\modules\gallery::index
 			*/
 			/* Разработчик знает, что подключает */
-			if (isset($this->handlers_urls[$handler]))
-			{
+			if (isset($this->handlers_urls[$handler])) {
 				return $this->get_url_with_params($this->handlers_urls[$handler], $params);
 			}
 			
@@ -201,10 +193,8 @@ class page
 		/**
 		* Обращение к методу текущего модуля
 		*/
-		if (false === strpos($handler, '::'))
-		{
-			if (isset($this->urls[$handler]))
-			{
+		if (false === strpos($handler, '::')) {
+			if (isset($this->urls[$handler])) {
 				return $this->get_url_with_params($this->urls[$handler], $params);
 			}
 			
@@ -222,21 +212,17 @@ class page
 		$class = substr($class, 4);
 		$diff = substr_count($class, '\\') - substr_count($handler, '\\');
 		
-		if ($diff > 0)
-		{
-			if (false != $prefix = implode('\\', array_slice(explode('\\', $class), 0, $diff)))
-			{
+		if ($diff > 0) {
+			if (false != $prefix = implode('\\', array_slice(explode('\\', $class), 0, $diff))) {
 				$full_handler = $prefix . '\\' . $handler;
 				
-				if (isset($this->handlers_urls[$full_handler]))
-				{
+				if (isset($this->handlers_urls[$full_handler])) {
 					return $this->get_url_with_params($this->handlers_urls[$full_handler], $params);
 				}
 			}
 		}
 		
-		if (isset($this->handlers_urls[$handler]))
-		{
+		if (isset($this->handlers_urls[$handler])) {
 			return $this->get_url_with_params($this->handlers_urls[$handler], $params);
 		}
 		
@@ -250,15 +236,13 @@ class page
 	*/
 	public function get_url_with_params($url, array $params = [])
 	{
-		if (empty($params))
-		{
+		if (empty($params)) {
 			return $url;
 		}
 		
 		$ary = [];
 		
-		for ($i = 0, $len = sizeof($params); $i < $len; $i++)
-		{
+		for ($i = 0, $len = sizeof($params); $i < $len; $i++) {
 			$ary[] = '$' . $i;
 		}
 		
@@ -276,8 +260,7 @@ class page
 	{
 		$filename = str_replace('\\', '/', get_class($this));
 		
-		if (0 === strpos($filename, 'app/'))
-		{
+		if (0 === strpos($filename, 'app/')) {
 			$filename = substr($filename, 4);
 		}
 		
@@ -297,28 +280,22 @@ class page
 			'directory_index'   => $this->options['directory_index'],
 		];
 		
-		if (false === $this->handlers_urls = $this->cache->obtain_handlers_urls($this->data['site_id'], $this->request->language, $options))
-		{
+		if (false === $this->handlers_urls = $this->cache->obtain_handlers_urls($this->data['site_id'], $this->request->language, $options)) {
 			return $this;
 		}
 
 		$handler = get_class($this);
 		
-		if (0 === strpos($handler, 'app\\'))
-		{
+		if (0 === strpos($handler, 'app\\')) {
 			$handler = substr($handler, 4);
-		}
-		elseif (0 === strpos($handler, 'fw\\'))
-		{
+		} elseif (0 === strpos($handler, 'fw\\')) {
 			$handler = "\\{$handler}";
 		}
 		
 		$pos = strlen($handler) + 2;
 
-		foreach ($this->handlers_urls as $method => $url)
-		{
-			if (0 === strpos($method, $handler . '::'))
-			{
+		foreach ($this->handlers_urls as $method => $url) {
+			if (0 === strpos($method, $handler . '::')) {
 				$this->urls[substr($method, $pos)] = $url;
 			}
 		}
@@ -328,8 +305,7 @@ class page
 
 	public function page_header()
 	{
-		if (defined('HEADER_PRINTED'))
-		{
+		if (defined('HEADER_PRINTED')) {
 			return $this;
 		}
 		
@@ -342,17 +318,13 @@ class page
 		$languages = $this->cache->obtain_languages();
 		$sites     = $this->cache->obtain_sites();
 
-		foreach ($sites as $row)
-		{
-			if ($this->request->server_name != $row['site_url'])
-			{
+		foreach ($sites as $row) {
+			if ($this->request->server_name != $row['site_url']) {
 				continue;
 			}
 			
-			foreach ($languages as $ary)
-			{
-				if ($ary['language_title'] == $row['site_language'])
-				{
+			foreach ($languages as $ary) {
+				if ($ary['language_title'] == $row['site_language']) {
 					break;
 				}
 			}
@@ -364,8 +336,7 @@ class page
 				'URL'   => ilink('', $this->config['site.root_path'] . $row['site_language'])
 			]);
 			
-			if ($this->request->language == $ary['language_title'])
-			{
+			if ($this->request->language == $ary['language_title']) {
 				$this->template->assign('S_LANGUAGE_DIRECTION', $ary['language_direction']);
 			}
 		}
@@ -397,18 +368,15 @@ class page
 		$display_profiler = false;
 		
 		/* Вывод профайлера только для html-документов */
-		if ($this->format == 'html' && !$this->request->is_ajax && !defined('IN_SQL_ERROR'))
-		{
+		if ($this->format == 'html' && !$this->request->is_ajax && !defined('IN_SQL_ERROR')) {
 			$display_profiler = $this->profiler->is_enabled() && ($this->auth->acl_get('a_') || $this->profiler->is_permitted());
 		}
 		
-		if ($this->template->file)
-		{
+		if ($this->template->file) {
 			$this->template->assign('cfg', $this->config);
 			$this->template->display();
 			
-			if ($display_profiler)
-			{
+			if ($display_profiler) {
 				$this->user->load_language('profiler');
 				$this->template->assign($this->profiler->get_stats());
 				$this->template->display('profiler.html');
@@ -424,8 +392,7 @@ class page
 	*/
 	public function set_appropriate_content_type()
 	{
-		switch ($this->format)
-		{
+		switch ($this->format) {
 			case 'json': $type = 'application/json'; break;
 			case 'xml':  $type = 'text/xml'; break;
 
@@ -447,27 +414,23 @@ class page
 	*/
 	public function set_default_template()
 	{
-		if (!$this->format)
-		{
+		if (!$this->format) {
 			return $this;
 		}
 		
 		$filename = str_replace('\\', '/', get_class($this));
 		
-		if (0 === strpos($filename, 'app/'))
-		{
+		if (0 === strpos($filename, 'app/')) {
 			$filename = substr($filename, 4);
 		}
 		
-		if (0 === strpos($filename, 'fw/modules/'))
-		{
+		if (0 === strpos($filename, 'fw/modules/')) {
 			$filename = substr($filename, 11);
 		}
 		
 		$this->template->file = "{$filename}_{$this->method}.{$this->format}";
 		
-		if ($this->request->is_ajax)
-		{
+		if ($this->request->is_ajax) {
 			$this->template->file = "ajax/{$filename}_{$this->method}.{$this->format}";
 		}
 		
@@ -490,8 +453,7 @@ class page
 	*/
 	public function set_preconfigured_urls($urls)
 	{
-		foreach ($urls as $key => $value)
-		{
+		foreach ($urls as $key => $value) {
 			$this->urls["_{$key}"] = $value;
 		}
 		
@@ -511,23 +473,16 @@ class page
 		$page_url = ilink($this->full_url);
 		$root_url = ilink();
 		
-		foreach ($menu as $row)
-		{
-			if ($row['URL'] == $root_url)
-			{
-				if ($page_url == $row['URL'])
-				{
+		foreach ($menu as $row) {
+			if ($row['URL'] == $root_url) {
+				if ($page_url == $row['URL']) {
 					$row['ACTIVE'] = true;
 				}
-			}
-			else
-			{
-				if (0 === mb_strpos($page_url, $row['URL']))
-				{
+			} else {
+				if (0 === mb_strpos($page_url, $row['URL'])) {
 					$row['ACTIVE'] = true;
 					
-					if (!empty($row['children']))
-					{
+					if (!empty($row['children'])) {
 						$this->recursive_set_menu_active_items($row['children'], $row['URL']);
 					}
 				}
@@ -546,8 +501,7 @@ class page
 	{
 		$rows = $this->get_page_descendants();
 		
-		foreach ($rows as $row)
-		{
+		foreach ($rows as $row) {
 			$this->template->append('submenu', [
 				'ACTIVE' => $this->data['page_id'] == $row['page_id'],
 				'IMAGE'  => $row['page_image'],
@@ -569,10 +523,8 @@ class page
 		$groups      = $this->cache->obtain_groups();
 		$groups_list = '';
 
-		foreach ($groups as $row)
-		{
-			if (!$row['group_legend'])
-			{
+		foreach ($groups as $row) {
+			if (!$row['group_legend']) {
 				continue;
 			}
 
@@ -616,8 +568,7 @@ class page
 	*/
 	public function user_profile_link($mode, $username, $colour = false, $url = false, $id = false, $time = false)
 	{
-		switch ($mode)
-		{
+		switch ($mode) {
 			/**
 			* Строка без ссылки
 			*/
@@ -646,8 +597,6 @@ class page
 				$url    = $url ? $this->get_handler_url('users::profile', [$url]) : $this->get_handler_url('users::profile', [$id]);
 
 				return sprintf('<a href="%s"%s%s>%s</a>', $url, $colour, $time, $username);
-
-			break;
 		}
 	}
 	
@@ -659,22 +608,18 @@ class page
 		$language = $this->request->language;
 		$menu_id  = 0;
 		
-		foreach ($this->cache->obtain_menus() as $key => $ary)
-		{
-			if ($key == $alias)
-			{
+		foreach ($this->cache->obtain_menus() as $key => $ary) {
+			if ($key == $alias) {
 				$menu_id = $ary['menu_id'];
 				break;
 			}
 		}
 		
-		if (!$menu_id)
-		{
+		if (!$menu_id) {
 			return $this;
 		}
 		
-		if (false === $menu = $this->cache->get("menu_{$menu_id}_{$language}"))
-		{
+		if (false === $menu = $this->cache->get("menu_{$menu_id}_{$language}")) {
 			$sql = 'SELECT * FROM site_pages WHERE site_id = ? ORDER BY left_id ASC';
 			$this->db->query($sql, [$this->data['site_id']]);
 			
@@ -685,8 +630,7 @@ class page
 				'return_as_tree'    => true,
 			]);
 			
-			while ($row = $this->db->fetchrow())
-			{
+			while ($row = $this->db->fetchrow()) {
 				$traversal->process_node($row);
 			}
 			
@@ -699,23 +643,16 @@ class page
 		$page_url = ilink($this->full_url);
 		$root_url = ilink();
 		
-		foreach ($menu as $row)
-		{
-			if ($row['URL'] == $root_url)
-			{
-				if ($page_url == $row['URL'])
-				{
+		foreach ($menu as $row) {
+			if ($row['URL'] == $root_url) {
+				if ($page_url == $row['URL']) {
 					$row['ACTIVE'] = true;
 				}
-			}
-			else
-			{
-				if (0 === mb_strpos($page_url, $row['URL']))
-				{
+			} else {
+				if (0 === mb_strpos($page_url, $row['URL'])) {
 					$row['ACTIVE'] = true;
 					
-					if (!empty($row['children']))
-					{
+					if (!empty($row['children'])) {
 						$this->recursive_set_menu_active_items($row['children'], $row['URL']);
 					}
 				}
@@ -747,29 +684,21 @@ class page
 	{
 		static $page_url;
 		
-		if (!$page_url)
-		{
+		if (!$page_url) {
 			$page_url = ilink($this->full_url);
 		}
 		
-		for ($i = 0, $len = sizeof($menu); $i < $len; $i++)
-		{
-			if ($menu[$i]['URL'] == $section_url)
-			{
-				if ($page_url == $menu[$i]['URL'])
-				{
+		for ($i = 0, $len = sizeof($menu); $i < $len; $i++) {
+			if ($menu[$i]['URL'] == $section_url) {
+				if ($page_url == $menu[$i]['URL']) {
 					$menu[$i]['ACTIVE'] = true;
 					return;
 				}
-			}
-			else
-			{
-				if (0 === mb_strpos($page_url, $menu[$i]['URL']))
-				{
+			} else {
+				if (0 === mb_strpos($page_url, $menu[$i]['URL'])) {
 					$menu[$i]['ACTIVE'] = true;
 
-					if (!empty($menu[$i]['children']))
-					{
+					if (!empty($menu[$i]['children'])) {
 						$this->recursive_set_menu_active_items($menu[$i]['children'], $menu[$i]['URL']);
 					}
 					

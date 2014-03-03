@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\modules\ucp\oauth;
@@ -131,10 +131,8 @@ class github extends base
 	*/
 	protected function get_primary_email($json)
 	{
-		foreach ($json as $email)
-		{
-			if ($email['primary'])
-			{
+		foreach ($json as $email) {
+			if ($email['primary']) {
 				return $email['email'];
 			}
 		}

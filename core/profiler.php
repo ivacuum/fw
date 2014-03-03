@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\core;
@@ -31,13 +31,11 @@ class console
 
 	public function log()
 	{
-		if (PHP_SAPI == 'cli')
-		{
+		if (PHP_SAPI == 'cli') {
 			return $this;
 		}
 		
-		foreach (func_get_args() as $arg)
-		{
+		foreach (func_get_args() as $arg) {
 			$this->logs[] = [
 				'data' => $arg,
 				'type' => 'log',
@@ -51,8 +49,7 @@ class console
 
 	public function log_memory($object = false, $name = 'php')
 	{
-		if (PHP_SAPI == 'cli')
-		{
+		if (PHP_SAPI == 'cli') {
 			return $this;
 		}
 		
@@ -70,15 +67,13 @@ class console
 
 	public function log_error($message, $line, $file)
 	{
-		if (PHP_SAPI == 'cli')
-		{
+		if (PHP_SAPI == 'cli') {
 			return $this;
 		}
 		
 		$call_stack = '';
 		
-		if (function_exists('xdebug_print_function_stack'))
-		{
+		if (function_exists('xdebug_print_function_stack')) {
 			ob_start();
 			xdebug_print_function_stack();
 			$call_stack = str_replace($this->document_root, '', ob_get_clean());
@@ -99,8 +94,7 @@ class console
 
 	public function log_speed($name = 'label')
 	{
-		if (PHP_SAPI == 'cli')
-		{
+		if (PHP_SAPI == 'cli') {
 			return $this;
 		}
 		
@@ -117,8 +111,7 @@ class console
 
 	public function log_query($sql, $start_time, $cached = false)
 	{
-		if (PHP_SAPI == 'cli')
-		{
+		if (PHP_SAPI == 'cli') {
 			return $this;
 		}
 		
@@ -132,8 +125,7 @@ class console
 			'time'   => $query_time,
 		];
 
-		if ($cached)
-		{
+		if ($cached) {
 			$this->query_cached++;
 		}
 		
@@ -165,8 +157,7 @@ class profiler extends console
 
 	public function get_stats()
 	{
-		if (PHP_SAPI == 'cli')
-		{
+		if (PHP_SAPI == 'cli') {
 			return;
 		}
 		
@@ -215,23 +206,19 @@ class profiler extends console
 	*/
 	public function send_stats($hostname = '', $url = '')
 	{
-		if (PHP_SAPI == 'cli')
-		{
+		if (PHP_SAPI == 'cli') {
 			return;
 		}
 		
-		if (!$this->options['send_stats'])
-		{
+		if (!$this->options['send_stats']) {
 			return;
 		}
 		
-		if (false === $fp = fsockopen("udp://{$this->options['host']}", $this->options['port']))
-		{
+		if (false === $fp = fsockopen("udp://{$this->options['host']}", $this->options['port'])) {
 			return false;
 		}
 		
-		if (!$this->memory_used)
-		{
+		if (!$this->memory_used) {
 			$this->get_console_data()
 				->get_file_data()
 				->get_memory_data()
@@ -267,10 +254,8 @@ class profiler extends console
 
 	protected function get_console_data()
 	{
-		foreach ($logs = $this->logs as $key => $log)
-		{
-			switch ($log['type'])
-			{
+		foreach ($logs = $this->logs as $key => $log) {
+			switch ($log['type']) {
 				case 'log':    $logs[$key]['data'] = print_r($log['data'], true); break;
 				case 'memory':
 				case 'speed':  $logs[$key]['data'] = $log['data']; break;
@@ -287,10 +272,8 @@ class profiler extends console
 		$file_list = [];
 		$this->file_count = 0;
 
-		foreach (get_included_files() as $key => $file)
-		{
-			if (false !== strpos($file, '/lib/'))
-			{
+		foreach (get_included_files() as $key => $file) {
+			if (false !== strpos($file, '/lib/')) {
 				continue;
 			}
 			

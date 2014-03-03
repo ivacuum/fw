@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\form\field;
@@ -29,8 +29,7 @@ class number extends generic
 		/* Обработка разделителей с учетом текущей локали */
 		$value = str_replace([$locale['thousands_sep'], $locale['decimal_point']], ['', '.'], $value);
 		
-		switch ($this->data['field_rounding_mode'])
-		{
+		switch ($this->data['field_rounding_mode']) {
 			/**
 			* Отсечение лишней части
 			*
@@ -86,23 +85,19 @@ class number extends generic
 	
 	public function validate()
 	{
-		if ($this->data['field_disabled'] || $this->data['field_readonly'])
-		{
+		if ($this->data['field_disabled'] || $this->data['field_readonly']) {
 			return true;
 		}
 		
-		if ($this->data['field_required'] && !$this->data['value'])
-		{
+		if ($this->data['field_required'] && !$this->data['value']) {
 			return false;
 		}
 		
-		if ($this->data['field_min'] !== '' && $this->data['value'] < $this->data['field_min'])
-		{
+		if ($this->data['field_min'] !== '' && $this->data['value'] < $this->data['field_min']) {
 			return false;
 		}
 		
-		if ($this->data['field_max'] !== '' && $this->data['value'] > $this->data['field_max'])
-		{
+		if ($this->data['field_max'] !== '' && $this->data['value'] > $this->data['field_max']) {
 			return false;
 		}
 

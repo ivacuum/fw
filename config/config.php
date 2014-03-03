@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2012
+* @copyright (c) 2014
 */
 
 namespace fw\config;
@@ -31,8 +31,7 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 	*/
 	public function increment($key, $increment = 1)
 	{
-		if (!isset($this->config[$key]))
-		{
+		if (!isset($this->config[$key])) {
 			$this->config[$key] = 0;
 		}
 		
@@ -52,8 +51,7 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 	*/
 	public function set_atomic($key, $old_value, $new_value)
 	{
-		if (!isset($this->config[$key]) || $this->config[$key] == $old_value)
-		{
+		if (!isset($this->config[$key]) || $this->config[$key] == $old_value) {
 			$this->config[$key] = $new_value;
 			return true;
 		}

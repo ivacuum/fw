@@ -1,7 +1,7 @@
 <?php
 /**
 * @package fw
-* @copyright (c) 2013
+* @copyright (c) 2014
 */
 
 namespace fw\modules\acp;
@@ -34,8 +34,7 @@ class sites extends page
 			->validate()
 			->append_template();
 		
-		if ($this->form->is_valid)
-		{
+		if ($this->form->is_valid) {
 			$sql = 'INSERT INTO site_sites ' . $this->db->build_array('INSERT', $this->form->get_fields_values());
 			$this->db->query($sql);
 			$this->purge_cache();
@@ -59,8 +58,7 @@ class sites extends page
 		
 		$data_to_delete = [];
 		
-		foreach ($this->delete_tables as $table)
-		{
+		foreach ($this->delete_tables as $table) {
 			$sql = 'SELECT COUNT(*) AS total FROM :table WHERE site_id = ?';
 			$this->db->query($sql, [$id, ':table' => $table]);
 			$data_to_delete[$table] = $this->db->fetchfield('total');
@@ -85,8 +83,7 @@ class sites extends page
 		$this->db->transaction('begin');
 		$this->delete_tables[] = 'site_sites';
 		
-		foreach ($this->delete_tables as $table)
-		{
+		foreach ($this->delete_tables as $table) {
 			$sql = 'DELETE FROM :table WHERE site_id = ?';
 			$this->db->query($sql, [$id, ':table' => $table]);
 		}
@@ -115,8 +112,7 @@ class sites extends page
 			->validate()
 			->append_template();
 		
-		if ($this->form->is_valid)
-		{
+		if ($this->form->is_valid) {
 			$sql = 'UPDATE site_sites SET :update_ary WHERE site_id = ?';
 			$this->db->query($sql, [$id, ':update_ary' => $this->db->build_array('UPDATE', $this->form->get_fields_values())]);
 			$this->purge_cache();
@@ -142,8 +138,7 @@ class sites extends page
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
 		
-		if (!$row)
-		{
+		if (!$row) {
 			trigger_error('SITE_NOT_FOUND');
 		}
 		
