@@ -175,6 +175,7 @@ class profiler extends console
 			'FILE_COUNT'      => $this->file_count,
 			'FILE_SIZE'       => $this->file_size,
 			'FILE_LARGEST'    => $this->file_largest,
+			'FW_VERSION'      => basename(FW_DIR),
 			'LOG_COUNT'       => $this->log_count,
 			'LOGS_COUNT'      => sizeof($this->output['logs']),
 			'ERROR_COUNT'     => $this->error_count,
