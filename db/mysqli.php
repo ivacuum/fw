@@ -409,6 +409,46 @@ class mysqli
 	}
 
 	/**
+	* Замена спецсимволов в запросах на данные
+	*/
+	public function placehold($query = '', array $params = [])
+	{
+		if (empty($params)) {
+			return $query;
+		}
+		
+		$named_placeholders = $named_params = $question_placeholders = $question_params = [];
+		$named_ary = $question_ary = [];
+		$i = 0;
+
+		/**
+		* SELECT * FROM table WHERE id = ? AND title = ?
+		* превращается в
+		* SELECT * FROM table WHERE id = $0 AND title $1
+		*/
+		while (false !== $pos = strpos($query, '?')) {
+			$query = substr_replace($query, '$' . $i, $pos, 1);
+			$question_ary['$' . $i] = $this->check_value($params[$i]);
+			$i++;
+		}
+	
+		foreach ($params as $key => $value) {
+			if (!is_numeric($key)) {
+				/* Именованные параметры не экранируются */
+				$named_ary[$key] = $value;
+			}
+		}
+		
+		/* $0 => value1, $1 => $value2 */
+		$query = str_replace(array_keys($question_ary), array_values($question_ary), $query);
+		
+		/* :param1 => value1, :param2 => value2 */
+		$query = str_replace(array_keys($named_ary), array_values($named_ary), $query);
+		
+		return $query;
+	}
+
+	/**
 	* Выполнение запроса к БД
 	*/
 	public function query($query = '', array $params = [], $cache_ttl = 0)
@@ -421,36 +461,7 @@ class mysqli
 			return false;
 		}
 		
-		if (!empty($params)) {
-			$named_placeholders = $named_params = $question_placeholders = $question_params = [];
-			$named_ary = $question_ary = [];
-			$i = 0;
-
-			/**
-			* SELECT * FROM table WHERE id = ? AND title = ?
-			* превращается в
-			* SELECT * FROM table WHERE id = $0 AND title $1
-			*/
-			while (false !== $pos = strpos($query, '?')) {
-				$query = substr_replace($query, '$' . $i, $pos, 1);
-				$question_ary['$' . $i] = $this->check_value($params[$i]);
-				$i++;
-			}
-		
-			foreach ($params as $key => $value) {
-				if (!is_numeric($key)) {
-					/* Именованные параметры не экранируются */
-					$named_ary[$key] = $value;
-				}
-			}
-			
-			/* $0 => value1, $1 => $value2 */
-			$query = str_replace(array_keys($question_ary), array_values($question_ary), $query);
-			
-			/* :param1 => value1, :param2 => value2 */
-			$query = str_replace(array_keys($named_ary), array_values($named_ary), $query);
-		}
-		
+		$query = $this->placehold($query, $params);
 		$start_time = microtime(true);
 		$this->query_result = false;
 		
