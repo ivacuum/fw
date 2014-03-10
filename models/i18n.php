@@ -31,6 +31,20 @@ class i18n extends base
 		return (bool) $this->db->affected_rows();
 	}
 	
+	public function get_by_id($id)
+	{
+		$sql = 'SELECT * FROM site_i18n WHERE i18n_id = ? AND site_id = ?';
+		$this->db->query($sql, [$id, $this->site_id]);
+		$row = $this->db->fetchrow();
+		$this->db->freeresult();
+		
+		if (!$row) {
+			throw new \Exception('Translation entry is not found.');
+		}
+		
+		return $row;
+	}
+	
 	public function get_count()
 	{
 		$sql = 'SELECT COUNT(*) AS total FROM site_i18n WHERE site_id = ?';
@@ -39,6 +53,40 @@ class i18n extends base
 		$this->db->freeresult();
 		
 		return $total;
+	}
+	
+	public function get_entries(array $filter = [])
+	{
+		$sql = [
+			'SELECT' => '*',
+			'FROM'   => 'site_i18n',
+			'WHERE'  => [],
+		];
+		
+		$aliases = [
+			'site_id'       => '',
+			'i18n_lang'     => 'lang',
+			'i18n_subindex' => 'subindex',
+			'i18n_index'    => 'index',
+			'i18n_file'     => 'file',
+		];
+		
+		foreach ($aliases as $key => $alias) {
+			if (isset($filter[$key])) {
+				$sql['WHERE'][] = $this->db->placehold("{$key} = ?", [$filter[$key]]);
+				continue;
+			}
+			
+			if ($alias && isset($filter[$alias])) {
+				$sql['WHERE'][] = $this->db->placehold("{$key} = ?", [$filter[$alias]]);
+			}
+		}
+		
+		$this->db->query($this->db->build_query('SELECT', $sql));
+		$rows = $this->db->fetchall();
+		$this->db->freeresult();
+		
+		return $rows;
 	}
 	
 	protected function process_input_array($ary)
