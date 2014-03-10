@@ -1,10 +1,4 @@
-<?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
-
-namespace fw\template;
+<?php namespace fw\template;
 
 class twig
 {

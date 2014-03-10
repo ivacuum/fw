@@ -1,10 +1,4 @@
-<?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
-
-namespace fw\models\acp;
+<?php namespace fw\models\acp;
 
 use fw\models\page as base_page;
 

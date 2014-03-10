@@ -1,10 +1,4 @@
-<?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
-
-namespace fw\db;
+<?php namespace fw\db;
 
 /**
 * Класс работы с MySQL версии 4.1 и выше

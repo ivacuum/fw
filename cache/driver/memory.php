@@ -1,10 +1,4 @@
-<?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
-
-namespace fw\cache\driver;
+<?php namespace fw\cache\driver;
 
 class memory
 {

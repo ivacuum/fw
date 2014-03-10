@@ -1,10 +1,4 @@
-<?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
-
-namespace fw\cron\tasks;
+<?php namespace fw\cron\tasks;
 
 use fw\cron\task;
 

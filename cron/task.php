@@ -1,10 +1,4 @@
-<?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
-
-namespace fw\cron;
+<?php namespace fw\cron;
 
 use fw\traits\injection;
 

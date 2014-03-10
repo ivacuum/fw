@@ -1,10 +1,4 @@
-<?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
-
-namespace fw\traits;
+<?php namespace fw\traits;
 
 trait i18n
 {

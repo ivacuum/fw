@@ -1,8 +1,4 @@
 <?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
 
 /**
 * Вывод на печать ajax данных

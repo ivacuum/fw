@@ -1,10 +1,4 @@
-<?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
-
-namespace fw;
+<?php namespace fw;
 
 use fw\core\application;
 

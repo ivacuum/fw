@@ -1,10 +1,4 @@
-<?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
-
-namespace fw\session;
+<?php namespace fw\session;
 
 use fw\traits\i18n;
 

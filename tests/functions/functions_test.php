@@ -1,8 +1,4 @@
 <?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
 
 require_once dirname(__FILE__) . '/../../engine/functions.php';
 

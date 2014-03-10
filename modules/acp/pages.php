@@ -1,10 +1,4 @@
-<?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
-
-namespace fw\modules\acp;
+<?php namespace fw\modules\acp;
 
 use app\models\page;
 

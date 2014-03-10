@@ -1,10 +1,4 @@
-<?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
-
-namespace fw\cache;
+<?php namespace fw\cache;
 
 use fw\helpers\traverse\tree\site_pages;
 

@@ -1,10 +1,4 @@
-<?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
-
-namespace fw\logger\handlers;
+<?php namespace fw\logger\handlers;
 
 use Monolog\Logger;
 use Monolog\Handler\AbstractProcessingHandler;

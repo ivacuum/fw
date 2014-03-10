@@ -1,10 +1,4 @@
-<?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
-
-namespace fw\captcha\driver;
+<?php namespace fw\captcha\driver;
 
 /**
 * GD-капча

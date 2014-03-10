@@ -1,10 +1,4 @@
-<?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
-
-namespace fw\helpers\traverse;
+<?php namespace fw\helpers\traverse;
 
 /**
 * Обход древовидной структуры

@@ -1,10 +1,4 @@
-<?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
-
-namespace fw\modules\ucp\oauth;
+<?php namespace fw\modules\ucp\oauth;
 
 use fw\core\errorhandler;
 

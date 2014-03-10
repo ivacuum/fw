@@ -1,10 +1,4 @@
-<?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
-
-namespace fw\form\field;
+<?php namespace fw\form\field;
 
 /**
 * Флажок

@@ -1,10 +1,4 @@
-<?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
-
-namespace fw\core;
+<?php namespace fw\core;
 
 use fw\traits\breadcrumbs;
 use fw\traits\injection;

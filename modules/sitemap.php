@@ -1,10 +1,4 @@
-<?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
-
-namespace fw\modules;
+<?php namespace fw\modules;
 
 use app\models\page;
 use fw\helpers\traverse\tree\site_pages;

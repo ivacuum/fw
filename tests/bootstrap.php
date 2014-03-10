@@ -1,8 +1,4 @@
 <?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
 
 define('IN_SITE', true);
 $site_root_path = dirname(__FILE__) . '/../';

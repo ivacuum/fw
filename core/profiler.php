@@ -1,10 +1,4 @@
-<?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
-
-namespace fw\core;
+<?php namespace fw\core;
 
 /**
 * Класс для хранения информации о скрипте и ходе его выполнения

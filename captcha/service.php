@@ -1,10 +1,4 @@
-<?php
-/**
-* @package fw
-* @copyright (c) 2014
-*/
-
-namespace fw\captcha;
+<?php namespace fw\captcha;
 
 /**
 * Слой для работы с кодами подтверждений
