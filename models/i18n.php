@@ -8,6 +8,14 @@ namespace fw\models;
 
 class i18n extends base
 {
+	protected $aliases = [
+		'site_id'       => '',
+		'i18n_lang'     => 'lang',
+		'i18n_subindex' => 'subindex',
+		'i18n_index'    => 'index',
+		'i18n_file'     => 'file',
+	];
+	
 	protected $site_id;
 
 	function __construct($site_id)
@@ -20,7 +28,7 @@ class i18n extends base
 		$sql = 'INSERT INTO site_i18n ' . $this->db->build_array('INSERT', $this->process_input_array($ary));
 		$this->db->query($sql);
 		
-		return true;
+		return $this->db->insert_id();
 	}
 	
 	public function delete($id)
@@ -63,15 +71,7 @@ class i18n extends base
 			'WHERE'  => [],
 		];
 		
-		$aliases = [
-			'site_id'       => '',
-			'i18n_lang'     => 'lang',
-			'i18n_subindex' => 'subindex',
-			'i18n_index'    => 'index',
-			'i18n_file'     => 'file',
-		];
-		
-		foreach ($aliases as $key => $alias) {
+		foreach ($this->aliases as $key => $alias) {
 			if (isset($filter[$key])) {
 				$sql['WHERE'][] = $this->db->placehold("{$key} = ?", [$filter[$key]]);
 				continue;

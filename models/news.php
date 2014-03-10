@@ -20,7 +20,7 @@ class news extends base
 		$sql = 'INSERT INTO site_news ' . $this->db->build_array('INSERT', $this->process_input_array($ary));
 		$this->db->query($sql);
 		
-		return true;
+		return $this->db->insert_id();
 	}
 	
 	public function delete($id)
