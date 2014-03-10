@@ -6,6 +6,10 @@
 
 namespace fw\models;
 
+/**
+* Строчки локализации
+* Таблица site_i18n
+*/
 class i18n extends base
 {
 	protected $aliases = [
@@ -25,8 +29,11 @@ class i18n extends base
 
 	public function add($ary)
 	{
-		$sql = 'INSERT INTO site_i18n ' . $this->db->build_array('INSERT', $this->process_input_array($ary));
+		$ary = $this->process_input_array($ary);
+		$sql = 'INSERT INTO site_i18n ' . $this->db->build_array('INSERT', $ary);
 		$this->db->query($sql);
+		
+		// $this->delete_cache_entry($ary);
 		
 		return $this->db->insert_id();
 	}
@@ -89,6 +96,27 @@ class i18n extends base
 		return $rows;
 	}
 	
+	protected function delete_cache_entry($row)
+	{
+		if (empty($row['site_id'])) {
+			throw new \Exception('Site id is not specified.');
+		} elseif (empty($row['i18n_file'])) {
+			throw new \Exception('File is not specified.');
+		} elseif (empty($row['i18n_lang'])) {
+			throw new \Exception('Language is not specified.');
+		}
+		
+		$cache_entry = "i18n_{$row['i18n_file']}_{$row['i18n_lang']}";
+
+		if (0 === $row['site_id']) {
+			$this->cache->delete_shared($cache_entry);
+		} else {
+			$this->cache->delete($cache_entry);
+		}
+		
+		return true;
+	}
+
 	protected function process_input_array($ary)
 	{
 		if (empty($ary['i18n_lang'])) {
