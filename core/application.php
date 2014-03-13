@@ -9,6 +9,7 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\NativeMailerHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Processor\WebProcessor;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use fw\captcha\service as captcha_service;
 use fw\captcha\validator as captcha_validator;
 use fw\cron\manager as cron_manager;
@@ -184,6 +185,10 @@ class application implements \ArrayAccess
 		
 		$this['sphinx'] = function() use ($app) {
 			return new db_sphinx($app['cache.driver'], $app['profiler'], $app['sphinx.options']);
+		};
+		
+		$this['events'] = function() {
+			return new EventDispatcher();
 		};
 		
 		foreach ($this['include.files'] as $file) {
