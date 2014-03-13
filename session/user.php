@@ -1,13 +1,13 @@
 <?php namespace fw\session;
 
-use fw\traits\i18n;
+use fw\Traits\I18n;
 
 /**
 * Пользователь
 */
 class user extends session
 {
-	use i18n;
+	use I18n;
 	
 	/**
 	* Пользователь добавляет социальный профиль через другой сервис

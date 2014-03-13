@@ -1,13 +1,13 @@
 <?php namespace fw\cron;
 
-use fw\traits\injection;
+use fw\Traits\Injection;
 
 /**
 * Задача по расписанию
 */
 class task
 {
-	use injection;
+	use Injection;
 	
 	public $data = [];
 

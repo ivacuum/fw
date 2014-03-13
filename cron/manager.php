@@ -1,13 +1,13 @@
 <?php namespace fw\cron;
 
-use fw\traits\injection;
+use fw\Traits\Injection;
 
 /**
 * Задачи по расписанию
 */
 class manager
 {
-	use injection;
+	use Injection;
 	
 	protected $cron_allowed;
 	protected $cron_running;

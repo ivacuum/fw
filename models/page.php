@@ -1,15 +1,15 @@
 <?php namespace fw\models;
 
 use fw\helpers\traverse\tree\site_pages;
-use fw\traits\breadcrumbs;
-use fw\traits\injection;
+use fw\Traits\Breadcrumbs;
+use fw\Traits\Injection;
 
 /**
 * Страница сайта
 */
 class page
 {
-	use breadcrumbs, injection;
+	use Breadcrumbs, Injection;
 	
 	public $data;
 	public $format;

@@ -1,10 +1,10 @@
 <?php namespace fw\models;
 
-use fw\traits\injection;
+use fw\Traits\Injection;
 
 class base
 {
-	use injection;
+	use Injection;
 
 	function __construct()
 	{

@@ -1,14 +1,14 @@
 <?php namespace fw\core;
 
-use fw\traits\breadcrumbs;
-use fw\traits\injection;
+use fw\Traits\Breadcrumbs;
+use fw\Traits\Injection;
 
 /**
 * Маршрутизатор запросов
 */
 class router
 {
-	use breadcrumbs, injection;
+	use Breadcrumbs, Injection;
 	
 	public $format;
 	public $handler;

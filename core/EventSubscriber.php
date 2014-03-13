@@ -2,11 +2,11 @@
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use fw\Events\GenericEvent;
-use fw\traits\injection;
+use fw\Traits\Injection;
 
 class EventSubscriber implements EventSubscriberInterface
 {
-	use injection;
+	use Injection;
 	
 	public static function getSubscribedEvents()
 	{

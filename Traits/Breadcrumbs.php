@@ -1,13 +1,13 @@
-<?php namespace fw\traits;
+<?php namespace fw\Traits;
 
-trait breadcrumbs
+trait Breadcrumbs
 {
 	/**
 	* Навигационная ссылка
 	*
-	* @param	string	$text	Название страницы
-	* @param	string	$url	Ссылка на страницу
-	* @param	string	$image	Изображение
+	* @param string $text  Название страницы
+	* @param string $url   Ссылка на страницу
+	* @param string $image Изображение
 	*/
 	public function breadcrumbs($text, $url = '', $image = false)
 	{

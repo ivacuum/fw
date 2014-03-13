@@ -1,6 +1,6 @@
-<?php namespace fw\traits;
+<?php namespace fw\Traits;
 
-trait injection
+trait Injection
 {
 	protected $app;
 	

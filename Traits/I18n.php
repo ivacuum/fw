@@ -1,6 +1,6 @@
-<?php namespace fw\traits;
+<?php namespace fw\Traits;
 
-trait i18n
+trait I18n
 {
 	public $lang = [];
 
