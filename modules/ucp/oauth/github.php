@@ -1,7 +1,5 @@
 <?php namespace fw\modules\ucp\oauth;
 
-use fw\core\errorhandler;
-
 class github extends base
 {
 	protected $authorize_endpoint    = 'https://github.com/login/oauth/authorize';

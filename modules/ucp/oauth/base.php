@@ -1,7 +1,7 @@
 <?php namespace fw\modules\ucp\oauth;
 
 use app\models\page;
-use fw\core\errorhandler;
+use fw\Events\GenericEvent;
 
 class base extends page
 {
@@ -137,8 +137,8 @@ class base extends page
 	{
 		$sql_ary = $this->get_openid_insert_data($json);
 		
-		errorhandler::log_mail(print_r($json, true) . print_r($sql_ary, true), 'OAuth data arrived');
-		
 		$this->db->multi_insert('site_openid_identities', $sql_ary, 'openid_last_use = values(openid_last_use), openid_first_name = values(openid_first_name), openid_last_name = values(openid_last_name), openid_dob = values(openid_dob), openid_gender = values(openid_gender), openid_email = values(openid_email)' . (!$user_id && $this->user['user_id'] ? ', user_id = values(user_id)' : ''));
+		
+		$this->events->dispatch('opeid.data.saved', new GenericEvent(compact('json', 'sql_ary')));
 	}
 }

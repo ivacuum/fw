@@ -1,7 +1,5 @@
 <?php namespace fw\modules\ucp\oauth;
 
-use fw\core\errorhandler;
-
 class vk extends base
 {
 	protected $authorize_endpoint    = 'https://oauth.vk.com/authorize';

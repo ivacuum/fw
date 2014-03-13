@@ -188,7 +188,10 @@ class application implements \ArrayAccess
 		};
 		
 		$this['events'] = function() {
-			return new EventDispatcher();
+			$dispatcher = new EventDispatcher();
+			$subscriber = new EventSubscriber();
+			$dispatcher->addSubscriber($subscriber);
+			return $dispatcher;
 		};
 		
 		foreach ($this['include.files'] as $file) {

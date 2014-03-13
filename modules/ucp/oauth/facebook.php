@@ -1,7 +1,5 @@
 <?php namespace fw\modules\ucp\oauth;
 
-use fw\core\errorhandler;
-
 class facebook extends base
 {
 	protected $authorize_endpoint    = 'https://www.facebook.com/dialog/oauth';

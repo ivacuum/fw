@@ -1,7 +1,5 @@
 <?php namespace fw\modules\ucp\oauth;
 
-use fw\core\errorhandler;
-
 class google extends base
 {
 	protected $authorize_endpoint    = 'https://accounts.google.com/o/oauth2/auth';

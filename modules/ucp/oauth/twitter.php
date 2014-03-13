@@ -1,7 +1,6 @@
 <?php namespace fw\modules\ucp\oauth;
 
 use Guzzle\Plugin\Oauth\OauthPlugin;
-use fw\core\errorhandler;
 
 class twitter extends base
 {
