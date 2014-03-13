@@ -187,9 +187,10 @@ class application implements \ArrayAccess
 			return new db_sphinx($app['cache.driver'], $app['profiler'], $app['sphinx.options']);
 		};
 		
-		$this['events'] = function() {
+		$this['events'] = function() use ($app) {
 			$dispatcher = new EventDispatcher();
-			$subscriber = new EventSubscriber();
+			$subscriber = (new EventSubscriber())
+				->_set_app($app);
 			$dispatcher->addSubscriber($subscriber);
 			return $dispatcher;
 		};

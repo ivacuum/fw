@@ -44,6 +44,13 @@ trait injection
 		return $this;
 	}
 	
+	public function _set_events($events)
+	{
+		$this->events = $events;
+		
+		return $this;
+	}
+	
 	public function _set_profiler($profiler)
 	{
 		$this->profiler = $profiler;

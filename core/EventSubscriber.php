@@ -1,10 +1,13 @@
 <?php namespace fw\core;
 
-use fw\Events\GenericEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use fw\Events\GenericEvent;
+use fw\traits\injection;
 
 class EventSubscriber implements EventSubscriberInterface
 {
+	use injection;
+	
 	public static function getSubscribedEvents()
 	{
 		return ['openid.data.saved' => 'onOpenidDataSaved'];
