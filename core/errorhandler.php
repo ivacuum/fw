@@ -196,10 +196,7 @@ class errorhandler
 
 					printf('<b style="color: red;">***</b> <b style="white-space: pre-line;">%s</b> on line <b>%d</b> in file <b>%s</b>.<br>', $error['message'], $error['line'], $error['file']);
 
-					if (function_exists('xdebug_print_function_stack')) {
-						ob_start();
-						xdebug_print_function_stack();
-						$call_stack = str_replace(static::$document_root, '', ob_get_clean());
+					if ($call_stack = str_replace(static::$document_root, '', get_call_stack())) {
 						echo '<pre>', $call_stack, '</pre>';
 					}
 
@@ -225,22 +222,29 @@ class errorhandler
 			return;
 		}
 		
-		$call_stack = '';
+		$call_stack = str_replace(static::$document_root, '', get_call_stack());
 		$text       = is_array($text) ? print_r($text, true) : $text;
 		$title      = $_SERVER['SERVER_NAME'] . ($title ? ' ' . $title : '');
 		
-		if (function_exists('xdebug_print_function_stack')) {
-			ob_start();
-			xdebug_print_function_stack();
-			$call_stack = str_replace(static::$document_root, '', ob_get_clean());
-		}
-		
 		if (PHP_SAPI == 'cli') {
-			mail(static::$options["email.{$email}"], $title, sprintf("[%s]\n%s\n%s\$_SERVER => %s", strftime('%c'), $text, $call_stack, print_r($_SERVER, true)), sprintf("From: fw@%s\r\n", gethostname()));
-			return;
+			$mail_body = sprintf("[%s]\n%s\n%s\$_SERVER => %s",
+				strftime('%c'),
+				$text,
+				$call_stack,
+				print_r($_SERVER, true)
+			);
+		} else {
+			$mail_body = sprintf("[%s]\n%s\n%s\$app['user']->data => %s\n\$_SERVER => %s\n\$_REQUEST => %s",
+				strftime('%c'),
+				$text,
+				$call_stack,
+				!empty($app['user']) ? print_r($app['user']->data, true) : '',
+				print_r($_SERVER, true),
+				print_r($_REQUEST, true)
+			);
 		}
 		
-		mail(static::$options["email.{$email}"], $title, sprintf("[%s]\n%s\n%s\$app['user']->data => %s\n\$_SERVER => %s\n\$_REQUEST => %s", strftime('%c'), $text, $call_stack, !empty($app['user']) ? print_r($app['user']->data, true) : '', print_r($_SERVER, true), print_r($_REQUEST, true)), sprintf("From: fw@%s\r\n", gethostname()));
+		mail(static::$options["email.{$email}"], $title, $mail_body, sprintf("From: fw@%s\r\n", gethostname()));
 	}
 
 	/**

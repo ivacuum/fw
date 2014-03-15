@@ -65,16 +65,8 @@ class console
 			return $this;
 		}
 		
-		$call_stack = '';
-		
-		if (function_exists('xdebug_print_function_stack')) {
-			ob_start();
-			xdebug_print_function_stack();
-			$call_stack = str_replace($this->document_root, '', ob_get_clean());
-		}
-		
 		$this->logs[] = [
-			'call_stack' => $call_stack,
+			'call_stack' => str_replace($this->document_root, '', get_call_stack()),
 			'data'       => $message,
 			'type'       => 'error',
 			'file'       => $file,

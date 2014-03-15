@@ -55,6 +55,21 @@ function generate_page_link($page, $base_url, $query_string)
 }
 
 /**
+* Стек вызовов
+* Для вывода необходимо установленное расширение xdebug
+*/
+function get_call_stack()
+{
+	if (!function_exists('xdebug_print_function_stack')) {
+		return;
+	}
+
+	ob_start();
+	xdebug_print_function_stack();
+	return ob_get_clean();
+}
+
+/**
 * Возвращает требуемое регулярное выражение
 *
 * @param	string	$type	Тип регулярного выражения
