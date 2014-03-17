@@ -283,28 +283,6 @@ class application implements \ArrayAccess
 		return $this->values[$id];
 	}
 
-	public function load_constants($prefix)
-	{
-		if (!function_exists('apc_fetch')) {
-			return false;
-		}
-
-		return apc_load_constants("{$prefix}_constants");
-	}
-
-	public function set_constants($prefix, $constants)
-	{
-		if (!function_exists('apc_fetch')) {
-			foreach ($constants as $key => $value) {
-				define($key, $value);
-			}
-		
-			return true;
-		}
-	
-		apc_define_constants("{$prefix}_constants", $constants);
-	}
-
 	public function keys()
 	{
 		return array_keys($this->values);
