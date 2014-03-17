@@ -59,7 +59,7 @@ class sites extends page
 			$this->db->freeresult();
 		}
 		
-		$data_to_delete = array_filter($data_to_delete, function($value) {
+		$data_to_delete = array_filter($data_to_delete, function ($value) {
 			return !empty($value);
 		});
 		

@@ -22,7 +22,7 @@ class MailHandler extends AbstractProcessingHandler
 
     protected function write(array $record)
     {
-		if (empty($record['context']['to']) || empty($record['context']['title'])) {
+		if (empty($record['context']['to'])) {
 			return false;
 		}
 		
@@ -30,9 +30,11 @@ class MailHandler extends AbstractProcessingHandler
 		$emails = is_array($emails) ? $emails : [$emails];
 		
 		$call_stack = str_replace($this->doc_root, '', get_call_stack());
-        $headers = implode("\r\n", $this->headers) . "\r\n";
+        $headers    = implode("\r\n", $this->headers) . "\r\n";
+		$title      = $_SERVER['SERVER_NAME'] . ($record['context']['title'] ? ' ' . $record['context']['title'] : '');
 		
 		if (PHP_SAPI == 'cli') {
+			/* В терминале нет пользователя сайта и запроса */
 			$text = sprintf("[%s]\n%s\n%s\$_SERVER => %s",
 				strftime('%c'),
 				$record['message'],
@@ -51,7 +53,7 @@ class MailHandler extends AbstractProcessingHandler
 		}
 
         foreach ($emails as $to) {
-            mail($to, $record['context']['title'], $text, $headers);
+            mail($to, $title, $text, $headers);
         }
     }
 }
