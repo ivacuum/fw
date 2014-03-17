@@ -16,7 +16,7 @@ use fw\cron\manager as cron_manager;
 use fw\config\db as config_db;
 use fw\db\mysqli as db_mysqli;
 use fw\db\sphinx as db_sphinx;
-use fw\logger\handlers\db as DBHandler;
+use fw\Logger\Handlers\DbHandler;
 use fw\session\user;
 use fw\template\smarty;
 
@@ -159,7 +159,7 @@ class application implements \ArrayAccess
 			}
 
 			/* info и выше */
-			$logger->pushHandler(new DBHandler($app['db'], $app['request']));
+			$logger->pushHandler(new DbHandler($app['db'], $app['request']));
 			
 			// if ($email) {
 			// 	/* warn и выше */

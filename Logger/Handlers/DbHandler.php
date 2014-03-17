@@ -1,9 +1,9 @@
-<?php namespace fw\logger\handlers;
+<?php namespace fw\Logger\Handlers;
 
 use Monolog\Logger;
 use Monolog\Handler\AbstractProcessingHandler;
 
-class db extends AbstractProcessingHandler
+class DbHandler extends AbstractProcessingHandler
 {
 	protected $db;
 	protected $request;
