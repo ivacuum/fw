@@ -17,7 +17,7 @@ class MailHandler extends AbstractProcessingHandler
 		$this->doc_root  = realpath(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/../../') . '/';
 		$this->headers[] = sprintf('From: fw@%s', gethostname());
 
-	    parent::__construct($level, $bubble);
+		parent::__construct($level, $bubble);
 	}
 
 	protected function write(array $record)
@@ -31,7 +31,7 @@ class MailHandler extends AbstractProcessingHandler
 		
 		$call_stack = str_replace($this->doc_root, '', get_call_stack());
 		$headers    = implode("\r\n", $this->headers) . "\r\n";
-		$title      = $_SERVER['SERVER_NAME'] . ($record['context']['title'] ? ' ' . $record['context']['title'] : '');
+		$title      = $_SERVER['SERVER_NAME'] . (isset($record['context']['title']) ? ' ' . $record['context']['title'] : '');
 		
 		if (PHP_SAPI == 'cli') {
 			/* В терминале нет пользователя сайта и запроса */

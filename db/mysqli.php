@@ -1,5 +1,7 @@
 <?php namespace fw\db;
 
+use fw\Events\GenericEvent;
+
 /**
 * Класс работы с MySQL версии 4.1 и выше
 */
@@ -24,17 +26,19 @@ class mysqli
 	protected $transactions = 0;
 
 	protected $cache;
+	protected $events;
 	protected $profiler;
 	
 	/**
 	* Сбор параметров
 	* Само подключение к серверу выполняется при первом запросе
 	*/
-	function __construct($cache, $profiler, array $options = [])
+	function __construct($cache, $events, $profiler, array $options = [])
 	{
 		$this->options = array_merge($this->options, $options);
 		
 		$this->cache    = $cache;
+		$this->events   = $events;
 		$this->profiler = $profiler;
 		
 		if (false !== $this->options['pers'] && $this->options['host'] == 'localhost' && version_compare(PHP_VERSION, '5.3.0', '>=')) {
@@ -638,19 +642,11 @@ class mysqli
 	*/
 	protected function error($sql = '')
 	{
-		global $error_ary;
-
 		$code = $this->connect_id ? mysqli_errno($this->connect_id) : mysqli_connect_errno();
 		$text = $this->connect_id ? mysqli_error($this->connect_id) : mysqli_connect_error();
 		
-		if (!defined('IN_SQL_ERROR')) {
-			define('IN_SQL_ERROR', true);
-		}
-		
 		/* Подсветка ключевых слов */
 		$sql = preg_replace('#(SELECT|INSERT INTO|UPDATE|SET|DELETE|FROM|LEFT JOIN|WHERE|AND|GROUP BY|ORDER BY|LIMIT|AS|ON)#', '<em>${1}</em>', $sql);
-
-		$error_ary = compact('code', 'sql', 'text');
 
 		if ($this->transaction) {
 			$this->transaction('rollback');
@@ -665,6 +661,7 @@ class mysqli
 			}
 		}
 		
-		trigger_error(false, E_USER_ERROR);
+		$this->events->dispatch('error.sql', new GenericEvent(compact('code', 'sql', 'text')));
+		exit;
 	}
 }

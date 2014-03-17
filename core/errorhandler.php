@@ -41,14 +41,6 @@ class errorhandler
 			*/
 			case E_USER_ERROR:
 			
-				if (defined('IN_SQL_ERROR')) {
-					if (!static::$options['standalone']) {
-						global $error_ary;
-						static::$events->dispatch('error.sql', new GenericEvent($error_ary));
-						exit;
-					}
-				}
-				
 				if (!static::$options['standalone']) {
 					static::$events->dispatch('error.crit', new GenericEvent(compact('text')));
 					exit;

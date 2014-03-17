@@ -66,8 +66,16 @@ class application implements \ArrayAccess
 			return new request($app['request.options']);
 		};
 		
+		$this['events'] = function () use ($app) {
+			$dispatcher = new EventDispatcher();
+			$subscriber = (new EventSubscriber())
+				->_set_app($app);
+			$dispatcher->addSubscriber($subscriber);
+			return $dispatcher;
+		};
+		
 		$this['db'] = function () use ($app) {
-			return new db_mysqli($app['cache.driver'], $app['profiler'], $app['db.options']);
+			return new db_mysqli($app['cache.driver'], $app['events'], $app['profiler'], $app['db.options']);
 		};
 		
 		$this['cache.driver'] = function () use ($app) {
@@ -181,14 +189,6 @@ class application implements \ArrayAccess
 		
 		$this['sphinx'] = function () use ($app) {
 			return new db_sphinx($app['cache.driver'], $app['profiler'], $app['sphinx.options']);
-		};
-		
-		$this['events'] = function () use ($app) {
-			$dispatcher = new EventDispatcher();
-			$subscriber = (new EventSubscriber())
-				->_set_app($app);
-			$dispatcher->addSubscriber($subscriber);
-			return $dispatcher;
 		};
 		
 		foreach ($this['include.files'] as $file) {

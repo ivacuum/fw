@@ -362,7 +362,7 @@ class page
 		$display_profiler = false;
 		
 		/* Вывод профайлера только для html-документов */
-		if ($this->format == 'html' && !$this->request->is_ajax && !defined('IN_SQL_ERROR')) {
+		if ($this->format == 'html' && !$this->request->is_ajax) {
 			$display_profiler = $this->profiler->is_enabled() && ($this->auth->acl_get('a_') || $this->profiler->is_permitted());
 		}
 		
