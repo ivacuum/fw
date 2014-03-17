@@ -8,20 +8,20 @@ class MailHandler extends AbstractProcessingHandler
 	protected $user;
 	
 	protected $doc_root;
-    protected $headers = ['Content-type: text/plain; charset=utf-8'];
+	protected $headers = ['Content-type: text/plain; charset=utf-8'];
 
-    public function __construct($user, $level = Logger::ERROR, $bubble = true)
-    {
+	public function __construct($user, $level = Logger::ERROR, $bubble = true)
+	{
 		$this->user = $user;
-		
+
 		$this->doc_root  = realpath(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/../../') . '/';
 		$this->headers[] = sprintf('From: fw@%s', gethostname());
 
-        parent::__construct($level, $bubble);
-    }
+	    parent::__construct($level, $bubble);
+	}
 
-    protected function write(array $record)
-    {
+	protected function write(array $record)
+	{
 		if (empty($record['context']['to'])) {
 			return false;
 		}
@@ -30,7 +30,7 @@ class MailHandler extends AbstractProcessingHandler
 		$emails = is_array($emails) ? $emails : [$emails];
 		
 		$call_stack = str_replace($this->doc_root, '', get_call_stack());
-        $headers    = implode("\r\n", $this->headers) . "\r\n";
+		$headers    = implode("\r\n", $this->headers) . "\r\n";
 		$title      = $_SERVER['SERVER_NAME'] . ($record['context']['title'] ? ' ' . $record['context']['title'] : '');
 		
 		if (PHP_SAPI == 'cli') {
@@ -52,8 +52,8 @@ class MailHandler extends AbstractProcessingHandler
 			);
 		}
 
-        foreach ($emails as $to) {
-            mail($to, $title, $text, $headers);
-        }
-    }
+		foreach ($emails as $to) {
+		    mail($to, $title, $text, $headers);
+		}
+	}
 }
