@@ -37,7 +37,12 @@ class vk extends base
 		// $params = ['friends.getAppUsers{?access_token}', compact('access_token')];
 		// $json = $this->http_client->get($params)->send()->json();
 		// $this->profiler->log($json);
-		// errorhandler::log_mail(print_r($json, true), 'VK Friends Get App Users');
+		// $this->logger->error(
+		// 	print_r($json, true), [
+		// 		'title' => 'VK Friends Get App Users',
+		// 		'to'    => $this->app['errorhandler.options']['email.error']
+		// 	]
+		// );
 	}
 	
 	/**

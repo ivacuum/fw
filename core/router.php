@@ -124,7 +124,12 @@ class router
 		for ($i = 0; $i < $this->params_count; $i++) {
 			if (false == $row = $this->get_page_row_by_url($this->params[$i], true, $parent_id)) {
 				if ($redirect) {
-					errorhandler::log_mail("Page http://{$this->request->server_name}{$this->request->url} not found and redirected to {$redirect}", "404 Not Found", 404);
+					$this->logger->error(
+						"Page http://{$this->request->server_name}{$this->request->url} not found and redirected to {$redirect}", [
+							'title' => '404 Not Found',
+							'to'    => $this->app['errorhandler.options']['email.404'],
+						]
+					);
 					
 					/* Выход для использования редиректа родительской страницы */
 					break;
@@ -171,7 +176,12 @@ class router
 			if (!$this->params_count || ($this->params_count > 0 && $this->page != $this->options['directory_index'])) {
 				if (false == $row = $this->get_page_row_by_url($this->page, false, $parent_id)) {
 					if ($redirect) {
-						errorhandler::log_mail("Page http://{$this->request->server_name}{$this->request->url} not found and redirected to {$redirect}", "404 Not Found", 404);
+						$this->logger->error(
+							"Page http://{$this->request->server_name}{$this->request->url} not found and redirected to {$redirect}", [
+								'title' => '404 Not Found',
+								'to'    => $this->app['errorhandler.options']['email.404'],
+							]
+						);
 
 						/* Выход для использования редиректа родительской страницы */
 						break;
@@ -231,6 +241,38 @@ class router
 		
 		return $this->load_handler($handler_name, $handler_method, $this->params);
 	}
+	
+	/**
+	* Загрузка модуля статичной страницы
+	* В данный момент используется для вывода 404 Not Found
+	*/
+	public function load_page_inform($title, $text)
+	{
+		$class_name = $this->namespace . 'models\\page';
+		
+		$this->handler = new $class_name($this->options);
+		
+		$this->set_handler_vars([
+			'site_id'      => $this->site_id,
+			'page_noindex' => 1,
+			'page_title'   => $title,
+			'page_text'    => $text,
+		]);
+
+		$this->handler->_set_app($this->app)
+			->additional_tplengine_features()
+			->set_preconfigured_urls($this->app['urls'])
+			->set_site_menu()
+			->set_page_data();
+		
+		/* Предустановки */
+		if (method_exists($this->handler, '_setup')) {
+			call_user_func([$this->handler, '_setup']);
+		}
+
+		$this->handler->page_header()
+			->page_footer();
+	}
 
 	/**
 	* Загрузка модуля
@@ -259,15 +301,11 @@ class router
 		/* Проверка существования необходимого метода у обработчика */
 		if (!method_exists($this->handler, $concrete_method) && !method_exists($this->handler, $this->method)) {
 			if ($this->options['send_status_code']) {
-				/**
-				* API-сайт должен отправлять соответствующие коды состояния HTTP
-				*/
+				/* API-сайт должен отправлять соответствующие коды состояния HTTP */
 				if ($this->request->method == 'get' || !method_exists($this->handler, "{$this->method}_get")) {
-					/* Not Implemented */
-					http_response_code(501);
+					http_response_code(501); // Not Implemented
 				} else {
-					/* Method Not Allowed */
-					http_response_code(405);
+					http_response_code(405); // Method Not Allowed
 				}
 				
 				return false;
@@ -278,16 +316,7 @@ class router
 			}
 		}
 		
-		$full_url = $this->url . ($this->page != $this->options['directory_index'] ? ($this->format ? "/{$this->page}.{$this->format}" : $this->page) : '');
-		
-		/* Параметры обработчика */
-		$this->handler->data     = $this->page_row;
-		$this->handler->format   = $this->format;
-		$this->handler->full_url = $full_url;
-		$this->handler->method   = $this->method;
-		$this->handler->page     = $this->page;
-		$this->handler->params   = $params;
-		$this->handler->url      = implode('/', $this->page_link);
+		$this->set_handler_vars($this->page_row, $params);
 		
 		/* Настройка обработчика */
 		$this->handler->_set_app($this->app)
@@ -370,5 +399,23 @@ class router
 		}
 		
 		return $row;
+	}
+
+	/**
+	* Параметры страницы-обработчика
+	*/
+	protected function set_handler_vars(array $data = [], array $params = [])
+	{
+		$full_url = $this->url . ($this->page != $this->options['directory_index'] ? ($this->format ? "/{$this->page}.{$this->format}" : $this->page) : '');
+		
+		$this->handler->data     = $data;
+		$this->handler->format   = $this->format;
+		$this->handler->full_url = $full_url;
+		$this->handler->method   = $this->method;
+		$this->handler->page     = $this->page;
+		$this->handler->params   = $params;
+		$this->handler->url      = implode('/', $this->page_link);
+		
+		return $this;
 	}
 }
