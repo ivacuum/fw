@@ -640,8 +640,8 @@ class mysqli
 	{
 		global $error_ary;
 
-		$code    = $this->connect_id ? mysqli_errno($this->connect_id) : mysqli_connect_errno();
-		$message = $this->connect_id ? mysqli_error($this->connect_id) : mysqli_connect_error();
+		$code = $this->connect_id ? mysqli_errno($this->connect_id) : mysqli_connect_errno();
+		$text = $this->connect_id ? mysqli_error($this->connect_id) : mysqli_connect_error();
 		
 		if (!defined('IN_SQL_ERROR')) {
 			define('IN_SQL_ERROR', true);
@@ -650,29 +650,21 @@ class mysqli
 		/* Подсветка ключевых слов */
 		$sql = preg_replace('#(SELECT|INSERT INTO|UPDATE|SET|DELETE|FROM|LEFT JOIN|WHERE|AND|GROUP BY|ORDER BY|LIMIT|AS|ON)#', '<em>${1}</em>', $sql);
 
-		$error_ary = [
-			'code' => $code,
-			'sql'  => $sql,
-			'text' => $message
-		];
+		$error_ary = compact('code', 'sql', 'text');
 
 		if ($this->transaction) {
 			$this->transaction('rollback');
 		}
 		
-		/**
-		* Автоматическое исправление таблиц
-		*/
+		/* Автоматическое исправление таблиц */
 		if ($code === 145) {
-			if (preg_match("#Table '.+/(.+)' is marked as crashed and should be repaired#", $message, $matches)) {
+			if (preg_match("#Table '.+/(.+)' is marked as crashed and should be repaired#", $text, $matches)) {
 				$this->query('REPAIR TABLE ' . $matches[1]);
-			} elseif (preg_match("#Can't open file: '(.+).MY[ID]'\.? \(errno: 145\)#", $message, $matches)) {
+			} elseif (preg_match("#Can't open file: '(.+).MY[ID]'\.? \(errno: 145\)#", $text, $matches)) {
 				$this->query('REPAIR TABLE ' . $matches[1]);
 			}
 		}
 		
 		trigger_error(false, E_USER_ERROR);
-
-		return $result;
 	}
 }
