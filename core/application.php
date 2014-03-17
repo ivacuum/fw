@@ -16,6 +16,7 @@ use fw\config\db as config_db;
 use fw\db\mysqli as db_mysqli;
 use fw\db\sphinx as db_sphinx;
 use fw\Logger\DbHandler;
+use fw\Logger\MailHandler;
 use fw\session\user;
 use fw\template\smarty;
 
@@ -144,10 +145,8 @@ class application implements \ArrayAccess
 		
 		$this['logger'] = function () use ($app) {
 			$logger = new Logger($app['site_info']['domain']);
-			$email  = $app['errorhandler.options']['email.error'];
 			
-			if (PHP_SAPI == 'cli')
-			{
+			if (PHP_SAPI == 'cli') {
 				$handler = new StreamHandler('php://stdout');
 				$handler->setFormatter(new LineFormatter($app['logger.options']['cron.format']));
 				
@@ -160,10 +159,8 @@ class application implements \ArrayAccess
 			/* info и выше */
 			$logger->pushHandler(new DbHandler($app['db'], $app['request']));
 			
-			// if ($email) {
-			// 	/* warn и выше */
-			// 	$logger->pushHandler(new MailHandler($app['user']));
-			// }
+			/* error и выше */
+			$logger->pushHandler(new MailHandler($app['user']));
 
 			$logger->pushProcessor(function ($record) use ($app) {
 				$record['extra']['site_id'] = $app['site_info']['id'];
