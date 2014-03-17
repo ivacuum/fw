@@ -1,4 +1,4 @@
-<?php namespace fw\Logger\Handlers;
+<?php namespace fw\Logger;
 
 use Monolog\Logger;
 use Monolog\Handler\AbstractProcessingHandler;
