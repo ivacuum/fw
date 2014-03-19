@@ -254,19 +254,6 @@ function make_random_string($length = 10)
 }
 
 /**
-* Мета-переадресация
-*
-* @param	int		$time	Время в секундах
-* @param	string	$url	Будущий URL
-*/
-function meta_refresh($time, $url)
-{
-	global $app;
-	
-	$app['template']->assign('META', sprintf('<meta http-equiv="refresh" content="%d;url=%s">', $time, $url));
-}
-
-/**
 * Переход по страницам
 *
 * Проверяем наличие выбранной страницы. Устанавливаем данные шаблона.
