@@ -1,22 +1,6 @@
 <?php
 
 /**
-* Вывод на печать ajax данных
-*
-* @param	string	$file	Файл в папке templates/ajax
-*/
-function ajax_output($file = false)
-{
-	global $app;
-	
-	$file = $file ?: $app['template']->file;
-
-	header('Content-type: text/xml; charset=utf-8');
-	$app['template']->display("ajax/{$file}");
-	exit;
-}
-
-/**
 * Создание скрытых полей по данным переданного массива
 *
 * @param	array	$row	Массив данных
