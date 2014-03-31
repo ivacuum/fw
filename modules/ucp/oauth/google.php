@@ -86,8 +86,8 @@ class google extends base
 	{
 		switch ($json['gender']) {
 			case 'female': $gender = 1; break;
-			case 'male': $gender = 2; break;
-			default: $gender = 0;
+			case 'male':   $gender = 2; break;
+			default:       $gender = 0;
 		}
 
 		return [
@@ -96,7 +96,7 @@ class google extends base
 			'openid_last_use'   => $this->request->time,
 			'openid_provider'   => $this->api_provider,
 			'openid_uid'        => $this->openid_uid,
-			'openid_identity'   => $json['profile'],
+			'openid_identity'   => isset($json['profile']) ? $json['profile'] : '',
 			'openid_first_name' => isset($json['given_name']) ? $json['given_name'] : '',
 			'openid_last_name'  => isset($json['family_name']) ? $json['family_name'] : '',
 			'openid_dob'        => '',
