@@ -109,9 +109,11 @@ $app = [
 	
 	/* Ссылки */
 	'urls' => [
-		'register' => '/',
-		'signin'   => '/',
-		'signout'  => '/',
+		'register'     => '/',
+		'signin'       => '/',
+		'signout'      => '/',
+		'static'       => '',
+		'static_local' => '',
 	],
 	
 	/* Версии библиотек */

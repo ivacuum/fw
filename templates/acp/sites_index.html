@@ -8,9 +8,9 @@
 
 {foreach $entries|default:[] as $row}
 	{capture "input"}
-		<img src="//ivacuum.org/i/flags/16/{$row.site_language}.png" alt="" class="tip" title="{$row.site_locale}">
+		<img src="{$T_STATIC}/i/flags/16/{$row.site_language}.png" alt="" class="tip" title="{$row.site_locale}">
 		{if $row.site_default}
-			<img src="//ivacuum.org/i/_/star-small.png" alt="" class="tip" title="Локализация по умолчанию">
+			<img src="{$T_STATIC}/i/_/star-small.png" alt="" class="tip" title="Локализация по умолчанию">
 		{/if}
 	{/capture}
 	{$entries[$row@key].site_language = $smarty.capture.input}

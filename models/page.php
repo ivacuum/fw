@@ -334,7 +334,7 @@ class page
 				$this->template->assign('S_LANGUAGE_DIRECTION', $ary['language_direction']);
 			}
 		}
-
+		
 		$this->template->assign([
 			'S_BOT'             => $this->user->is_bot,
 			'S_ISP'             => $this->request->isp,
@@ -343,6 +343,8 @@ class page
 			'S_SERVER_NAME'     => $this->request->server_name,
 			'S_USER_REGISTERED' => $this->user->is_registered,
 			'S_USERNAME'        => $this->user['username'],
+			
+			'T_STATIC' => $this->request->isp == 'local' && $this->urls['_static_local'] ? $this->urls['_static_local'] : $this->urls['_static'],
 
 			/* Ссылки */
 			'U_INDEX'     => ilink(),

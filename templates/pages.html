@@ -139,8 +139,8 @@
 				<table class="table-stats">
 					{foreach $pages as $row}
 					<tr ondblclick="document.location='{$row.U_EDIT}';">
-						<td style="width: 25px; text-align: right;"><img src="//ivacuum.org/i/_/{($row.is_dir) ? 'folder_open' : 'blog'}.png" alt=""></td>
-						<td style="width: 25px; text-align: center;"><img src="//ivacuum.org/i/_/status_{($row.page_enabled) ? 'online' : 'offline'}.png" alt=""></td>
+						<td style="width: 25px; text-align: right;"><img src="{$T_STATIC}/i/_/{($row.is_dir) ? 'folder_open' : 'blog'}.png" alt=""></td>
+						<td style="width: 25px; text-align: center;"><img src="{$T_STATIC}/i/_/status_{($row.page_enabled) ? 'online' : 'offline'}.png" alt=""></td>
 						<td>
 							{if $row.is_dir}
 								<a href="{$row.U_PAGE}" title="/{$row.page_url}/">{$row.page_name}</a>
@@ -151,29 +151,29 @@
 								<span class="muted">({$row.page_handler}::{$row.handler_method})</span>
 							{/if}
 							{if $row.page_noindex}
-								<img src="//ivacuum.org/i/_/monitor_off.png" alt="">
+								<img src="{$T_STATIC}/i/_/monitor_off.png" alt="">
 							{/if}
 							{if $row.page_display == 2}
-								<img src="//ivacuum.org/i/_/sitemap_application_blue.png" alt="">
+								<img src="{$T_STATIC}/i/_/sitemap_application_blue.png" alt="">
 							{elseif $row.page_display == 1}
-								<img src="//ivacuum.org/i/_/sitemap_application.png" alt="">
+								<img src="{$T_STATIC}/i/_/sitemap_application.png" alt="">
 							{/if}
 							{if $row.page_redirect}
-								<img src="//ivacuum.org/i/_/road_sign.png" alt="">
+								<img src="{$T_STATIC}/i/_/road_sign.png" alt="">
 							{/if}
 						</td>
 						<td style="width: 15%; white-space: nowrap; text-align: center; vertical-align: middle;">&nbsp;{if $row.page_enabled}<a href="{$row.U_DISABLE}">{'DISABLE'|i18n}</a>{else}<a href="{$row.U_ENABLE}">{'ENABLE'|i18n}</a>{/if}&nbsp;</td>
 						<td style="width: 90px; white-space: nowrap; text-align: right; vertical-align: middle;">
 							{if $row@first and not $row@last}
-								<a href="{$row.U_MOVE_DOWN}"><img src="//ivacuum.org/i/_/arrow_270.png" alt=""></a>
+								<a href="{$row.U_MOVE_DOWN}"><img src="{$T_STATIC}/i/_/arrow_270.png" alt=""></a>
 							{elseif not $row@first and not $row@last}
-								<a href="{$row.U_MOVE_UP}"><img src="//ivacuum.org/i/_/arrow_090.png" alt=""></a> 
-								<a href="{$row.U_MOVE_DOWN}"><img src="//ivacuum.org/i/_/arrow_270.png" alt=""></a> 
+								<a href="{$row.U_MOVE_UP}"><img src="{$T_STATIC}/i/_/arrow_090.png" alt=""></a> 
+								<a href="{$row.U_MOVE_DOWN}"><img src="{$T_STATIC}/i/_/arrow_270.png" alt=""></a> 
 							{elseif not $row@first and $row@last}
-								<a href="{$row.U_MOVE_UP}"><img src="//ivacuum.org/i/_/arrow_090.png" alt=""></a>	
+								<a href="{$row.U_MOVE_UP}"><img src="{$T_STATIC}/i/_/arrow_090.png" alt=""></a>	
 							{/if}
-							<a href="{$row.U_EDIT}"><img src="//ivacuum.org/i/_/pencil.png" alt=""></a> 
-							<a href="#" onclick="if(confirm('Будет удалена вся информация, связанная с этой записью! Продолжить?')) { document.location = '{$row.U_DELETE}'; return false; }"><img src="//ivacuum.org/i/_/cross.png" alt=""></a>
+							<a href="{$row.U_EDIT}"><img src="{$T_STATIC}/i/_/pencil.png" alt=""></a> 
+							<a href="#" onclick="if(confirm('Будет удалена вся информация, связанная с этой записью! Продолжить?')) { document.location = '{$row.U_DELETE}'; return false; }"><img src="{$T_STATIC}/i/_/cross.png" alt=""></a>
 						</td>
 					</tr>
 					{/foreach}

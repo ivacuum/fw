@@ -11,9 +11,9 @@
 	{*
 	{capture "input"}
 		{if $row.news_active}
-			<img src="//ivacuum.org/i/_/status.png" alt="">
+			<img src="{$T_STATIC}/i/_/status.png" alt="">
 		{else}
-			<img src="//ivacuum.org/i/_/status-offline.png" alt="">
+			<img src="{$T_STATIC}/i/_/status-offline.png" alt="">
 		{/if}
 	{/capture}
 	{$entries[$row@key].news_active = $smarty.capture.input}
