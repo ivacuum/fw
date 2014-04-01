@@ -34,3 +34,5 @@ cache.properties
 .svn
 .CVS
 .idea
+
+/vendor

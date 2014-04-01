@@ -46,19 +46,7 @@ class application implements \ArrayAccess
 			return new profiler(START_TIME, $app['profiler.options']);
 		};
 		
-		$this['autoloader'] = function () use ($app) {
-			require FW_DIR . 'core/autoloader.php';
-			
-			return (new autoloader())
-				->register_namespaces($app['autoloader.namespaces'])
-				->register_pears($app['autoloader.pears'])
-				->register();
-		};
-		
 		$this['template'] = function () use ($app) {
-			define('SMARTY_DIR', "{$app['dir.lib']}/smarty/{$app['version.smarty']}/Smarty/");
-			require SMARTY_DIR . 'Smarty.class.php';
-
 			return new smarty([$app['dir.templates.app'], $app['dir.templates.fw']], $app['dir.templates.cache']);
 		};
 		
@@ -182,22 +170,12 @@ class application implements \ArrayAccess
 		};
 		
 		$this['mailer'] = function () use ($app) {
-			require "{$app['dir.lib']}/swiftmailer/{$app['version.swift']}/swift_init.php";
-
 			return new mailer($app['config'], $app['template']);
 		};
 		
 		$this['sphinx'] = function () use ($app) {
 			return new db_sphinx($app['cache.driver'], $app['profiler'], $app['sphinx.options']);
 		};
-		
-		foreach ($this['include.files'] as $file) {
-			require $file;
-		}
-		
-		if ($this['autoloader.options']['enabled']) {
-			$this['autoloader'];
-		}
 		
 		if ($this['errorhandler.options']['enabled']) {
 			errorhandler::register($this['errorhandler.options'], $this['events']);
