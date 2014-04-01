@@ -57,9 +57,9 @@ class db extends config
 		'site.root_path'             => '/',
 		'site.tz'                    => 4,
 		'sitename'                   => 'Название сайта',
-		'smtp.host'                  => '',
+		'smtp.host'                  => 'localhost',
 		'smtp.pass'                  => '',
-		'smtp.port'                  => '',
+		'smtp.port'                  => 25,
 		'smtp.user'                  => '',
 	];
 	
