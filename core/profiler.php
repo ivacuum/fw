@@ -260,7 +260,7 @@ class profiler extends console
 		$this->file_count = 0;
 
 		foreach (get_included_files() as $key => $file) {
-			if (false !== strpos($file, '/lib/')) {
+			if (false !== strpos($file, '/vendor/')) {
 				continue;
 			}
 			
