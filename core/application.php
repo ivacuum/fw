@@ -140,7 +140,7 @@ class application implements \ArrayAccess
 		};
 		
 		$this['logger'] = function () use ($app) {
-			$logger = new Logger($app['site_info']['domain']);
+			$logger = new Logger('localhost');
 			
 			if (PHP_SAPI == 'cli') {
 				$handler = new StreamHandler('php://stdout');
