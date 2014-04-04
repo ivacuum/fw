@@ -229,6 +229,26 @@ class application implements \ArrayAccess
 		
 		return $callable;
 	}
+	
+	public function getMigratorOptions($type = 'site')
+	{
+		return [
+			'paths' => ['migrations' => $this['migrator.options']["{$type}.dir"]],
+			'environments' => [
+				'default_migration_table' => $this['migrator.options']["{$type}.table"],
+				'default_database' => 'koenigsegg',
+				'koenigsegg' => [
+					'adapter' => 'mysql',
+					'host'    => $this['db.options']['host'],
+					'name'    => $this['db.options']['name'],
+					'user'    => $this['db.options']['user'],
+					'pass'    => $this['db.options']['pass'],
+					'port'    => $this['db.options']['port'],
+					'charset' => 'utf8',
+				]
+			]
+		];
+	}
 
 	/**
 	* Данный объект не будет вызван при обращении

@@ -52,6 +52,14 @@ $app = [
 		'cron.format'   => "%datetime%: %message%\n",
 		'guzzle.format' => '{req_header_User-Agent} "{method} {host}{resource} {protocol}/{version}" {code} {res_header_Content-Length} connect={connect_time}s total={total_time}s',
 	],
+	
+	/* Настройки миграций phinx */
+	'migrator.options' => [
+		'fw.dir'     => FW_DIR . 'Migrations',
+		'fw.table'   => 'site_migrations_fw',
+		'site.dir'   => realpath(SITE_DIR . '../migrations'),
+		'site.table' => 'site_migrations',
+	],
 
 	/* Настройки профайлера */
 	'profiler.options' => [
