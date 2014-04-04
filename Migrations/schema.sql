@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `site_auth_options` (
   `auth_default` tinyint(1) unsigned NOT NULL,
   PRIMARY KEY (`auth_id`),
   UNIQUE KEY `auth_var` (`auth_var`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `site_auth_roles` (
   `role_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `site_cron` (
   PRIMARY KEY (`cron_id`),
   KEY `site_id_active_next_run` (`site_id`,`cron_active`,`next_run`),
   KEY `site_id_order` (`site_id`,`run_order`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `site_groups` (
   `group_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS `site_groups` (
   `group_legend` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `group_skip_auth` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`group_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `site_i18n` (
   `i18n_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
@@ -128,7 +128,7 @@ CREATE TABLE IF NOT EXISTS `site_i18n` (
   PRIMARY KEY (`i18n_id`),
   KEY `lang_file` (`i18n_lang`,`i18n_file`),
   KEY `site_id` (`site_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=757 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `site_languages` (
   `language_id` tinyint(2) unsigned NOT NULL AUTO_INCREMENT,
@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS `site_languages` (
   `language_name` varchar(30) COLLATE utf8_bin NOT NULL,
   `language_sort` mediumint(5) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`language_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ROW_FORMAT=COMPACT AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ROW_FORMAT=COMPACT AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `site_login_attempts` (
   `attempt_ip` varchar(40) COLLATE utf8_bin NOT NULL DEFAULT '',
@@ -179,7 +179,7 @@ CREATE TABLE IF NOT EXISTS `site_menus` (
   PRIMARY KEY (`menu_id`),
   UNIQUE KEY `menu_alias` (`menu_alias`),
   KEY `sort` (`menu_sort`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `site_news` (
   `news_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
@@ -327,7 +327,7 @@ CREATE TABLE IF NOT EXISTS `site_users` (
   PRIMARY KEY (`user_id`),
   KEY `user_url` (`user_url`),
   KEY `username_clean` (`username_clean`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin PACK_KEYS=0 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin PACK_KEYS=0 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `site_user_groups` (
   `group_id` mediumint(8) unsigned NOT NULL DEFAULT '0',
