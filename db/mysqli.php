@@ -21,7 +21,6 @@ class mysqli
 	protected $cache_row_pointer = [];
 	protected $connect_id;
 	protected $query_result;
-	protected $num_queries = ['cached' => 0, 'normal' => 0, 'total' => 0];
 	protected $transaction = false;
 	protected $transactions = 0;
 
@@ -41,7 +40,7 @@ class mysqli
 		$this->events   = $events;
 		$this->profiler = $profiler;
 		
-		if (false !== $this->options['pers'] && $this->options['host'] == 'localhost' && version_compare(PHP_VERSION, '5.3.0', '>=')) {
+		if (false !== $this->options['pers'] && $this->options['host'] == 'localhost') {
 			$this->options['host'] = "p:{$this->options['host']}";
 		}
 	}
@@ -399,14 +398,6 @@ class mysqli
 	}
 	
 	/**
-	* Количество запросов
-	*/
-	public function num_queries($cached = false)
-	{
-		return $cached ? $this->num_queries['cached'] : $this->num_queries['normal'];
-	}
-
-	/**
 	* Замена спецсимволов в запросах на данные
 	*/
 	public function placehold($query = '', array $params = [])
@@ -470,7 +461,6 @@ class mysqli
 			if (false !== $result = $this->cache->get("sql_{$cache_key}")) {
 				$this->cache_rowset[$query_id] = $result;
 				$this->cache_row_pointer[$query_id] = 0;
-				$this->add_num_queries(true);
 				
 				if (is_object($this->profiler)) {
 					$this->profiler->log_query($query, $start_time, true);
@@ -494,8 +484,6 @@ class mysqli
 			$this->cache->set("sql_{$cache_key}", $this->cache_rowset[$query_id], $cache_ttl);
 			$this->query_result = $query_id;
 		}
-		
-		$this->add_num_queries();
 		
 		if (is_object($this->profiler)) {
 			$this->profiler->log_query($query, $start_time);
@@ -549,15 +537,6 @@ class mysqli
 		return false !== $query_id ? mysqli_data_seek($query_id, $rownum) : false;
 	}
 	
-
-	/**
-	* Число запросов к БД (для отладки)
-	*/
-	public function total_queries()
-	{
-		return $this->num_queries['total'];
-	}
-
 	/**
 	* Транзакции
 	*/
@@ -617,16 +596,6 @@ class mysqli
 		return $result;
 	}
 	
-	/**
-	* Увеличение счетчика запросов
-	*/
-	protected function add_num_queries($cached = false)
-	{
-		$this->num_queries['cached'] += false !== $cached ? 1 : 0;
-		$this->num_queries['normal'] += false !== $cached ? 0 : 1;
-		$this->num_queries['total']++;
-	}
-
 	/**
 	* Установка подключения к БД
 	*/
