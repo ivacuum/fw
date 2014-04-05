@@ -1,9 +1,9 @@
-<div class="boxed-group flush">
+<div class="boxed-group {if not empty($entries) and not empty($columns)}flush{/if}">
 	{if $add_url = 'add'|url_for}
 		<a href="{$add_url}" class="boxed-group-action btn btn-success">Добавить</a>
 	{/if}
-	{if not empty($entries) && not empty($columns)}
 	<h3>{$page.page_name} <small>{$entry_title|default:''}</small></h3>
+	{if not empty($entries) and not empty($columns)}
 		<div class="boxed-group-inner">
 			<table class="table-stats">
 				<thead>
@@ -21,7 +21,7 @@
 							{$edit_url_values[] = $row[$param]}
 						{/foreach}
 						{$edit_url = 'edit'|url_for:$edit_url_values}
-						<tr data-edit-url="{$edit_url}" class="js-dblclick-edit">
+						<tr data-dblclick-url="{$edit_url}" class="js-dblclick-edit">
 							{foreach $columns as $col}
 								<td class="{$col.class|default:''}" style="{$col.style|default:''}">{$row[$col@key]}</td>
 							{/foreach}
@@ -38,13 +38,20 @@
 				</tbody>
 			</table>
 		</div>
+	{else}
+		<div class="boxed-group-inner">
+			Записей еще нет.
+			{if $add_url}
+				Но можно <a href="{$add_url}">добавить</a>.
+			{/if}
+		</div>
 	{/if}
 </div>
 
 <script>
 $(function() {
 	$('.js-dblclick-edit').bind('dblclick', function() {
-		document.location = $(this).data('edit-url');
+		document.location = $(this).data('dblclick-url');
 	});
 });
 </script>
