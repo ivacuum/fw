@@ -674,6 +674,23 @@ class page
 		
 		return $this;
 	}
+	
+	/**
+	* Запрос API
+	*
+	* @param string $api Название класса модуля (namespace + class name)
+	* @param array $params Параметры для конструктора класса
+	* 
+	* @return \fw\Api\Base Экземпляр запрошенного API
+	*/
+	protected function getApi($api, array $params = [])
+	{
+		$api = false === strpos($api, '\\Api\\') ? "fw\\Api\\{$api}" : $api;
+		
+		return (new \ReflectionClass($api))
+			->newInstanceArgs($params)
+			->_set_app($this->app);
+	}
 
 	/**
 	* Подсветка активных пунктов меню
