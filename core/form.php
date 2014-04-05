@@ -25,7 +25,7 @@ class form
 		$this->template = $template;
 	}
 	
-	public function add_field($row, $tab_id = false)
+	public function addField(array $row, $tab_id = false)
 	{
 		if (false == $type = @$row['field_type'] ?: @$row['type'] ?: '') {
 			trigger_error('При создании поля не было указано обязательное поле type.');
@@ -40,7 +40,7 @@ class form
 			* При ручном создании формы вкладка будет создана
 			* автоматически при добавлении первого поля
 			*/
-			$this->add_tab();
+			$this->addTab();
 		}
 		
 		/* При ручном создании формы поле попадает в последнюю вкладку */
@@ -84,7 +84,7 @@ class form
 		return $this;
 	}
 	
-	public function add_form($row)
+	public function addForm(array $row)
 	{
 		if (false == $alias = @$row['form_alias'] ?: @$row['alias'] ?: '') {
 			trigger_error('При создании формы не было указано обязательное поле alias.');
@@ -109,12 +109,12 @@ class form
 			'form_captcha'       => @$row['form_captcha'] ?: @$row['captcha'] ?: 0,
 		];
 
-		$this->csrf_token = $this->get_csrf_token();
+		$this->csrf_token = $this->getCsrfToken();
 		
 		return $this;
 	}
 	
-	public function add_tab($row = [], $tab_id = false)
+	public function addTab(array $row = [], $tab_id = false)
 	{
 		if (false === $tab_id) {
 			$this->last_tab++;
@@ -133,7 +133,7 @@ class form
 	/**
 	* Передача шаблонизатору данных формы
 	*/
-	public function append_template()
+	public function appendTemplate()
 	{
 		$this->template->assign('forms', [$this->data['form_alias'] => [
 			'data' => array_merge([
@@ -153,7 +153,7 @@ class form
 	/**
 	* Связывание строки из БД с полями формы
 	*/
-	public function bind_data($row)
+	public function bindData(array $row)
 	{
 		foreach ($this->fields as $field) {
 			$field['value'] = isset($row[$field['field_alias']]) ? $row[$field['field_alias']] : $field['value'];
@@ -165,7 +165,7 @@ class form
 	/**
 	* Связывание пользовательского ввода с полями формы
 	*/
-	public function bind_request()
+	public function bindRequest()
 	{
 		foreach ($this->fields as $field) {
 			switch ($this->data['form_method']) {
@@ -178,7 +178,7 @@ class form
 		}
 
 		$this->is_bound = true;
-		$this->is_csrf_valid = $this->validate_csrf_token();
+		$this->is_csrf_valid = $this->validateCsrfToken();
 		
 		return $this;
 	}
@@ -186,7 +186,7 @@ class form
 	/**
 	* Извлечение значений полей формы
 	*/
-	public function get_fields_values($prefixed = false)
+	public function getFieldsValues($prefixed = false)
 	{
 		$ary = [];
 		
@@ -202,7 +202,7 @@ class form
 	/**
 	* Извлечение информации о форме
 	*/
-	public function get_form($alias)
+	public function getForm($alias)
 	{
 		if (!$alias) {
 			trigger_error('Не указан псевдоним формы.');
@@ -224,7 +224,7 @@ class form
 		$this->db->query($sql, [$this->data['form_id']]);
 		
 		while ($row = $this->db->fetchrow()) {
-			$this->add_tab($row, $row['tab_id']);
+			$this->addTab($row, $row['tab_id']);
 		}
 		
 		$this->db->freeresult();
@@ -238,11 +238,11 @@ class form
 		$this->db->query($sql, [$this->data['form_id']]);
 		
 		while ($row = $this->db->fetchrow()) {
-			$this->add_field($row, $row['tab_id']);
+			$this->addField($row, $row['tab_id']);
 		}
 		
 		$this->db->freeresult();
-		$this->csrf_token = $this->get_csrf_token();
+		$this->csrf_token = $this->getCsrfToken();
 		
 		return $this;
 	}
@@ -264,7 +264,7 @@ class form
 		
 		if ($this->is_valid) {
 			/* Защита от повторной отправки формы */
-			$this->delete_csrf_token();
+			$this->deleteCsrfToken();
 		}
 		
 		return $this;
@@ -273,7 +273,7 @@ class form
 	/**
 	* Проверка значения CSRF-токена
 	*/
-	public function validate_csrf_token()
+	public function validateCsrfToken()
 	{
 		return $this->request->post("{$this->data['form_alias']}_csrf_token", '') === $this->csrf_token;
 	}
@@ -281,7 +281,7 @@ class form
 	/**
 	* Удаление CSRF-токена
 	*/
-	protected function delete_csrf_token()
+	protected function deleteCsrfToken()
 	{
 		unset($_SESSION['csrf'][$this->data['form_alias']]);
 	}
@@ -289,7 +289,7 @@ class form
 	/**
 	* Генерация нового CSRF-токена
 	*/
-	protected function generate_csrf_token()
+	protected function generateCsrfToken()
 	{
 		return $_SESSION['csrf'][$this->data['form_alias']] = make_random_string();
 	}
@@ -297,8 +297,8 @@ class form
 	/**
 	* Значение CSRF-токена
 	*/
-	protected function get_csrf_token()
+	protected function getCsrfToken()
 	{
-		return isset($_SESSION['csrf'][$this->data['form_alias']]) ? $_SESSION['csrf'][$this->data['form_alias']] : $this->generate_csrf_token();
+		return isset($_SESSION['csrf'][$this->data['form_alias']]) ? $_SESSION['csrf'][$this->data['form_alias']] : $this->generateCsrfToken();
 	}
 }

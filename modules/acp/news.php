@@ -23,22 +23,22 @@ class news extends page
 	
 	public function add()
 	{
-		$this->get_edit_form()
-			->append_template();
+		$this->getEditForm()
+			->appendTemplate();
 	}
 	
 	public function add_post()
 	{
-		$this->get_edit_form()
-			->bind_request()
+		$this->getEditForm()
+			->bindRequest()
 			->validate()
-			->append_template();
+			->appendTemplate();
 		
 		if (!$this->form->is_valid) {
 			return;
 		}
 
-		$this->news->add($this->form->get_fields_values());
+		$this->news->add($this->form->getFieldsValues());
 		
 		if ($this->request->is_set_post('submit')) {
 			$this->request->redirect(ilink($this->get_handler_url('index')));
@@ -49,7 +49,7 @@ class news extends page
 	{
 		$row = $this->news->getById($id);
 		
-		$this->form->add_form([
+		$this->form->addForm([
 			'title'         => '',
 			'alias'         => 'custom',
 			'action'        => ilink($this->url),
@@ -57,7 +57,7 @@ class news extends page
 			'cancel_text'   => 'Отмена',
 			'submit_class'  => 'btn btn-danger',
 			'submit_text'   => 'Удалить новость',
-		])->append_template();
+		])->appendTemplate();
 		
 		$this->template->assign('entry_title', $row['news_subject']);
 	}
@@ -76,59 +76,60 @@ class news extends page
 			trigger_error($e->getMessage());
 		}
 		
-		$this->get_edit_form()
-			->bind_data($row)
-			->append_template();
+		$this->getEditForm()
+			->bindData($row)
+			->appendTemplate();
 	}
 	
 	public function edit_post($id)
 	{
 		$row = $this->news->getById($id);
 		
-		$this->get_edit_form()
-			->bind_data($row)
-			->bind_request()
+		$this->getEditForm()
+			->bindData($row)
+			->bindRequest()
 			->validate()
-			->append_template();
+			->appendTemplate();
 		
 		if (!$this->form->is_valid) {
 			return;
 		}
 		
-		$this->news->update($id, $this->form->get_fields_values());
+		$this->news->update($id, $this->form->getFieldsValues());
 
 		if ($this->request->is_set_post('submit')) {
 			$this->request->redirect(ilink($this->get_handler_url('index')));
 		}
 	}
 	
-	protected function get_edit_form()
+	protected function getEditForm()
 	{
-		return $this->form->add_form([
+		return $this->form->addForm([
 			'title'         => '',
 			'alias'         => 'custom',
 			'action'        => ilink($this->url),
 			'class'         => 'form-horizontal',
 			'action_cancel' => ilink($this->get_handler_url('index')),
 			'action_save'   => ilink($this->url),
-		])->add_field([
-			'type'  => 'text',
-			'title' => 'Заголовок',
-			'alias' => 'news_subject',
-		])->add_field([
+		])->addField([
+			'type'     => 'text',
+			'title'    => 'Заголовок',
+			'alias'    => 'news_subject',
+			'required' => true,
+		])->addField([
 			'type' => 'date',
 			'title' => 'Дата публикации',
 			'alias' => 'news_time',
-		])->add_field([
+		])->addField([
 			'type'  => 'text',
 			'title' => 'URL',
 			'alias' => 'news_url',
-		])->add_field([
+		])->addField([
 			'type'   => 'texteditor',
 			'title'  => 'Текст новости',
 			'alias'  => 'news_text',
 			'height' => '30em',
-		])->add_field([
+		])->addField([
 			'type'  => 'hidden',
 			'title' => 'Автор',
 			'alias' => 'user_id',
