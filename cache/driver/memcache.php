@@ -10,7 +10,7 @@ class memcache extends memory
 		parent::__construct($options);
 
 		$this->memcache = new \Memcache();
-		$this->memcache->pconnect($this->options['host'], $this->options['port']);
+		$this->memcache->connect($this->options['host'], $this->options['port']);
 	}
 
 	public function _delete($var)
