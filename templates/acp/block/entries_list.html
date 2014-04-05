@@ -2,8 +2,8 @@
 	{if $add_url = 'add'|url_for}
 		<a href="{$add_url}" class="boxed-group-action btn btn-success">Добавить</a>
 	{/if}
-	<h3>{$page.page_name}</h3>
 	{if not empty($entries) && not empty($columns)}
+	<h3>{$page.page_name} <small>{$entry_title|default:''}</small></h3>
 		<div class="boxed-group-inner">
 			<table class="table-stats">
 				<thead>

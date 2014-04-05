@@ -17,8 +17,10 @@ class news extends page
 	public function index()
 	{
 		$on_page = 20;
+		$site_title = $this->getApi('Sites')->getById($this->site_id)['site_title'];
 		
 		$this->template->assign('entries', $this->news->get(compact('on_page')));
+		$this->template->assign('entry_title', $site_title);
 	}
 	
 	public function add()
