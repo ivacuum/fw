@@ -261,7 +261,6 @@ class router
 
 		$this->handler->_set_app($this->app)
 			->set_preconfigured_urls($this->app['urls'])
-			->set_site_menu()
 			->set_page_data();
 		
 		/* Предустановки */
@@ -323,7 +322,6 @@ class router
 			->obtain_handlers_urls()
 			->set_preconfigured_urls($this->app['urls'])
 			->set_default_template()
-			->set_site_menu()
 			->set_page_data()
 			->set_appropriate_content_type();
 		

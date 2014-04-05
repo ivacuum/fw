@@ -361,7 +361,8 @@ class page
 
 	public function page_footer()
 	{
-		$this->additional_tplengine_features();
+		$this->additional_tplengine_features()
+			->set_site_menu();
 		
 		$display_profiler = false;
 		
