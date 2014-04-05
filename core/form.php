@@ -97,6 +97,7 @@ class form
 			'form_class'         => @$row['form_class'] ?: @$row['class'] ?: '',
 			'form_action'        => @$row['form_action'] ?: @$row['action'] ?: '',
 			'form_action_cancel' => @$row['form_action_cancel'] ?: @$row['action_cancel'] ?: '',
+			'form_action_save'   => @$row['form_action_save'] ?: @$row['action_save'] ?: '',
 			'form_enctype'       => @$row['form_enctype'] ?: @$row['enctype'] ?: '',
 			'form_method'        => @$row['form_method'] ?: @$row['method'] ?: 'post',
 			'form_message'       => @$row['form_message'] ?: @$row['message'] ?: '',
@@ -157,7 +158,7 @@ class form
 		foreach ($this->fields as $field) {
 			$field['value'] = isset($row[$field['field_alias']]) ? $row[$field['field_alias']] : $field['value'];
 		}
-		
+
 		return $this;
 	}
 	
