@@ -255,7 +255,7 @@ class session implements \ArrayAccess, \Countable, \IteratorAggregate, \SessionH
 			$sql_array['WHERE'][] = $_sql;
 		}
 		
-		$result = $this->db->query($this->db->build_query('SELECT', $sql_array));
+		$result = $this->db->query(['SELECT', $sql_array]);
 		$ban_triggered_by = 'user';
 
 		while ($row = $this->db->fetchrow($result)) {

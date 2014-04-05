@@ -61,7 +61,7 @@ class News extends AbstractApi
 			$sql['WHERE'][] = $this->db->placehold('u.user_id = ?', [$user_id]);
 		}
 		
-		$this->db->query_limit($this->db->build_query('SELECT', $sql), [], $pagination['on_page'], $pagination['offset']);
+		$this->db->query_limit(['SELECT', $sql], [], $pagination['on_page'], $pagination['offset']);
 		$rows = $this->db->fetchall();
 		$this->db->freeresult();
 		
@@ -80,7 +80,7 @@ class News extends AbstractApi
 			],
 		];
 		
-		$this->db->query($this->db->build_query('SELECT', $sql));
+		$this->db->query(['SELECT', $sql]);
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
 		
@@ -112,7 +112,7 @@ class News extends AbstractApi
 			],
 		];
 		
-		$this->db->query($this->db->build_query('SELECT', $sql));
+		$this->db->query(['SELECT', $sql]);
 		$row = $this->db->fetchrow();
 		$this->db->freeresult();
 		
@@ -137,7 +137,7 @@ class News extends AbstractApi
 			$sql['WHERE'][] = "news_time BETWEEN {$interval['start']} AND {$interval['end']}";
 		}
 		
-		$this->db->query($this->db->build_query('SELECT', $sql));
+		$this->db->query(['SELECT', $sql]);
 		$total = $this->db->fetchfield('total');
 		$this->db->freeresult();
 		

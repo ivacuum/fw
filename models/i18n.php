@@ -83,7 +83,7 @@ class i18n extends base
 			}
 		}
 		
-		$this->db->query($this->db->build_query('SELECT', $sql));
+		$this->db->query(['SELECT', $sql]);
 		$rows = $this->db->fetchall();
 		$this->db->freeresult();
 		

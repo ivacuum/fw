@@ -440,14 +440,14 @@ class mysqli
 	/**
 	* Выполнение запроса к БД
 	*/
-	public function query($query = '', array $params = [], $cache_ttl = 0)
+	public function query($query, array $params = [], $cache_ttl = 0)
 	{
 		if (!$this->connect_id) {
 			$this->connect();
 		}
 		
-		if (!$query) {
-			return false;
+		if (is_array($query)) {
+			$query = $this->build_query($query[0], $query[1]);
 		}
 		
 		$query = $this->placehold($query, $params);
@@ -494,8 +494,8 @@ class mysqli
 	
 	public function query_limit($query, array $params = [], $on_page, $offset = 0, $cache_ttl = 0)
 	{
-		if (empty($query)) {
-			return false;
+		if (is_array($query)) {
+			$query = $this->build_query($query[0], $query[1]);
 		}
 		
 		$on_page = max(0, $on_page);
