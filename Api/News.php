@@ -30,13 +30,14 @@ class News extends AbstractApi
 	/**
 	* Список новостей
 	*
-	* Поддерживаемые параметры:
+	* Поддерживаемые параметры и одноименные переменные:
 	*   site_id = 0
 	*   user_id = 5
 	*   year = 2014
 	*   month = 5
 	*   day = 14
 	*   on_page = 10
+	*   order_by = n.news_views DESC
 	*/
 	public function get(array $filter = [])
 	{
@@ -49,7 +50,7 @@ class News extends AbstractApi
 			'FROM'      => 'site_news n',
 			'LEFT_JOIN' => 'site_users u ON (u.user_id = n.user_id)',
 			'WHERE'     => ["n.site_id = {$site_id}"],
-			'ORDER_BY'  => 'n.news_time DESC',
+			'ORDER_BY'  => $order_by,
 		];
 		
 		/* Новости за определенный интервал времени */
@@ -143,6 +144,16 @@ class News extends AbstractApi
 		
 		return $total;
 	}
+	
+	public function getMostDiscussed()
+	{
+		return $this->get(['order_by' => 'n.news_comments DESC, n.news_time DESC']);
+	}
+	
+	public function getMostViewed()
+	{
+		return $this->get(['order_by' => 'n.news_views DESC, n.news_time DESC']);
+	}
 
 	public function update($id, array $row)
 	{
@@ -234,9 +245,10 @@ class News extends AbstractApi
 		
 		$this->checkInputDate($f['year'], $f['month'], $f['day']);
 		
-		$f['site_id'] = @$f['site_id'] ?: $this->site_id;
-		$f['on_page'] = @$f['on_page'] ?: 10;
-		$f['on_page'] = min($f['on_page'], 50);
+		$f['site_id']  = @$f['site_id'] ?: $this->site_id;
+		$f['on_page']  = @$f['on_page'] ?: 10;
+		$f['on_page']  = min($f['on_page'], 50);
+		$f['order_by'] = @$f['order_by'] ?: 'n.news_time DESC';
 		
 		return $f;
 	}

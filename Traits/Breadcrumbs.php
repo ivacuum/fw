@@ -16,5 +16,7 @@ trait Breadcrumbs
 			'TEXT'  => $text,
 			'URL'   => $url,
 		]);
+		
+		return $this;
 	}
 }
