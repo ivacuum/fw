@@ -3,7 +3,12 @@
 {block "content"}
 {if not empty($forms.custom)}
 <div class="boxed-group">
-	<h3>{$page.page_name}</h3>
+	<h3>
+		{if not empty($forms.custom.data.form_action_cancel)}
+			<a href="{$forms.custom.data.form_action_cancel}">&larr;</a>
+		{/if}
+		{$page.page_name}
+	</h3>
 	<div class="boxed-group-inner">
 		{include "form.html" form=$forms.custom}
 	</div>
