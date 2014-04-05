@@ -361,6 +361,8 @@ class page
 
 	public function page_footer()
 	{
+		$this->additional_tplengine_features();
+		
 		$display_profiler = false;
 		
 		/* Вывод профайлера только для html-документов */
