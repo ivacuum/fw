@@ -399,7 +399,7 @@ function prepare_text_for_print($text)
 function seo_url($url, $lang = 'ru')
 {
 	switch ($lang) {
-		case 'ru': $pattern = '/[^а-яa-z\d\.]/u'; break;
+		case 'ru': $pattern = '/[^а-яёa-z\d\.]/u'; break;
 		default:   $pattern = '/[^a-z\d\.]/u';
 	}
 
