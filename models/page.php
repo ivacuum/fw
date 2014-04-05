@@ -677,19 +677,21 @@ class page
 	}
 	
 	/**
-	* Запрос API
+	* Запрос модуля API
+	* Все параметры после первого передаются создаваемому экземпляру
 	*
 	* @param string $api Название класса модуля (namespace + class name)
-	* @param array $params Параметры для конструктора класса
 	* 
 	* @return \fw\Api\Base Экземпляр запрошенного API
 	*/
-	protected function getApi($api, array $params = [])
+	protected function getApi($api)
 	{
-		$api = false === strpos($api, '\\Api\\') ? "fw\\Api\\{$api}" : $api;
+		$api  = false === strpos($api, '\\Api\\') ? "fw\\Api\\{$api}" : $api;
+		$args = func_get_args();
+		array_shift($args);
 		
 		return (new \ReflectionClass($api))
-			->newInstanceArgs($params)
+			->newInstanceArgs($args)
 			->_set_app($this->app);
 	}
 
