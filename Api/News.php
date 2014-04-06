@@ -157,6 +157,7 @@ class News extends AbstractApi
 
 	public function update($id, array $row)
 	{
+		$row = array_merge($this->getById($id), $row);
 		$row = $this->db->build_array('UPDATE', $this->processInput($row));
 		
 		$sql = 'UPDATE site_news SET :row WHERE news_id = ? AND site_id = ?';
@@ -272,6 +273,9 @@ class News extends AbstractApi
 		if (empty($row['news_url'])) {
 			throw new \Exception('URL_GENERATION_FAILED');
 		}
+		
+		/* Колонки других таблиц */
+		unset($row['username']);
 		
 		return $row;
 	}
