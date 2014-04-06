@@ -554,10 +554,11 @@ class mysqli
 					return true;
 				}
 
-				if (false == $result = mysqli_autocommit($this->connect_id, false)) {
+				if (false === $result = mysqli_autocommit($this->connect_id, false)) {
 					$this->error();
 				}
 
+				$result = mysqli_autocommit($this->connect_id, false);
 				$this->transaction = true;
 
 			break;
@@ -572,12 +573,8 @@ class mysqli
 					return false;
 				}
 
-				$result = mysqli_commit($this->connect_id);
-				mysqli_autocommit($this->connect_id, true);
-
-				if (!$result) {
-					$this->error();
-				}
+				mysqli_commit($this->connect_id);
+				$result = mysqli_autocommit($this->connect_id, true);
 
 				$this->transaction = false;
 				$this->transactions = 0;
@@ -585,8 +582,8 @@ class mysqli
 			break;
 			case 'rollback':
 
-				$result = mysqli_rollback($this->connect_id);
-				mysqli_autocommit($this->connect_id, true);
+				mysqli_rollback($this->connect_id);
+				$result = mysqli_autocommit($this->connect_id, true);
 				$this->transaction = false;
 				$this->transactions = 0;
 

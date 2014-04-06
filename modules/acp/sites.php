@@ -5,14 +5,18 @@ use app\models\page;
 class sites extends page
 {
 	protected $edit_url_params = ['site_id'];
-	protected $delete_tables = ['site_config', 'site_cron', 'site_i18n', 'site_news', 'site_pages'];
+	protected $sites;
+	
+	public function _setup()
+	{
+		parent::_setup();
+		
+		$this->sites = $this->getApi('Sites');
+	}
 	
 	public function index()
 	{
-		$sql = 'SELECT * FROM site_sites ORDER BY site_url ASC, site_language ASC';
-		$this->db->query($sql);
-		$this->template->assign('entries', $this->db->fetchall());
-		$this->db->freeresult();
+		$this->template->assign('entries', $this->sites->get());
 	}
 	
 	public function add()
@@ -28,17 +32,20 @@ class sites extends page
 			->validate()
 			->appendTemplate();
 		
-		if ($this->form->is_valid) {
-			$sql = 'INSERT INTO site_sites ' . $this->db->build_array('INSERT', $this->form->getFieldsValues());
-			$this->db->query($sql);
-			$this->purge_cache();
+		if (!$this->form->is_valid) {
+			return;
+		}
+		
+		$this->sites->add($this->form->getFieldsValues());
+		
+		if ($this->request->is_set_post('submit')) {
 			$this->request->redirect(ilink($this->get_handler_url('index')));
 		}
 	}
 	
 	public function delete($id)
 	{
-		$row = $this->get_site_data($id);
+		$row = $this->sites->getById($id);
 		
 		$this->form->addForm([
 			'title'         => '',
@@ -50,46 +57,25 @@ class sites extends page
 			'submit_text'   => 'Удалить сайт',
 		])->appendTemplate();
 		
-		$data_to_delete = [];
-		
-		foreach ($this->delete_tables as $table) {
-			$sql = 'SELECT COUNT(*) AS total FROM :table WHERE site_id = ?';
-			$this->db->query($sql, [$id, ':table' => $table]);
-			$data_to_delete[$table] = $this->db->fetchfield('total');
-			$this->db->freeresult();
-		}
-		
-		$data_to_delete = array_filter($data_to_delete, function ($value) {
-			return !empty($value);
-		});
-		
 		$this->template->assign([
-			'data_to_delete' => $data_to_delete,
+			'data_to_delete' => $this->sites->getDataToDelete($id),
 			'entry_title'    => $row['site_title'],
 		]);
 	}
 	
 	public function delete_post($id)
 	{
-		/* Проверка существования сайта */
-		$row = $this->get_site_data($id);
-		
-		$this->db->transaction('begin');
-		$this->delete_tables[] = 'site_sites';
-		
-		foreach ($this->delete_tables as $table) {
-			$sql = 'DELETE FROM :table WHERE site_id = ?';
-			$this->db->query($sql, [$id, ':table' => $table]);
-		}
-
-		$this->purge_cache();
-		$this->db->transaction('commit');
+		$this->sites->delete($id);
 		$this->request->redirect(ilink($this->get_handler_url('index')));
 	}
 	
 	public function edit($id)
 	{
-		$row = $this->get_site_data($id);
+		try {
+			$row = $this->sites->getById($id);
+		} catch (Exception $e) {
+			trigger_error($e->getMessage());
+		}
 		
 		$this->getEditForm()
 			->bindData($row)
@@ -98,7 +84,7 @@ class sites extends page
 	
 	public function edit_post($id)
 	{
-		$row = $this->get_site_data($id);
+		$row = $this->sites->getById($id);
 		
 		$this->getEditForm()
 			->bindData($row)
@@ -106,10 +92,13 @@ class sites extends page
 			->validate()
 			->appendTemplate();
 		
-		if ($this->form->is_valid) {
-			$sql = 'UPDATE site_sites SET :update_ary WHERE site_id = ?';
-			$this->db->query($sql, [$id, ':update_ary' => $this->db->build_array('UPDATE', $this->form->getFieldsValues())]);
-			$this->purge_cache();
+		if (!$this->form->is_valid) {
+			return;
+		}
+		
+		$this->sites->update($id, $this->form->getFieldsValues());
+		
+		if ($this->request->is_set_post('submit')) {
 			$this->request->redirect(ilink($this->get_handler_url('index')));
 		}
 	}
@@ -117,10 +106,12 @@ class sites extends page
 	protected function getEditForm()
 	{
 		return $this->form->addForm([
-			'title'  => 'Редактирование сайта',
-			'alias'  => 'custom',
-			'action' => ilink($this->url),
-			'class'  => 'form-horizontal',
+			'title'         => 'Редактирование сайта',
+			'alias'         => 'custom',
+			'action'        => ilink($this->url),
+			'class'         => 'form-horizontal',
+			'action_cancel' => ilink($this->get_handler_url('index')),
+			'action_save'   => ilink($this->url),
 		])->addField([
 			'type'  => 'text',
 			'title' => 'Название сайта',
@@ -151,25 +142,5 @@ class sites extends page
 			'title' => 'Локализация по умолчанию',
 			'alias' => 'site_default'
 		]);
-	}
-	
-	protected function get_site_data($id)
-	{
-		$sql = 'SELECT * FROM site_sites WHERE site_id = ?';
-		$this->db->query($sql, [$id]);
-		$row = $this->db->fetchrow();
-		$this->db->freeresult();
-		
-		if (!$row) {
-			trigger_error('SITE_NOT_FOUND');
-		}
-		
-		return $row;
-	}
-	
-	protected function purge_cache()
-	{
-		$this->cache->delete_shared('hostnames');
-		$this->cache->delete_shared('sites');
 	}
 }
