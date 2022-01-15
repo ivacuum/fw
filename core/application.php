@@ -21,7 +21,7 @@ use fw\template\smarty;
 
 class application implements \ArrayAccess
 {
-	const VERSION = '1.6.4';
+	const VERSION = '1.6.5';
 
 	private $values = [];
 	private $factories;
