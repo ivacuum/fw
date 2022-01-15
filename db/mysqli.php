@@ -25,7 +25,7 @@ class mysqli
 
 	protected $cache;
 	protected $profiler;
-	
+
 	/**
 	* Сбор параметров
 	* Само подключение к серверу выполняется при первом запросе
@@ -33,15 +33,15 @@ class mysqli
 	function __construct($cache, $profiler, array $options = [])
 	{
 		$this->options = array_merge($this->options, $options);
-		
+
 		$this->cache    = $cache;
 		$this->profiler = $profiler;
-		
+
 		if (false !== $this->options['pers'] && $this->options['host'] == 'localhost' && version_compare(PHP_VERSION, '5.3.0', '>=')) {
 			$this->options['host'] = "p:{$this->options['host']}";
 		}
 	}
-	
+
 	function __destruct()
 	{
 		$this->close();
@@ -76,7 +76,7 @@ class mysqli
 			$query = ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
 		} elseif ($query == 'SELECT' || $query == 'UPDATE') {
 			$values = [];
-			
+
 			foreach ($data as $key => $value) {
 				$values[] = $key . ' = ' . $this->check_value($value);
 			}
@@ -86,20 +86,20 @@ class mysqli
 
 		return $query;
 	}
-	
+
 	/**
 	* Построение sql-запроса из массива данных
 	*/
 	public function build_query($query, $array)
 	{
 		$sql = '';
-		
+
 		switch ($query) {
 			case 'SELECT':
 			case 'SELECT_DISTINCT':
-			
+
 				$sql = str_replace('_', '', $query) . ' ' . (is_array($array['SELECT']) ? implode(', ', $array['SELECT']) : $array['SELECT']) . ' FROM ';
-				
+
 				if (is_array($array['FROM'])) {
 					$table_array = $aliases = [];
 					$used_multi_alias = false;
@@ -122,7 +122,7 @@ class mysqli
 				} else {
 					$sql .= $array['FROM'];
 				}
-				
+
 				if (!empty($array['LEFT_JOIN'])) {
 					if (is_array($array['LEFT_JOIN'])) {
 						foreach ($array['LEFT_JOIN'] as $join) {
@@ -132,22 +132,22 @@ class mysqli
 						$sql .= ' LEFT JOIN ' . $array['LEFT_JOIN'];
 					}
 				}
-				
+
 				if (!empty($array['WHERE'])) {
 					$sql .= ' WHERE ' . implode(' AND ', $array['WHERE']);
 				}
-				
+
 				if (!empty($array['GROUP_BY'])) {
 					$sql .= ' GROUP BY ' . $array['GROUP_BY'];
 				}
-				
+
 				if (!empty($array['ORDER_BY'])) {
 					$sql .= ' ORDER BY ' . $array['ORDER_BY'];
 				}
-				
+
 			break;
 		}
-		
+
 		return $sql;
 	}
 
@@ -162,7 +162,7 @@ class mysqli
 		} elseif (is_string($value)) {
 			return "'" . $this->escape($value) . "'";
 		}
-		
+
 		return is_bool($value) ? intval($value) : $value;
 	}
 
@@ -195,10 +195,10 @@ class mysqli
 		if (!$this->connect_id) {
 			$this->connect();
 		}
-		
+
 		return mysqli_real_escape_string($this->connect_id, $message);
 	}
-	
+
 	/**
 	* Заносим полученные данные в цифровой массив
 	*
@@ -218,13 +218,13 @@ class mysqli
 					foreach ($this->cache_rowset[$query_id] as $row) {
 						$result[$row[$field]] = $row;
 					}
-					
+
 					return $result;
 				}
-				
+
 				return $this->cache_rowset[$query_id];
 			}
-			
+
 			while ($row = $this->fetchrow($query_id)) {
 				if (false !== $field) {
 					$result[$row[$field]] = $row;
@@ -238,7 +238,7 @@ class mysqli
 
 		return false;
 	}
-	
+
 	/**
 	* Извлечение поля
 	* Если rownum = false, то используется текущая строка (по умолчанию: 0)
@@ -246,7 +246,7 @@ class mysqli
 	public function fetchfield($field, $rownum = false, $query_id = false)
 	{
 		$query_id = false === $query_id ? $this->query_result : $query_id;
-		
+
 		if (false === $query_id) {
 			return false;
 		}
@@ -259,12 +259,12 @@ class mysqli
 			if ($this->cache_row_pointer[$query_id] < sizeof($this->cache_rowset[$query_id])) {
 				return isset($this->cache_rowset[$query_id][$this->cache_row_pointer[$query_id]][$field]) ? $this->cache_rowset[$query_id][$this->cache_row_pointer[$query_id]++][$field] : false;
 			}
-			
+
 			return false;
 		}
 
 		$row = $this->fetchrow($query_id);
-		
+
 		return isset($row[$field]) ? $row[$field] : false;
 	}
 
@@ -279,15 +279,15 @@ class mysqli
 			if ($this->cache_row_pointer[$query_id] < sizeof($this->cache_rowset[$query_id])) {
 				return $this->cache_rowset[$query_id][$this->cache_row_pointer[$query_id]++];
 			}
-		
+
 			return false;
 		}
-		
+
 		if (false !== $query_id) {
 			$result = mysqli_fetch_assoc($query_id);
 			return $result !== null ? $result : false;
 		}
-		
+
 		return false;
 	}
 
@@ -302,13 +302,13 @@ class mysqli
 			if (!isset($this->cache_rowset[$query_id])) {
 				return false;
 			}
-		
+
 			unset($this->cache_rowset[$query_id]);
 			unset($this->cache_row_pointer[$query_id]);
-		
+
 			return true;
 		}
-		
+
 		return mysqli_free_result($query_id);
 	}
 
@@ -364,7 +364,7 @@ class mysqli
 
 		return 'LIKE \'%' . $this->escape($expression) . '%\'';
 	}
-	
+
 	/**
 	* Вставка более одной записи одновременно
 	* Есть поддержка синтаксиса INSERT .. ON DUPLICATE KEY UPDATE
@@ -374,26 +374,26 @@ class mysqli
 		if (!sizeof($sql_ary)) {
 			return false;
 		}
-		
+
 		$ary = [];
-		
+
 		foreach ($sql_ary as $id => $_sql_ary) {
 			if (!is_array($_sql_ary)) {
 				return $this->query('INSERT INTO ' . $table . ' ' . $this->build_array('INSERT', $sql_ary) . ($on_duplicate_action ? ' ON DUPLICATE KEY UPDATE ' . $on_duplicate_action : ''));
 			}
-			
+
 			$values = [];
-			
+
 			foreach ($_sql_ary as $key => $var) {
 				$values[] = $this->check_value($var);
 			}
-			
+
 			$ary[] = '(' . implode(', ', $values) . ')';
 		}
-		
+
 		return $this->query('INSERT INTO ' . $table . ' (' . implode(', ', array_keys($sql_ary[0])) . ') VALUES ' . implode(', ', $ary) . ($on_duplicate_action ? ' ON DUPLICATE KEY UPDATE ' . $on_duplicate_action : ''));
 	}
-	
+
 	/**
 	* Количество запросов
 	*/
@@ -410,7 +410,7 @@ class mysqli
 		if (empty($params)) {
 			return $query;
 		}
-		
+
 		$named_placeholders = $named_params = $question_placeholders = $question_params = [];
 		$named_ary = $question_ary = [];
 		$i = 0;
@@ -425,20 +425,20 @@ class mysqli
 			$question_ary['$' . $i] = $this->check_value($params[$i]);
 			$i++;
 		}
-	
+
 		foreach ($params as $key => $value) {
 			if (!is_numeric($key)) {
 				/* Именованные параметры не экранируются */
 				$named_ary[$key] = $value;
 			}
 		}
-		
+
 		/* $0 => value1, $1 => $value2 */
 		$query = str_replace(array_keys($question_ary), array_values($question_ary), $query);
-		
+
 		/* :param1 => value1, :param2 => value2 */
 		$query = str_replace(array_keys($named_ary), array_values($named_ary), $query);
-		
+
 		return $query;
 	}
 
@@ -450,67 +450,67 @@ class mysqli
 		if (!$this->connect_id) {
 			$this->connect();
 		}
-		
+
 		if (!$query) {
 			return false;
 		}
-		
+
 		$query = $this->placehold($query, $params);
 		$start_time = microtime(true);
 		$this->query_result = false;
-		
+
 		if ($cache_ttl && is_object($this->cache)) {
 			$cache_key = md5(preg_replace('#[\n\r\s\t]+#', ' ', $query));
 			$query_id  = sizeof($this->cache_rowset);
-	
+
 			if (false !== $result = $this->cache->get("sql_{$cache_key}")) {
 				$this->cache_rowset[$query_id] = $result;
 				$this->cache_row_pointer[$query_id] = 0;
 				$this->add_num_queries(true);
-				
+
 				if (is_object($this->profiler)) {
 					$this->profiler->log_query($query, $start_time, true);
 				}
-				
+
 				return $this->query_result = $query_id;
 			}
 		}
-		
+
 		if (false === $this->query_result = mysqli_query($this->connect_id, $query)) {
 			$this->error($query);
 		}
-		
+
 		if ($cache_ttl && is_object($this->cache)) {
 			$cache_key = md5(preg_replace('#[\n\r\s\t]+#', ' ', $query));
 			$query_id  = sizeof($this->cache_rowset);
-			
+
 			$this->cache_rowset[$query_id] = $this->fetchall($this->query_result);
 			$this->cache_row_pointer[$query_id] = 0;
 			$this->freeresult($this->query_result);
 			$this->cache->set("sql_{$cache_key}", $this->cache_rowset[$query_id], $cache_ttl);
 			$this->query_result = $query_id;
 		}
-		
+
 		$this->add_num_queries();
-		
+
 		if (is_object($this->profiler)) {
 			$this->profiler->log_query($query, $start_time);
 		}
 
 		return $this->query_result;
 	}
-	
-	public function query_limit($query, array $params = [], $on_page, $offset = 0, $cache_ttl = 0)
+
+	public function query_limit($query, array $params, $on_page, $offset = 0, $cache_ttl = 0)
 	{
 		if (empty($query)) {
 			return false;
 		}
-		
+
 		$on_page = max(0, $on_page);
 		$offset = max(0, $offset);
-		
+
 		$this->query_result = false;
-		
+
 		/* 0 = нет лимита */
 		if ($on_page == 0) {
 			/**
@@ -519,12 +519,12 @@ class mysqli
 			*/
 			$on_page = '18446744073709551615';
 		}
-		
+
 		$query .= "\n LIMIT " . (!empty($offset) ? $offset . ', ' . $on_page : $on_page);
-		
+
 		return $this->query($query, $params, $cache_ttl);
 	}
-	
+
 	/**
 	* Перемещение к определенной строке
 	*/
@@ -536,15 +536,15 @@ class mysqli
 			if ($rownum >= sizeof($this->cache_rowset[$query_id])) {
 				return false;
 			}
-		
+
 			$this->cache_row_pointer[$query_id] = $rownum;
-		
+
 			return true;
 		}
 
 		return false !== $query_id ? mysqli_data_seek($query_id, $rownum) : false;
 	}
-	
+
 
 	/**
 	* Число запросов к БД (для отладки)
@@ -562,7 +562,7 @@ class mysqli
 		if (!$this->connect_id) {
 			$this->connect();
 		}
-		
+
 		switch ($status) {
 			case 'begin':
 
@@ -609,10 +609,10 @@ class mysqli
 
 			break;
 		}
-		
+
 		return $result;
 	}
-	
+
 	/**
 	* Увеличение счетчика запросов
 	*/
@@ -642,11 +642,11 @@ class mysqli
 
 		$code    = $this->connect_id ? mysqli_errno($this->connect_id) : mysqli_connect_errno();
 		$message = $this->connect_id ? mysqli_error($this->connect_id) : mysqli_connect_error();
-		
+
 		if (!defined('IN_SQL_ERROR')) {
 			define('IN_SQL_ERROR', true);
 		}
-		
+
 		/* Подсветка ключевых слов */
 		$sql = preg_replace('#(SELECT|INSERT INTO|UPDATE|SET|DELETE|FROM|LEFT JOIN|WHERE|AND|GROUP BY|ORDER BY|LIMIT|AS|ON)#', '<em>${1}</em>', $sql);
 
@@ -659,7 +659,7 @@ class mysqli
 		if ($this->transaction) {
 			$this->transaction('rollback');
 		}
-		
+
 		/**
 		* Автоматическое исправление таблиц
 		*/
@@ -670,7 +670,7 @@ class mysqli
 				$this->query('REPAIR TABLE ' . $matches[1]);
 			}
 		}
-		
+
 		trigger_error(false, E_USER_ERROR);
 
 		return $result;
