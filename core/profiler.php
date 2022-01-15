@@ -28,16 +28,16 @@ class console
 		if (PHP_SAPI == 'cli') {
 			return $this;
 		}
-		
+
 		foreach (func_get_args() as $arg) {
 			$this->logs[] = [
 				'data' => $arg,
 				'type' => 'log',
 			];
 		}
-		
+
 		$this->log_count++;
-		
+
 		return $this;
 	}
 
@@ -46,7 +46,7 @@ class console
 		if (PHP_SAPI == 'cli') {
 			return $this;
 		}
-		
+
 		$this->logs[] = [
 			'data'      => $object ? strlen(serialize($object)) : memory_get_usage(),
 			'type'      => 'memory',
@@ -55,7 +55,7 @@ class console
 		];
 
 		$this->memory_count++;
-		
+
 		return $this;
 	}
 
@@ -64,15 +64,15 @@ class console
 		if (PHP_SAPI == 'cli') {
 			return $this;
 		}
-		
+
 		$call_stack = '';
-		
+
 		if (function_exists('xdebug_print_function_stack')) {
 			ob_start();
 			xdebug_print_function_stack();
 			$call_stack = str_replace($this->document_root, '', ob_get_clean());
 		}
-		
+
 		$this->logs[] = [
 			'call_stack' => $call_stack,
 			'data'       => $message,
@@ -82,7 +82,7 @@ class console
 		];
 
 		$this->error_count++;
-		
+
 		return $this;
 	}
 
@@ -91,15 +91,15 @@ class console
 		if (PHP_SAPI == 'cli') {
 			return $this;
 		}
-		
+
 		$this->logs[] = [
 			'data' => (microtime(true) - $this->start_time) * 1000,
 			'type' => 'speed',
 			'name' => $name,
 		];
-		
+
 		$this->speed_count++;
-		
+
 		return $this;
 	}
 
@@ -108,11 +108,11 @@ class console
 		if (PHP_SAPI == 'cli') {
 			return $this;
 		}
-		
+
 		$query_time = (microtime(true) - $start_time) * 1000;
 		$this->query_time += $query_time;
 		$this->query_count++;
-		
+
 		$this->queries[] = [
 			'cached' => $cached,
 			'sql'    => preg_replace('#[\n\r\s\t]+#', ' ', $sql),
@@ -122,7 +122,7 @@ class console
 		if ($cached) {
 			$this->query_cached++;
 		}
-		
+
 		return $this;
 	}
 }
@@ -132,7 +132,7 @@ class profiler extends console
 	protected $document_root;
 	protected $output = [];
 	protected $start_time;
-	
+
 	protected $options = [
 		'debug.ips'  => [],
 		'enabled'    => false,
@@ -145,7 +145,7 @@ class profiler extends console
 	{
 		$this->document_root = realpath(rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/../../') . '/';
 		$this->start_time    = $start_time ?: microtime(true);
-		
+
 		$this->options = array_merge($this->options, $options);
 	}
 
@@ -154,7 +154,7 @@ class profiler extends console
 		if (PHP_SAPI == 'cli') {
 			return;
 		}
-		
+
 		$this->get_console_data()
 			->get_file_data()
 			->get_memory_data()
@@ -165,7 +165,7 @@ class profiler extends console
 			'profiler_logs'    => $this->output['logs'],
 			'profiler_files'   => $this->output['files'],
 			'profiler_queries' => $this->output['queries'],
-			
+
 			'FILE_COUNT'      => $this->file_count,
 			'FILE_SIZE'       => $this->file_size,
 			'FILE_LARGEST'    => $this->file_largest,
@@ -185,17 +185,17 @@ class profiler extends console
 			'QUERY_TIME'      => $this->query_time,
 		];
 	}
-	
+
 	public function is_enabled()
 	{
 		return $this->options['enabled'];
 	}
-	
+
 	public function is_permitted()
 	{
 		return in_array($_SERVER['REMOTE_ADDR'], $this->options['debug.ips']);
 	}
-	
+
 	/**
 	* Отправка данных внешнему профайлеру
 	*/
@@ -204,15 +204,15 @@ class profiler extends console
 		if (PHP_SAPI == 'cli') {
 			return;
 		}
-		
+
 		if (!$this->options['send_stats']) {
 			return;
 		}
-		
+
 		if (false === $fp = fsockopen("udp://{$this->options['host']}", $this->options['port'])) {
 			return false;
 		}
-		
+
 		if (!$this->memory_used) {
 			$this->get_console_data()
 				->get_file_data()
@@ -224,9 +224,9 @@ class profiler extends console
 		fwrite($fp, json_encode([
 			'domain' => $hostname,
 			'page'   => $url,
-			
+
 			'logs' => $this->output['logs'],
-			
+
 			'file_count'    => $this->file_count,
 			'file_size'     => $this->file_size,
 			'file_largest'  => $this->file_largest,
@@ -243,7 +243,7 @@ class profiler extends console
 			'query_count'   => $this->query_count,
 			'query_time'    => sprintf('%.3f', $this->query_time),
 		]));
-		
+
 		fclose($fp);
 	}
 
@@ -258,7 +258,7 @@ class profiler extends console
 		}
 
 		$this->output['logs'] = $logs;
-		
+
 		return $this;
 	}
 
@@ -268,10 +268,10 @@ class profiler extends console
 		$this->file_count = 0;
 
 		foreach (get_included_files() as $key => $file) {
-			if (false !== strpos($file, '/lib/')) {
+			if (false !== strpos($file, '/vendor/')) {
 				continue;
 			}
-			
+
 			$size = filesize($file);
 
 			$file_list[] = [
@@ -285,7 +285,7 @@ class profiler extends console
 		}
 
 		$this->output['files'] = $file_list;
-		
+
 		return $this;
 	}
 
@@ -293,14 +293,14 @@ class profiler extends console
 	{
 		$this->memory_used  = memory_get_peak_usage();
 		$this->memory_total = ini_get('memory_limit');
-		
+
 		return $this;
 	}
 
 	protected function get_query_data()
 	{
 		$this->output['queries'] = $this->queries;
-		
+
 		return $this;
 	}
 
@@ -308,7 +308,7 @@ class profiler extends console
 	{
 		$this->speed_allowed = ini_get('max_execution_time');
 		$this->speed_total   = (microtime(true) - $this->start_time) * 1000;
-		
+
 		return $this;
 	}
 }

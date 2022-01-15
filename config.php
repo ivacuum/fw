@@ -1,11 +1,6 @@
 <?php namespace fw;
 
 $app = [
-	/* Настройки автозагрузчика классов */
-	'autoloader.options' => [
-		'enabled' => true,
-	],
-	
 	/* Настройки кэша */
 	'cache.driver.options' => [
 		'host'          => '',
@@ -14,11 +9,11 @@ $app = [
 		'shared_prefix' => '',
 		'type'          => 'null',
 	],
-	
+
 	/* Настройки кода подтверждения */
 	'captcha.fonts' => ['tremble.ttf'],
 	'captcha.type'  => 'gd',
-	
+
 	/* Настройки подключения к БД */
 	'db.options' => [
 		'host' => 'localhost',
@@ -29,17 +24,15 @@ $app = [
 		'sock' => '/tmp/mysql.sock',
 		'pers' => false,
 	],
-	
+
 	/* Пути к папкам */
 	'dir.app'             => realpath(SITE_DIR . '../includes'),
 	'dir.fonts'           => FW_DIR . 'assets/fonts',
-	'dir.fw'              => rtrim(FW_DIR, '/'),
-	'dir.lib'             => realpath(FW_DIR . '../lib'),
 	'dir.logs'            => realpath(SITE_DIR . '../logs'),
 	'dir.templates.app'   => realpath(SITE_DIR . '../templates'),
 	'dir.templates.cache' => realpath(SITE_DIR . '../cache/templates'),
 	'dir.templates.fw'    => FW_DIR . 'templates',
-	
+
 	/* Настройки обработчика ошибок */
 	'errorhandler.options' => [
 		'debug.ips'   => [],
@@ -49,16 +42,11 @@ $app = [
 		'enabled'     => true,
 		'standalone'  => false,
 	],
-	
+
 	/* Пути к файлам */
 	'file.cron.allowed' => 'cron_allowed',
 	'file.cron.running' => 'cron_running',
-	
-	/* Автоподключение файлов */
-	'include.files' => [
-		FW_DIR . 'functions.php',
-	],
-	
+
 	/* Настройки логирования */
 	'logger.options' => [
 		'cron.format'   => "%datetime%: %message%\n",
@@ -87,7 +75,7 @@ $app = [
 		'directory_index'    => 'index',
 		'send_status_code'   => false,
 	],
-	
+
 	/* Настройки сессий */
 	'session.options' => [
 		'name'            => 'sid',
@@ -99,39 +87,18 @@ $app = [
 		'referer_check'   => false,
 		'hash_function'   => 'sha1',
 	],
-	
+
 	/* Настройки подключения к поисковику sphinx */
 	'sphinx.options' => [
 		'host' => 'localhost',
 		'port' => false,
 		'sock' => '/tmp/sphinx.sock',
 	],
-	
+
 	/* Ссылки */
 	'urls' => [
 		'register' => '/',
 		'signin'   => '/',
 		'signout'  => '/',
 	],
-	
-	/* Версии библиотек */
-	'version.guzzle'   => '3.8.1',
-	'version.monolog'  => '1.7.0',
-	'version.psrlog'   => '1.0.0',
-	'version.smarty'   => '3.1.16',
-	'version.swift'    => '5.0.3',
-	'version.symfony'  => '2.2.11',
-];
-
-$app['autoloader.namespaces'] = [
-	'fw'      => $app['dir.fw'],
-	'app'     => $app['dir.app'],
-	'Guzzle'  => "{$app['dir.lib']}/guzzle/{$app['version.guzzle']}/Guzzle",
-	'Monolog' => "{$app['dir.lib']}/monolog/{$app['version.monolog']}/Monolog",
-	'Psr'     => "{$app['dir.lib']}/psrlog/{$app['version.psrlog']}/Psr",
-	'Symfony' => "{$app['dir.lib']}/symfony/{$app['version.symfony']}/Symfony",
-];
-
-$app['autoloader.pears'] = [
-	'Swift' => "{$app['dir.lib']}/swiftmailer/{$app['version.swift']}/classes",
 ];

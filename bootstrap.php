@@ -11,7 +11,9 @@ ini_set('display_errors', false);
 error_reporting(E_ALL);
 mb_internal_encoding('utf-8');
 
-require FW_DIR . 'core/application.php';
+$loader = require 'vendor/autoload.php';
+$loader->addPsr4('app\\', realpath(SITE_DIR . '../includes'));
+
 require FW_DIR . 'config.php';
 require SITE_DIR . '../config.php';
 
