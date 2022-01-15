@@ -1,22 +1,6 @@
 <?php
 
 /**
-* Вывод на печать ajax данных
-*
-* @param	string	$file	Файл в папке templates/ajax
-*/
-function ajax_output($file = false)
-{
-	global $app;
-	
-	$file = $file ?: $app['template']->file;
-
-	header('Content-type: text/xml; charset=utf-8');
-	$app['template']->display("ajax/{$file}");
-	exit;
-}
-
-/**
 * Создание скрытых полей по данным переданного массива
 *
 * @param	array	$row	Массив данных
@@ -120,14 +104,14 @@ function ilink($url = '', $prefix = false)
 			$link = sprintf('%s%s/', $link, $app['site_info']['language']);
 		}
 	}
-	
+
 	$link .= $url;
 	$ary = pathinfo($url);
-	
+
 	if (isset($ary['extension']) || substr($link, -1) == '/' || !$app['router.options']['default_extension']) {
 		return $link;
 	}
-	
+
 	return sprintf('%s/', $link);
 }
 
@@ -176,7 +160,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			if (defined('IN_CHECK_BAN') && $result['user_row']['user_id'] === 1) {
 				return;
 			}
-			
+
 			$app['user']->attach_oauth_saved_data($result['user_row']['user_id']);
 			$app['request']->redirect(ilink($redirect));
 		}
@@ -185,20 +169,20 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		if ($result['status'] == 'LOGIN_BREAK') {
 			trigger_error($result['message']);
 		}
-		
+
 		switch ($result['status']) {
 			case 'ERROR_ATTEMPTS':
-			
+
 				$app['template']->assign('ERROR_ATTEMPTS', true);
-			
+
 			break;
 		}
-		
+
 		/* Различные ошибки аутентификации */
 		// $err = $app['user']->lang[$result['status']];
 		$err = $result['message'];
 	}
-	
+
 	$s_hidden_fields = [];
 
 	if ($redirect) {
@@ -206,7 +190,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	}
 
 	$s_hidden_fields = build_hidden_fields($s_hidden_fields);
-	
+
 	$app['template']->assign([
 		'LOGIN_ERROR'   => $err,
 		'LOGIN_EXPLAIN' => $l_explain,
@@ -263,7 +247,7 @@ function make_random_string($length = 10)
 function meta_refresh($time, $url)
 {
 	global $app;
-	
+
 	$app['template']->assign('META', sprintf('<meta http-equiv="refresh" content="%d;url=%s">', $time, $url));
 }
 
@@ -342,7 +326,7 @@ function pagination($on_page, $overall, $link, $page_var = 'p')
 	} elseif ($pages == $p && $pages > 1) {
 		$url_prev = $p - 1;
 	}
-	
+
 	$app['template']->assign([
 		'pagination' => [
 			'ITEMS'   => $overall,

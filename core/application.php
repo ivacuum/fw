@@ -256,82 +256,64 @@ class application implements \ArrayAccess
 		return $this->values[$id];
 	}
 
-	public function load_constants($prefix)
-	{
-		if (!function_exists('apc_fetch')) {
-			return false;
-		}
-
-		return apc_load_constants("{$prefix}_constants");
-	}
-
-	public function set_constants($prefix, $constants)
-	{
-		if (!function_exists('apc_fetch')) {
-			foreach ($constants as $key => $value) {
-				define($key, $value);
-			}
-
-			return true;
-		}
-
-		apc_define_constants("{$prefix}_constants", $constants);
-	}
-
 	public function keys()
 	{
 		return array_keys($this->values);
 	}
 
-	public function offsetExists($id)
+    #[\ReturnTypeWillChange]
+	public function offsetExists($offset)
 	{
-		return array_key_exists($id, $this->values);
+		return array_key_exists($offset, $this->values);
 	}
 
-	public function offsetGet($id)
+    #[\ReturnTypeWillChange]
+	public function offsetGet($offset)
 	{
-		if (!isset($this->keys[$id])) {
-			throw new \InvalidArgumentException(sprintf('Ключ «%s» не найден.', $id));
+		if (!isset($this->keys[$offset])) {
+			throw new \InvalidArgumentException(sprintf('Ключ «%s» не найден.', $offset));
 		}
 
-		if (isset($this->raw[$id])
-			|| !is_object($this->values[$id])
-			|| isset($this->protected[$this->values[$id]])
-			|| !method_exists($this->values[$id], '__invoke')
+		if (isset($this->raw[$offset])
+			|| !is_object($this->values[$offset])
+			|| isset($this->protected[$this->values[$offset]])
+			|| !method_exists($this->values[$offset], '__invoke')
 		) {
-			return $this->values[$id];
+			return $this->values[$offset];
 		}
 
-		if (isset($this->factories[$this->values[$id]])) {
-			return $this->values[$id]($this);
+		if (isset($this->factories[$this->values[$offset]])) {
+			return $this->values[$offset]($this);
 		}
 
-		$this->frozen[$id] = true;
-		$this->raw[$id] = $this->values[$id];
+		$this->frozen[$offset] = true;
+		$this->raw[$offset] = $this->values[$offset];
 
-		return $this->values[$id] = $this->values[$id]($this);
+		return $this->values[$offset] = $this->values[$offset]($this);
 	}
 
-	public function offsetSet($id, $value)
+    #[\ReturnTypeWillChange]
+	public function offsetSet($offset, $value)
 	{
-		if (isset($this->frozen[$id])) {
-			throw new \RuntimeException(sprintf('Нельзя изменять замороженный объект «%s»', $id));
+		if (isset($this->frozen[$offset])) {
+			throw new \RuntimeException(sprintf('Нельзя изменять замороженный объект «%s»', $offset));
 		}
 
-		$this->values[$id] = $value;
-		$this->keys[$id] = true;
+		$this->values[$offset] = $value;
+		$this->keys[$offset] = true;
 	}
 
-	public function offsetUnset($id)
+    #[\ReturnTypeWillChange]
+	public function offsetUnset($offset)
 	{
-		unset($this->values[$id]);
+		unset($this->values[$offset]);
 
-		if (isset($this->keys[$id])) {
-			if (is_object($this->values[$id])) {
-				unset($this->factories[$this->values[$id]], $this->protected[$this->values[$id]]);
+		if (isset($this->keys[$offset])) {
+			if (is_object($this->values[$offset])) {
+				unset($this->factories[$this->values[$offset]], $this->protected[$this->values[$offset]]);
 			}
 
-			unset($this->values[$id], $this->frozen[$id], $this->raw[$id], $this->keys[$id]);
+			unset($this->values[$offset], $this->frozen[$offset], $this->raw[$offset], $this->keys[$offset]);
 		}
 	}
 }

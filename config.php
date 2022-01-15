@@ -7,7 +7,7 @@ $app = [
 		'port'          => 0,
 		'prefix'        => '',
 		'shared_prefix' => '',
-		'type'          => 'null',
+		'type'          => 'dummy',
 	],
 
 	/* Настройки кода подтверждения */

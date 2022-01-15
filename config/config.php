@@ -6,7 +6,7 @@
 class config implements \ArrayAccess, \IteratorAggregate, \Countable
 {
 	protected $config;
-	
+
 	function __construct(array $config)
 	{
 		$this->config = $config;
@@ -19,7 +19,7 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 	{
 		unset($this->config[$key]);
 	}
-	
+
 	/**
 	* Увеличение значения настройки (счетчика)
 	*/
@@ -28,10 +28,10 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 		if (!isset($this->config[$key])) {
 			$this->config[$key] = 0;
 		}
-		
+
 		$this->config[$key] += $increment;
 	}
-	
+
 	/**
 	* Установка нового значения настройки
 	*/
@@ -39,7 +39,7 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 	{
 		$this->config[$key] = $value;
 	}
-	
+
 	/**
 	* Установка нового значения только если предыдущее совпадает или вовсе отсутствует
 	*/
@@ -49,45 +49,46 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 			$this->config[$key] = $new_value;
 			return true;
 		}
-		
+
 		return false;
 	}
 
 	/**
 	* Реализация интерфейса Countable
 	*/
+    #[\ReturnTypeWillChange]
 	public function count()
 	{
 		return sizeof($this->config);
 	}
-	
+
 	/**
 	* Реализация интерфейса IteratorAggregate
 	*/
 	public function getIterator()
 	{
-		return new ArrayIterator($this->config);
+		return new \ArrayIterator($this->config);
 	}
-	
+
 	/**
 	* Реализация интерфейса ArrayAccess
 	*/
-	public function offsetExists($key)
+	public function offsetExists($offset)
 	{
-		return isset($this->config[$key]);
+		return isset($this->config[$offset]);
 	}
-	
-	public function offsetGet($key)
+
+	public function offsetGet($offset)
 	{
-		return isset($this->config[$key]) ? $this->config[$key] : '';
+		return isset($this->config[$offset]) ? $this->config[$offset] : '';
 	}
-	
-	public function offsetSet($key, $value)
+
+	public function offsetSet($offset, $value)
 	{
-		$this->config[$key] = $value;
+		$this->config[$offset] = $value;
 	}
-	
-	public function offsetUnset($key)
+
+	public function offsetUnset($offset)
 	{
 		trigger_error('Вместо функции unset() следует использовать метод config::delete()');
 	}
