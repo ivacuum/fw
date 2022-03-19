@@ -235,7 +235,17 @@ function make_float($value)
 */
 function make_random_string($length = 10)
 {
-	return substr(str_shuffle(preg_replace('#[^0-9a-zA-Z]#', '', crypt(uniqid(mt_rand(), true)))), 0, $length);
+    $string = '';
+
+    while (($len = strlen($string)) < $length) {
+        $size = $length - $len;
+
+        $bytes = random_bytes($size);
+
+        $string .= substr(str_replace(['/', '+', '='], '', base64_encode($bytes)), 0, $size);
+    }
+
+    return $string;
 }
 
 /**
