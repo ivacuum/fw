@@ -13,29 +13,11 @@
   "config": {
     "optizime-autoloader": true
   },
-  "repositories": [
-    {
-      "type": "package",
-      "package": {
-        "name": "smarty/smarty",
-        "version": "3.1.16",
-        "dist": {
-          "url": "https://www.smarty.net/files/Smarty-3.1.16.zip",
-          "type": "zip"
-        },
-        "autoload": {
-          "classmap": [
-            "libs/"
-          ]
-        }
-      }
-    }
-  ],
   "require": {
     "php": ">=7.0",
     "guzzle/guzzle": "3.8.*",
     "monolog/monolog": "1.8.*",
-    "smarty/smarty": "3.1.16",
+    "smarty/smarty": "^3.1",
     "symfony/event-dispatcher": "2.2.*",
     "swiftmailer/swiftmailer": "5.1.*"
   },
