@@ -14,12 +14,12 @@
     "optizime-autoloader": true
   },
   "require": {
-    "php": ">=7.0",
-    "guzzle/guzzle": "3.8.*",
-    "monolog/monolog": "1.8.*",
+    "php": ">=8.0",
+    "guzzle/guzzle": "^3.8",
+    "monolog/monolog": "^1.8",
     "smarty/smarty": "^3.1",
-    "symfony/event-dispatcher": "2.2.*",
-    "swiftmailer/swiftmailer": "5.1.*"
+    "symfony/event-dispatcher": "^2.2",
+    "swiftmailer/swiftmailer": "^5.1"
   },
   "autoload": {
     "files": [
