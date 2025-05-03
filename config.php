@@ -38,7 +38,7 @@ $app = [
 		'debug.ips'   => [],
 		'email.401'   => '',
 		'email.404'   => '',
-		'email.error' => 'fw@ivacuum.ru',
+		'email.error' => 'fw@vacuum.name',
 		'enabled'     => true,
 		'standalone'  => false,
 	],
